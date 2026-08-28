@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ApiService } from './services/api';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +8,22 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnInit {
+
   protected readonly title = signal('frontend');
+
+  constructor(private apiService: ApiService) {}
+
+  ngOnInit(): void {
+  console.log('App inició');
+
+  this.apiService.test().subscribe({
+    next: respuesta => {
+      console.log('Respuesta del backend:', respuesta);
+    },
+    error: error => {
+      console.error('Error conectando con el backend:', error);
+    }
+  });
+}
 }

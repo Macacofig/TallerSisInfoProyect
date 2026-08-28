@@ -1,0 +1,41 @@
+services:
+
+  db:
+    image: postgres:17
+    container_name: unihub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: unihub
+      POSTGRES_USER: unihub
+      POSTGRES_PASSWORD: unihub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: unihub-backend
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/unihub
+      SPRING_DATASOURCE_USERNAME: unihub
+      SPRING_DATASOURCE_PASSWORD: unihub
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: unihub-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
