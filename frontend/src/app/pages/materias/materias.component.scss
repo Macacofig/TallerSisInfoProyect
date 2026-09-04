@@ -1,5 +1,5 @@
 .materias-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 4rem);
   padding: 2.5rem clamp(1.5rem, 4vw, 4rem);
   color: #14213d;
 }

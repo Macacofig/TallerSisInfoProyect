@@ -2,9 +2,10 @@ import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ApiService } from './services/api';
 import { Sidebar } from '../layouts/sidebar/sidebar';
+import { Navbar } from "../layouts/navbar/navbar";
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Sidebar],
+  imports: [RouterOutlet, Sidebar, Navbar],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

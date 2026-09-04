@@ -1,0 +1,159 @@
+.navbar {
+  width: 100%;
+  min-height: 4.25rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  padding: 0 1.5rem;
+
+  box-sizing: border-box;
+
+  background-color: #063b78;
+
+  border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* ========================================
+   ACTIONS
+   ======================================== */
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+
+  gap: 1rem;
+}
+
+
+/* ========================================
+   NOTIFICATIONS
+   ======================================== */
+
+.navbar__notification {
+  position: relative;
+
+  width: 2rem;
+  height: 2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #ffffff;
+
+  cursor: pointer;
+}
+
+
+.navbar__notification:hover {
+  color: #d9e5f2;
+}
+
+
+.navbar__notification-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+
+/* ========================================
+   USER
+   ======================================== */
+
+.navbar__user {
+  display: flex;
+  align-items: center;
+
+  gap: 0.625rem;
+}
+
+
+/* Avatar */
+
+.navbar__avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  border: 0.0625rem solid #c9a227;
+  border-radius: 50%;
+
+  background-color: rgba(255, 255, 255, 0.08);
+
+  color: #c9a227;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+
+/* User information */
+
+.navbar__user-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.125rem;
+}
+
+
+.navbar__user-name {
+  color: #ffffff;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  line-height: 1.2;
+}
+
+
+.navbar__user-semester {
+  color: rgba(255, 255, 255, 0.65);
+
+  font-size: 0.625rem;
+
+  line-height: 1.2;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 48rem) {
+
+  .navbar {
+    padding: 0 1rem;
+  }
+
+  .navbar__user-info {
+    display: none;
+  }
+
+  .navbar__actions {
+    gap: 0.625rem;
+  }
+}
+
+
+@media (max-width: 36rem) {
+
+  .navbar__avatar {
+    width: 2rem;
+    height: 2rem;
+  }
+}
