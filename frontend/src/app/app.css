@@ -1,0 +1,20 @@
+.app-shell {
+	min-height: 100vh;
+	display: flex;
+	background-color: #f4f7fb;
+}
+
+app-sidebar {
+	flex: 0 0 16.25rem;
+}
+
+.app-content {
+	min-width: 0;
+	flex: 1;
+}
+
+@media (max-width: 48rem) {
+	app-sidebar {
+		flex-basis: 14rem;
+	}
+}
