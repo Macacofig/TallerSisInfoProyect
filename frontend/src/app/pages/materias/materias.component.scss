@@ -1,3 +1,59 @@
+.materias-page {
+  min-height: 100vh;
+  padding: 2.5rem clamp(1.5rem, 4vw, 4rem);
+  color: #14213d;
+}
+
+.materias-page__header {
+  max-width: 52rem;
+}
+
+.materias-page__eyebrow {
+  margin: 0 0 0.5rem;
+  color: #b28619;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.75rem;
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.materias-page__description {
+  margin-bottom: 0;
+  color: #5d6b82;
+  font-size: 1rem;
+}
+
+.materias-page__empty-state {
+  max-width: 52rem;
+  margin-top: 2rem;
+  padding: 2rem;
+  border: 1px solid #dce4ef;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+}
+
+.materias-page__empty-state h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.materias-page__empty-state p {
+  margin-bottom: 0;
+  color: #5d6b82;
+}
 :host {
   display: block;
   width: 100%;
