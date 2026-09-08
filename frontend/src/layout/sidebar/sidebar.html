@@ -1,0 +1,76 @@
+<aside class="sidebar">
+
+  <header class="sidebar__header">
+    <div class="sidebar__brand">
+
+      <div class="sidebar__logo">
+        <span class="sidebar__logo-mark">▥</span>
+      </div>
+
+      <div class="sidebar__brand-text">
+        <span class="sidebar__brand-name">
+          UniHub
+        </span>
+
+        <span class="sidebar__brand-subtitle">
+          BIBLIOTECA ACADÉMICA
+        </span>
+      </div>
+
+    </div>
+  </header>
+
+
+  <nav
+    class="sidebar__navigation"
+    aria-label="Navegación principal"
+  >
+
+    <a
+      routerLink="/materias"
+      routerLinkActive="sidebar__item--active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="sidebar__item"
+    >
+
+      <span
+        class="sidebar__icon"
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M4 5.5C4 4.67 4.67 4 5.5 4H18.5C19.33 4 20 4.67 20 5.5V18.5C20 19.33 19.33 20 18.5 20H5.5C4.67 20 4 19.33 4 18.5V5.5Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+
+          <path
+            d="M8 8H16M8 12H16M8 16H13"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+
+      <span class="sidebar__label">
+        Materias
+      </span>
+
+    </a>
+
+  </nav>
+
+
+  <footer class="sidebar__footer">
+    <p>
+      Datos de demostración. La información
+      mostrada es ficticia.
+    </p>
+  </footer>
+
+</aside>
