@@ -9,11 +9,11 @@
 
       <div class="sidebar__brand-text">
         <span class="sidebar__brand-name">
-          UniHub
+          {{ LAYOUT_STRINGS.sidebar.brandName }}
         </span>
 
         <span class="sidebar__brand-subtitle">
-          BIBLIOTECA ACADÉMICA
+          {{ LAYOUT_STRINGS.sidebar.brandSubtitle }}
         </span>
       </div>
 
@@ -23,7 +23,7 @@
 
   <nav
     class="sidebar__navigation"
-    aria-label="Navegación principal"
+    [attr.aria-label]="LAYOUT_STRINGS.sidebar.navigationLabel"
   >
 
     <a
@@ -58,7 +58,7 @@
       </span>
 
       <span class="sidebar__label">
-        Materias
+        {{ LAYOUT_STRINGS.sidebar.itemLabel }}
       </span>
 
     </a>
@@ -68,8 +68,7 @@
 
   <footer class="sidebar__footer">
     <p>
-      Datos de demostración. La información
-      mostrada es ficticia.
+      {{ LAYOUT_STRINGS.sidebar.footerText }}
     </p>
   </footer>
 

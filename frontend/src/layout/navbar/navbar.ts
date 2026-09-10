@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LAYOUT_STRINGS as LAYOUT_TEXTS } from '../../app/strings/layout.strings';
 
 @Component({
   selector: 'app-navbar',
@@ -6,4 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar {}
+export class Navbar {
+  protected readonly LAYOUT_STRINGS = LAYOUT_TEXTS;
+}
