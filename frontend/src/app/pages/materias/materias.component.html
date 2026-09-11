@@ -1,16 +1,179 @@
-<section class="materias-page">
-	<header class="materias-page__header">
-		<div>
-			<p class="materias-page__eyebrow">Biblioteca academica</p>
-			<h1>Materias</h1>
-			<p class="materias-page__description">
-				Explora el material disponible para tus materias.
-			</p>
-		</div>
-	</header>
+<section class="materias-page" aria-labelledby="titulo-materias">
+  <header class="materias-page__header">
+    <div>
+      <p class="materias-page__eyebrow">{{ MESSAGES.MATERIAS_PAGE_EYEBROW }}</p>
+      <h1 id="titulo-materias">{{ MESSAGES.MATERIAS_PAGE_TITLE }}</h1>
+      <p class="materias-page__description">{{ MESSAGES.MATERIAS_PAGE_DESCRIPTION }}</p>
+    </div>
+    @if (estado() === APP_CONFIG.COMPONENT_STATES.READY) {
+      <p class="materias-page__total" role="status">
+        {{ materias().length }} {{ materias().length === 1 ? MESSAGES.MATERIA_SINGULAR : MESSAGES.MATERIA_PLURAL }}
+      </p>
+    }
+  </header>
 
-	<div class="materias-page__empty-state">
-		<h2>Materias disponibles</h2>
-		<p>Aqui apareceran las materias registradas.</p>
-	</div>
+  @if (mostrandoDemo()) {
+    <p class="materias-page__demo" role="status">{{ MESSAGES.DEMO_NOTICE }}</p>
+  }
+
+  <div [attr.aria-busy]="estado() === APP_CONFIG.COMPONENT_STATES.LOADING">
+    @if (estado() === APP_CONFIG.COMPONENT_STATES.LOADING) {
+      <div class="materias-page__message" role="status">
+        <span class="materias-page__spinner" aria-hidden="true"></span>
+        <p>{{ MESSAGES.LOADING_MESSAGE }}</p>
+      </div>
+    } @else if (estado() === APP_CONFIG.COMPONENT_STATES.ERROR) {
+      <div class="materias-page__message" role="alert">
+        <h2>{{ MESSAGES.ERROR_TITLE }}</h2>
+        <p>{{ MESSAGES.ERROR_DESCRIPTION }}</p>
+        <button type="button" class="materia-button" (click)="cargarMaterias()">{{ MESSAGES.ERROR_BUTTON }}</button>
+      </div>
+    } @else if (materias().length === 0) {
+      <div class="materias-page__message" role="status">
+        <h2>{{ MESSAGES.EMPTY_TITLE }}</h2>
+        <p>{{ MESSAGES.EMPTY_DESCRIPTION }}</p>
+      </div>
+    } @else {
+      <div class="materias-grid">
+        @for (materia of materias(); track materia.id) {
+          <article class="materia-card" [attr.aria-labelledby]="'materia-' + materia.id">
+            <header>
+              <p class="materia-card__codigo">{{ materia.codigo }}</p>
+              <h2 [id]="'materia-' + materia.id">{{ materia.nombre }}</h2>
+              <p class="materia-card__meta">{{ materia.carrera }} · Semestre {{ materia.semestre }}
+                @if (materia.semestre === 1) { · {{ MESSAGES.LEVEL_BASIC }} }
+                @else if (materia.semestre >= APP_CONFIG.SEMESTER_LEVELS.INTERMEDIATE_START && materia.semestre <= APP_CONFIG.SEMESTER_LEVELS.INTERMEDIATE_END) { · {{ MESSAGES.LEVEL_INTERMEDIATE }} }
+                @else if (materia.semestre >= APP_CONFIG.SEMESTER_LEVELS.ADVANCED_START) { · {{ MESSAGES.LEVEL_ADVANCED }} }
+              </p>
+            </header>
+
+            <div class="materia-card__indicadores" [attr.aria-label]="materia.cantidadEstudiantesEvaluados ? MESSAGES.INDICATORS_WITH_DATA : MESSAGES.INDICATORS_WITHOUT_DATA">
+              @if (materia.dificultad) {
+                <div class="materia-card__indicador">
+                  <div class="materia-card__etiqueta">
+                    <span>{{ MESSAGES.DIFFICULTY_LABEL }}</span>
+                    <span class="materia-card__valor">{{ materia.dificultad.valor }}<span class="materia-card__escala">/{{ APP_CONFIG.SCALE.RATING_TOTAL }}</span></span>
+                  </div>
+                  <div class="materia-card__barra-contenedor">
+                    <div class="materia-card__barra" [style.width]="getAnchoIndicador(materia.dificultad.valor)" aria-hidden="true"></div>
+                  </div>
+                </div>
+              } @else {
+                <div class="materia-card__indicador">
+                  <div class="materia-card__etiqueta">
+                    <span>{{ MESSAGES.DIFFICULTY_LABEL }}</span>
+                    <span class="materia-card__sin-datos">{{ MESSAGES.NO_DATA }}</span>
+                  </div>
+                  <div class="materia-card__barra-contenedor">
+                    <div class="materia-card__barra" aria-hidden="true"></div>
+                  </div>
+                </div>
+              }
+
+              @if (materia.cargaTrabajo) {
+                <div class="materia-card__indicador">
+                  <div class="materia-card__etiqueta">
+                    <span>{{ MESSAGES.WORKLOAD_LABEL }}</span>
+                    <span class="materia-card__valor">{{ materia.cargaTrabajo.valor }}<span class="materia-card__escala">/{{ APP_CONFIG.SCALE.RATING_TOTAL }}</span></span>
+                  </div>
+                  <div class="materia-card__barra-contenedor">
+                    <div class="materia-card__barra" [style.width]="getAnchoIndicador(materia.cargaTrabajo.valor)" aria-hidden="true"></div>
+                  </div>
+                </div>
+              } @else {
+                <div class="materia-card__indicador">
+                  <div class="materia-card__etiqueta">
+                    <span>{{ MESSAGES.WORKLOAD_LABEL }}</span>
+                    <span class="materia-card__sin-datos">{{ MESSAGES.NO_DATA }}</span>
+                  </div>
+                  <div class="materia-card__barra-contenedor">
+                    <div class="materia-card__barra" aria-hidden="true"></div>
+                  </div>
+                </div>
+              }
+
+              @if (materia.conocimientosPrevios) {
+                <div class="materia-card__indicador">
+                  <div class="materia-card__etiqueta">
+                    <span>{{ MESSAGES.PREREQUISITES_LABEL }}</span>
+                    <span class="materia-card__valor">{{ materia.conocimientosPrevios.valor }}<span class="materia-card__escala">/{{ APP_CONFIG.SCALE.RATING_TOTAL }}</span></span>
+                  </div>
+                  <div class="materia-card__barra-contenedor">
+                    <div class="materia-card__barra" [style.width]="getAnchoIndicador(materia.conocimientosPrevios.valor)" aria-hidden="true"></div>
+                  </div>
+                </div>
+              } @else {
+                <div class="materia-card__indicador">
+                  <div class="materia-card__etiqueta">
+                    <span>{{ MESSAGES.PREREQUISITES_LABEL }}</span>
+                    <span class="materia-card__sin-datos">{{ MESSAGES.NO_DATA }}</span>
+                  </div>
+                  <div class="materia-card__barra-contenedor">
+                    <div class="materia-card__barra" aria-hidden="true"></div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (materia.predominio) {
+              <div class="materia-card__predominio">
+                <span>{{ MESSAGES.DOMINANCE_LABEL }}</span><span>{{ materia.predominio }}</span>
+              </div>
+            }
+
+            @if (materia.cantidadEstudiantesEvaluados) {
+              <p class="materia-card__evaluaciones">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <circle cx="9" cy="7" r="3"></circle>
+                  <path d="M3 21v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v3"></path>
+                </svg>
+                {{ materia.cantidadEstudiantesEvaluados }} {{ materia.cantidadEstudiantesEvaluados === 1 ? MESSAGES.STUDENT_EVALUATED_SINGULAR : MESSAGES.STUDENT_EVALUATED_PLURAL }} {{ MESSAGES.STUDENTS_EVALUATED_SUFFIX }}
+              </p>
+            } @else {
+              <p class="materia-card__evaluaciones">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <circle cx="9" cy="7" r="3"></circle>
+                  <path d="M3 21v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v3"></path>
+                </svg>
+                {{ MESSAGES.EVALUATIONS_UNAVAILABLE }}
+              </p>
+            }
+            <button type="button" class="materia-button"
+              [attr.aria-label]="MESSAGES.EXPLORE_BUTTON + ': ' + materia.nombre"
+              (click)="explorarMateria(materia)">
+              {{ MESSAGES.EXPLORE_BUTTON }}
+            </button>
+          </article>
+        }
+      </div>
+    }
+  </div>
+
+  <dialog #detalle class="materia-detalle" aria-labelledby="titulo-detalle" (close)="limpiarSeleccion()">
+    @if (materiaSeleccionada(); as materia) {
+      <p class="materias-page__eyebrow">{{ MESSAGES.MODAL_EYEBROW }}</p>
+      <h2 id="titulo-detalle">{{ materia.nombre }}</h2>
+      <dl>
+        <div><dt>{{ MESSAGES.MODAL_CODE_LABEL }}</dt><dd>{{ materia.codigo }}</dd></div>
+        <div><dt>{{ MESSAGES.MODAL_CAREER_LABEL }}</dt><dd>{{ materia.carrera }}</dd></div>
+        <div><dt>{{ MESSAGES.MODAL_SEMESTER_LABEL }}</dt><dd>{{ materia.semestre }}</dd></div>
+        @if (materia.predominio) {
+          <div><dt>{{ MESSAGES.MODAL_DOMINANCE_LABEL }}</dt><dd>{{ materia.predominio }}</dd></div>
+        }
+        @if (materia.dificultad) {
+          <div><dt>{{ MESSAGES.MODAL_DIFFICULTY_LABEL }}</dt><dd>{{ materia.dificultad.valor }}/{{ APP_CONFIG.SCALE.RATING_TOTAL }}</dd></div>
+        }
+        @if (materia.cargaTrabajo) {
+          <div><dt>{{ MESSAGES.MODAL_WORKLOAD_LABEL }}</dt><dd>{{ materia.cargaTrabajo.valor }}/{{ APP_CONFIG.SCALE.RATING_TOTAL }}</dd></div>
+        }
+        @if (materia.conocimientosPrevios) {
+          <div><dt>{{ MESSAGES.MODAL_PREREQUISITES_LABEL }}</dt><dd>{{ materia.conocimientosPrevios.valor }}/{{ APP_CONFIG.SCALE.RATING_TOTAL }}</dd></div>
+        }
+        @if (materia.cantidadEstudiantesEvaluados) {
+          <div><dt>{{ MESSAGES.MODAL_EVALUATIONS_LABEL }}</dt><dd>{{ materia.cantidadEstudiantesEvaluados }} {{ MESSAGES.MODAL_STUDENTS_SUFFIX }}</dd></div>
+        }
+      </dl>
+      <button type="button" class="materia-button" autofocus (click)="cerrarDetalle()">{{ MESSAGES.BACK_TO_CATALOG_BUTTON }}</button>
+    }
+  </dialog>
 </section>

@@ -1,0 +1,17 @@
+export interface Indicador {
+  valor: number; // 0-10
+  total: number; // siempre 10
+}
+
+export interface Materia {
+  id: number;
+  codigo: string;
+  nombre: string;
+  carrera: string;
+  semestre: number;
+  dificultad?: Indicador;
+  cargaTrabajo?: Indicador;
+  conocimientosPrevios?: Indicador;
+  predominio?: 'Teórico' | 'Práctico';
+  cantidadEstudiantesEvaluados?: number;
+}

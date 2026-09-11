@@ -1,0 +1,67 @@
+/**
+ * Datos de demostración/fallback para la aplicación
+ */
+import { Materia } from '../models/materia';
+
+export const DEMO_MATERIAS: Materia[] = [
+  {
+    id: 1,
+    codigo: 'INF-101',
+    nombre: 'Programación I',
+    carrera: 'Ingeniería de Sistemas',
+    semestre: 1,
+    dificultad: { valor: 7.4, total: 10 },
+    cargaTrabajo: { valor: 8.1, total: 10 },
+    conocimientosPrevios: { valor: 6.2, total: 10 },
+    predominio: 'Práctico',
+    cantidadEstudiantesEvaluados: 127,
+  },
+  {
+    id: 2,
+    codigo: 'MAT-102',
+    nombre: 'Estructuras de Datos',
+    carrera: 'Ingeniería de Sistemas',
+    semestre: 3,
+    dificultad: { valor: 8.6, total: 10 },
+    cargaTrabajo: { valor: 8.4, total: 10 },
+    conocimientosPrevios: { valor: 8.3, total: 10 },
+    predominio: 'Práctico',
+    cantidadEstudiantesEvaluados: 98,
+  },
+  {
+    id: 3,
+    codigo: 'BDF-301',
+    nombre: 'Bases de Datos',
+    carrera: 'Ingeniería de Sistemas',
+    semestre: 5,
+    dificultad: { valor: 6.8, total: 10 },
+    cargaTrabajo: { valor: 7.2, total: 10 },
+    conocimientosPrevios: { valor: 6.0, total: 10 },
+    predominio: 'Práctico',
+    cantidadEstudiantesEvaluados: 112,
+  },
+  {
+    id: 4,
+    codigo: 'INF-410',
+    nombre: 'Ingeniería de Software',
+    carrera: 'Ingeniería de Sistemas',
+    semestre: 7,
+    dificultad: { valor: 6.2, total: 10 },
+    cargaTrabajo: { valor: 8.8, total: 10 },
+    conocimientosPrevios: { valor: 6.7, total: 10 },
+    predominio: 'Práctico',
+    cantidadEstudiantesEvaluados: 76,
+  },
+  {
+    id: 5,
+    codigo: 'INF-455',
+    nombre: 'Taller de Interfaces Web',
+    carrera: 'Ingeniería de Sistemas',
+    semestre: 8,
+    dificultad: { valor: 7.4, total: 10 },
+    cargaTrabajo: { valor: 7.6, total: 10 },
+    conocimientosPrevios: { valor: 5.8, total: 10 },
+    predominio: 'Práctico',
+    cantidadEstudiantesEvaluados: 54,
+  },
+];
