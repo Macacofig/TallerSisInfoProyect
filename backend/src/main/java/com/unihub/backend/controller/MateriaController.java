@@ -5,6 +5,8 @@ import com.unihub.backend.service.MateriaService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -19,8 +21,23 @@ public class MateriaController {
     }
 
     @GetMapping
-    public List<MateriaResponse> obtenerMaterias() {
+    public ResponseEntity<List<MateriaResponse>> obtenerMaterias(
 
-        return materiaService.obtenerMaterias();
+        @RequestParam(required = false) String nombre,
+
+        @RequestParam(required = false) String carrera,
+
+        @RequestParam(required = false) Integer semestre
+
+    ) {
+
+        List<MateriaResponse> materias =
+            materiaService.obtenerMaterias(
+                nombre,
+                carrera,
+                semestre
+            );
+
+        return ResponseEntity.ok(materias);
     }
 }
