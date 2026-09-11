@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PAGES_STRINGS as PAGES_TEXTS } from '../../strings/pages.strings';
 
 @Component({
   selector: 'app-splash',
@@ -10,7 +9,6 @@ import { PAGES_STRINGS as PAGES_TEXTS } from '../../strings/pages.strings';
   styleUrl: './splash.component.scss'
 })
 export class SplashComponent implements OnInit {
-  protected readonly SPLASH_STRINGS = PAGES_TEXTS.splash;
 
   constructor(private router: Router) {}
 
