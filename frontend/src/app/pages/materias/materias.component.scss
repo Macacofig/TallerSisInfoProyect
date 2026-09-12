@@ -1,62 +1,193 @@
+:host {
+  display: block;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #183454;
+}
+
+* { box-sizing: border-box; }
+
 .materias-page {
-  min-height: 100vh;
-  padding: 2.5rem clamp(1.5rem, 4vw, 4rem);
-  color: #14213d;
+  min-height: calc(100vh - 5rem);
+  padding: 2.5rem clamp(1.25rem, 2.5vw, 2.5rem);
+  background-color: #f7faff;
+  background-image: radial-gradient(#dce7f5 0.65px, transparent 0.65px);
+  background-size: 18px 18px;
 }
 
 .materias-page__header {
-  max-width: 52rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.materias-page__eyebrow {
-  margin: 0 0 0.5rem;
-  color: #b28619;
-  font-size: 0.75rem;
+.materias-page__eyebrow,
+.materia-card__codigo {
+  margin: 0 0 0.75rem;
+  color: #9b7213;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.12rem;
-  text-transform: uppercase;
+  letter-spacing: 0.11rem;
 }
 
-h1,
-h2,
-p {
-  margin-top: 0;
+.materias-page__eyebrow { text-transform: uppercase; }
+h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
+h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
+.materias-page__description,
+.materias-page__total { margin: 0; color: #5d6f88; line-height: 1.6; }
+.materias-page__total { font-size: 0.85rem; }
+
+.materias-page__demo {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-left: 4px solid #e5ac20;
+  border-radius: 0.35rem;
+  background-color: #fff5d8;
+  color: #183454;
+  line-height: 1.5;
 }
 
-h1 {
-  margin-bottom: 0.75rem;
-  font-family: Georgia, serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.1;
+.materias-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
 }
 
-.materias-page__description {
-  margin-bottom: 0;
-  color: #5d6b82;
-  font-size: 1rem;
+.materia-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.5rem;
+  border: 1px solid #d3e1f2;
+  border-left: 5px solid #e5ac20;
+  border-radius: 0.65rem;
+  background-color: #fff;
+  box-shadow: 0 2px 3px #193c6520;
+  overflow-wrap: anywhere;
 }
 
-.materias-page__empty-state {
-  max-width: 52rem;
-  margin-top: 2rem;
-  padding: 2rem;
-  border: 1px solid #dce4ef;
-  border-radius: 0.5rem;
-  background-color: #ffffff;
+.materia-card header { min-height: 6.1rem; }
+.materia-card h2 { margin: 0 0 0.65rem; font-size: 1.2rem; line-height: 1.35; }
+.materia-card__meta { margin: 0; color: #617794; font-size: 0.73rem; line-height: 1.6; }
+.materia-card__indicadores { margin-top: 1.25rem; }
+.materia-card__indicador { margin-bottom: 1.15rem; }
+
+.materia-card__etiqueta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin-bottom: 0.6rem;
+  color: #617794;
+  font-size: 0.79rem;
 }
 
-.materias-page__empty-state h2 {
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
+.materia-card__sin-datos { font-size: 0.71rem; white-space: nowrap; }
+
+.materia-card__valor {
+  font-weight: 600;
+  color: #183454;
+  white-space: nowrap;
 }
 
-.materias-page__empty-state p {
-  margin-bottom: 0;
-  color: #5d6b82;
+.materia-card__escala {
+  font-weight: normal;
+  font-size: 0.7rem;
+  color: #9b7213;
 }
-:host {
-  display: block;
+
+.materia-card__barra-contenedor {
+  height: 7px;
+  border-radius: 1rem;
+  background-color: #dfebfa;
+  overflow: hidden;
+}
+
+.materia-card__barra {
+  height: 100%;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, #e5ac20 0%, #f4d67b 100%);
+  transition: width 0.3s ease;
+}
+
+.materia-card__predominio {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem;
+  border: 1px solid #d7e4f5;
+  border-radius: 0.3rem;
+  background-color: #f8faff;
+  color: #617794;
+  font-size: 0.73rem;
+}
+
+.materia-card__evaluaciones {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.8rem 0;
+  color: #617794;
+  font-size: 0.71rem;
+}
+.materia-card__evaluaciones svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.materia-button {
   width: 100%;
-  min-height: 100vh;
-  background-color: white;
+  min-height: 2.5rem;
+  margin-top: auto;
+  padding: 0.65rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.35rem;
+  background-color: #064bad;
+  color: #fff;
+  font: 600 0.8rem Arial, Helvetica, sans-serif;
+  cursor: pointer;
 }
+.materia-button:hover { background-color: #073b83; }
+.materia-button:focus-visible { outline: 3px solid #e5ac20; outline-offset: 3px; }
+
+.materias-page__message {
+  padding: 3rem 1.5rem;
+  border: 1px solid #d3e1f2;
+  border-radius: 0.65rem;
+  background-color: #fff;
+  text-align: center;
+}
+.materias-page__message h2 { margin: 0 0 0.75rem; font-size: 1.4rem; }
+.materias-page__message p { color: #5d6f88; line-height: 1.6; }
+.materias-page__message .materia-button { width: auto; margin-top: 0.5rem; }
+.materias-page__spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid #dfebfa;
+  border-top-color: #064bad;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .materias-page__spinner { animation: none; } }
+
+.materia-detalle {
+  width: min(32rem, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  padding: 2rem;
+  border: 1px solid #d3e1f2;
+  border-top: 5px solid #e5ac20;
+  border-radius: 0.65rem;
+  color: #183454;
+  overflow-wrap: anywhere;
+}
+.materia-detalle::backdrop { background-color: #14243da6; }
+.materia-detalle h2 { margin: 0 0 1.5rem; }
+.materia-detalle dl { margin: 0 0 1.5rem; }
+.materia-detalle dl div { padding: 0.75rem 0; border-bottom: 1px solid #e4ebf4; }
+.materia-detalle dt { margin-bottom: 0.3rem; color: #617794; font-size: 0.8rem; }
+.materia-detalle dd { margin: 0; line-height: 1.5; }
+
+@media (max-width: 1200px) { .materias-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .materias-grid { grid-template-columns: minmax(0, 1fr); } }
