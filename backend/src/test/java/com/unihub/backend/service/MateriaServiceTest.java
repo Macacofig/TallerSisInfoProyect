@@ -6,106 +6,174 @@ import com.unihub.backend.mapper.MateriaMapper;
 import com.unihub.backend.repository.MateriaRepository;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.TestMethodOrder;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@TestMethodOrder(OrderAnnotation.class)
 class MateriaServiceTest {
 
     @Mock
     private MateriaRepository materiaRepository;
 
-    private MateriaMapper materiaMapper;
-
     private MateriaService materiaService;
+    private static int numeroPrueba;
 
     @BeforeEach
     void setUp() {
-
         MockitoAnnotations.openMocks(this);
+        materiaService = new MateriaService(materiaRepository, new MateriaMapper());
+        numeroPrueba++;
+    }
 
-        materiaMapper = new MateriaMapper();
+    private Materia materia(String codigo, String nombre, String carrera, int semestre) {
+        return new Materia(codigo, nombre, carrera, semestre);
+    }
 
-        materiaService = new MateriaService(
-                materiaRepository,
-                materiaMapper
-        );
+    private void configurarMaterias(Materia... materias) {
+        when(materiaRepository.findAll(any(Specification.class))).thenReturn(List.of(materias));
+    }
+
+    private List<MateriaResponse> obtener(String nombre, String carrera, Integer semestre) {
+        return materiaService.obtenerMaterias(nombre, carrera, semestre);
+    }
+
+    private void verificarConsulta() {
+        verify(materiaRepository).findAll(any(Specification.class));
+    }
+
+    private void mostrarResultado(String descripcion) {
+        System.out.println("-----------------------------");
+        System.out.println("PRUEBA " + numeroPrueba);
+        System.out.println("-----------------------------");
+        System.out.println(descripcion);
+        System.out.println("Resultado: OK");
+        System.out.println("-----------------------------");
     }
 
     @Test
+    @Order(1)
     void deberiaRetornarTodasLasMaterias() {
-
-        // Arrange
-
-        Materia materia1 = new Materia(
-                "INF101",
-                "Programación I",
-                "Ingeniería de Sistemas",
-                1
+        configurarMaterias(
+                materia("INF101", "Programación I", "Ingeniería de Sistemas", 1),
+                materia("INF202", "Base de Datos", "Ingeniería de Sistemas", 3)
         );
 
-        Materia materia2 = new Materia(
-                "INF202",
-                "Base de Datos",
-                "Ingeniería de Sistemas",
-                3
-        );
-
-        when(materiaRepository.findAll())
-                .thenReturn(List.of(materia1, materia2));
-
-
-        // Act
-
-        List<MateriaResponse> resultado =
-                materiaService.obtenerMaterias();
-
-
-        // Assert
+        List<MateriaResponse> resultado = obtener(null, null, null);
 
         assertEquals(2, resultado.size());
-
-        assertEquals(
-                "Programación I",
-                resultado.get(0).nombre()
-        );
-
-        assertEquals(
-                "Base de Datos",
-                resultado.get(1).nombre()
-        );
-
-        verify(materiaRepository, times(1))
-                .findAll();
+        verificarConsulta();
+        mostrarResultado("Mostrar todas las materias");
     }
 
-
     @Test
+    @Order(2)
     void deberiaRetornarListaVaciaCuandoNoExistenMaterias() {
+        configurarMaterias();
 
-        // Arrange
-
-        when(materiaRepository.findAll())
-                .thenReturn(List.of());
-
-
-        // Act
-
-        List<MateriaResponse> resultado =
-                materiaService.obtenerMaterias();
-
-
-        // Assert
+        List<MateriaResponse> resultado = obtener(null, null, null);
 
         assertTrue(resultado.isEmpty());
+        verificarConsulta();
+        mostrarResultado("Mostrar lista vacía (no hay materias)");
+    }
 
-        verify(materiaRepository, times(1))
-                .findAll();
+    @Test
+    @Order(3)
+    void deberiaFiltrarPorNombre() {
+        configurarMaterias(materia("INF101", "Programación I", "Ingeniería de Sistemas", 1));
+
+        List<MateriaResponse> resultado = obtener("Programación", null, null);
+
+        assertEquals("Programación I", resultado.getFirst().nombre());
+        verificarConsulta();
+        mostrarResultado("Mostrar materias por nombre");
+    }
+
+    @Test
+    @Order(4)
+    void deberiaFiltrarPorSemestre() {
+        configurarMaterias(materia("INF202", "Base de Datos", "Ingeniería de Sistemas", 3));
+
+        List<MateriaResponse> resultado = obtener(null, null, 3);
+
+        assertEquals(3, resultado.getFirst().semestre());
+        verificarConsulta();
+        mostrarResultado("Mostrar materias por semestre");
+    }
+
+    @Test
+    @Order(5)
+    void deberiaFiltrarPorCarrera() {
+        configurarMaterias(materia("INF202", "Base de Datos", "Ingeniería de Sistemas", 3));
+
+        List<MateriaResponse> resultado = obtener(null, "Ingeniería de Sistemas", null);
+
+        assertEquals("Ingeniería de Sistemas", resultado.getFirst().carrera());
+        verificarConsulta();
+        mostrarResultado("Mostrar materias por carrera");
+    }
+
+    @Test
+    @Order(6)
+    void deberiaFiltrarPorNombreYSemestre() {
+        configurarMaterias(materia("INF101", "Programación I", "Ingeniería de Sistemas", 1));
+
+        List<MateriaResponse> resultado = obtener("Programación", null, 1);
+
+        assertEquals(1, resultado.size());
+        verificarConsulta();
+        mostrarResultado("Mostrar materias por nombre y semestre");
+    }
+
+    @Test
+    @Order(7)
+    void deberiaFiltrarPorNombreYCarrera() {
+        configurarMaterias(materia("INF101", "Programación I", "Ingeniería de Sistemas", 1));
+
+        List<MateriaResponse> resultado = obtener("Programación", "Ingeniería de Sistemas", null);
+
+        assertEquals(1, resultado.size());
+        verificarConsulta();
+        mostrarResultado("Mostrar materias por nombre y carrera");
+    }
+
+    @Test
+    @Order(8)
+    void deberiaFiltrarPorSemestreYCarrera() {
+        configurarMaterias(materia("INF101", "Programación I", "Ingeniería de Sistemas", 1));
+
+        List<MateriaResponse> resultado = obtener(null, "Ingeniería de Sistemas", 1);
+
+        assertEquals(1, resultado.size());
+        verificarConsulta();
+        mostrarResultado("Mostrar materias por semestre y carrera");
+    }
+
+    @Test
+    @Order(9)
+    void deberiaFiltrarPorNombreCarreraYSemestre() {
+        configurarMaterias(materia("INF101", "Programación I", "Ingeniería de Sistemas", 1));
+
+        List<MateriaResponse> resultado = obtener("Programación", "Ingeniería de Sistemas", 1);
+
+        assertEquals(1, resultado.size());
+        assertEquals("Programación I", resultado.getFirst().nombre());
+        verificarConsulta();
+        mostrarResultado("Mostrar materias por materia, nombre y carrera");
     }
 }
