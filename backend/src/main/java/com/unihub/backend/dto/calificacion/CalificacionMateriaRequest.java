@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.util.List;
 
-public record CalificacionRequest(
+public record CalificacionMateriaRequest(
 
 	@NotNull Long idMateria,
 	Long idEstudiante,

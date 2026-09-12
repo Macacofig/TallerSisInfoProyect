@@ -1,7 +1,7 @@
 package com.unihub.backend.controller;
 
-import com.unihub.backend.dto.calificacion.CalificacionRequest;
-import com.unihub.backend.dto.calificacion.CalificacionResponse;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaRequest;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.service.CalificacionMateriaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,8 +22,8 @@ public class CalificacionMateriaController {
 	}
 
 	@PostMapping
-	public ResponseEntity<CalificacionResponse> crear(
-			@Valid @RequestBody CalificacionRequest request
+	public ResponseEntity<CalificacionMateriaResponse> crear(
+			@Valid @RequestBody CalificacionMateriaRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(calificacionService.crear(request));

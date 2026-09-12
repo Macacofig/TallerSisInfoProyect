@@ -1,6 +1,6 @@
 package com.unihub.backend.controller;
 
-import com.unihub.backend.dto.calificacion.CalificacionResponse;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.service.CalificacionMateriaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class CalificacionMateriaControllerTest {
 
     @Test
     void deberiaCrearCalificacionDeMateria() throws Exception {
-        when(calificacionService.crear(any())).thenReturn(new CalificacionResponse(
+        when(calificacionService.crear(any())).thenReturn(new CalificacionMateriaResponse(
                 1L,
                 1L,
                 null,

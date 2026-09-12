@@ -1,6 +1,6 @@
 package com.unihub.backend.dto.calificacion;
 
-public record CalificacionResponse(
+public record CalificacionMateriaResponse(
         Long id,
         Long idMateria,
         Long idEstudiante,

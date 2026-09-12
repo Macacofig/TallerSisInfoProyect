@@ -1,9 +1,10 @@
 package com.unihub.backend.service;
 
-import com.unihub.backend.dto.calificacion.CalificacionRequest;
-import com.unihub.backend.dto.calificacion.CalificacionResponse;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaRequest;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.entity.CalificacionMateria;
 import com.unihub.backend.entity.Materia;
+import com.unihub.backend.mapper.CalificacionMateriaMapper;
 import com.unihub.backend.repository.CalificacionMateriaRepository;
 import com.unihub.backend.repository.MateriaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +36,8 @@ class CalificacionMateriaServiceTest {
         MockitoAnnotations.openMocks(this);
         calificacionService = new CalificacionMateriaService(
                 calificacionRepository,
-                materiaRepository
+                materiaRepository,
+                new CalificacionMateriaMapper()
         );
     }
 
@@ -47,7 +49,7 @@ class CalificacionMateriaServiceTest {
                 "Ingenieria de Sistemas",
                 1
         );
-        CalificacionRequest request = new CalificacionRequest(
+        CalificacionMateriaRequest request = new CalificacionMateriaRequest(
                 1L,
                 null,
                 8,
@@ -62,7 +64,7 @@ class CalificacionMateriaServiceTest {
         when(calificacionRepository.save(any(CalificacionMateria.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        CalificacionResponse resultado = calificacionService.crear(request);
+        CalificacionMateriaResponse resultado = calificacionService.crear(request);
 
         assertNull(resultado.idEstudiante());
         assertEquals("Matematicas,Logica", resultado.prerequisitosText());
@@ -75,7 +77,7 @@ class CalificacionMateriaServiceTest {
 
     @Test
     void deberiaRechazarMateriaInexistente() {
-        CalificacionRequest request = new CalificacionRequest(
+        CalificacionMateriaRequest request = new CalificacionMateriaRequest(
                 99L,
                 null,
                 8,
