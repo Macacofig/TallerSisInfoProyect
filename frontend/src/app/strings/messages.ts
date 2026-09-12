@@ -12,6 +12,15 @@ export const MESSAGES = {
   MATERIA_PLURAL: 'materias disponibles',
   DEMO_NOTICE: 'Datos de demostración: estas materias y sus indicadores son ficticios.',
 
+  // Búsqueda de materias (HU-02)
+  SEARCH_LABEL: 'Buscar',
+  SEARCH_PLACEHOLDER: 'Nombre de la materia',
+  SEARCH_CLEAR: 'Limpiar búsqueda',
+  SEARCH_RESULT_SINGULAR: 'materia encontrada',
+  SEARCH_RESULT_PLURAL: 'materias encontradas',
+  SEARCH_EMPTY_TITLE: 'No se encontraron coincidencias',
+  SEARCH_EMPTY_DESCRIPTION: 'Prueba con otro nombre, o limpia la búsqueda para ver todas las materias.',
+
   // Cargando
   LOADING_MESSAGE: 'Cargando materias…',
 

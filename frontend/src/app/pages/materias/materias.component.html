@@ -7,16 +7,39 @@
     </div>
     @if (estado() === APP_CONFIG.COMPONENT_STATES.READY) {
       <p class="materias-page__total" role="status">
-        {{ materias().length }} {{ materias().length === 1 ? MESSAGES.MATERIA_SINGULAR : MESSAGES.MATERIA_PLURAL }}
+        {{ materias().length }}
+        @if (busqueda().trim()) {
+          {{ materias().length === 1 ? MESSAGES.SEARCH_RESULT_SINGULAR : MESSAGES.SEARCH_RESULT_PLURAL }}
+        } @else {
+          {{ materias().length === 1 ? MESSAGES.MATERIA_SINGULAR : MESSAGES.MATERIA_PLURAL }}
+        }
       </p>
     }
   </header>
+
+  <div class="materias-search" role="search" [attr.aria-label]="MESSAGES.MATERIAS_SECTION_LABEL">
+    <label for="buscar-materia">{{ MESSAGES.SEARCH_LABEL }}</label>
+    <div class="materias-search__field">
+      <input #buscarMateria id="buscar-materia" type="search"
+        [placeholder]="MESSAGES.SEARCH_PLACEHOLDER"
+        [value]="busqueda()"
+        (input)="actualizarBusqueda(buscarMateria.value)"
+        (keydown.escape)="actualizarBusqueda('')"
+        aria-controls="resultados-materias">
+      @if (busqueda()) {
+        <button type="button" class="materias-search__clear"
+          (click)="actualizarBusqueda(''); buscarMateria.focus()">
+          {{ MESSAGES.SEARCH_CLEAR }}
+        </button>
+      }
+    </div>
+  </div>
 
   @if (mostrandoDemo()) {
     <p class="materias-page__demo" role="status">{{ MESSAGES.DEMO_NOTICE }}</p>
   }
 
-  <div [attr.aria-busy]="estado() === APP_CONFIG.COMPONENT_STATES.LOADING">
+  <div id="resultados-materias" [attr.aria-busy]="estado() === APP_CONFIG.COMPONENT_STATES.LOADING">
     @if (estado() === APP_CONFIG.COMPONENT_STATES.LOADING) {
       <div class="materias-page__message" role="status">
         <span class="materias-page__spinner" aria-hidden="true"></span>
@@ -27,6 +50,11 @@
         <h2>{{ MESSAGES.ERROR_TITLE }}</h2>
         <p>{{ MESSAGES.ERROR_DESCRIPTION }}</p>
         <button type="button" class="materia-button" (click)="cargarMaterias()">{{ MESSAGES.ERROR_BUTTON }}</button>
+      </div>
+    } @else if (materias().length === 0 && busqueda().trim()) {
+      <div class="materias-page__message" role="status">
+        <h2>{{ MESSAGES.SEARCH_EMPTY_TITLE }}</h2>
+        <p>{{ MESSAGES.SEARCH_EMPTY_DESCRIPTION }}</p>
       </div>
     } @else if (materias().length === 0) {
       <div class="materias-page__message" role="status">
