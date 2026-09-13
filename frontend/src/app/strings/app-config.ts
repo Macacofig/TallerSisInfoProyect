@@ -2,8 +2,8 @@
  * Configuración de la aplicación
  */
 export const APP_CONFIG = {
-  // Desactivar antes de la entrega para mostrar solo resultados de la API.
-  DEMO_MODE: true,
+  // Mostrar los resultados reales de la API por defecto.
+  DEMO_MODE: false,
 
   // Configuración del API
   API: {
@@ -17,6 +17,7 @@ export const APP_CONFIG = {
   // Timeouts
   TIMEOUTS: {
     API_REQUEST: 15000, // 15 segundos
+    SEARCH_DEBOUNCE: 300,
   },
 
   // Estados de componente

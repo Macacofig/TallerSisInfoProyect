@@ -56,6 +56,55 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   gap: 1.25rem;
 }
 
+.materias-search {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid #d3e1f2;
+  border-radius: 0.65rem;
+  background-color: #fff;
+  box-shadow: 0 2px 3px #193c6510;
+}
+
+.materias-search label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #617794;
+  font-size: 0.65rem;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+}
+
+.materias-search__field { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.materias-search input {
+  flex: 1 1 15rem;
+  min-width: 0;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #d3e1f2;
+  border-radius: 0.35rem;
+  background-color: #fff;
+  box-shadow: 0 1px 3px #193c6520;
+  color: #183454;
+  font: inherit;
+  font-size: 0.8rem;
+}
+.materias-search input::placeholder { color: #617794; opacity: 1; }
+.materias-search__clear {
+  min-height: 2.5rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #d3e1f2;
+  border-radius: 0.35rem;
+  background-color: #f7faff;
+  color: #064bad;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.materias-search__clear:hover { background-color: #dfebfa; }
+.materias-search input:focus-visible,
+.materias-search__clear:focus-visible { outline: 2px solid #064bad; outline-offset: 2px; }
+
 .materia-card {
   display: flex;
   flex-direction: column;
