@@ -12,11 +12,10 @@
 
   @if (materia) {
 
-    <!-- ENCABEZADO -->
-
     <header class="materia-detalle__encabezado">
 
       <div>
+
         <p class="materia-detalle__carrera">
           {{ materia.carrera }}
         </p>
@@ -24,6 +23,7 @@
         <h1>
           {{ materia.nombre }}
         </h1>
+
       </div>
 
       <div class="materia-detalle__datos">
@@ -40,8 +40,6 @@
 
     </header>
 
-    <!-- ACCIONES -->
-
     <div class="materia-detalle__acciones">
 
       @if (
@@ -54,11 +52,13 @@
           class="boton-calificar"
           (click)="abrirFormularioCalificacion()"
         >
+
           @if (yaCalifico) {
             Ver calificación
           } @else {
             Calificar materia
           }
+
         </button>
 
       }
@@ -66,27 +66,29 @@
     </div>
 
     @if (verificandoCalificacion) {
+
       <p class="estado-carga">
         Verificando calificación...
       </p>
+
     }
 
     @if (errorEstadoCalificacion) {
+
       <p class="mensaje-error">
         {{ errorEstadoCalificacion }}
       </p>
+
     }
 
-    <!-- ================================================== -->
-    <!-- HU-05.2 - CRITERIO 1                              -->
-    <!-- RESUMEN DE CALIFICACIONES                        -->
-    <!-- ================================================== -->
+    <!-- HU-05.2 - CRITERIO 1 -->
 
     <section class="resumen-calificaciones">
 
       <div class="resumen-calificaciones__encabezado">
 
         <div>
+
           <h2>
             Resumen de calificaciones
           </h2>
@@ -95,12 +97,15 @@
             Información obtenida de las evaluaciones registradas
             por estudiantes de esta materia.
           </p>
+
         </div>
 
         @if (gestionActual) {
+
           <span class="gestion-destacada">
             Gestión {{ gestionActual }}
           </span>
+
         }
 
       </div>
@@ -183,6 +188,12 @@
 
         </div>
 
+        <!-- HU-05.2 - CRITERIO 2 -->
+
+        <app-calificacion-graficos
+          [promedios]="promediosMateria"
+        />
+
       } @else {
 
         <p class="estado-carga">
@@ -199,6 +210,7 @@
         <div class="gestiones-resumen__encabezado">
 
           <div>
+
             <h3>
               Historial de gestiones
             </h3>
@@ -206,6 +218,7 @@
             <p>
               Referencia de las gestiones con información registrada.
             </p>
+
           </div>
 
         </div>
@@ -272,9 +285,7 @@
 
     </section>
 
-    <!-- ================================================== -->
-    <!-- MODAL HU-05.1                                     -->
-    <!-- ================================================== -->
+    <!-- MODAL HU-05.1 -->
 
     @if (mostrarFormularioCalificacion) {
 
@@ -293,11 +304,10 @@
             calificacionExistente
           ) {
 
-            <!-- CALIFICACIÓN REGISTRADA -->
-
             <div class="calificacion-materia__encabezado">
 
               <div>
+
                 <h2>
                   Mi calificación
                 </h2>
@@ -306,6 +316,7 @@
                   Esta es la calificación que registraste
                   para esta materia.
                 </p>
+
               </div>
 
               <button
@@ -367,11 +378,10 @@
 
           } @else {
 
-            <!-- NUEVA CALIFICACIÓN -->
-
             <div class="calificacion-materia__encabezado">
 
               <div>
+
                 <h2>
                   Calificar materia
                 </h2>
@@ -379,6 +389,7 @@
                 <p>
                   Evalúa tu experiencia en esta materia.
                 </p>
+
               </div>
 
               <button
@@ -392,8 +403,6 @@
             </div>
 
             <form [formGroup]="formularioCalificacion">
-
-              <!-- DIFICULTAD -->
 
               <div class="criterio-calificacion">
 
@@ -420,8 +429,6 @@
 
               </div>
 
-              <!-- CARGA -->
-
               <div class="criterio-calificacion">
 
                 <div class="criterio-calificacion__encabezado">
@@ -446,8 +453,6 @@
                 />
 
               </div>
-
-              <!-- CONOCIMIENTO PREVIO -->
 
               <div class="criterio-calificacion">
 
@@ -476,8 +481,6 @@
 
               </div>
 
-              <!-- PREREQUISITOS -->
-
               <div class="campo-formulario">
 
                 <label for="prerequisitos">
@@ -504,8 +507,6 @@
                 }
 
               </div>
-
-              <!-- PREDOMINIO -->
 
               <div class="campo-predominio">
 
@@ -546,8 +547,6 @@
                 </div>
 
               </div>
-
-              <!-- GESTIÓN -->
 
               <div class="campo-formulario">
 
@@ -602,8 +601,6 @@
 
             </form>
 
-            <!-- CONFIRMACIÓN -->
-
             @if (mostrarConfirmacion) {
 
               <div class="confirmacion-calificacion">
@@ -656,6 +653,7 @@
                     } @else {
                       Teórico
                     }
+
                   </p>
 
                   <p>

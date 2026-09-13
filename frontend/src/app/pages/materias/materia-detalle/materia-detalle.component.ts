@@ -34,10 +34,17 @@ import {
   APP_CONFIG
 } from '../../../strings/app-config';
 
+import {
+  CalificacionGraficosComponent
+} from './calificacion-graficos/calificacion-graficos.component';
+
 @Component({
   selector: 'app-materia-detalle',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    CalificacionGraficosComponent
+  ],
   templateUrl: './materia-detalle.component.html',
   styleUrl: './materia-detalle.component.scss'
 })
@@ -167,7 +174,6 @@ export class MateriaDetalleComponent implements OnInit {
 
     this.mostrarFormularioCalificacion = true;
     this.mostrarConfirmacion = false;
-
     this.errorCalificacion = '';
   }
 
@@ -175,7 +181,6 @@ export class MateriaDetalleComponent implements OnInit {
 
     this.mostrarFormularioCalificacion = false;
     this.mostrarConfirmacion = false;
-
     this.errorCalificacion = '';
   }
 
@@ -187,7 +192,6 @@ export class MateriaDetalleComponent implements OnInit {
     ) {
 
       this.formularioCalificacion.markAllAsTouched();
-
       return;
     }
 
@@ -196,7 +200,6 @@ export class MateriaDetalleComponent implements OnInit {
   }
 
   cancelarConfirmacion(): void {
-
     this.mostrarConfirmacion = false;
   }
 
@@ -204,28 +207,34 @@ export class MateriaDetalleComponent implements OnInit {
 
     const input = event.target as HTMLInputElement;
 
-    let valor = input.value;
+    let valor =
+      input.value.replace(/[^0-9-]/g, '');
 
-    valor = valor.replace(/[^0-9-]/g, '');
+    const tieneGuion =
+      valor.includes('-');
 
-    const tieneGuion = valor.includes('-');
+    const partes =
+      valor.split('-');
 
-    const partes = valor.split('-');
+    const anio =
+      partes[0];
 
-    const anio = partes[0];
+    let semestre =
+      partes
+        .slice(1)
+        .join('')
+        .replace(/[^12]/g, '');
 
-    let semestre = partes
-      .slice(1)
-      .join('')
-      .replace(/[^12]/g, '');
+    semestre =
+      semestre.slice(0, 1);
 
-    semestre = semestre.slice(0, 1);
+    const gestion =
+      tieneGuion
+        ? `${anio}-${semestre}`
+        : anio;
 
-    const gestion = tieneGuion
-      ? `${anio}-${semestre}`
-      : anio;
-
-    input.value = gestion;
+    input.value =
+      gestion;
 
     this.formularioCalificacion
       .get('gestion')
@@ -239,7 +248,8 @@ export class MateriaDetalleComponent implements OnInit {
 
   confirmarCalificacion(): void {
 
-    const materiaId = this.obtenerMateriaId();
+    const materiaId =
+      this.obtenerMateriaId();
 
     if (
       !materiaId ||
@@ -269,7 +279,8 @@ export class MateriaDetalleComponent implements OnInit {
     const calificacion:
       RegistrarCalificacionMateriaRequest = {
 
-        idMateria: materiaId,
+        idMateria:
+          materiaId,
 
         idEstudiante:
           this.idEstudianteActual,
@@ -396,11 +407,12 @@ export class MateriaDetalleComponent implements OnInit {
 
   private obtenerMateriaId(): number | null {
 
-    const materiaId = Number(
-      this.route.snapshot.paramMap.get(
-        'materiaId'
-      )
-    );
+    const materiaId =
+      Number(
+        this.route.snapshot.paramMap.get(
+          'materiaId'
+        )
+      );
 
     return materiaId > 0
       ? materiaId
@@ -431,8 +443,11 @@ export class MateriaDetalleComponent implements OnInit {
             return;
           }
 
-          this.materia = materia;
-          this.cargando = false;
+          this.materia =
+            materia;
+
+          this.cargando =
+            false;
 
           this.verificarCalificacionExistente(
             materiaId
@@ -452,7 +467,8 @@ export class MateriaDetalleComponent implements OnInit {
           this.error =
             'No se pudo cargar la información de la materia.';
 
-          this.cargando = false;
+          this.cargando =
+            false;
 
           this.changeDetectorRef.markForCheck();
         }
@@ -464,8 +480,11 @@ export class MateriaDetalleComponent implements OnInit {
     materiaId: number
   ): void {
 
-    this.verificandoCalificacion = true;
-    this.errorEstadoCalificacion = '';
+    this.verificandoCalificacion =
+      true;
+
+    this.errorEstadoCalificacion =
+      '';
 
     this.calificacionesMateriaService
       .obtenerCalificacionPorEstudiante(
@@ -482,17 +501,22 @@ export class MateriaDetalleComponent implements OnInit {
           this.yaCalifico =
             calificacion !== null;
 
-          this.verificandoCalificacion = false;
+          this.verificandoCalificacion =
+            false;
 
           this.changeDetectorRef.markForCheck();
         },
 
         error: () => {
 
-          this.verificandoCalificacion = false;
+          this.verificandoCalificacion =
+            false;
 
-          this.yaCalifico = true;
-          this.calificacionExistente = null;
+          this.yaCalifico =
+            true;
+
+          this.calificacionExistente =
+            null;
 
           this.errorEstadoCalificacion =
             'No se pudo verificar si ya calificaste esta materia.';
@@ -507,8 +531,11 @@ export class MateriaDetalleComponent implements OnInit {
     materiaId: number
   ): void {
 
-    this.cargandoPromedios = true;
-    this.errorPromedios = '';
+    this.cargandoPromedios =
+      true;
+
+    this.errorPromedios =
+      '';
 
     this.calificacionesMateriaService
       .obtenerPromediosPorMateria(
@@ -521,18 +548,21 @@ export class MateriaDetalleComponent implements OnInit {
           this.promediosMateria =
             promedios;
 
-          this.cargandoPromedios = false;
+          this.cargandoPromedios =
+            false;
 
           this.changeDetectorRef.markForCheck();
         },
 
         error: (error) => {
 
-          this.cargandoPromedios = false;
+          this.cargandoPromedios =
+            false;
 
           if (error.status === 404) {
 
-            this.promediosMateria = null;
+            this.promediosMateria =
+              null;
 
           } else {
 
@@ -548,8 +578,11 @@ export class MateriaDetalleComponent implements OnInit {
 
   private cargarGestiones(): void {
 
-    this.cargandoGestiones = true;
-    this.errorGestiones = '';
+    this.cargandoGestiones =
+      true;
+
+    this.errorGestiones =
+      '';
 
     this.calificacionesMateriaService
       .obtenerGestiones()
@@ -560,23 +593,33 @@ export class MateriaDetalleComponent implements OnInit {
           this.gestiones =
             [...gestiones].sort(
               (a, b) =>
-                this.compararGestiones(a, b)
+                this.compararGestiones(
+                  a,
+                  b
+                )
             );
 
           this.actualizarGestionesReferencia();
 
-          this.cargandoGestiones = false;
+          this.cargandoGestiones =
+            false;
 
           this.changeDetectorRef.markForCheck();
         },
 
         error: () => {
 
-          this.cargandoGestiones = false;
+          this.cargandoGestiones =
+            false;
 
-          this.gestiones = [];
-          this.gestionActual = null;
-          this.gestionAnterior = null;
+          this.gestiones =
+            [];
+
+          this.gestionActual =
+            null;
+
+          this.gestionAnterior =
+            null;
 
           this.errorGestiones =
             'No se pudieron cargar las gestiones disponibles.';
@@ -591,8 +634,11 @@ export class MateriaDetalleComponent implements OnInit {
 
     if (this.gestiones.length === 0) {
 
-      this.gestionActual = null;
-      this.gestionAnterior = null;
+      this.gestionActual =
+        null;
+
+      this.gestionAnterior =
+        null;
 
       return;
     }
@@ -618,16 +664,18 @@ export class MateriaDetalleComponent implements OnInit {
     const [
       anioPrimera,
       periodoPrimera
-    ] = primeraGestion
-      .split('-')
-      .map(Number);
+    ] =
+      primeraGestion
+        .split('-')
+        .map(Number);
 
     const [
       anioSegunda,
       periodoSegunda
-    ] = segundaGestion
-      .split('-')
-      .map(Number);
+    ] =
+      segundaGestion
+        .split('-')
+        .map(Number);
 
     if (anioPrimera !== anioSegunda) {
 

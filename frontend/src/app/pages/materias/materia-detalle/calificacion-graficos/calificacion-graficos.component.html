@@ -1,0 +1,159 @@
+<section class="graficos-calificacion">
+
+  <header class="graficos-calificacion__encabezado">
+
+    <h3>
+      Métricas de la materia
+    </h3>
+
+    <p>
+      Representación visual de los promedios registrados
+      en una escala de 0 a 10.
+    </p>
+
+  </header>
+
+  <div class="graficos-calificacion__contenido">
+
+    <!-- DIFICULTAD -->
+
+    <div class="grafico-metrica">
+
+      <div class="grafico-metrica__encabezado">
+
+        <span>
+          Dificultad
+        </span>
+
+        <strong>
+          {{
+            obtenerPromedioFormateado(
+              promedios.dificultadPromedio
+            )
+          }}/10
+        </strong>
+
+      </div>
+
+      <div
+        class="grafico-metrica__barra"
+        role="progressbar"
+        aria-label="Promedio de dificultad"
+        aria-valuemin="0"
+        aria-valuemax="10"
+        [attr.aria-valuenow]="promedios.dificultadPromedio"
+      >
+
+        <div
+          class="grafico-metrica__progreso"
+          [style.width.%]="
+            obtenerPorcentaje(
+              promedios.dificultadPromedio
+            )
+          "
+        ></div>
+
+      </div>
+
+    </div>
+
+    <!-- CARGA -->
+
+    <div class="grafico-metrica">
+
+      <div class="grafico-metrica__encabezado">
+
+        <span>
+          Carga
+        </span>
+
+        <strong>
+          {{
+            obtenerPromedioFormateado(
+              promedios.cargaPromedio
+            )
+          }}/10
+        </strong>
+
+      </div>
+
+      <div
+        class="grafico-metrica__barra"
+        role="progressbar"
+        aria-label="Promedio de carga"
+        aria-valuemin="0"
+        aria-valuemax="10"
+        [attr.aria-valuenow]="promedios.cargaPromedio"
+      >
+
+        <div
+          class="grafico-metrica__progreso"
+          [style.width.%]="
+            obtenerPorcentaje(
+              promedios.cargaPromedio
+            )
+          "
+        ></div>
+
+      </div>
+
+    </div>
+
+    <!-- CONOCIMIENTO PREVIO -->
+
+    <div class="grafico-metrica">
+
+      <div class="grafico-metrica__encabezado">
+
+        <span>
+          Conocimiento previo
+        </span>
+
+        <strong>
+          {{
+            obtenerPromedioFormateado(
+              promedios.conocimientoPrevioPromedio
+            )
+          }}/10
+        </strong>
+
+      </div>
+
+      <div
+        class="grafico-metrica__barra"
+        role="progressbar"
+        aria-label="Promedio de conocimiento previo"
+        aria-valuemin="0"
+        aria-valuemax="10"
+        [attr.aria-valuenow]="
+          promedios.conocimientoPrevioPromedio
+        "
+      >
+
+        <div
+          class="grafico-metrica__progreso"
+          [style.width.%]="
+            obtenerPorcentaje(
+              promedios.conocimientoPrevioPromedio
+            )
+          "
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    class="grafico-escala"
+    aria-hidden="true"
+  >
+
+    <span>0</span>
+    <span>5</span>
+    <span>10</span>
+
+  </div>
+
+</section>
