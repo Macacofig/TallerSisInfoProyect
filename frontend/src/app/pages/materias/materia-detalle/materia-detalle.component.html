@@ -1,0 +1,529 @@
+<section class="materia-detalle">
+
+  @if (cargando) {
+
+    <p>
+      Cargando materia...
+    </p>
+
+  }
+
+  @if (error) {
+
+    <p class="mensaje-error">
+      {{ error }}
+    </p>
+
+  }
+
+  @if (materia) {
+
+    <div class="materia-detalle__encabezado">
+
+      <div>
+
+        <p class="materia-detalle__carrera">
+          {{ materia.carrera }}
+        </p>
+
+        <h1>
+          {{ materia.nombre }}
+        </h1>
+
+      </div>
+
+      <div class="materia-detalle__datos">
+
+        <span>
+          Código: {{ materia.codigo }}
+        </span>
+
+        <span>
+          Semestre: {{ materia.semestre }}
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="materia-detalle__acciones">
+
+      @if (
+        !mostrarFormularioCalificacion &&
+        !verificandoCalificacion &&
+        !errorEstadoCalificacion
+      ) {
+
+        <button
+          type="button"
+          class="boton-calificar"
+          (click)="abrirFormularioCalificacion()"
+        >
+
+          @if (yaCalifico) {
+            Ver calificación
+          } @else {
+            Calificar materia
+          }
+
+        </button>
+
+      }
+
+    </div>
+
+    @if (verificandoCalificacion) {
+
+      <p>
+        Verificando calificación...
+      </p>
+
+    }
+
+    @if (errorEstadoCalificacion) {
+
+      <p class="mensaje-error">
+        {{ errorEstadoCalificacion }}
+      </p>
+
+    }
+
+    @if (mostrarFormularioCalificacion) {
+
+      <section class="calificacion-materia">
+
+        @if (
+          yaCalifico &&
+          calificacionExistente
+        ) {
+
+          <!-- CALIFICACIÓN YA REGISTRADA -->
+
+          <div class="calificacion-materia__encabezado">
+
+            <div>
+
+              <h2>
+                Calificación registrada
+              </h2>
+
+              <p>
+                Ya calificaste esta materia.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="boton-cerrar"
+              (click)="cerrarFormularioCalificacion()"
+            >
+              Cerrar
+            </button>
+
+          </div>
+
+          <div class="confirmacion-calificacion__resumen">
+
+            <p>
+              <strong>Materia:</strong>
+              {{ materia.nombre }}
+            </p>
+
+            <p>
+              <strong>Dificultad:</strong>
+              {{ calificacionExistente.dificultad }}/10
+            </p>
+
+            <p>
+              <strong>Carga:</strong>
+              {{ calificacionExistente.carga }}/10
+            </p>
+
+            <p>
+              <strong>Conocimiento previo:</strong>
+              {{ calificacionExistente.conocimientoPrevio }}/10
+            </p>
+
+            <p>
+              <strong>Prerequisitos:</strong>
+              {{ calificacionExistente.prerequisitosText }}
+            </p>
+
+            <p>
+              <strong>Predominio:</strong>
+              {{
+                obtenerPredominioParaMostrar(
+                  calificacionExistente.predominio
+                )
+              }}
+            </p>
+
+            <p>
+              <strong>Gestión:</strong>
+              {{ calificacionExistente.gestion }}
+            </p>
+
+          </div>
+
+          <p>
+            Solo puedes registrar una calificación por materia.
+          </p>
+
+        } @else {
+
+          <!-- FORMULARIO PARA NUEVA CALIFICACIÓN -->
+
+          <div class="calificacion-materia__encabezado">
+
+            <div>
+
+              <h2>
+                Calificar materia
+              </h2>
+
+              <p>
+                Evalúa tu experiencia en esta materia.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="boton-cerrar"
+              (click)="cerrarFormularioCalificacion()"
+            >
+              Cerrar
+            </button>
+
+          </div>
+
+          <form [formGroup]="formularioCalificacion">
+
+            <!-- DIFICULTAD -->
+
+            <div class="criterio-calificacion">
+
+              <div class="criterio-calificacion__encabezado">
+
+                <label for="dificultad">
+                  Dificultad
+                </label>
+
+                <span>
+                  {{ formularioCalificacion.value.dificultad }}/10
+                </span>
+
+              </div>
+
+              <input
+                id="dificultad"
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                formControlName="dificultad"
+              />
+
+            </div>
+
+            <!-- CARGA -->
+
+            <div class="criterio-calificacion">
+
+              <div class="criterio-calificacion__encabezado">
+
+                <label for="carga">
+                  Carga
+                </label>
+
+                <span>
+                  {{ formularioCalificacion.value.carga }}/10
+                </span>
+
+              </div>
+
+              <input
+                id="carga"
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                formControlName="carga"
+              />
+
+            </div>
+
+            <!-- CONOCIMIENTO PREVIO -->
+
+            <div class="criterio-calificacion">
+
+              <div class="criterio-calificacion__encabezado">
+
+                <label for="conocimientoPrevio">
+                  Conocimiento previo
+                </label>
+
+                <span>
+                  {{
+                    formularioCalificacion.value.conocimientoPrevio
+                  }}/10
+                </span>
+
+              </div>
+
+              <input
+                id="conocimientoPrevio"
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                formControlName="conocimientoPrevio"
+              />
+
+            </div>
+
+            <!-- PREREQUISITOS -->
+
+            <div class="campo-formulario">
+
+              <label for="prerequisitos">
+                Prerequisitos
+              </label>
+
+              <input
+                id="prerequisitos"
+                type="text"
+                formControlName="prerequisitos"
+                placeholder="Ej: Programación básica, Lógica, Matemática"
+                autocomplete="off"
+              />
+
+              @if (
+                formularioCalificacion.get('prerequisitos')?.invalid &&
+                formularioCalificacion.get('prerequisitos')?.touched
+              ) {
+
+                <small>
+                  Debes ingresar al menos un prerequisito.
+                </small>
+
+              }
+
+            </div>
+
+            <!-- PREDOMINIO -->
+
+            <div class="campo-predominio">
+
+              <span class="campo-predominio__titulo">
+                Predominio
+              </span>
+
+              <div class="campo-predominio__opciones">
+
+                <label class="opcion-predominio">
+
+                  <input
+                    type="radio"
+                    value="Practico"
+                    formControlName="predominio"
+                  />
+
+                  <span>
+                    Práctico
+                  </span>
+
+                </label>
+
+                <label class="opcion-predominio">
+
+                  <input
+                    type="radio"
+                    value="Teorico"
+                    formControlName="predominio"
+                  />
+
+                  <span>
+                    Teórico
+                  </span>
+
+                </label>
+
+              </div>
+
+            </div>
+
+            <!-- GESTIÓN -->
+
+            <div class="campo-formulario">
+
+              <label for="gestion">
+                Gestión
+              </label>
+
+              <input
+                id="gestion"
+                type="text"
+                formControlName="gestion"
+                placeholder="Ej: 2026-1"
+                autocomplete="off"
+                inputmode="numeric"
+                maxlength="10"
+                (input)="normalizarGestion($event)"
+              />
+
+              @if (
+                formularioCalificacion.get('gestion')?.invalid &&
+                formularioCalificacion.get('gestion')?.touched
+              ) {
+
+                <small>
+                  La gestión debe tener el formato AÑO-1 o AÑO-2.
+                </small>
+
+              }
+
+            </div>
+
+            <div class="calificacion-materia__acciones">
+
+              <button
+                type="button"
+                class="boton-secundario"
+                (click)="cerrarFormularioCalificacion()"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                class="boton-principal"
+                [disabled]="formularioCalificacion.invalid"
+                (click)="abrirConfirmacion()"
+              >
+                Continuar
+              </button>
+
+            </div>
+
+          </form>
+
+          @if (mostrarConfirmacion) {
+
+            <div class="confirmacion-calificacion">
+
+              <h3>
+                Confirmar calificación
+              </h3>
+
+              <p>
+                Revisa los valores antes de registrar tu calificación.
+              </p>
+
+              <div class="confirmacion-calificacion__resumen">
+
+                <p>
+                  <strong>Materia:</strong>
+                  {{ materia.nombre }}
+                </p>
+
+                <p>
+                  <strong>Dificultad:</strong>
+                  {{ formularioCalificacion.value.dificultad }}/10
+                </p>
+
+                <p>
+                  <strong>Carga:</strong>
+                  {{ formularioCalificacion.value.carga }}/10
+                </p>
+
+                <p>
+                  <strong>Conocimiento previo:</strong>
+                  {{
+                    formularioCalificacion.value.conocimientoPrevio
+                  }}/10
+                </p>
+
+                <p>
+                  <strong>Prerequisitos:</strong>
+                  {{ obtenerPrerequisitosParaMostrar() }}
+                </p>
+
+                <p>
+
+                  <strong>
+                    Predominio:
+                  </strong>
+
+                  @if (
+                    formularioCalificacion.value.predominio === 'Practico'
+                  ) {
+                    Práctico
+                  } @else {
+                    Teórico
+                  }
+
+                </p>
+
+                <p>
+                  <strong>Gestión:</strong>
+                  {{ formularioCalificacion.value.gestion }}
+                </p>
+
+              </div>
+
+              <p>
+                Solo puedes registrar una calificación por materia.
+                Revisa los datos antes de confirmar.
+              </p>
+
+              <div class="confirmacion-calificacion__acciones">
+
+                <button
+                  type="button"
+                  class="boton-secundario"
+                  [disabled]="enviandoCalificacion"
+                  (click)="cancelarConfirmacion()"
+                >
+                  Volver
+                </button>
+
+                <button
+                  type="button"
+                  class="boton-principal"
+                  [disabled]="enviandoCalificacion"
+                  (click)="confirmarCalificacion()"
+                >
+
+                  @if (enviandoCalificacion) {
+                    Registrando...
+                  } @else {
+                    Confirmar calificación
+                  }
+
+                </button>
+
+              </div>
+
+            </div>
+
+          }
+
+          @if (errorCalificacion) {
+
+            <p class="mensaje-error">
+              {{ errorCalificacion }}
+            </p>
+
+          }
+
+        }
+
+      </section>
+
+    }
+
+  }
+
+</section>
