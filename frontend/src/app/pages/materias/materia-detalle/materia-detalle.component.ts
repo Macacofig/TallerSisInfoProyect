@@ -16,6 +16,7 @@ import {
 import { Materia } from '../../../models/materia';
 
 import {
+  CalificacionMateriaPromedioResponse,
   CalificacionMateriaResponse,
   PredominioMateria,
   RegistrarCalificacionMateriaRequest
@@ -47,7 +48,18 @@ export class MateriaDetalleComponent implements OnInit {
   calificacionExistente:
     CalificacionMateriaResponse | null = null;
 
+  promediosMateria:
+    CalificacionMateriaPromedioResponse | null = null;
+
+  gestiones: string[] = [];
+
+  gestionActual: string | null = null;
+  gestionAnterior: string | null = null;
+
   cargando = true;
+  cargandoPromedios = false;
+  cargandoGestiones = false;
+
   enviandoCalificacion = false;
   verificandoCalificacion = false;
 
@@ -56,6 +68,8 @@ export class MateriaDetalleComponent implements OnInit {
   error = '';
   errorCalificacion = '';
   errorEstadoCalificacion = '';
+  errorPromedios = '';
+  errorGestiones = '';
 
   mostrarFormularioCalificacion = false;
   mostrarConfirmacion = false;
@@ -297,6 +311,12 @@ export class MateriaDetalleComponent implements OnInit {
           this.yaCalifico = true;
           this.calificacionExistente = respuesta;
 
+          this.cargarPromediosMateria(
+            materiaId
+          );
+
+          this.cargarGestiones();
+
           this.changeDetectorRef.markForCheck();
         },
 
@@ -345,6 +365,13 @@ export class MateriaDetalleComponent implements OnInit {
     return predominio === 'Practico'
       ? 'Práctico'
       : 'Teórico';
+  }
+
+  obtenerPromedioFormateado(
+    promedio: number
+  ): string {
+
+    return promedio.toFixed(1);
   }
 
   private convertirPrerequisitos(
@@ -411,6 +438,12 @@ export class MateriaDetalleComponent implements OnInit {
             materiaId
           );
 
+          this.cargarPromediosMateria(
+            materiaId
+          );
+
+          this.cargarGestiones();
+
           this.changeDetectorRef.markForCheck();
         },
 
@@ -458,11 +491,6 @@ export class MateriaDetalleComponent implements OnInit {
 
           this.verificandoCalificacion = false;
 
-          /*
-           * Ante un error de verificación no se permite
-           * registrar una nueva calificación para evitar
-           * posibles duplicados.
-           */
           this.yaCalifico = true;
           this.calificacionExistente = null;
 
@@ -473,5 +501,139 @@ export class MateriaDetalleComponent implements OnInit {
         }
 
       });
+  }
+
+  private cargarPromediosMateria(
+    materiaId: number
+  ): void {
+
+    this.cargandoPromedios = true;
+    this.errorPromedios = '';
+
+    this.calificacionesMateriaService
+      .obtenerPromediosPorMateria(
+        materiaId
+      )
+      .subscribe({
+
+        next: (promedios) => {
+
+          this.promediosMateria =
+            promedios;
+
+          this.cargandoPromedios = false;
+
+          this.changeDetectorRef.markForCheck();
+        },
+
+        error: (error) => {
+
+          this.cargandoPromedios = false;
+
+          if (error.status === 404) {
+
+            this.promediosMateria = null;
+
+          } else {
+
+            this.errorPromedios =
+              'No se pudieron cargar los datos de calificación de la materia.';
+          }
+
+          this.changeDetectorRef.markForCheck();
+        }
+
+      });
+  }
+
+  private cargarGestiones(): void {
+
+    this.cargandoGestiones = true;
+    this.errorGestiones = '';
+
+    this.calificacionesMateriaService
+      .obtenerGestiones()
+      .subscribe({
+
+        next: (gestiones) => {
+
+          this.gestiones =
+            [...gestiones].sort(
+              (a, b) =>
+                this.compararGestiones(a, b)
+            );
+
+          this.actualizarGestionesReferencia();
+
+          this.cargandoGestiones = false;
+
+          this.changeDetectorRef.markForCheck();
+        },
+
+        error: () => {
+
+          this.cargandoGestiones = false;
+
+          this.gestiones = [];
+          this.gestionActual = null;
+          this.gestionAnterior = null;
+
+          this.errorGestiones =
+            'No se pudieron cargar las gestiones disponibles.';
+
+          this.changeDetectorRef.markForCheck();
+        }
+
+      });
+  }
+
+  private actualizarGestionesReferencia(): void {
+
+    if (this.gestiones.length === 0) {
+
+      this.gestionActual = null;
+      this.gestionAnterior = null;
+
+      return;
+    }
+
+    this.gestionActual =
+      this.gestiones[
+        this.gestiones.length - 1
+      ];
+
+    this.gestionAnterior =
+      this.gestiones.length > 1
+        ? this.gestiones[
+            this.gestiones.length - 2
+          ]
+        : null;
+  }
+
+  private compararGestiones(
+    primeraGestion: string,
+    segundaGestion: string
+  ): number {
+
+    const [
+      anioPrimera,
+      periodoPrimera
+    ] = primeraGestion
+      .split('-')
+      .map(Number);
+
+    const [
+      anioSegunda,
+      periodoSegunda
+    ] = segundaGestion
+      .split('-')
+      .map(Number);
+
+    if (anioPrimera !== anioSegunda) {
+
+      return anioPrimera - anioSegunda;
+    }
+
+    return periodoPrimera - periodoSegunda;
   }
 }
