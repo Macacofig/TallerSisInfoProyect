@@ -57,8 +57,13 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 }
 
 .materias-search {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 1rem;
   margin-bottom: 1.5rem;
-  padding: 1.25rem;
+  padding: 1rem;
   border: 1px solid #d3e1f2;
   border-radius: 0.65rem;
   background-color: #fff;
@@ -74,13 +79,19 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   text-transform: uppercase;
 }
 
-.materias-search__field { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.materias-search input {
-  flex: 1 1 15rem;
+.materias-search__name,
+.materias-search__career {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.materias-search__field { display: flex; gap: 0.75rem; }
+.materias-search input,
+.materias-search select {
+  flex: 1 1 0;
   min-width: 0;
   width: 100%;
-  min-height: 2.5rem;
-  padding: 0.65rem 0.85rem;
+  height: 2.25rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid #d3e1f2;
   border-radius: 0.35rem;
   background-color: #fff;
@@ -91,8 +102,9 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 }
 .materias-search input::placeholder { color: #617794; opacity: 1; }
 .materias-search__clear {
-  min-height: 2.5rem;
-  padding: 0.65rem 0.85rem;
+  flex-shrink: 0;
+  height: 2.25rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid #d3e1f2;
   border-radius: 0.35rem;
   background-color: #f7faff;
@@ -103,6 +115,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 }
 .materias-search__clear:hover { background-color: #dfebfa; }
 .materias-search input:focus-visible,
+.materias-search select:focus-visible,
 .materias-search__clear:focus-visible { outline: 2px solid #064bad; outline-offset: 2px; }
 
 .materia-card {
@@ -240,3 +253,8 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 
 @media (max-width: 1200px) { .materias-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 900px) { .materias-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+  .materias-search { flex-direction: column; }
+  .materias-search__name,
+  .materias-search__career { width: 100%; }
+}

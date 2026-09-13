@@ -13,9 +13,10 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerMaterias(nombre = ''): Observable<Materia[]> {
+  obtenerMaterias(nombre = '', carrera = ''): Observable<Materia[]> {
     const termino = nombre.trim();
-    const params = termino ? new HttpParams().set('nombre', termino) : new HttpParams();
+    let params = termino ? new HttpParams().set('nombre', termino) : new HttpParams();
+    if (carrera.trim()) params = params.set('carrera', carrera.trim());
     return this.http.get<Materia[]>(`${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.MATERIAS}`, { params });
   }
 
