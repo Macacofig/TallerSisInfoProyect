@@ -1,0 +1,266 @@
+<section class="historial-calificaciones">
+
+  <header class="historial-calificaciones__encabezado">
+
+    <div>
+
+      <h3>
+        Evolución histórica por gestión
+      </h3>
+
+      <p>
+        Comparación general de las calificaciones
+        registradas a lo largo de las gestiones.
+      </p>
+
+    </div>
+
+  </header>
+
+  @if (cargando) {
+
+    <p class="estado">
+      Cargando historial...
+    </p>
+
+  } @else if (error) {
+
+    <p class="error">
+      {{ error }}
+    </p>
+
+  } @else if (datos.length > 1) {
+
+    <div class="grafico">
+
+      <svg
+        [attr.viewBox]="
+          '0 0 ' +
+          anchoGrafico +
+          ' ' +
+          altoGrafico
+        "
+        role="img"
+        aria-label="Evolución histórica de las calificaciones por gestión"
+      >
+
+        <!-- Líneas horizontales -->
+
+        @for (
+          nivel of niveles;
+          track nivel
+        ) {
+
+          <line
+            class="rejilla"
+            [attr.x1]="margenIzquierdo"
+            [attr.x2]="
+              anchoGrafico -
+              margenDerecho
+            "
+            [attr.y1]="obtenerY(nivel)"
+            [attr.y2]="obtenerY(nivel)"
+          />
+
+          <text
+            class="etiqueta-y"
+            [attr.x]="
+              margenIzquierdo - 12
+            "
+            [attr.y]="
+              obtenerY(nivel) + 4
+            "
+            text-anchor="end"
+          >
+            {{ nivel }}
+          </text>
+
+        }
+
+        <!-- Eje vertical -->
+
+        <line
+          class="eje"
+          [attr.x1]="margenIzquierdo"
+          [attr.x2]="margenIzquierdo"
+          [attr.y1]="margenSuperior"
+          [attr.y2]="
+            altoGrafico -
+            margenInferior
+          "
+        />
+
+        <!-- Eje horizontal -->
+
+        <line
+          class="eje"
+          [attr.x1]="margenIzquierdo"
+          [attr.x2]="
+            anchoGrafico -
+            margenDerecho
+          "
+          [attr.y1]="
+            altoGrafico -
+            margenInferior
+          "
+          [attr.y2]="
+            altoGrafico -
+            margenInferior
+          "
+        />
+
+        <!-- Línea dificultad -->
+
+        <polyline
+          class="linea dificultad"
+          [attr.points]="
+            obtenerPuntos('dificultad')
+          "
+        />
+
+        <!-- Línea carga -->
+
+        <polyline
+          class="linea carga"
+          [attr.points]="
+            obtenerPuntos('carga')
+          "
+        />
+
+        <!-- Línea conocimiento -->
+
+        <polyline
+          class="linea conocimiento"
+          [attr.points]="
+            obtenerPuntos('conocimiento')
+          "
+        />
+
+        @for (
+          dato of datos;
+          track dato.gestion;
+          let indice = $index
+        ) {
+
+          <!-- Dificultad -->
+
+          <circle
+            class="punto dificultad"
+            [attr.cx]="obtenerX(indice)"
+            [attr.cy]="
+              obtenerY(
+                dato.dificultad
+              )
+            "
+            r="5"
+          >
+            <title>
+              {{ dato.gestion }}
+              - Dificultad:
+              {{
+                obtenerPromedioFormateado(
+                  dato.dificultad
+                )
+              }}/10
+            </title>
+          </circle>
+
+          <!-- Carga -->
+
+          <circle
+            class="punto carga"
+            [attr.cx]="obtenerX(indice)"
+            [attr.cy]="
+              obtenerY(
+                dato.carga
+              )
+            "
+            r="5"
+          >
+            <title>
+              {{ dato.gestion }}
+              - Carga:
+              {{
+                obtenerPromedioFormateado(
+                  dato.carga
+                )
+              }}/10
+            </title>
+          </circle>
+
+          <!-- Conocimiento -->
+
+          <circle
+            class="punto conocimiento"
+            [attr.cx]="obtenerX(indice)"
+            [attr.cy]="
+              obtenerY(
+                dato.conocimiento
+              )
+            "
+            r="5"
+          >
+            <title>
+              {{ dato.gestion }}
+              - Conocimiento previo:
+              {{
+                obtenerPromedioFormateado(
+                  dato.conocimiento
+                )
+              }}/10
+            </title>
+          </circle>
+
+          <!-- Gestión -->
+
+          <text
+            class="etiqueta-x"
+            [attr.x]="obtenerX(indice)"
+            [attr.y]="
+              altoGrafico - 18
+            "
+            text-anchor="middle"
+          >
+            {{ dato.gestion }}
+          </text>
+
+        }
+
+      </svg>
+
+    </div>
+
+    <div class="leyenda">
+
+      <span>
+        <i class="leyenda__linea dificultad"></i>
+        Dificultad
+      </span>
+
+      <span>
+        <i class="leyenda__linea carga"></i>
+        Carga
+      </span>
+
+      <span>
+        <i class="leyenda__linea conocimiento"></i>
+        Conocimiento previo
+      </span>
+
+    </div>
+
+    <p class="historial-calificaciones__nota">
+      El historial corresponde a los promedios generales
+      disponibles por gestión.
+    </p>
+
+  } @else {
+
+    <p class="estado">
+      No existen suficientes gestiones para construir
+      el historial.
+    </p>
+
+  }
+
+</section>

@@ -19,6 +19,10 @@ export class CalificacionGraficosComponent {
   @Input({ required: true })
   promedios!: CalificacionMateriaPromedioResponse;
 
+  @Input()
+  contexto =
+    'Promedio general de la materia';
+
   obtenerPromedioFormateado(
     promedio: number
   ): string {
@@ -30,14 +34,11 @@ export class CalificacionGraficosComponent {
     promedio: number
   ): number {
 
-    const porcentaje =
-      promedio * 10;
-
     return Math.max(
       0,
       Math.min(
         100,
-        porcentaje
+        promedio * 10
       )
     );
   }

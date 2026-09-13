@@ -1,0 +1,163 @@
+:host {
+  display: block;
+  margin-top: 26px;
+}
+
+.filtro-gestiones {
+  border: 1px solid #e3e8ef;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.historial-gestiones {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px;
+  background: #fff;
+  border-bottom: 1px solid #e3e8ef;
+}
+
+.historial-gestiones h3,
+.filtro-gestiones__titulo h4 {
+  margin: 0 0 6px;
+  color: #10213f;
+}
+
+.historial-gestiones p,
+.filtro-gestiones__titulo p {
+  margin: 0;
+  color: #667085;
+}
+
+.historial-gestiones__rapidas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.gestion-rapida,
+.filtro-gestiones__modos button,
+.filtro-gestiones__acciones button {
+  padding: 9px 13px;
+  border: 1px solid #cfd7e4;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gestion-rapida {
+  color: #344054;
+  background: #fff;
+}
+
+.gestion-rapida span {
+  color: #667085;
+  font-weight: 400;
+}
+
+.gestion-rapida.activa {
+  color: #fff;
+  background: #165dab;
+  border-color: #165dab;
+}
+
+.gestion-rapida.activa span {
+  color: #fff;
+}
+
+.filtro-gestiones__contenido {
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.filtro-gestiones__modos {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.filtro-gestiones__modos button {
+  color: #344054;
+  background: #fff;
+}
+
+.filtro-gestiones__modos .activo,
+.filtro-gestiones__acciones .principal {
+  color: #fff;
+  background: #165dab;
+  border-color: #165dab;
+}
+
+.filtro-gestiones__campos {
+  display: grid;
+  grid-template-columns: minmax(180px, 320px);
+  gap: 14px;
+}
+
+.filtro-gestiones__campos.rango {
+  grid-template-columns:
+    repeat(2, minmax(180px, 1fr));
+}
+
+.filtro-gestiones__campos label {
+  display: grid;
+  gap: 7px;
+  color: #344054;
+  font-weight: 700;
+}
+
+.filtro-gestiones__campos select {
+  padding: 10px;
+  color: #344054;
+  background: #fff;
+  border: 1px solid #cdd6e3;
+  border-radius: 8px;
+}
+
+.filtro-gestiones__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.filtro-gestiones__acciones .secundario {
+  color: #344054;
+  background: #fff;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.filtro-gestiones__error {
+  margin: 14px 0 0;
+  padding: 10px;
+  color: #991b1b;
+  background: #fef2f2;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+
+  .historial-gestiones {
+    flex-direction: column;
+  }
+
+  .historial-gestiones__rapidas {
+    justify-content: flex-start;
+  }
+
+  .filtro-gestiones__modos,
+  .filtro-gestiones__acciones {
+    flex-direction: column;
+  }
+
+  .filtro-gestiones__campos.rango {
+    grid-template-columns: 1fr;
+  }
+}

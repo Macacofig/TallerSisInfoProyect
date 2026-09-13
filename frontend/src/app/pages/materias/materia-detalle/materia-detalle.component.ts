@@ -4,7 +4,9 @@ import {
   OnInit
 } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import {
+  ActivatedRoute
+} from '@angular/router';
 
 import {
   FormBuilder,
@@ -13,7 +15,9 @@ import {
   Validators
 } from '@angular/forms';
 
-import { Materia } from '../../../models/materia';
+import {
+  Materia
+} from '../../../models/materia';
 
 import {
   CalificacionMateriaPromedioResponse,
@@ -38,12 +42,23 @@ import {
   CalificacionGraficosComponent
 } from './calificacion-graficos/calificacion-graficos.component';
 
+import {
+  FiltroGestionesComponent,
+  FiltroGestionesResultado
+} from './filtro-gestiones/filtro-gestiones.component';
+
+import {
+  HistorialCalificacionesComponent
+} from './historial-calificaciones/historial-calificaciones.component';
+
 @Component({
   selector: 'app-materia-detalle',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    CalificacionGraficosComponent
+    CalificacionGraficosComponent,
+    FiltroGestionesComponent,
+    HistorialCalificacionesComponent
   ],
   templateUrl: './materia-detalle.component.html',
   styleUrl: './materia-detalle.component.scss'
@@ -58,15 +73,23 @@ export class MateriaDetalleComponent implements OnInit {
   promediosMateria:
     CalificacionMateriaPromedioResponse | null = null;
 
+  promediosMostrados:
+    CalificacionMateriaPromedioResponse | null = null;
+
   gestiones: string[] = [];
 
   gestionActual: string | null = null;
   gestionAnterior: string | null = null;
 
+  contextoPromedios =
+    'Promedio general de la materia';
+
+  filtroGestionesActivo =
+    false;
+
   cargando = true;
   cargandoPromedios = false;
   cargandoGestiones = false;
-
   enviandoCalificacion = false;
   verificandoCalificacion = false;
 
@@ -95,75 +118,106 @@ export class MateriaDetalleComponent implements OnInit {
     private readonly changeDetectorRef: ChangeDetectorRef
   ) {
 
-    this.formularioCalificacion = this.formBuilder.group({
+    this.formularioCalificacion =
+      this.formBuilder.group({
 
-      dificultad: [
-        5,
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(10)
+        dificultad: [
+          5,
+          [
+            Validators.required,
+            Validators.min(1),
+            Validators.max(10)
+          ]
+        ],
+
+        carga: [
+          5,
+          [
+            Validators.required,
+            Validators.min(1),
+            Validators.max(10)
+          ]
+        ],
+
+        conocimientoPrevio: [
+          5,
+          [
+            Validators.required,
+            Validators.min(1),
+            Validators.max(10)
+          ]
+        ],
+
+        prerequisitos: [
+          '',
+          [Validators.required]
+        ],
+
+        predominio: [
+          'Practico',
+          [Validators.required]
+        ],
+
+        gestion: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(/^\d+-(1|2)$/)
+          ]
         ]
-      ],
 
-      carga: [
-        5,
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(10)
-        ]
-      ],
-
-      conocimientoPrevio: [
-        5,
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(10)
-        ]
-      ],
-
-      prerequisitos: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      predominio: [
-        'Practico',
-        [
-          Validators.required
-        ]
-      ],
-
-      gestion: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\d+-(1|2)$/)
-        ]
-      ]
-
-    });
+      });
   }
 
   ngOnInit(): void {
 
-    const materiaId = this.obtenerMateriaId();
+    const materiaId =
+      this.obtenerMateriaId();
 
     if (!materiaId) {
 
       this.error =
         'El identificador de la materia no es válido.';
 
-      this.cargando = false;
+      this.cargando =
+        false;
 
       return;
     }
 
-    this.cargarMateria(materiaId);
+    this.cargarMateria(
+      materiaId
+    );
+  }
+
+  aplicarFiltroGestiones(
+    resultado: FiltroGestionesResultado
+  ): void {
+
+    this.promediosMostrados =
+      resultado.promedios;
+
+    this.contextoPromedios =
+      resultado.descripcion;
+
+    this.filtroGestionesActivo =
+      true;
+
+    this.changeDetectorRef.markForCheck();
+  }
+
+  limpiarFiltroGestiones(): void {
+
+    this.promediosMostrados =
+      this.promediosMateria;
+
+    this.contextoPromedios =
+      'Promedio general de la materia';
+
+    this.filtroGestionesActivo =
+      false;
+
+    this.changeDetectorRef.markForCheck();
   }
 
   abrirFormularioCalificacion(): void {
@@ -172,16 +226,26 @@ export class MateriaDetalleComponent implements OnInit {
       return;
     }
 
-    this.mostrarFormularioCalificacion = true;
-    this.mostrarConfirmacion = false;
-    this.errorCalificacion = '';
+    this.mostrarFormularioCalificacion =
+      true;
+
+    this.mostrarConfirmacion =
+      false;
+
+    this.errorCalificacion =
+      '';
   }
 
   cerrarFormularioCalificacion(): void {
 
-    this.mostrarFormularioCalificacion = false;
-    this.mostrarConfirmacion = false;
-    this.errorCalificacion = '';
+    this.mostrarFormularioCalificacion =
+      false;
+
+    this.mostrarConfirmacion =
+      false;
+
+    this.errorCalificacion =
+      '';
   }
 
   abrirConfirmacion(): void {
@@ -191,24 +255,35 @@ export class MateriaDetalleComponent implements OnInit {
       this.formularioCalificacion.invalid
     ) {
 
-      this.formularioCalificacion.markAllAsTouched();
+      this.formularioCalificacion
+        .markAllAsTouched();
+
       return;
     }
 
-    this.errorCalificacion = '';
-    this.mostrarConfirmacion = true;
+    this.errorCalificacion =
+      '';
+
+    this.mostrarConfirmacion =
+      true;
   }
 
   cancelarConfirmacion(): void {
     this.mostrarConfirmacion = false;
   }
 
-  normalizarGestion(event: Event): void {
+  normalizarGestion(
+    event: Event
+  ): void {
 
-    const input = event.target as HTMLInputElement;
+    const input =
+      event.target as HTMLInputElement;
 
     let valor =
-      input.value.replace(/[^0-9-]/g, '');
+      input.value.replace(
+        /[^0-9-]/g,
+        ''
+      );
 
     const tieneGuion =
       valor.includes('-');
@@ -223,10 +298,16 @@ export class MateriaDetalleComponent implements OnInit {
       partes
         .slice(1)
         .join('')
-        .replace(/[^12]/g, '');
+        .replace(
+          /[^12]/g,
+          ''
+        );
 
     semestre =
-      semestre.slice(0, 1);
+      semestre.slice(
+        0,
+        1
+      );
 
     const gestion =
       tieneGuion
@@ -261,14 +342,17 @@ export class MateriaDetalleComponent implements OnInit {
     }
 
     const valores =
-      this.formularioCalificacion.getRawValue();
+      this.formularioCalificacion
+        .getRawValue();
 
     const prerequisitos =
       this.convertirPrerequisitos(
         valores.prerequisitos
       );
 
-    if (prerequisitos.length === 0) {
+    if (
+      prerequisitos.length === 0
+    ) {
 
       this.errorCalificacion =
         'Debes ingresar al menos un prerequisito.';
@@ -286,13 +370,19 @@ export class MateriaDetalleComponent implements OnInit {
           this.idEstudianteActual,
 
         dificultad:
-          Number(valores.dificultad),
+          Number(
+            valores.dificultad
+          ),
 
         carga:
-          Number(valores.carga),
+          Number(
+            valores.carga
+          ),
 
         conocimientoPrevio:
-          Number(valores.conocimientoPrevio),
+          Number(
+            valores.conocimientoPrevio
+          ),
 
         prerequisitos,
 
@@ -303,8 +393,11 @@ export class MateriaDetalleComponent implements OnInit {
           valores.gestion
       };
 
-    this.enviandoCalificacion = true;
-    this.errorCalificacion = '';
+    this.enviandoCalificacion =
+      true;
+
+    this.errorCalificacion =
+      '';
 
     this.calificacionesMateriaService
       .registrarCalificacion(
@@ -314,13 +407,26 @@ export class MateriaDetalleComponent implements OnInit {
 
         next: (respuesta) => {
 
-          this.enviandoCalificacion = false;
+          this.enviandoCalificacion =
+            false;
 
-          this.mostrarConfirmacion = false;
-          this.mostrarFormularioCalificacion = false;
+          this.mostrarConfirmacion =
+            false;
 
-          this.yaCalifico = true;
-          this.calificacionExistente = respuesta;
+          this.mostrarFormularioCalificacion =
+            false;
+
+          this.yaCalifico =
+            true;
+
+          this.calificacionExistente =
+            respuesta;
+
+          this.filtroGestionesActivo =
+            false;
+
+          this.contextoPromedios =
+            'Promedio general de la materia';
 
           this.cargarPromediosMateria(
             materiaId
@@ -333,14 +439,19 @@ export class MateriaDetalleComponent implements OnInit {
 
         error: (error) => {
 
-          this.enviandoCalificacion = false;
+          this.enviandoCalificacion =
+            false;
 
-          if (error.status === 400) {
+          if (
+            error.status === 400
+          ) {
 
             this.errorCalificacion =
               'Los datos de la calificación no son válidos.';
 
-          } else if (error.status === 404) {
+          } else if (
+            error.status === 404
+          ) {
 
             this.errorCalificacion =
               'La materia solicitada no está disponible.';
@@ -409,9 +520,10 @@ export class MateriaDetalleComponent implements OnInit {
 
     const materiaId =
       Number(
-        this.route.snapshot.paramMap.get(
-          'materiaId'
-        )
+        this.route
+          .snapshot
+          .paramMap
+          .get('materiaId')
       );
 
     return materiaId > 0
@@ -436,7 +548,8 @@ export class MateriaDetalleComponent implements OnInit {
             this.error =
               'La materia solicitada no existe.';
 
-            this.cargando = false;
+            this.cargando =
+              false;
 
             this.changeDetectorRef.markForCheck();
 
@@ -548,6 +661,14 @@ export class MateriaDetalleComponent implements OnInit {
           this.promediosMateria =
             promedios;
 
+          if (
+            !this.filtroGestionesActivo
+          ) {
+
+            this.promediosMostrados =
+              promedios;
+          }
+
           this.cargandoPromedios =
             false;
 
@@ -559,10 +680,20 @@ export class MateriaDetalleComponent implements OnInit {
           this.cargandoPromedios =
             false;
 
-          if (error.status === 404) {
+          if (
+            error.status === 404
+          ) {
 
             this.promediosMateria =
               null;
+
+            if (
+              !this.filtroGestionesActivo
+            ) {
+
+              this.promediosMostrados =
+                null;
+            }
 
           } else {
 
@@ -592,7 +723,10 @@ export class MateriaDetalleComponent implements OnInit {
 
           this.gestiones =
             [...gestiones].sort(
-              (a, b) =>
+              (
+                a,
+                b
+              ) =>
                 this.compararGestiones(
                   a,
                   b
@@ -632,7 +766,9 @@ export class MateriaDetalleComponent implements OnInit {
 
   private actualizarGestionesReferencia(): void {
 
-    if (this.gestiones.length === 0) {
+    if (
+      this.gestiones.length === 0
+    ) {
 
       this.gestionActual =
         null;
@@ -677,11 +813,19 @@ export class MateriaDetalleComponent implements OnInit {
         .split('-')
         .map(Number);
 
-    if (anioPrimera !== anioSegunda) {
+    if (
+      anioPrimera !== anioSegunda
+    ) {
 
-      return anioPrimera - anioSegunda;
+      return (
+        anioPrimera -
+        anioSegunda
+      );
     }
 
-    return periodoPrimera - periodoSegunda;
+    return (
+      periodoPrimera -
+      periodoSegunda
+    );
   }
 }

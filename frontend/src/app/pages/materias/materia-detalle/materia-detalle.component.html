@@ -81,8 +81,6 @@
 
     }
 
-    <!-- HU-05.2 - CRITERIO 1 -->
-
     <section class="resumen-calificaciones">
 
       <div class="resumen-calificaciones__encabezado">
@@ -94,13 +92,18 @@
           </h2>
 
           <p>
-            Información obtenida de las evaluaciones registradas
-            por estudiantes de esta materia.
+            Información obtenida de las evaluaciones registradas.
           </p>
 
         </div>
 
-        @if (gestionActual) {
+        @if (filtroGestionesActivo) {
+
+          <span class="gestion-destacada">
+            Filtro aplicado
+          </span>
+
+        } @else if (gestionActual) {
 
           <span class="gestion-destacada">
             Gestión {{ gestionActual }}
@@ -109,6 +112,28 @@
         }
 
       </div>
+
+      @if (cargandoGestiones) {
+
+        <p class="estado-carga">
+          Cargando gestiones...
+        </p>
+
+      } @else if (errorGestiones) {
+
+        <p class="mensaje-error">
+          {{ errorGestiones }}
+        </p>
+
+      } @else if (gestiones.length > 0) {
+
+        <app-filtro-gestiones
+          [gestiones]="gestiones"
+          (filtroAplicado)="aplicarFiltroGestiones($event)"
+          (filtroLimpiado)="limpiarFiltroGestiones()"
+        />
+
+      }
 
       @if (cargandoPromedios) {
 
@@ -122,7 +147,7 @@
           {{ errorPromedios }}
         </p>
 
-      } @else if (promediosMateria) {
+      } @else if (promediosMostrados) {
 
         <div class="metricas-resumen">
 
@@ -135,12 +160,12 @@
             <strong>
               {{
                 obtenerPromedioFormateado(
-                  promediosMateria.dificultadPromedio
+                  promediosMostrados.dificultadPromedio
                 )
               }}
             </strong>
 
-            <span class="metrica-resumen__escala">
+            <span>
               /10
             </span>
 
@@ -155,12 +180,12 @@
             <strong>
               {{
                 obtenerPromedioFormateado(
-                  promediosMateria.cargaPromedio
+                  promediosMostrados.cargaPromedio
                 )
               }}
             </strong>
 
-            <span class="metrica-resumen__escala">
+            <span>
               /10
             </span>
 
@@ -175,12 +200,12 @@
             <strong>
               {{
                 obtenerPromedioFormateado(
-                  promediosMateria.conocimientoPrevioPromedio
+                  promediosMostrados.conocimientoPrevioPromedio
                 )
               }}
             </strong>
 
-            <span class="metrica-resumen__escala">
+            <span>
               /10
             </span>
 
@@ -188,104 +213,33 @@
 
         </div>
 
-        <!-- HU-05.2 - CRITERIO 2 -->
-
         <app-calificacion-graficos
-          [promedios]="promediosMateria"
+          [promedios]="promediosMostrados"
+          [contexto]="contextoPromedios"
         />
 
       } @else {
 
         <p class="estado-carga">
-          Esta materia todavía no cuenta con calificaciones
-          suficientes para mostrar promedios.
+          No existen calificaciones suficientes
+          para mostrar promedios.
         </p>
 
       }
 
-      <!-- GESTIONES -->
+      @if (
+        !cargandoGestiones &&
+        !errorGestiones &&
+        gestiones.length > 1
+      ) {
 
-      <div class="gestiones-resumen">
+        <app-historial-calificaciones
+          [gestiones]="gestiones"
+        />
 
-        <div class="gestiones-resumen__encabezado">
-
-          <div>
-
-            <h3>
-              Historial de gestiones
-            </h3>
-
-            <p>
-              Referencia de las gestiones con información registrada.
-            </p>
-
-          </div>
-
-        </div>
-
-        @if (cargandoGestiones) {
-
-          <p class="estado-carga">
-            Cargando gestiones...
-          </p>
-
-        } @else if (errorGestiones) {
-
-          <p class="mensaje-error">
-            {{ errorGestiones }}
-          </p>
-
-        } @else if (gestiones.length > 0) {
-
-          <div class="gestiones-resumen__contenido">
-
-            <div class="gestion-resumen">
-
-              <span>
-                Gestión más reciente
-              </span>
-
-              <strong>
-                @if (gestionActual) {
-                  {{ gestionActual }}
-                } @else {
-                  No disponible
-                }
-              </strong>
-
-            </div>
-
-            <div class="gestion-resumen">
-
-              <span>
-                Gestión anterior
-              </span>
-
-              <strong>
-                @if (gestionAnterior) {
-                  {{ gestionAnterior }}
-                } @else {
-                  No disponible
-                }
-              </strong>
-
-            </div>
-
-          </div>
-
-        } @else {
-
-          <p class="estado-carga">
-            No existen gestiones registradas.
-          </p>
-
-        }
-
-      </div>
+      }
 
     </section>
-
-    <!-- MODAL HU-05.1 -->
 
     @if (mostrarFormularioCalificacion) {
 
@@ -495,17 +449,6 @@
                   autocomplete="off"
                 />
 
-                @if (
-                  formularioCalificacion.get('prerequisitos')?.invalid &&
-                  formularioCalificacion.get('prerequisitos')?.touched
-                ) {
-
-                  <small>
-                    Debes ingresar al menos un prerequisito.
-                  </small>
-
-                }
-
               </div>
 
               <div class="campo-predominio">
@@ -524,9 +467,7 @@
                       formControlName="predominio"
                     />
 
-                    <span>
-                      Práctico
-                    </span>
+                    Práctico
 
                   </label>
 
@@ -538,9 +479,7 @@
                       formControlName="predominio"
                     />
 
-                    <span>
-                      Teórico
-                    </span>
+                    Teórico
 
                   </label>
 
@@ -560,21 +499,8 @@
                   formControlName="gestion"
                   placeholder="Ej: 2026-1"
                   autocomplete="off"
-                  inputmode="numeric"
-                  maxlength="10"
                   (input)="normalizarGestion($event)"
                 />
-
-                @if (
-                  formularioCalificacion.get('gestion')?.invalid &&
-                  formularioCalificacion.get('gestion')?.touched
-                ) {
-
-                  <small>
-                    La gestión debe tener el formato AÑO-1 o AÑO-2.
-                  </small>
-
-                }
 
               </div>
 
@@ -609,11 +535,6 @@
                   Confirmar calificación
                 </h3>
 
-                <p>
-                  Revisa los valores antes de registrar
-                  tu calificación.
-                </p>
-
                 <div class="confirmacion-calificacion__resumen">
 
                   <p>
@@ -644,29 +565,11 @@
                   </p>
 
                   <p>
-                    <strong>Predominio:</strong>
-
-                    @if (
-                      formularioCalificacion.value.predominio === 'Practico'
-                    ) {
-                      Práctico
-                    } @else {
-                      Teórico
-                    }
-
-                  </p>
-
-                  <p>
                     <strong>Gestión:</strong>
                     {{ formularioCalificacion.value.gestion }}
                   </p>
 
                 </div>
-
-                <p>
-                  Solo puedes registrar una calificación por materia.
-                  Revisa los datos antes de confirmar.
-                </p>
 
                 <div class="confirmacion-calificacion__acciones">
 
