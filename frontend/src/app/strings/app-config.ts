@@ -5,8 +5,8 @@ export const APP_CONFIG = {
   // Mostrar los resultados reales de la API por defecto.
   DEMO_MODE: false,
 
-  // Carreras disponibles incluso cuando aún no tienen materias registradas.
-  CARRERAS: ['Ingeniería de Sistemas', 'Ingeniería Industrial', 'Administración de Empresas'],
+  // La población del proyecto corresponde únicamente a Ingeniería de Sistemas.
+  CARRERAS: ['Ingeniería de Sistemas'],
 
   // Configuración del API
   API: {
