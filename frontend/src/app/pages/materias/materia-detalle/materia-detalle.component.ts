@@ -4,7 +4,9 @@ import {
   OnInit
 } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import {
+  ActivatedRoute
+} from '@angular/router';
 
 import {
   FormBuilder,
@@ -13,7 +15,9 @@ import {
   Validators
 } from '@angular/forms';
 
-import { Materia } from '../../../models/materia';
+import {
+  Materia
+} from '../../../models/materia';
 
 import {
   CalificacionMateriaResponse,
@@ -30,17 +34,22 @@ import {
 } from '../../../services/calificaciones-materia.service';
 
 import {
-  APP_CONFIG
-} from '../../../strings/app-config';
+  APP_CONFIG,
+  MESSAGES
+} from '../../../strings';
 
 @Component({
   selector: 'app-materia-detalle',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule
+  ],
   templateUrl: './materia-detalle.component.html',
   styleUrl: './materia-detalle.component.scss'
 })
 export class MateriaDetalleComponent implements OnInit {
+
+  readonly mensajes = MESSAGES;
 
   materia: Materia | null = null;
 
@@ -71,78 +80,83 @@ export class MateriaDetalleComponent implements OnInit {
     private readonly calificacionesMateriaService:
       CalificacionesMateriaService,
     private readonly formBuilder: FormBuilder,
-    private readonly changeDetectorRef: ChangeDetectorRef
+    private readonly changeDetectorRef:
+      ChangeDetectorRef
   ) {
 
-    this.formularioCalificacion = this.formBuilder.group({
+    this.formularioCalificacion =
+      this.formBuilder.group({
 
-      dificultad: [
-        5,
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(10)
+        dificultad: [
+          5,
+          [
+            Validators.required,
+            Validators.min(1),
+            Validators.max(10)
+          ]
+        ],
+
+        carga: [
+          5,
+          [
+            Validators.required,
+            Validators.min(1),
+            Validators.max(10)
+          ]
+        ],
+
+        conocimientoPrevio: [
+          5,
+          [
+            Validators.required,
+            Validators.min(1),
+            Validators.max(10)
+          ]
+        ],
+
+        prerequisitos: [
+          '',
+          [
+            Validators.required
+          ]
+        ],
+
+        predominio: [
+          'Practico',
+          [
+            Validators.required
+          ]
+        ],
+
+        gestion: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(/^\d+-(1|2)$/)
+          ]
         ]
-      ],
 
-      carga: [
-        5,
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(10)
-        ]
-      ],
-
-      conocimientoPrevio: [
-        5,
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(10)
-        ]
-      ],
-
-      prerequisitos: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      predominio: [
-        'Practico',
-        [
-          Validators.required
-        ]
-      ],
-
-      gestion: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\d+-(1|2)$/)
-        ]
-      ]
-
-    });
+      });
   }
 
   ngOnInit(): void {
 
-    const materiaId = this.obtenerMateriaId();
+    const materiaId =
+      this.obtenerMateriaId();
 
     if (!materiaId) {
 
       this.error =
-        'El identificador de la materia no es válido.';
+        MESSAGES.CALIFICATION_INVALID_SUBJECT_ID;
 
       this.cargando = false;
 
       return;
     }
 
-    this.cargarMateria(materiaId);
+    this.cargarMateria(
+      materiaId
+    );
   }
 
   abrirFormularioCalificacion(): void {
@@ -151,18 +165,26 @@ export class MateriaDetalleComponent implements OnInit {
       return;
     }
 
-    this.mostrarFormularioCalificacion = true;
-    this.mostrarConfirmacion = false;
+    this.mostrarFormularioCalificacion =
+      true;
 
-    this.errorCalificacion = '';
+    this.mostrarConfirmacion =
+      false;
+
+    this.errorCalificacion =
+      '';
   }
 
   cerrarFormularioCalificacion(): void {
 
-    this.mostrarFormularioCalificacion = false;
-    this.mostrarConfirmacion = false;
+    this.mostrarFormularioCalificacion =
+      false;
 
-    this.errorCalificacion = '';
+    this.mostrarConfirmacion =
+      false;
+
+    this.errorCalificacion =
+      '';
   }
 
   abrirConfirmacion(): void {
@@ -172,46 +194,69 @@ export class MateriaDetalleComponent implements OnInit {
       this.formularioCalificacion.invalid
     ) {
 
-      this.formularioCalificacion.markAllAsTouched();
+      this.formularioCalificacion
+        .markAllAsTouched();
 
       return;
     }
 
-    this.errorCalificacion = '';
-    this.mostrarConfirmacion = true;
+    this.errorCalificacion =
+      '';
+
+    this.mostrarConfirmacion =
+      true;
   }
 
   cancelarConfirmacion(): void {
 
-    this.mostrarConfirmacion = false;
+    this.mostrarConfirmacion =
+      false;
   }
 
-  normalizarGestion(event: Event): void {
+  normalizarGestion(
+    event: Event
+  ): void {
 
-    const input = event.target as HTMLInputElement;
+    const input =
+      event.target as HTMLInputElement;
 
-    let valor = input.value;
+    let valor =
+      input.value.replace(
+        /[^0-9-]/g,
+        ''
+      );
 
-    valor = valor.replace(/[^0-9-]/g, '');
+    const tieneGuion =
+      valor.includes('-');
 
-    const tieneGuion = valor.includes('-');
+    const partes =
+      valor.split('-');
 
-    const partes = valor.split('-');
+    const anio =
+      partes[0];
 
-    const anio = partes[0];
+    let semestre =
+      partes
+        .slice(1)
+        .join('')
+        .replace(
+          /[^12]/g,
+          ''
+        );
 
-    let semestre = partes
-      .slice(1)
-      .join('')
-      .replace(/[^12]/g, '');
+    semestre =
+      semestre.slice(
+        0,
+        1
+      );
 
-    semestre = semestre.slice(0, 1);
+    const gestion =
+      tieneGuion
+        ? `${anio}-${semestre}`
+        : anio;
 
-    const gestion = tieneGuion
-      ? `${anio}-${semestre}`
-      : anio;
-
-    input.value = gestion;
+    input.value =
+      gestion;
 
     this.formularioCalificacion
       .get('gestion')
@@ -225,7 +270,8 @@ export class MateriaDetalleComponent implements OnInit {
 
   confirmarCalificacion(): void {
 
-    const materiaId = this.obtenerMateriaId();
+    const materiaId =
+      this.obtenerMateriaId();
 
     if (
       !materiaId ||
@@ -237,17 +283,20 @@ export class MateriaDetalleComponent implements OnInit {
     }
 
     const valores =
-      this.formularioCalificacion.getRawValue();
+      this.formularioCalificacion
+        .getRawValue();
 
     const prerequisitos =
       this.convertirPrerequisitos(
         valores.prerequisitos
       );
 
-    if (prerequisitos.length === 0) {
+    if (
+      prerequisitos.length === 0
+    ) {
 
       this.errorCalificacion =
-        'Debes ingresar al menos un prerequisito.';
+        MESSAGES.CALIFICATION_PREREQUISITES_REQUIRED;
 
       return;
     }
@@ -255,19 +304,26 @@ export class MateriaDetalleComponent implements OnInit {
     const calificacion:
       RegistrarCalificacionMateriaRequest = {
 
-        idMateria: materiaId,
+        idMateria:
+          materiaId,
 
         idEstudiante:
           this.idEstudianteActual,
 
         dificultad:
-          Number(valores.dificultad),
+          Number(
+            valores.dificultad
+          ),
 
         carga:
-          Number(valores.carga),
+          Number(
+            valores.carga
+          ),
 
         conocimientoPrevio:
-          Number(valores.conocimientoPrevio),
+          Number(
+            valores.conocimientoPrevio
+          ),
 
         prerequisitos,
 
@@ -278,8 +334,11 @@ export class MateriaDetalleComponent implements OnInit {
           valores.gestion
       };
 
-    this.enviandoCalificacion = true;
-    this.errorCalificacion = '';
+    this.enviandoCalificacion =
+      true;
+
+    this.errorCalificacion =
+      '';
 
     this.calificacionesMateriaService
       .registrarCalificacion(
@@ -289,38 +348,52 @@ export class MateriaDetalleComponent implements OnInit {
 
         next: (respuesta) => {
 
-          this.enviandoCalificacion = false;
+          this.enviandoCalificacion =
+            false;
 
-          this.mostrarConfirmacion = false;
-          this.mostrarFormularioCalificacion = false;
+          this.mostrarConfirmacion =
+            false;
 
-          this.yaCalifico = true;
-          this.calificacionExistente = respuesta;
+          this.mostrarFormularioCalificacion =
+            false;
 
-          this.changeDetectorRef.markForCheck();
+          this.yaCalifico =
+            true;
+
+          this.calificacionExistente =
+            respuesta;
+
+          this.changeDetectorRef
+            .markForCheck();
         },
 
         error: (error) => {
 
-          this.enviandoCalificacion = false;
+          this.enviandoCalificacion =
+            false;
 
-          if (error.status === 400) {
-
-            this.errorCalificacion =
-              'Los datos de la calificación no son válidos.';
-
-          } else if (error.status === 404) {
+          if (
+            error.status === 400
+          ) {
 
             this.errorCalificacion =
-              'La materia solicitada no está disponible.';
+              MESSAGES.CALIFICATION_INVALID_DATA;
+
+          } else if (
+            error.status === 404
+          ) {
+
+            this.errorCalificacion =
+              MESSAGES.CALIFICATION_SUBJECT_UNAVAILABLE;
 
           } else {
 
             this.errorCalificacion =
-              'No se pudo registrar la calificación. Intenta nuevamente.';
+              MESSAGES.CALIFICATION_REGISTER_ERROR;
           }
 
-          this.changeDetectorRef.markForCheck();
+          this.changeDetectorRef
+            .markForCheck();
         }
 
       });
@@ -343,8 +416,8 @@ export class MateriaDetalleComponent implements OnInit {
   ): string {
 
     return predominio === 'Practico'
-      ? 'Práctico'
-      : 'Teórico';
+      ? MESSAGES.CALIFICATION_PRACTICAL_LABEL
+      : MESSAGES.CALIFICATION_THEORETICAL_LABEL;
   }
 
   private convertirPrerequisitos(
@@ -367,13 +440,16 @@ export class MateriaDetalleComponent implements OnInit {
       );
   }
 
-  private obtenerMateriaId(): number | null {
+  private obtenerMateriaId():
+    number | null {
 
-    const materiaId = Number(
-      this.route.snapshot.paramMap.get(
-        'materiaId'
-      )
-    );
+    const materiaId =
+      Number(
+        this.route
+          .snapshot
+          .paramMap
+          .get('materiaId')
+      );
 
     return materiaId > 0
       ? materiaId
@@ -395,33 +471,41 @@ export class MateriaDetalleComponent implements OnInit {
           if (!materia) {
 
             this.error =
-              'La materia solicitada no existe.';
+              MESSAGES.CALIFICATION_SUBJECT_NOT_FOUND;
 
-            this.cargando = false;
+            this.cargando =
+              false;
 
-            this.changeDetectorRef.markForCheck();
+            this.changeDetectorRef
+              .markForCheck();
 
             return;
           }
 
-          this.materia = materia;
-          this.cargando = false;
+          this.materia =
+            materia;
+
+          this.cargando =
+            false;
 
           this.verificarCalificacionExistente(
             materiaId
           );
 
-          this.changeDetectorRef.markForCheck();
+          this.changeDetectorRef
+            .markForCheck();
         },
 
         error: () => {
 
           this.error =
-            'No se pudo cargar la información de la materia.';
+            MESSAGES.CALIFICATION_SUBJECT_LOAD_ERROR;
 
-          this.cargando = false;
+          this.cargando =
+            false;
 
-          this.changeDetectorRef.markForCheck();
+          this.changeDetectorRef
+            .markForCheck();
         }
 
       });
@@ -431,8 +515,11 @@ export class MateriaDetalleComponent implements OnInit {
     materiaId: number
   ): void {
 
-    this.verificandoCalificacion = true;
-    this.errorEstadoCalificacion = '';
+    this.verificandoCalificacion =
+      true;
+
+    this.errorEstadoCalificacion =
+      '';
 
     this.calificacionesMateriaService
       .obtenerCalificacionPorEstudiante(
@@ -449,27 +536,34 @@ export class MateriaDetalleComponent implements OnInit {
           this.yaCalifico =
             calificacion !== null;
 
-          this.verificandoCalificacion = false;
+          this.verificandoCalificacion =
+            false;
 
-          this.changeDetectorRef.markForCheck();
+          this.changeDetectorRef
+            .markForCheck();
         },
 
         error: () => {
 
-          this.verificandoCalificacion = false;
+          this.verificandoCalificacion =
+            false;
 
           /*
            * Ante un error de verificación no se permite
            * registrar una nueva calificación para evitar
            * posibles duplicados.
            */
-          this.yaCalifico = true;
-          this.calificacionExistente = null;
+          this.yaCalifico =
+            true;
+
+          this.calificacionExistente =
+            null;
 
           this.errorEstadoCalificacion =
-            'No se pudo verificar si ya calificaste esta materia.';
+            MESSAGES.CALIFICATION_STATUS_ERROR;
 
-          this.changeDetectorRef.markForCheck();
+          this.changeDetectorRef
+            .markForCheck();
         }
 
       });
