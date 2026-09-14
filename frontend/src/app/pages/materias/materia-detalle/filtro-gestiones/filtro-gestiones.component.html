@@ -1,18 +1,15 @@
 <section class="filtro-gestiones">
 
-  <!-- HISTORIAL VISUAL TIPO PROTOTIPO -->
-
   <header class="historial-gestiones">
 
     <div>
 
       <h3>
-        Historial por gestión
+        {{ mensajes.CALIFICATION_FILTER_HISTORY_TITLE }}
       </h3>
 
       <p>
-        Consulta rápidamente las gestiones más recientes
-        o utiliza un rango personalizado.
+        {{ mensajes.CALIFICATION_FILTER_HISTORY_DESCRIPTION }}
       </p>
 
     </div>
@@ -31,14 +28,17 @@
           [disabled]="cargando"
           (click)="seleccionarGestionRapida(gestion)"
         >
+
           {{ gestion }}
 
           @if (
             gestion === gestionesRapidas[0]
           ) {
+
             <span>
-              · reciente
+              · {{ mensajes.CALIFICATION_FILTER_RECENT }}
             </span>
+
           }
 
         </button>
@@ -49,19 +49,16 @@
 
   </header>
 
-  <!-- FILTRO COMPLETO -->
-
   <div class="filtro-gestiones__contenido">
 
     <div class="filtro-gestiones__titulo">
 
       <h4>
-        Consulta personalizada
+        {{ mensajes.CALIFICATION_FILTER_CUSTOM_TITLE }}
       </h4>
 
       <p>
-        Selecciona una gestión específica
-        o un rango de gestiones.
+        {{ mensajes.CALIFICATION_FILTER_CUSTOM_DESCRIPTION }}
       </p>
 
     </div>
@@ -73,7 +70,7 @@
         [class.activo]="modo === 'gestion'"
         (click)="cambiarModo('gestion')"
       >
-        Una gestión
+        {{ mensajes.CALIFICATION_FILTER_SINGLE_MODE }}
       </button>
 
       <button
@@ -81,19 +78,21 @@
         [class.activo]="modo === 'rango'"
         (click)="cambiarModo('rango')"
       >
-        Rango de gestiones
+        {{ mensajes.CALIFICATION_FILTER_RANGE_MODE }}
       </button>
 
     </div>
 
-    @if (modo === 'gestion') {
+    @if (
+      modo === 'gestion'
+    ) {
 
       <div class="filtro-gestiones__campos">
 
         <label>
 
           <span>
-            Gestión
+            {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}
           </span>
 
           <select
@@ -124,7 +123,7 @@
         <label>
 
           <span>
-            Desde
+            {{ mensajes.CALIFICATION_FILTER_FROM_LABEL }}
           </span>
 
           <select
@@ -149,7 +148,7 @@
         <label>
 
           <span>
-            Hasta
+            {{ mensajes.CALIFICATION_FILTER_TO_LABEL }}
           </span>
 
           <select
@@ -193,7 +192,7 @@
           [disabled]="cargando"
           (click)="limpiarFiltro()"
         >
-          Quitar filtro
+          {{ mensajes.CALIFICATION_FILTER_CLEAR_BUTTON }}
         </button>
 
       }
@@ -209,9 +208,13 @@
       >
 
         @if (cargando) {
-          Consultando...
+
+          {{ mensajes.CALIFICATION_FILTER_LOADING }}
+
         } @else {
-          Aplicar filtro
+
+          {{ mensajes.CALIFICATION_FILTER_APPLY_BUTTON }}
+
         }
 
       </button>

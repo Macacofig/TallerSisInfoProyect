@@ -71,6 +71,7 @@ export const MESSAGES = {
 
   // Botones y acciones
   EXPLORE_BUTTON: 'Explorar materia',
+  VIEW_DETAIL_BUTTON: 'Ver detalle y calificaciones',
   BACK_TO_CATALOG_BUTTON: 'Volver al catálogo',
 
   // Detalle de materia (HU-04)
@@ -209,5 +210,138 @@ export const MESSAGES = {
 
   CALIFICATION_STATUS_ERROR:
     'No se pudo verificar si ya calificaste esta materia.',
+
+  // HU-05.2 - Visualización de calificaciones
+  CALIFICATION_SUMMARY_TITLE:
+    'Resumen de calificaciones',
+
+  CALIFICATION_SUMMARY_DESCRIPTION:
+    'Información obtenida de las evaluaciones registradas.',
+
+  CALIFICATION_SUMMARY_GENERAL_CONTEXT:
+    'Promedio general de la materia',
+
+  CALIFICATION_FILTER_APPLIED:
+    'Filtro aplicado',
+
+  CALIFICATION_MANAGEMENTS_LOADING:
+    'Cargando gestiones...',
+
+  CALIFICATION_DATA_LOADING:
+    'Cargando datos de calificación...',
+
+  CALIFICATION_SUMMARY_EMPTY:
+    'No existen calificaciones suficientes para mostrar promedios.',
+
+  CALIFICATION_SUMMARY_LOAD_ERROR:
+    'No se pudieron cargar los datos de calificación de la materia.',
+
+  CALIFICATION_MANAGEMENTS_LOAD_ERROR:
+    'No se pudieron cargar las gestiones disponibles.',
+
+  // HU-05.2 - Gráficos de calificación
+  CALIFICATION_GRAPH_TITLE:
+    'Métricas de calificación',
+
+  CALIFICATION_GRAPH_DESCRIPTION:
+    'Representación visual en una escala de 0 a 10.',
+
+  CALIFICATION_GRAPH_DIFFICULTY_ARIA:
+    'Promedio de dificultad',
+
+  CALIFICATION_GRAPH_WORKLOAD_ARIA:
+    'Promedio de carga',
+
+  CALIFICATION_GRAPH_PREVIOUS_KNOWLEDGE_ARIA:
+    'Promedio de conocimiento previo',
+
+  // HU-05.2 - Filtro de gestiones
+  CALIFICATION_FILTER_HISTORY_TITLE:
+    'Historial por gestión',
+
+  CALIFICATION_FILTER_HISTORY_DESCRIPTION:
+    'Consulta rápidamente las gestiones más recientes o utiliza un rango personalizado.',
+
+  CALIFICATION_FILTER_RECENT:
+    'reciente',
+
+  CALIFICATION_FILTER_CUSTOM_TITLE:
+    'Consulta personalizada',
+
+  CALIFICATION_FILTER_CUSTOM_DESCRIPTION:
+    'Selecciona una gestión específica o un rango de gestiones.',
+
+  CALIFICATION_FILTER_SINGLE_MODE:
+    'Una gestión',
+
+  CALIFICATION_FILTER_RANGE_MODE:
+    'Rango de gestiones',
+
+  CALIFICATION_FILTER_FROM_LABEL:
+    'Desde',
+
+  CALIFICATION_FILTER_TO_LABEL:
+    'Hasta',
+
+  CALIFICATION_FILTER_CLEAR_BUTTON:
+    'Quitar filtro',
+
+  CALIFICATION_FILTER_LOADING:
+    'Consultando...',
+
+  CALIFICATION_FILTER_APPLY_BUTTON:
+    'Aplicar filtro',
+
+  CALIFICATION_FILTER_MANAGEMENT_REQUIRED:
+    'Selecciona una gestión.',
+
+  CALIFICATION_FILTER_MANAGEMENT_EMPTY:
+    'No existen calificaciones para la gestión seleccionada.',
+
+  CALIFICATION_FILTER_MANAGEMENT_LOAD_ERROR:
+    'No se pudieron cargar los datos de la gestión.',
+
+  CALIFICATION_FILTER_MANAGEMENT_CONTEXT:
+    'Promedio general de la gestión',
+
+  CALIFICATION_FILTER_RANGE_REQUIRED:
+    'Selecciona la gestión inicial y final.',
+
+  CALIFICATION_FILTER_RANGE_INVALID:
+    'La gestión inicial no puede ser posterior a la final.',
+
+  CALIFICATION_FILTER_RANGE_EMPTY:
+    'No existen calificaciones para el rango seleccionado.',
+
+  CALIFICATION_FILTER_RANGE_LOAD_ERROR:
+    'No se pudieron cargar los datos del rango.',
+
+  CALIFICATION_FILTER_RANGE_CONTEXT:
+    'Promedio general del rango',
+
+  CALIFICATION_FILTER_RANGE_SEPARATOR:
+    'a',
+
+  // HU-05.2 - Historial de calificaciones
+  CALIFICATION_HISTORY_TITLE:
+    'Evolución histórica por gestión',
+
+  CALIFICATION_HISTORY_DESCRIPTION:
+    'Comparación general de las calificaciones registradas a lo largo de las gestiones.',
+
+  CALIFICATION_HISTORY_LOADING:
+    'Cargando historial...',
+
+  CALIFICATION_HISTORY_LOAD_ERROR:
+    'No se pudo cargar el historial de calificaciones.',
+
+  CALIFICATION_HISTORY_ARIA:
+    'Evolución histórica de las calificaciones por gestión',
+
+  CALIFICATION_HISTORY_NOTE:
+    'El historial corresponde a los promedios generales disponibles por gestión.',
+
+  CALIFICATION_HISTORY_EMPTY:
+    'No existen suficientes gestiones para construir el historial.',
 
 } as const;

@@ -1,5 +1,9 @@
 :host {
   display: block;
+
+  --color-dificultad: #d97706;
+  --color-carga: #165dab;
+  --color-conocimiento: #0f8f7a;
 }
 
 .graficos-calificacion {
@@ -38,8 +42,16 @@
   font-weight: 700;
 }
 
-.grafico-metrica__encabezado strong {
-  color: #165dab;
+.grafico-metrica__valor--dificultad {
+  color: var(--color-dificultad);
+}
+
+.grafico-metrica__valor--carga {
+  color: var(--color-carga);
+}
+
+.grafico-metrica__valor--conocimiento {
+  color: var(--color-conocimiento);
 }
 
 .grafico-metrica__barra {
@@ -51,8 +63,20 @@
 
 .grafico-metrica__progreso {
   height: 100%;
-  background: #165dab;
   border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+.grafico-metrica__progreso--dificultad {
+  background: var(--color-dificultad);
+}
+
+.grafico-metrica__progreso--carga {
+  background: var(--color-carga);
+}
+
+.grafico-metrica__progreso--conocimiento {
+  background: var(--color-conocimiento);
 }
 
 .grafico-escala {
@@ -72,4 +96,5 @@
   .grafico-metrica__encabezado {
     gap: 10px;
   }
+
 }

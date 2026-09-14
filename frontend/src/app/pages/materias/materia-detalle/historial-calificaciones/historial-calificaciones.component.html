@@ -5,12 +5,11 @@
     <div>
 
       <h3>
-        Evolución histórica por gestión
+        {{ mensajes.CALIFICATION_HISTORY_TITLE }}
       </h3>
 
       <p>
-        Comparación general de las calificaciones
-        registradas a lo largo de las gestiones.
+        {{ mensajes.CALIFICATION_HISTORY_DESCRIPTION }}
       </p>
 
     </div>
@@ -20,7 +19,7 @@
   @if (cargando) {
 
     <p class="estado">
-      Cargando historial...
+      {{ mensajes.CALIFICATION_HISTORY_LOADING }}
     </p>
 
   } @else if (error) {
@@ -41,10 +40,8 @@
           altoGrafico
         "
         role="img"
-        aria-label="Evolución histórica de las calificaciones por gestión"
+        [attr.aria-label]="mensajes.CALIFICATION_HISTORY_ARIA"
       >
-
-        <!-- Líneas horizontales -->
 
         @for (
           nivel of niveles;
@@ -77,8 +74,6 @@
 
         }
 
-        <!-- Eje vertical -->
-
         <line
           class="eje"
           [attr.x1]="margenIzquierdo"
@@ -89,8 +84,6 @@
             margenInferior
           "
         />
-
-        <!-- Eje horizontal -->
 
         <line
           class="eje"
@@ -109,8 +102,6 @@
           "
         />
 
-        <!-- Línea dificultad -->
-
         <polyline
           class="linea dificultad"
           [attr.points]="
@@ -118,16 +109,12 @@
           "
         />
 
-        <!-- Línea carga -->
-
         <polyline
           class="linea carga"
           [attr.points]="
             obtenerPuntos('carga')
           "
         />
-
-        <!-- Línea conocimiento -->
 
         <polyline
           class="linea conocimiento"
@@ -142,8 +129,6 @@
           let indice = $index
         ) {
 
-          <!-- Dificultad -->
-
           <circle
             class="punto dificultad"
             [attr.cx]="obtenerX(indice)"
@@ -156,7 +141,8 @@
           >
             <title>
               {{ dato.gestion }}
-              - Dificultad:
+              -
+              {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
               {{
                 obtenerPromedioFormateado(
                   dato.dificultad
@@ -164,8 +150,6 @@
               }}/10
             </title>
           </circle>
-
-          <!-- Carga -->
 
           <circle
             class="punto carga"
@@ -179,7 +163,8 @@
           >
             <title>
               {{ dato.gestion }}
-              - Carga:
+              -
+              {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
               {{
                 obtenerPromedioFormateado(
                   dato.carga
@@ -187,8 +172,6 @@
               }}/10
             </title>
           </circle>
-
-          <!-- Conocimiento -->
 
           <circle
             class="punto conocimiento"
@@ -202,7 +185,8 @@
           >
             <title>
               {{ dato.gestion }}
-              - Conocimiento previo:
+              -
+              {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
               {{
                 obtenerPromedioFormateado(
                   dato.conocimiento
@@ -210,8 +194,6 @@
               }}/10
             </title>
           </circle>
-
-          <!-- Gestión -->
 
           <text
             class="etiqueta-x"
@@ -234,31 +216,29 @@
 
       <span>
         <i class="leyenda__linea dificultad"></i>
-        Dificultad
+        {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}
       </span>
 
       <span>
         <i class="leyenda__linea carga"></i>
-        Carga
+        {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}
       </span>
 
       <span>
         <i class="leyenda__linea conocimiento"></i>
-        Conocimiento previo
+        {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
       </span>
 
     </div>
 
     <p class="historial-calificaciones__nota">
-      El historial corresponde a los promedios generales
-      disponibles por gestión.
+      {{ mensajes.CALIFICATION_HISTORY_NOTE }}
     </p>
 
   } @else {
 
     <p class="estado">
-      No existen suficientes gestiones para construir
-      el historial.
+      {{ mensajes.CALIFICATION_HISTORY_EMPTY }}
     </p>
 
   }

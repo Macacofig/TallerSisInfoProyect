@@ -100,11 +100,11 @@
         <div>
 
           <h2>
-            Resumen de calificaciones
+            {{ mensajes.CALIFICATION_SUMMARY_TITLE }}
           </h2>
 
           <p>
-            Información obtenida de las evaluaciones registradas.
+            {{ mensajes.CALIFICATION_SUMMARY_DESCRIPTION }}
           </p>
 
         </div>
@@ -112,13 +112,14 @@
         @if (filtroGestionesActivo) {
 
           <span class="gestion-destacada">
-            Filtro aplicado
+            {{ mensajes.CALIFICATION_FILTER_APPLIED }}
           </span>
 
         } @else if (gestionActual) {
 
           <span class="gestion-destacada">
-            Gestión {{ gestionActual }}
+            {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}
+            {{ gestionActual }}
           </span>
 
         }
@@ -128,7 +129,7 @@
       @if (cargandoGestiones) {
 
         <p class="estado-carga">
-          Cargando gestiones...
+          {{ mensajes.CALIFICATION_MANAGEMENTS_LOADING }}
         </p>
 
       } @else if (errorGestiones) {
@@ -150,7 +151,7 @@
       @if (cargandoPromedios) {
 
         <p class="estado-carga">
-          Cargando datos de calificación...
+          {{ mensajes.CALIFICATION_DATA_LOADING }}
         </p>
 
       } @else if (errorPromedios) {
@@ -166,7 +167,7 @@
           <article class="metrica-resumen">
 
             <span class="metrica-resumen__nombre">
-              Dificultad
+              {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}
             </span>
 
             <strong>
@@ -186,7 +187,7 @@
           <article class="metrica-resumen">
 
             <span class="metrica-resumen__nombre">
-              Carga
+              {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}
             </span>
 
             <strong>
@@ -206,7 +207,7 @@
           <article class="metrica-resumen">
 
             <span class="metrica-resumen__nombre">
-              Conocimiento previo
+              {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
             </span>
 
             <strong>
@@ -233,8 +234,7 @@
       } @else {
 
         <p class="estado-carga">
-          No existen calificaciones suficientes
-          para mostrar promedios.
+          {{ mensajes.CALIFICATION_SUMMARY_EMPTY }}
         </p>
 
       }
