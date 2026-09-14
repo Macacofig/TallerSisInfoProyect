@@ -3,8 +3,11 @@
  */
 export const APP_CONFIG = {
 
-  // Desactivar antes de la entrega para mostrar solo resultados de la API.
-  DEMO_MODE: true,
+  // Mostrar los resultados reales de la API por defecto.
+  DEMO_MODE: false,
+
+  // La población del proyecto corresponde únicamente a Ingeniería de Sistemas.
+  CARRERAS: ['Ingeniería de Sistemas'],
 
   DEMO: {
     STUDENT_ID: 2,
@@ -21,7 +24,8 @@ export const APP_CONFIG = {
   },
 
   TIMEOUTS: {
-    API_REQUEST: 15000,
+    API_REQUEST: 15000, // 15 segundos
+    SEARCH_DEBOUNCE: 300,
   },
 
   COMPONENT_STATES: {
