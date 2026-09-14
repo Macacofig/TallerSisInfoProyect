@@ -1,0 +1,223 @@
+<section class="filtro-gestiones">
+
+  <!-- HISTORIAL VISUAL TIPO PROTOTIPO -->
+
+  <header class="historial-gestiones">
+
+    <div>
+
+      <h3>
+        Historial por gestión
+      </h3>
+
+      <p>
+        Consulta rápidamente las gestiones más recientes
+        o utiliza un rango personalizado.
+      </p>
+
+    </div>
+
+    <div class="historial-gestiones__rapidas">
+
+      @for (
+        gestion of gestionesRapidas;
+        track gestion
+      ) {
+
+        <button
+          type="button"
+          class="gestion-rapida"
+          [class.activa]="esGestionActiva(gestion)"
+          [disabled]="cargando"
+          (click)="seleccionarGestionRapida(gestion)"
+        >
+          {{ gestion }}
+
+          @if (
+            gestion === gestionesRapidas[0]
+          ) {
+            <span>
+              · reciente
+            </span>
+          }
+
+        </button>
+
+      }
+
+    </div>
+
+  </header>
+
+  <!-- FILTRO COMPLETO -->
+
+  <div class="filtro-gestiones__contenido">
+
+    <div class="filtro-gestiones__titulo">
+
+      <h4>
+        Consulta personalizada
+      </h4>
+
+      <p>
+        Selecciona una gestión específica
+        o un rango de gestiones.
+      </p>
+
+    </div>
+
+    <div class="filtro-gestiones__modos">
+
+      <button
+        type="button"
+        [class.activo]="modo === 'gestion'"
+        (click)="cambiarModo('gestion')"
+      >
+        Una gestión
+      </button>
+
+      <button
+        type="button"
+        [class.activo]="modo === 'rango'"
+        (click)="cambiarModo('rango')"
+      >
+        Rango de gestiones
+      </button>
+
+    </div>
+
+    @if (modo === 'gestion') {
+
+      <div class="filtro-gestiones__campos">
+
+        <label>
+
+          <span>
+            Gestión
+          </span>
+
+          <select
+            [(ngModel)]="gestionSeleccionada"
+          >
+
+            @for (
+              gestion of gestiones;
+              track gestion
+            ) {
+
+              <option [value]="gestion">
+                {{ gestion }}
+              </option>
+
+            }
+
+          </select>
+
+        </label>
+
+      </div>
+
+    } @else {
+
+      <div class="filtro-gestiones__campos rango">
+
+        <label>
+
+          <span>
+            Desde
+          </span>
+
+          <select
+            [(ngModel)]="gestionDesde"
+          >
+
+            @for (
+              gestion of gestiones;
+              track gestion
+            ) {
+
+              <option [value]="gestion">
+                {{ gestion }}
+              </option>
+
+            }
+
+          </select>
+
+        </label>
+
+        <label>
+
+          <span>
+            Hasta
+          </span>
+
+          <select
+            [(ngModel)]="gestionHasta"
+          >
+
+            @for (
+              gestion of gestiones;
+              track gestion
+            ) {
+
+              <option [value]="gestion">
+                {{ gestion }}
+              </option>
+
+            }
+
+          </select>
+
+        </label>
+
+      </div>
+
+    }
+
+    @if (error) {
+
+      <p class="filtro-gestiones__error">
+        {{ error }}
+      </p>
+
+    }
+
+    <div class="filtro-gestiones__acciones">
+
+      @if (filtroActivo) {
+
+        <button
+          type="button"
+          class="secundario"
+          [disabled]="cargando"
+          (click)="limpiarFiltro()"
+        >
+          Quitar filtro
+        </button>
+
+      }
+
+      <button
+        type="button"
+        class="principal"
+        [disabled]="
+          cargando ||
+          gestiones.length === 0
+        "
+        (click)="aplicarFiltro()"
+      >
+
+        @if (cargando) {
+          Consultando...
+        } @else {
+          Aplicar filtro
+        }
+
+      </button>
+
+    </div>
+
+  </div>
+
+</section>

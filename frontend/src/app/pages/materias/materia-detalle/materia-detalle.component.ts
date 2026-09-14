@@ -20,6 +20,7 @@ import {
 } from '../../../models/materia';
 
 import {
+  CalificacionMateriaPromedioResponse,
   CalificacionMateriaResponse,
   PredominioMateria,
   RegistrarCalificacionMateriaRequest
@@ -38,11 +39,27 @@ import {
   MESSAGES
 } from '../../../strings';
 
+import {
+  CalificacionGraficosComponent
+} from './calificacion-graficos/calificacion-graficos.component';
+
+import {
+  FiltroGestionesComponent,
+  FiltroGestionesResultado
+} from './filtro-gestiones/filtro-gestiones.component';
+
+import {
+  HistorialCalificacionesComponent
+} from './historial-calificaciones/historial-calificaciones.component';
+
 @Component({
   selector: 'app-materia-detalle',
   standalone: true,
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CalificacionGraficosComponent,
+    FiltroGestionesComponent,
+    HistorialCalificacionesComponent
   ],
   templateUrl: './materia-detalle.component.html',
   styleUrl: './materia-detalle.component.scss'
@@ -56,7 +73,26 @@ export class MateriaDetalleComponent implements OnInit {
   calificacionExistente:
     CalificacionMateriaResponse | null = null;
 
+  promediosMateria:
+    CalificacionMateriaPromedioResponse | null = null;
+
+  promediosMostrados:
+    CalificacionMateriaPromedioResponse | null = null;
+
+  gestiones: string[] = [];
+
+  gestionActual: string | null = null;
+  gestionAnterior: string | null = null;
+
+  contextoPromedios =
+    'Promedio general de la materia';
+
+  filtroGestionesActivo =
+    false;
+
   cargando = true;
+  cargandoPromedios = false;
+  cargandoGestiones = false;
   enviandoCalificacion = false;
   verificandoCalificacion = false;
 
@@ -65,6 +101,8 @@ export class MateriaDetalleComponent implements OnInit {
   error = '';
   errorCalificacion = '';
   errorEstadoCalificacion = '';
+  errorPromedios = '';
+  errorGestiones = '';
 
   mostrarFormularioCalificacion = false;
   mostrarConfirmacion = false;
@@ -149,7 +187,8 @@ export class MateriaDetalleComponent implements OnInit {
       this.error =
         MESSAGES.CALIFICATION_INVALID_SUBJECT_ID;
 
-      this.cargando = false;
+      this.cargando =
+        false;
 
       return;
     }
@@ -157,6 +196,38 @@ export class MateriaDetalleComponent implements OnInit {
     this.cargarMateria(
       materiaId
     );
+  }
+
+  aplicarFiltroGestiones(
+    resultado: FiltroGestionesResultado
+  ): void {
+
+    this.promediosMostrados =
+      resultado.promedios;
+
+    this.contextoPromedios =
+      resultado.descripcion;
+
+    this.filtroGestionesActivo =
+      true;
+
+    this.changeDetectorRef
+      .markForCheck();
+  }
+
+  limpiarFiltroGestiones(): void {
+
+    this.promediosMostrados =
+      this.promediosMateria;
+
+    this.contextoPromedios =
+      'Promedio general de la materia';
+
+    this.filtroGestionesActivo =
+      false;
+
+    this.changeDetectorRef
+      .markForCheck();
   }
 
   abrirFormularioCalificacion(): void {
@@ -363,6 +434,18 @@ export class MateriaDetalleComponent implements OnInit {
           this.calificacionExistente =
             respuesta;
 
+          this.filtroGestionesActivo =
+            false;
+
+          this.contextoPromedios =
+            'Promedio general de la materia';
+
+          this.cargarPromediosMateria(
+            materiaId
+          );
+
+          this.cargarGestiones();
+
           this.changeDetectorRef
             .markForCheck();
         },
@@ -418,6 +501,13 @@ export class MateriaDetalleComponent implements OnInit {
     return predominio === 'Practico'
       ? MESSAGES.CALIFICATION_PRACTICAL_LABEL
       : MESSAGES.CALIFICATION_THEORETICAL_LABEL;
+  }
+
+  obtenerPromedioFormateado(
+    promedio: number
+  ): string {
+
+    return promedio.toFixed(1);
   }
 
   private convertirPrerequisitos(
@@ -491,6 +581,12 @@ export class MateriaDetalleComponent implements OnInit {
           this.verificarCalificacionExistente(
             materiaId
           );
+
+          this.cargarPromediosMateria(
+            materiaId
+          );
+
+          this.cargarGestiones();
 
           this.changeDetectorRef
             .markForCheck();
@@ -567,5 +663,198 @@ export class MateriaDetalleComponent implements OnInit {
         }
 
       });
+  }
+
+  private cargarPromediosMateria(
+    materiaId: number
+  ): void {
+
+    this.cargandoPromedios =
+      true;
+
+    this.errorPromedios =
+      '';
+
+    this.calificacionesMateriaService
+      .obtenerPromediosPorMateria(
+        materiaId
+      )
+      .subscribe({
+
+        next: (promedios) => {
+
+          this.promediosMateria =
+            promedios;
+
+          if (
+            !this.filtroGestionesActivo
+          ) {
+
+            this.promediosMostrados =
+              promedios;
+          }
+
+          this.cargandoPromedios =
+            false;
+
+          this.changeDetectorRef
+            .markForCheck();
+        },
+
+        error: (error) => {
+
+          this.cargandoPromedios =
+            false;
+
+          if (
+            error.status === 404
+          ) {
+
+            this.promediosMateria =
+              null;
+
+            if (
+              !this.filtroGestionesActivo
+            ) {
+
+              this.promediosMostrados =
+                null;
+            }
+
+          } else {
+
+            this.errorPromedios =
+              'No se pudieron cargar los datos de calificación de la materia.';
+          }
+
+          this.changeDetectorRef
+            .markForCheck();
+        }
+
+      });
+  }
+
+  private cargarGestiones(): void {
+
+    this.cargandoGestiones =
+      true;
+
+    this.errorGestiones =
+      '';
+
+    this.calificacionesMateriaService
+      .obtenerGestiones()
+      .subscribe({
+
+        next: (gestiones) => {
+
+          this.gestiones =
+            [...gestiones].sort(
+              (
+                a,
+                b
+              ) =>
+                this.compararGestiones(
+                  a,
+                  b
+                )
+            );
+
+          this.actualizarGestionesReferencia();
+
+          this.cargandoGestiones =
+            false;
+
+          this.changeDetectorRef
+            .markForCheck();
+        },
+
+        error: () => {
+
+          this.cargandoGestiones =
+            false;
+
+          this.gestiones =
+            [];
+
+          this.gestionActual =
+            null;
+
+          this.gestionAnterior =
+            null;
+
+          this.errorGestiones =
+            'No se pudieron cargar las gestiones disponibles.';
+
+          this.changeDetectorRef
+            .markForCheck();
+        }
+
+      });
+  }
+
+  private actualizarGestionesReferencia(): void {
+
+    if (
+      this.gestiones.length === 0
+    ) {
+
+      this.gestionActual =
+        null;
+
+      this.gestionAnterior =
+        null;
+
+      return;
+    }
+
+    this.gestionActual =
+      this.gestiones[
+        this.gestiones.length - 1
+      ];
+
+    this.gestionAnterior =
+      this.gestiones.length > 1
+        ? this.gestiones[
+            this.gestiones.length - 2
+          ]
+        : null;
+  }
+
+  private compararGestiones(
+    primeraGestion: string,
+    segundaGestion: string
+  ): number {
+
+    const [
+      anioPrimera,
+      periodoPrimera
+    ] =
+      primeraGestion
+        .split('-')
+        .map(Number);
+
+    const [
+      anioSegunda,
+      periodoSegunda
+    ] =
+      segundaGestion
+        .split('-')
+        .map(Number);
+
+    if (
+      anioPrimera !== anioSegunda
+    ) {
+
+      return (
+        anioPrimera -
+        anioSegunda
+      );
+    }
+
+    return (
+      periodoPrimera -
+      periodoSegunda
+    );
   }
 }
