@@ -1,0 +1,726 @@
+<section class="materia-detalle">
+
+  @if (cargando) {
+
+    <p>
+      {{ mensajes.MATERIA_DETAIL_LOADING }}
+    </p>
+
+  }
+
+  @if (error) {
+
+    <p class="mensaje-error">
+      {{ error }}
+    </p>
+
+  }
+
+  @if (materia) {
+
+    <header class="materia-detalle__encabezado">
+
+      <div>
+
+        <p class="materia-detalle__carrera">
+          {{ materia.carrera }}
+        </p>
+
+        <h1>
+          {{ materia.nombre }}
+        </h1>
+
+      </div>
+
+      <div class="materia-detalle__datos">
+
+        <span>
+          {{ mensajes.MATERIA_DETAIL_CODE_LABEL }}:
+          {{ materia.codigo }}
+        </span>
+
+        <span>
+          {{ mensajes.MATERIA_DETAIL_SEMESTER_LABEL }}:
+          {{ materia.semestre }}
+        </span>
+
+      </div>
+
+    </header>
+
+    <div class="materia-detalle__acciones">
+
+      @if (
+        !verificandoCalificacion &&
+        !errorEstadoCalificacion
+      ) {
+
+        <button
+          type="button"
+          class="boton-calificar"
+          (click)="abrirFormularioCalificacion()"
+        >
+
+          @if (yaCalifico) {
+
+            {{ mensajes.CALIFICATION_BUTTON_VIEW }}
+
+          } @else {
+
+            {{ mensajes.CALIFICATION_BUTTON_CREATE }}
+
+          }
+
+        </button>
+
+      }
+
+    </div>
+
+    @if (verificandoCalificacion) {
+
+      <p class="estado-carga">
+        {{ mensajes.CALIFICATION_VERIFYING }}
+      </p>
+
+    }
+
+    @if (errorEstadoCalificacion) {
+
+      <p class="mensaje-error">
+        {{ errorEstadoCalificacion }}
+      </p>
+
+    }
+
+    <section class="resumen-calificaciones">
+
+      <div class="resumen-calificaciones__encabezado">
+
+        <div>
+
+          <h2>
+            Resumen de calificaciones
+          </h2>
+
+          <p>
+            Información obtenida de las evaluaciones registradas.
+          </p>
+
+        </div>
+
+        @if (filtroGestionesActivo) {
+
+          <span class="gestion-destacada">
+            Filtro aplicado
+          </span>
+
+        } @else if (gestionActual) {
+
+          <span class="gestion-destacada">
+            Gestión {{ gestionActual }}
+          </span>
+
+        }
+
+      </div>
+
+      @if (cargandoGestiones) {
+
+        <p class="estado-carga">
+          Cargando gestiones...
+        </p>
+
+      } @else if (errorGestiones) {
+
+        <p class="mensaje-error">
+          {{ errorGestiones }}
+        </p>
+
+      } @else if (gestiones.length > 0) {
+
+        <app-filtro-gestiones
+          [gestiones]="gestiones"
+          (filtroAplicado)="aplicarFiltroGestiones($event)"
+          (filtroLimpiado)="limpiarFiltroGestiones()"
+        />
+
+      }
+
+      @if (cargandoPromedios) {
+
+        <p class="estado-carga">
+          Cargando datos de calificación...
+        </p>
+
+      } @else if (errorPromedios) {
+
+        <p class="mensaje-error">
+          {{ errorPromedios }}
+        </p>
+
+      } @else if (promediosMostrados) {
+
+        <div class="metricas-resumen">
+
+          <article class="metrica-resumen">
+
+            <span class="metrica-resumen__nombre">
+              Dificultad
+            </span>
+
+            <strong>
+              {{
+                obtenerPromedioFormateado(
+                  promediosMostrados.dificultadPromedio
+                )
+              }}
+            </strong>
+
+            <span>
+              /10
+            </span>
+
+          </article>
+
+          <article class="metrica-resumen">
+
+            <span class="metrica-resumen__nombre">
+              Carga
+            </span>
+
+            <strong>
+              {{
+                obtenerPromedioFormateado(
+                  promediosMostrados.cargaPromedio
+                )
+              }}
+            </strong>
+
+            <span>
+              /10
+            </span>
+
+          </article>
+
+          <article class="metrica-resumen">
+
+            <span class="metrica-resumen__nombre">
+              Conocimiento previo
+            </span>
+
+            <strong>
+              {{
+                obtenerPromedioFormateado(
+                  promediosMostrados.conocimientoPrevioPromedio
+                )
+              }}
+            </strong>
+
+            <span>
+              /10
+            </span>
+
+          </article>
+
+        </div>
+
+        <app-calificacion-graficos
+          [promedios]="promediosMostrados"
+          [contexto]="contextoPromedios"
+        />
+
+      } @else {
+
+        <p class="estado-carga">
+          No existen calificaciones suficientes
+          para mostrar promedios.
+        </p>
+
+      }
+
+      @if (
+        !cargandoGestiones &&
+        !errorGestiones &&
+        gestiones.length > 1
+      ) {
+
+        <app-historial-calificaciones
+          [gestiones]="gestiones"
+        />
+
+      }
+
+    </section>
+
+    @if (mostrarFormularioCalificacion) {
+
+      <div
+        class="modal-calificacion"
+        (click)="cerrarFormularioCalificacion()"
+      >
+
+        <section
+          class="modal-calificacion__contenido"
+          (click)="$event.stopPropagation()"
+        >
+
+          @if (
+            yaCalifico &&
+            calificacionExistente
+          ) {
+
+            <div class="calificacion-materia__encabezado">
+
+              <div>
+
+                <h2>
+                  {{ mensajes.CALIFICATION_REGISTERED_TITLE }}
+                </h2>
+
+                <p>
+                  {{ mensajes.CALIFICATION_REGISTERED_DESCRIPTION }}
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                class="boton-cerrar"
+                (click)="cerrarFormularioCalificacion()"
+              >
+                {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
+              </button>
+
+            </div>
+
+            <div class="confirmacion-calificacion__resumen">
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
+                </strong>
+
+                {{ materia.nombre }}
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.dificultad }}/10
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.carga }}/10
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.conocimientoPrevio }}/10
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.prerequisitosText }}
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}:
+                </strong>
+
+                {{
+                  obtenerPredominioParaMostrar(
+                    calificacionExistente.predominio
+                  )
+                }}
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.gestion }}
+              </p>
+
+            </div>
+
+            <p class="modal-calificacion__nota">
+              {{ mensajes.CALIFICATION_SINGLE_NOTICE }}
+            </p>
+
+          } @else {
+
+            <div class="calificacion-materia__encabezado">
+
+              <div>
+
+                <h2>
+                  {{ mensajes.CALIFICATION_FORM_TITLE }}
+                </h2>
+
+                <p>
+                  {{ mensajes.CALIFICATION_FORM_DESCRIPTION }}
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                class="boton-cerrar"
+                (click)="cerrarFormularioCalificacion()"
+              >
+                {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
+              </button>
+
+            </div>
+
+            <form [formGroup]="formularioCalificacion">
+
+              <div class="criterio-calificacion">
+
+                <div class="criterio-calificacion__encabezado">
+
+                  <label for="dificultad">
+                    {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}
+                  </label>
+
+                  <span>
+                    {{ formularioCalificacion.value.dificultad }}/10
+                  </span>
+
+                </div>
+
+                <input
+                  id="dificultad"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  formControlName="dificultad"
+                />
+
+              </div>
+
+              <div class="criterio-calificacion">
+
+                <div class="criterio-calificacion__encabezado">
+
+                  <label for="carga">
+                    {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}
+                  </label>
+
+                  <span>
+                    {{ formularioCalificacion.value.carga }}/10
+                  </span>
+
+                </div>
+
+                <input
+                  id="carga"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  formControlName="carga"
+                />
+
+              </div>
+
+              <div class="criterio-calificacion">
+
+                <div class="criterio-calificacion__encabezado">
+
+                  <label for="conocimientoPrevio">
+                    {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
+                  </label>
+
+                  <span>
+                    {{
+                      formularioCalificacion.value.conocimientoPrevio
+                    }}/10
+                  </span>
+
+                </div>
+
+                <input
+                  id="conocimientoPrevio"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  formControlName="conocimientoPrevio"
+                />
+
+              </div>
+
+              <div class="campo-formulario">
+
+                <label for="prerequisitos">
+                  {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}
+                </label>
+
+                <input
+                  id="prerequisitos"
+                  type="text"
+                  formControlName="prerequisitos"
+                  [placeholder]="mensajes.CALIFICATION_PREREQUISITES_PLACEHOLDER"
+                  autocomplete="off"
+                />
+
+                @if (
+                  formularioCalificacion.get('prerequisitos')?.invalid &&
+                  formularioCalificacion.get('prerequisitos')?.touched
+                ) {
+
+                  <small>
+                    {{ mensajes.CALIFICATION_PREREQUISITES_REQUIRED }}
+                  </small>
+
+                }
+
+              </div>
+
+              <div class="campo-predominio">
+
+                <span class="campo-predominio__titulo">
+                  {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}
+                </span>
+
+                <div class="campo-predominio__opciones">
+
+                  <label class="opcion-predominio">
+
+                    <input
+                      type="radio"
+                      value="Practico"
+                      formControlName="predominio"
+                    />
+
+                    <span>
+                      {{ mensajes.CALIFICATION_PRACTICAL_LABEL }}
+                    </span>
+
+                  </label>
+
+                  <label class="opcion-predominio">
+
+                    <input
+                      type="radio"
+                      value="Teorico"
+                      formControlName="predominio"
+                    />
+
+                    <span>
+                      {{ mensajes.CALIFICATION_THEORETICAL_LABEL }}
+                    </span>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+              <div class="campo-formulario">
+
+                <label for="gestion">
+                  {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}
+                </label>
+
+                <input
+                  id="gestion"
+                  type="text"
+                  formControlName="gestion"
+                  [placeholder]="mensajes.CALIFICATION_MANAGEMENT_PLACEHOLDER"
+                  autocomplete="off"
+                  inputmode="numeric"
+                  maxlength="10"
+                  (input)="normalizarGestion($event)"
+                />
+
+                @if (
+                  formularioCalificacion.get('gestion')?.invalid &&
+                  formularioCalificacion.get('gestion')?.touched
+                ) {
+
+                  <small>
+                    {{ mensajes.CALIFICATION_MANAGEMENT_INVALID }}
+                  </small>
+
+                }
+
+              </div>
+
+              <div class="calificacion-materia__acciones">
+
+                <button
+                  type="button"
+                  class="boton-secundario"
+                  (click)="cerrarFormularioCalificacion()"
+                >
+                  {{ mensajes.CALIFICATION_CANCEL_BUTTON }}
+                </button>
+
+                <button
+                  type="button"
+                  class="boton-principal"
+                  [disabled]="formularioCalificacion.invalid"
+                  (click)="abrirConfirmacion()"
+                >
+                  {{ mensajes.CALIFICATION_CONTINUE_BUTTON }}
+                </button>
+
+              </div>
+
+            </form>
+
+            @if (mostrarConfirmacion) {
+
+              <div class="confirmacion-calificacion">
+
+                <h3>
+                  {{ mensajes.CALIFICATION_CONFIRM_TITLE }}
+                </h3>
+
+                <p>
+                  {{ mensajes.CALIFICATION_CONFIRM_DESCRIPTION }}
+                </p>
+
+                <div class="confirmacion-calificacion__resumen">
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
+                    </strong>
+
+                    {{ materia.nombre }}
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
+                    </strong>
+
+                    {{ formularioCalificacion.value.dificultad }}/10
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
+                    </strong>
+
+                    {{ formularioCalificacion.value.carga }}/10
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
+                    </strong>
+
+                    {{
+                      formularioCalificacion.value.conocimientoPrevio
+                    }}/10
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}:
+                    </strong>
+
+                    {{ obtenerPrerequisitosParaMostrar() }}
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}:
+                    </strong>
+
+                    {{
+                      obtenerPredominioParaMostrar(
+                        formularioCalificacion.value.predominio
+                      )
+                    }}
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
+                    </strong>
+
+                    {{ formularioCalificacion.value.gestion }}
+                  </p>
+
+                </div>
+
+                <p>
+                  {{ mensajes.CALIFICATION_CONFIRM_NOTICE }}
+                </p>
+
+                <div class="confirmacion-calificacion__acciones">
+
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    [disabled]="enviandoCalificacion"
+                    (click)="cancelarConfirmacion()"
+                  >
+                    {{ mensajes.CALIFICATION_BACK_BUTTON }}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="boton-principal"
+                    [disabled]="enviandoCalificacion"
+                    (click)="confirmarCalificacion()"
+                  >
+
+                    @if (enviandoCalificacion) {
+
+                      {{ mensajes.CALIFICATION_REGISTERING }}
+
+                    } @else {
+
+                      {{ mensajes.CALIFICATION_CONFIRM_BUTTON }}
+
+                    }
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            }
+
+            @if (errorCalificacion) {
+
+              <p class="mensaje-error">
+                {{ errorCalificacion }}
+              </p>
+
+            }
+
+          }
+
+        </section>
+
+      </div>
+
+    }
+
+  }
+
+</section>

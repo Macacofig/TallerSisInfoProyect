@@ -1,0 +1,75 @@
+:host {
+  display: block;
+}
+
+.graficos-calificacion {
+  margin-top: 28px;
+  padding: 24px;
+  background: #f8fafc;
+  border: 1px solid #e3e8ef;
+  border-radius: 12px;
+}
+
+.graficos-calificacion__encabezado {
+  margin-bottom: 24px;
+}
+
+.graficos-calificacion__encabezado h3 {
+  margin: 0 0 7px;
+  color: #10213f;
+}
+
+.graficos-calificacion__encabezado p {
+  margin: 0;
+  color: #667085;
+}
+
+.graficos-calificacion__contenido {
+  display: grid;
+  gap: 22px;
+}
+
+.grafico-metrica__encabezado {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 9px;
+  color: #344054;
+  font-weight: 700;
+}
+
+.grafico-metrica__encabezado strong {
+  color: #165dab;
+}
+
+.grafico-metrica__barra {
+  height: 14px;
+  overflow: hidden;
+  background: #e5eaf1;
+  border-radius: 999px;
+}
+
+.grafico-metrica__progreso {
+  height: 100%;
+  background: #165dab;
+  border-radius: inherit;
+}
+
+.grafico-escala {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: #8490a2;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+
+  .graficos-calificacion {
+    padding: 18px;
+  }
+
+  .grafico-metrica__encabezado {
+    gap: 10px;
+  }
+}
