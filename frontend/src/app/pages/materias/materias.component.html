@@ -8,7 +8,7 @@
     @if (estado() === APP_CONFIG.COMPONENT_STATES.READY) {
       <p class="materias-page__total" role="status">
         {{ materias().length }}
-        @if (busqueda().trim()) {
+        @if (busqueda().trim() || carreraSeleccionada()) {
           {{ materias().length === 1 ? MESSAGES.SEARCH_RESULT_SINGULAR : MESSAGES.SEARCH_RESULT_PLURAL }}
         } @else {
           {{ materias().length === 1 ? MESSAGES.MATERIA_SINGULAR : MESSAGES.MATERIA_PLURAL }}
@@ -18,20 +18,34 @@
   </header>
 
   <div class="materias-search" role="search" [attr.aria-label]="MESSAGES.MATERIAS_SECTION_LABEL">
-    <label for="buscar-materia">{{ MESSAGES.SEARCH_LABEL }}</label>
-    <div class="materias-search__field">
-      <input #buscarMateria id="buscar-materia" type="search"
-        [placeholder]="MESSAGES.SEARCH_PLACEHOLDER"
-        [value]="busqueda()"
-        (input)="actualizarBusqueda(buscarMateria.value)"
-        (keydown.escape)="actualizarBusqueda('')"
+    <div class="materias-search__name">
+      <label for="buscar-materia">{{ MESSAGES.SEARCH_LABEL }}</label>
+      <div class="materias-search__field">
+        <input #buscarMateria id="buscar-materia" type="search"
+          [placeholder]="MESSAGES.SEARCH_PLACEHOLDER"
+          [value]="busqueda()"
+          (input)="actualizarBusqueda(buscarMateria.value)"
+          (keydown.escape)="actualizarBusqueda('')"
+          aria-controls="resultados-materias">
+        @if (busqueda()) {
+          <button type="button" class="materias-search__clear"
+            (click)="actualizarBusqueda(''); buscarMateria.focus()">
+            {{ MESSAGES.SEARCH_CLEAR }}
+          </button>
+        }
+      </div>
+    </div>
+    <div class="materias-search__career">
+      <label for="filtrar-carrera">{{ MESSAGES.CAREER_LABEL }}</label>
+      <select #filtrarCarrera id="filtrar-carrera"
+        [value]="carreraSeleccionada()"
+        (change)="actualizarCarrera(filtrarCarrera.value)"
         aria-controls="resultados-materias">
-      @if (busqueda()) {
-        <button type="button" class="materias-search__clear"
-          (click)="actualizarBusqueda(''); buscarMateria.focus()">
-          {{ MESSAGES.SEARCH_CLEAR }}
-        </button>
-      }
+        <option value="">{{ MESSAGES.CAREER_ALL }}</option>
+        @for (carrera of carreras(); track carrera) {
+          <option [value]="carrera">{{ carrera }}</option>
+        }
+      </select>
     </div>
   </div>
 
@@ -54,7 +68,12 @@
     } @else if (materias().length === 0 && busqueda().trim()) {
       <div class="materias-page__message" role="status">
         <h2>{{ MESSAGES.SEARCH_EMPTY_TITLE }}</h2>
-        <p>{{ MESSAGES.SEARCH_EMPTY_DESCRIPTION }}</p>
+        <p>{{ carreraSeleccionada() ? MESSAGES.CAREER_SEARCH_EMPTY_DESCRIPTION : MESSAGES.SEARCH_EMPTY_DESCRIPTION }}</p>
+      </div>
+    } @else if (materias().length === 0 && carreraSeleccionada()) {
+      <div class="materias-page__message" role="status">
+        <h2>{{ MESSAGES.CAREER_EMPTY_TITLE }}</h2>
+        <p>{{ carreraSeleccionada() }}. {{ MESSAGES.CAREER_EMPTY_DESCRIPTION }}</p>
       </div>
     } @else if (materias().length === 0) {
       <div class="materias-page__message" role="status">

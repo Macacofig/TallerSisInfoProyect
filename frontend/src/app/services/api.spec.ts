@@ -43,4 +43,23 @@ describe('Api', () => {
     expect(peticion.request.params.keys()).toEqual([]);
     peticion.flush([]);
   });
+
+  it('combina nombre y carrera conservando caracteres especiales y recortando espacios', () => {
+    service.obtenerMaterias('  Diseño  ', '  Administración & Gestión + I  ').subscribe();
+    const peticion = TestBed.inject(HttpTestingController).expectOne(req =>
+      req.url === 'http://localhost:8081/api/materias' &&
+      req.params.get('nombre') === 'Diseño' &&
+      req.params.get('carrera') === 'Administración & Gestión + I');
+    expect(peticion.request.params.keys()).toEqual(['nombre', 'carrera']);
+    expect(peticion.request.urlWithParams).toContain('%26');
+    expect(peticion.request.urlWithParams).toContain('%2B');
+    peticion.flush([]);
+  });
+
+  it('omite ambos parámetros cuando se selecciona Todas y el nombre está vacío', () => {
+    service.obtenerMaterias('   ', '   ').subscribe();
+    const peticion = TestBed.inject(HttpTestingController).expectOne('http://localhost:8081/api/materias');
+    expect(peticion.request.params.keys()).toEqual([]);
+    peticion.flush([]);
+  });
 });

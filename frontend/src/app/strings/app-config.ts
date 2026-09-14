@@ -5,6 +5,9 @@ export const APP_CONFIG = {
   // Mostrar los resultados reales de la API por defecto.
   DEMO_MODE: false,
 
+  // Carreras disponibles incluso cuando aún no tienen materias registradas.
+  CARRERAS: ['Ingeniería de Sistemas', 'Ingeniería Industrial', 'Administración de Empresas'],
+
   // Configuración del API
   API: {
     BASE_URL: 'http://localhost:8081/api',

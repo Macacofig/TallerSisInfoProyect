@@ -21,6 +21,13 @@ export const MESSAGES = {
   SEARCH_EMPTY_TITLE: 'No se encontraron coincidencias',
   SEARCH_EMPTY_DESCRIPTION: 'Prueba con otro nombre, o limpia la búsqueda para ver todas las materias.',
 
+  // Filtro por carrera (HU-03)
+  CAREER_LABEL: 'Carrera',
+  CAREER_ALL: 'Todas',
+  CAREER_EMPTY_TITLE: 'No hay materias registradas para esta carrera',
+  CAREER_EMPTY_DESCRIPTION: 'Selecciona otra carrera o elige Todas para ver las materias disponibles.',
+  CAREER_SEARCH_EMPTY_DESCRIPTION: 'No hay materias que coincidan con el nombre y la carrera seleccionados. Prueba con otro nombre o cambia la carrera.',
+
   // Cargando
   LOADING_MESSAGE: 'Cargando materias…',
 
