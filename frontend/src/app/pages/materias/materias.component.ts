@@ -26,7 +26,7 @@ export class MateriasComponent implements OnInit {
   readonly materias = signal<Materia[]>([]);
   readonly busqueda = signal('');
   readonly carreraSeleccionada = signal('');
-  readonly carreras = signal<string[]>([...APP_CONFIG.CARRERAS]);
+  readonly carreras = APP_CONFIG.CARRERAS;
   readonly mostrandoDemo = signal(false);
   readonly estado = signal<'cargando' | 'listo' | 'error'>(APP_CONFIG.COMPONENT_STATES.LOADING);
   readonly materiaSeleccionada = signal<Materia | null>(null);
@@ -68,11 +68,6 @@ export class MateriasComponent implements OnInit {
           const usarDemo = APP_CONFIG.DEMO_MODE && sinFiltros && materias.length === 0;
           this.mostrandoDemo.set(usarDemo);
           this.materias.set(usarDemo ? DEMO_MATERIAS : materias);
-          // Conserva las opciones aunque la siguiente consulta devuelva un subconjunto o esté vacía.
-          this.carreras.update(actuales => [...new Set([
-            ...actuales,
-            ...materias.map(materia => materia.carrera.trim()).filter(Boolean)
-          ])]);
           this.estado.set(APP_CONFIG.COMPONENT_STATES.READY);
         },
         error: () => {

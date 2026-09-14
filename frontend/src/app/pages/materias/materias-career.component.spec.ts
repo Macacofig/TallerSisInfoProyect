@@ -11,7 +11,6 @@ describe('HU-03: filtrar materias por carrera', () => {
   let http: HttpTestingController;
   const endpoint = 'http://localhost:8081/api/materias';
   const sistemas = 'Ingeniería de Sistemas';
-  const industrial = 'Ingeniería Industrial';
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
   const materias: Materia[] = [
@@ -70,10 +69,10 @@ describe('HU-03: filtrar materias por carrera', () => {
     return Array.from(codigos, codigo => codigo.textContent!.trim());
   }
 
-  it('ofrece Todas, las carreras configuradas y las del catálogo sin duplicados', () => {
+  it('ofrece solo Todas y Sistemas aunque el catálogo incluya otras carreras', () => {
     expect(selector().value).toBe('');
     expect(Array.from(selector().options, opcion => opcion.textContent)).toEqual([
-      'Todas', sistemas, industrial, 'Administración de Empresas', 'Ingeniería Civil'
+      'Todas', sistemas
     ]);
     expect(fixture.nativeElement.querySelector('label[for="filtrar-carrera"]').textContent).toBe('Carrera');
   });
@@ -86,7 +85,7 @@ describe('HU-03: filtrar materias por carrera', () => {
     expect(codigosVisibles()).toEqual(['INF-101', 'INF-201']);
     expect(fixture.nativeElement.querySelector('.materias-page__total').textContent)
       .toMatch(/2\s+materias encontradas/);
-    expect(selector().options.length).toBe(5);
+    expect(selector().options.length).toBe(2);
 
     seleccionar('');
     peticion().flush(materias);
@@ -120,14 +119,14 @@ describe('HU-03: filtrar materias por carrera', () => {
 
   it('informa que una carrera no tiene materias sin sustituir el resultado por datos demo', () => {
     config.DEMO_MODE = true;
-    seleccionar(industrial);
-    peticion(industrial).flush([]);
+    seleccionar(sistemas);
+    peticion(sistemas).flush([]);
     fixture.detectChanges();
     expect(codigosVisibles()).toEqual([]);
     expect(fixture.nativeElement.textContent).toContain(MESSAGES.CAREER_EMPTY_TITLE);
     expect(fixture.nativeElement.querySelector('.materias-page__demo')).toBeNull();
-    expect(selector().value).toBe(industrial);
-    expect(selector().options.length).toBe(5);
+    expect(selector().value).toBe(sistemas);
+    expect(selector().options.length).toBe(2);
   });
 
   it('distingue una búsqueda sin coincidencias dentro de una carrera', async () => {
@@ -144,9 +143,9 @@ describe('HU-03: filtrar materias por carrera', () => {
   it('cancela peticiones obsoletas y la espera por nombre al cambiar la carrera', async () => {
     seleccionar(sistemas);
     const anterior = peticion(sistemas);
-    seleccionar(industrial);
+    seleccionar('');
     expect(anterior.cancelled).toBe(true);
-    peticion(industrial).flush([]);
+    peticion().flush([]);
 
     escribir('Programación');
     seleccionar(sistemas);

@@ -42,7 +42,7 @@
         (change)="actualizarCarrera(filtrarCarrera.value)"
         aria-controls="resultados-materias">
         <option value="">{{ MESSAGES.CAREER_ALL }}</option>
-        @for (carrera of carreras(); track carrera) {
+        @for (carrera of carreras; track carrera) {
           <option [value]="carrera">{{ carrera }}</option>
         }
       </select>
