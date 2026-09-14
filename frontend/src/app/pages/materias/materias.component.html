@@ -87,7 +87,7 @@
             <header>
               <p class="materia-card__codigo">{{ materia.codigo }}</p>
               <h2 [id]="'materia-' + materia.id">{{ materia.nombre }}</h2>
-              <p class="materia-card__meta">{{ materia.carrera }} · Semestre {{ materia.semestre }}
+              <p class="materia-card__meta">{{ materia.carrera }} · {{ MESSAGES.SEMESTER_LABEL }} {{ materia.semestre }}
                 @if (materia.semestre === 1) { · {{ MESSAGES.LEVEL_BASIC }} }
                 @else if (materia.semestre >= APP_CONFIG.SEMESTER_LEVELS.INTERMEDIATE_START && materia.semestre <= APP_CONFIG.SEMESTER_LEVELS.INTERMEDIATE_END) { · {{ MESSAGES.LEVEL_INTERMEDIATE }} }
                 @else if (materia.semestre >= APP_CONFIG.SEMESTER_LEVELS.ADVANCED_START) { · {{ MESSAGES.LEVEL_ADVANCED }} }
@@ -185,9 +185,10 @@
                 {{ MESSAGES.EVALUATIONS_UNAVAILABLE }}
               </p>
             }
-            <button type="button" class="materia-button"
+            <button #explorar type="button" class="materia-button"
               [attr.aria-label]="MESSAGES.EXPLORE_BUTTON + ': ' + materia.nombre"
-              (click)="explorarMateria(materia)">
+              aria-haspopup="dialog"
+              (click)="explorarMateria(materia, explorar)">
               {{ MESSAGES.EXPLORE_BUTTON }}
             </button>
           </article>
@@ -199,11 +200,24 @@
   <dialog #detalle class="materia-detalle" aria-labelledby="titulo-detalle" (close)="limpiarSeleccion()">
     @if (materiaSeleccionada(); as materia) {
       <p class="materias-page__eyebrow">{{ MESSAGES.MODAL_EYEBROW }}</p>
-      <h2 id="titulo-detalle">{{ materia.nombre }}</h2>
+      <h2 id="titulo-detalle" tabindex="-1" autofocus>{{ materia.nombre }}</h2>
+      @if (mostrandoDemo()) {
+        <p class="materias-page__demo">{{ MESSAGES.DEMO_NOTICE }}</p>
+      }
       <dl>
         <div><dt>{{ MESSAGES.MODAL_CODE_LABEL }}</dt><dd>{{ materia.codigo }}</dd></div>
         <div><dt>{{ MESSAGES.MODAL_CAREER_LABEL }}</dt><dd>{{ materia.carrera }}</dd></div>
         <div><dt>{{ MESSAGES.MODAL_SEMESTER_LABEL }}</dt><dd>{{ materia.semestre }}</dd></div>
+      </dl>
+      <section class="materia-detalle__seccion" aria-labelledby="descripcion-detalle">
+        <h3 id="descripcion-detalle">{{ MESSAGES.MODAL_DESCRIPTION_LABEL }}</h3>
+        <p>{{ materia.descripcion?.trim() || MESSAGES.MODAL_INFORMATION_UNAVAILABLE }}</p>
+      </section>
+      <section class="materia-detalle__seccion" aria-labelledby="conocimientos-detalle">
+        <h3 id="conocimientos-detalle">{{ MESSAGES.MODAL_RECOMMENDED_PREREQUISITES_LABEL }}</h3>
+        <p>{{ materia.conocimientosPreviosRecomendados?.trim() || MESSAGES.MODAL_INFORMATION_UNAVAILABLE }}</p>
+      </section>
+      <dl>
         @if (materia.predominio) {
           <div><dt>{{ MESSAGES.MODAL_DOMINANCE_LABEL }}</dt><dd>{{ materia.predominio }}</dd></div>
         }
@@ -222,6 +236,7 @@
       </dl>
       <button type="button" class="materia-button" autofocus (click)="cerrarDetalle()">{{ MESSAGES.BACK_TO_CATALOG_BUTTON }}</button>
       <button type="button" class="materia-button" (click)="verDetalleMateria()">{{ MESSAGES.VIEW_DETAIL_BUTTON }}</button>
+      <button type="button" class="materia-button" (click)="cerrarDetalle()">{{ MESSAGES.BACK_TO_CATALOG_BUTTON }}</button>
     }
   </dialog>
 </section>
