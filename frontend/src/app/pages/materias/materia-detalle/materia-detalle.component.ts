@@ -84,8 +84,8 @@ export class MateriaDetalleComponent implements OnInit {
   gestionActual: string | null = null;
   gestionAnterior: string | null = null;
 
-  contextoPromedios =
-    'Promedio general de la materia';
+  contextoPromedios: string =
+    MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
 
   filtroGestionesActivo =
     false;
@@ -221,7 +221,7 @@ export class MateriaDetalleComponent implements OnInit {
       this.promediosMateria;
 
     this.contextoPromedios =
-      'Promedio general de la materia';
+      MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
 
     this.filtroGestionesActivo =
       false;
@@ -438,7 +438,7 @@ export class MateriaDetalleComponent implements OnInit {
             false;
 
           this.contextoPromedios =
-            'Promedio general de la materia';
+            MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
 
           this.cargarPromediosMateria(
             materiaId
@@ -724,7 +724,7 @@ export class MateriaDetalleComponent implements OnInit {
           } else {
 
             this.errorPromedios =
-              'No se pudieron cargar los datos de calificación de la materia.';
+              MESSAGES.CALIFICATION_SUMMARY_LOAD_ERROR;
           }
 
           this.changeDetectorRef
@@ -784,7 +784,7 @@ export class MateriaDetalleComponent implements OnInit {
             null;
 
           this.errorGestiones =
-            'No se pudieron cargar las gestiones disponibles.';
+            MESSAGES.CALIFICATION_MANAGEMENTS_LOAD_ERROR;
 
           this.changeDetectorRef
             .markForCheck();

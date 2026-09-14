@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, DestroyRef, ElementRef, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { of, Subscription, switchMap, timeout, timer } from 'rxjs';
 import { Materia } from '../../models/materia';
 import { ApiService } from '../../services/api';
@@ -31,7 +32,11 @@ export class MateriasComponent implements OnInit {
   readonly estado = signal<'cargando' | 'listo' | 'error'>(APP_CONFIG.COMPONENT_STATES.LOADING);
   readonly materiaSeleccionada = signal<Materia | null>(null);
 
-  constructor(private apiService: ApiService, private changeDetector: ChangeDetectorRef) {}
+  constructor(
+    private apiService: ApiService,
+    private changeDetector: ChangeDetectorRef,
+    private readonly router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarMaterias();
@@ -86,6 +91,21 @@ export class MateriasComponent implements OnInit {
     this.materiaSeleccionada.set(materia);
     this.changeDetector.detectChanges();
     this.detalle.nativeElement.showModal();
+  }
+
+  verDetalleMateria(): void {
+    const materia = this.materiaSeleccionada();
+
+    if (!materia) {
+      return;
+    }
+
+    this.detalle.nativeElement.close();
+
+    void this.router.navigate([
+      '/materias',
+      materia.id
+    ]);
   }
 
   cerrarDetalle(): void {

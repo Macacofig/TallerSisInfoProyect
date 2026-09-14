@@ -1,6 +1,10 @@
 :host {
   display: block;
   margin-top: 28px;
+
+  --color-dificultad: #d97706;
+  --color-carga: #165dab;
+  --color-conocimiento: #0f8f7a;
 }
 
 .historial-calificaciones {
@@ -52,34 +56,38 @@ svg {
 
 .linea {
   fill: none;
-  stroke: #165dab;
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
+.linea.dificultad {
+  stroke: var(--color-dificultad);
+}
+
 .linea.carga {
-  stroke-dasharray: 10 5;
-  opacity: .78;
+  stroke: var(--color-carga);
 }
 
 .linea.conocimiento {
-  stroke-dasharray: 3 5;
-  opacity: .6;
+  stroke: var(--color-conocimiento);
 }
 
 .punto {
   fill: #fff;
-  stroke: #165dab;
   stroke-width: 3;
 }
 
+.punto.dificultad {
+  stroke: var(--color-dificultad);
+}
+
 .punto.carga {
-  opacity: .78;
+  stroke: var(--color-carga);
 }
 
 .punto.conocimiento {
-  opacity: .6;
+  stroke: var(--color-conocimiento);
 }
 
 .leyenda {
@@ -101,17 +109,19 @@ svg {
 .leyenda__linea {
   display: inline-block;
   width: 26px;
-  border-top: 3px solid #165dab;
+  border-top: 3px solid;
+}
+
+.leyenda__linea.dificultad {
+  border-top-color: var(--color-dificultad);
 }
 
 .leyenda__linea.carga {
-  border-top-style: dashed;
-  opacity: .78;
+  border-top-color: var(--color-carga);
 }
 
 .leyenda__linea.conocimiento {
-  border-top-style: dotted;
-  opacity: .6;
+  border-top-color: var(--color-conocimiento);
 }
 
 .historial-calificaciones__nota {
@@ -137,4 +147,5 @@ svg {
   .leyenda {
     justify-content: flex-start;
   }
+
 }

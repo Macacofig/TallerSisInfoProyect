@@ -3,12 +3,12 @@
   <header class="graficos-calificacion__encabezado">
 
     <h3>
-      Métricas de calificación
+      {{ mensajes.CALIFICATION_GRAPH_TITLE }}
     </h3>
 
     <p>
       {{ contexto }}.
-      Representación visual en una escala de 0 a 10.
+      {{ mensajes.CALIFICATION_GRAPH_DESCRIPTION }}
     </p>
 
   </header>
@@ -20,10 +20,10 @@
       <div class="grafico-metrica__encabezado">
 
         <span>
-          Dificultad
+          {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}
         </span>
 
-        <strong>
+        <strong class="grafico-metrica__valor grafico-metrica__valor--dificultad">
           {{
             obtenerPromedioFormateado(
               promedios.dificultadPromedio
@@ -36,7 +36,7 @@
       <div
         class="grafico-metrica__barra"
         role="progressbar"
-        aria-label="Promedio de dificultad"
+        [attr.aria-label]="mensajes.CALIFICATION_GRAPH_DIFFICULTY_ARIA"
         aria-valuemin="0"
         aria-valuemax="10"
         [attr.aria-valuenow]="
@@ -45,7 +45,7 @@
       >
 
         <div
-          class="grafico-metrica__progreso"
+          class="grafico-metrica__progreso grafico-metrica__progreso--dificultad"
           [style.width.%]="
             obtenerPorcentaje(
               promedios.dificultadPromedio
@@ -62,10 +62,10 @@
       <div class="grafico-metrica__encabezado">
 
         <span>
-          Carga
+          {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}
         </span>
 
-        <strong>
+        <strong class="grafico-metrica__valor grafico-metrica__valor--carga">
           {{
             obtenerPromedioFormateado(
               promedios.cargaPromedio
@@ -78,7 +78,7 @@
       <div
         class="grafico-metrica__barra"
         role="progressbar"
-        aria-label="Promedio de carga"
+        [attr.aria-label]="mensajes.CALIFICATION_GRAPH_WORKLOAD_ARIA"
         aria-valuemin="0"
         aria-valuemax="10"
         [attr.aria-valuenow]="
@@ -87,7 +87,7 @@
       >
 
         <div
-          class="grafico-metrica__progreso"
+          class="grafico-metrica__progreso grafico-metrica__progreso--carga"
           [style.width.%]="
             obtenerPorcentaje(
               promedios.cargaPromedio
@@ -104,10 +104,10 @@
       <div class="grafico-metrica__encabezado">
 
         <span>
-          Conocimiento previo
+          {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
         </span>
 
-        <strong>
+        <strong class="grafico-metrica__valor grafico-metrica__valor--conocimiento">
           {{
             obtenerPromedioFormateado(
               promedios.conocimientoPrevioPromedio
@@ -120,7 +120,7 @@
       <div
         class="grafico-metrica__barra"
         role="progressbar"
-        aria-label="Promedio de conocimiento previo"
+        [attr.aria-label]="mensajes.CALIFICATION_GRAPH_PREVIOUS_KNOWLEDGE_ARIA"
         aria-valuemin="0"
         aria-valuemax="10"
         [attr.aria-valuenow]="
@@ -129,7 +129,7 @@
       >
 
         <div
-          class="grafico-metrica__progreso"
+          class="grafico-metrica__progreso grafico-metrica__progreso--conocimiento"
           [style.width.%]="
             obtenerPorcentaje(
               promedios.conocimientoPrevioPromedio

@@ -19,6 +19,10 @@ import {
   CalificacionesMateriaService
 } from '../../../../services/calificaciones-materia.service';
 
+import {
+  MESSAGES
+} from '../../../../strings';
+
 export type ModoFiltroGestiones =
   'gestion' |
   'rango';
@@ -31,11 +35,15 @@ export interface FiltroGestionesResultado {
 @Component({
   selector: 'app-filtro-gestiones',
   standalone: true,
-  imports: [FormsModule],
+  imports: [
+    FormsModule
+  ],
   templateUrl: './filtro-gestiones.component.html',
   styleUrl: './filtro-gestiones.component.scss'
 })
 export class FiltroGestionesComponent implements OnChanges {
+
+  readonly mensajes = MESSAGES;
 
   @Input()
   gestiones: string[] = [];
@@ -85,6 +93,7 @@ export class FiltroGestionesComponent implements OnChanges {
       changes['gestiones'] &&
       this.gestiones.length > 0
     ) {
+
       this.inicializarGestiones();
     }
   }
@@ -132,7 +141,9 @@ export class FiltroGestionesComponent implements OnChanges {
     this.error =
       '';
 
-    if (this.modo === 'gestion') {
+    if (
+      this.modo === 'gestion'
+    ) {
 
       this.filtrarPorGestion();
 
@@ -169,10 +180,12 @@ export class FiltroGestionesComponent implements OnChanges {
 
   private filtrarPorGestion(): void {
 
-    if (!this.gestionSeleccionada) {
+    if (
+      !this.gestionSeleccionada
+    ) {
 
       this.error =
-        'Selecciona una gestión.';
+        MESSAGES.CALIFICATION_FILTER_MANAGEMENT_REQUIRED;
 
       return;
     }
@@ -202,7 +215,7 @@ export class FiltroGestionesComponent implements OnChanges {
             promedios,
 
             descripcion:
-              `Promedio general de la gestión ${this.gestionSeleccionada}`
+              `${MESSAGES.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${this.gestionSeleccionada}`
           });
         },
 
@@ -213,8 +226,8 @@ export class FiltroGestionesComponent implements OnChanges {
 
           this.error =
             error.status === 404
-              ? 'No existen calificaciones para la gestión seleccionada.'
-              : 'No se pudieron cargar los datos de la gestión.';
+              ? MESSAGES.CALIFICATION_FILTER_MANAGEMENT_EMPTY
+              : MESSAGES.CALIFICATION_FILTER_MANAGEMENT_LOAD_ERROR;
         }
 
       });
@@ -228,7 +241,7 @@ export class FiltroGestionesComponent implements OnChanges {
     ) {
 
       this.error =
-        'Selecciona la gestión inicial y final.';
+        MESSAGES.CALIFICATION_FILTER_RANGE_REQUIRED;
 
       return;
     }
@@ -243,7 +256,7 @@ export class FiltroGestionesComponent implements OnChanges {
     ) {
 
       this.error =
-        'La gestión inicial no puede ser posterior a la final.';
+        MESSAGES.CALIFICATION_FILTER_RANGE_INVALID;
 
       return;
     }
@@ -274,7 +287,7 @@ export class FiltroGestionesComponent implements OnChanges {
             promedios,
 
             descripcion:
-              `Promedio general del rango ${this.gestionDesde} a ${this.gestionHasta}`
+              `${MESSAGES.CALIFICATION_FILTER_RANGE_CONTEXT} ${this.gestionDesde} ${MESSAGES.CALIFICATION_FILTER_RANGE_SEPARATOR} ${this.gestionHasta}`
           });
         },
 
@@ -285,8 +298,8 @@ export class FiltroGestionesComponent implements OnChanges {
 
           this.error =
             error.status === 404
-              ? 'No existen calificaciones para el rango seleccionado.'
-              : 'No se pudieron cargar los datos del rango.';
+              ? MESSAGES.CALIFICATION_FILTER_RANGE_EMPTY
+              : MESSAGES.CALIFICATION_FILTER_RANGE_LOAD_ERROR;
         }
 
       });

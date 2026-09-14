@@ -21,6 +21,10 @@ import {
   CalificacionesMateriaService
 } from '../../../../services/calificaciones-materia.service';
 
+import {
+  MESSAGES
+} from '../../../../strings';
+
 type MetricaHistorial =
   'dificultad' |
   'carga' |
@@ -42,6 +46,8 @@ interface HistorialGestion {
 })
 export class HistorialCalificacionesComponent
   implements OnChanges {
+
+  readonly mensajes = MESSAGES;
 
   @Input()
   gestiones: string[] = [];
@@ -83,6 +89,7 @@ export class HistorialCalificacionesComponent
       changes['gestiones'] &&
       this.gestiones.length > 0
     ) {
+
       this.cargarHistorial();
     }
   }
@@ -108,7 +115,10 @@ export class HistorialCalificacionesComponent
     indice: number
   ): number {
 
-    if (this.datos.length <= 1) {
+    if (
+      this.datos.length <= 1
+    ) {
+
       return this.anchoGrafico / 2;
     }
 
@@ -173,9 +183,14 @@ export class HistorialCalificacionesComponent
 
   private cargarHistorial(): void {
 
-    this.cargando = true;
-    this.error = '';
-    this.datos = [];
+    this.cargando =
+      true;
+
+    this.error =
+      '';
+
+    this.datos =
+      [];
 
     const consultas =
       this.gestiones.map(
@@ -247,7 +262,8 @@ export class HistorialCalificacionesComponent
                 })
               );
 
-          this.cargando = false;
+          this.cargando =
+            false;
 
           this.changeDetectorRef
             .markForCheck();
@@ -255,10 +271,11 @@ export class HistorialCalificacionesComponent
 
         error: () => {
 
-          this.cargando = false;
+          this.cargando =
+            false;
 
           this.error =
-            'No se pudo cargar el historial de calificaciones.';
+            MESSAGES.CALIFICATION_HISTORY_LOAD_ERROR;
 
           this.changeDetectorRef
             .markForCheck();

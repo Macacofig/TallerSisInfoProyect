@@ -7,6 +7,10 @@ import {
   CalificacionMateriaPromedioResponse
 } from '../../../../models/calificacion-materia.model';
 
+import {
+  MESSAGES
+} from '../../../../strings';
+
 @Component({
   selector: 'app-calificacion-graficos',
   standalone: true,
@@ -16,12 +20,14 @@ import {
 })
 export class CalificacionGraficosComponent {
 
+  readonly mensajes = MESSAGES;
+
   @Input({ required: true })
   promedios!: CalificacionMateriaPromedioResponse;
 
   @Input()
-  contexto =
-    'Promedio general de la materia';
+  contexto: string =
+    MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
 
   obtenerPromedioFormateado(
     promedio: number

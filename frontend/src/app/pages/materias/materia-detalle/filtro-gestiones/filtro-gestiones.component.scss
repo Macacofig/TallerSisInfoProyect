@@ -4,9 +4,9 @@
 }
 
 .filtro-gestiones {
+  overflow: hidden;
   border: 1px solid #e3e8ef;
   border-radius: 12px;
-  overflow: hidden;
 }
 
 .historial-gestiones {
@@ -130,7 +130,7 @@
 }
 
 button:disabled {
-  opacity: .6;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -160,4 +160,5 @@ button:disabled {
   .filtro-gestiones__campos.rango {
     grid-template-columns: 1fr;
   }
+
 }
