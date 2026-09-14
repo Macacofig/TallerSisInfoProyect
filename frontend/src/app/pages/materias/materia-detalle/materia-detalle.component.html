@@ -1,13 +1,19 @@
 <section class="materia-detalle">
 
   @if (cargando) {
-    <p>Cargando materia...</p>
+
+    <p>
+      {{ mensajes.MATERIA_DETAIL_LOADING }}
+    </p>
+
   }
 
   @if (error) {
+
     <p class="mensaje-error">
       {{ error }}
     </p>
+
   }
 
   @if (materia) {
@@ -29,11 +35,13 @@
       <div class="materia-detalle__datos">
 
         <span>
-          Código: {{ materia.codigo }}
+          {{ mensajes.MATERIA_DETAIL_CODE_LABEL }}:
+          {{ materia.codigo }}
         </span>
 
         <span>
-          Semestre: {{ materia.semestre }}
+          {{ mensajes.MATERIA_DETAIL_SEMESTER_LABEL }}:
+          {{ materia.semestre }}
         </span>
 
       </div>
@@ -54,9 +62,13 @@
         >
 
           @if (yaCalifico) {
-            Ver calificación
+
+            {{ mensajes.CALIFICATION_BUTTON_VIEW }}
+
           } @else {
-            Calificar materia
+
+            {{ mensajes.CALIFICATION_BUTTON_CREATE }}
+
           }
 
         </button>
@@ -68,7 +80,7 @@
     @if (verificandoCalificacion) {
 
       <p class="estado-carga">
-        Verificando calificación...
+        {{ mensajes.CALIFICATION_VERIFYING }}
       </p>
 
     }
@@ -263,12 +275,11 @@
               <div>
 
                 <h2>
-                  Mi calificación
+                  {{ mensajes.CALIFICATION_REGISTERED_TITLE }}
                 </h2>
 
                 <p>
-                  Esta es la calificación que registraste
-                  para esta materia.
+                  {{ mensajes.CALIFICATION_REGISTERED_DESCRIPTION }}
                 </p>
 
               </div>
@@ -278,7 +289,7 @@
                 class="boton-cerrar"
                 (click)="cerrarFormularioCalificacion()"
               >
-                Cerrar
+                {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
               </button>
 
             </div>
@@ -286,32 +297,50 @@
             <div class="confirmacion-calificacion__resumen">
 
               <p>
-                <strong>Materia:</strong>
+                <strong>
+                  {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
+                </strong>
+
                 {{ materia.nombre }}
               </p>
 
               <p>
-                <strong>Dificultad:</strong>
+                <strong>
+                  {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
+                </strong>
+
                 {{ calificacionExistente.dificultad }}/10
               </p>
 
               <p>
-                <strong>Carga:</strong>
+                <strong>
+                  {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
+                </strong>
+
                 {{ calificacionExistente.carga }}/10
               </p>
 
               <p>
-                <strong>Conocimiento previo:</strong>
+                <strong>
+                  {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
+                </strong>
+
                 {{ calificacionExistente.conocimientoPrevio }}/10
               </p>
 
               <p>
-                <strong>Prerequisitos:</strong>
+                <strong>
+                  {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}:
+                </strong>
+
                 {{ calificacionExistente.prerequisitosText }}
               </p>
 
               <p>
-                <strong>Predominio:</strong>
+                <strong>
+                  {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}:
+                </strong>
+
                 {{
                   obtenerPredominioParaMostrar(
                     calificacionExistente.predominio
@@ -320,14 +349,17 @@
               </p>
 
               <p>
-                <strong>Gestión:</strong>
+                <strong>
+                  {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
+                </strong>
+
                 {{ calificacionExistente.gestion }}
               </p>
 
             </div>
 
             <p class="modal-calificacion__nota">
-              Solo puedes registrar una calificación por materia.
+              {{ mensajes.CALIFICATION_SINGLE_NOTICE }}
             </p>
 
           } @else {
@@ -337,11 +369,11 @@
               <div>
 
                 <h2>
-                  Calificar materia
+                  {{ mensajes.CALIFICATION_FORM_TITLE }}
                 </h2>
 
                 <p>
-                  Evalúa tu experiencia en esta materia.
+                  {{ mensajes.CALIFICATION_FORM_DESCRIPTION }}
                 </p>
 
               </div>
@@ -351,7 +383,7 @@
                 class="boton-cerrar"
                 (click)="cerrarFormularioCalificacion()"
               >
-                Cerrar
+                {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
               </button>
 
             </div>
@@ -363,7 +395,7 @@
                 <div class="criterio-calificacion__encabezado">
 
                   <label for="dificultad">
-                    Dificultad
+                    {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}
                   </label>
 
                   <span>
@@ -388,7 +420,7 @@
                 <div class="criterio-calificacion__encabezado">
 
                   <label for="carga">
-                    Carga
+                    {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}
                   </label>
 
                   <span>
@@ -413,7 +445,7 @@
                 <div class="criterio-calificacion__encabezado">
 
                   <label for="conocimientoPrevio">
-                    Conocimiento previo
+                    {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
                   </label>
 
                   <span>
@@ -438,23 +470,34 @@
               <div class="campo-formulario">
 
                 <label for="prerequisitos">
-                  Prerequisitos
+                  {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}
                 </label>
 
                 <input
                   id="prerequisitos"
                   type="text"
                   formControlName="prerequisitos"
-                  placeholder="Ej: Programación básica, Lógica, Matemática"
+                  [placeholder]="mensajes.CALIFICATION_PREREQUISITES_PLACEHOLDER"
                   autocomplete="off"
                 />
+
+                @if (
+                  formularioCalificacion.get('prerequisitos')?.invalid &&
+                  formularioCalificacion.get('prerequisitos')?.touched
+                ) {
+
+                  <small>
+                    {{ mensajes.CALIFICATION_PREREQUISITES_REQUIRED }}
+                  </small>
+
+                }
 
               </div>
 
               <div class="campo-predominio">
 
                 <span class="campo-predominio__titulo">
-                  Predominio
+                  {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}
                 </span>
 
                 <div class="campo-predominio__opciones">
@@ -467,7 +510,9 @@
                       formControlName="predominio"
                     />
 
-                    Práctico
+                    <span>
+                      {{ mensajes.CALIFICATION_PRACTICAL_LABEL }}
+                    </span>
 
                   </label>
 
@@ -479,7 +524,9 @@
                       formControlName="predominio"
                     />
 
-                    Teórico
+                    <span>
+                      {{ mensajes.CALIFICATION_THEORETICAL_LABEL }}
+                    </span>
 
                   </label>
 
@@ -490,17 +537,30 @@
               <div class="campo-formulario">
 
                 <label for="gestion">
-                  Gestión
+                  {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}
                 </label>
 
                 <input
                   id="gestion"
                   type="text"
                   formControlName="gestion"
-                  placeholder="Ej: 2026-1"
+                  [placeholder]="mensajes.CALIFICATION_MANAGEMENT_PLACEHOLDER"
                   autocomplete="off"
+                  inputmode="numeric"
+                  maxlength="10"
                   (input)="normalizarGestion($event)"
                 />
+
+                @if (
+                  formularioCalificacion.get('gestion')?.invalid &&
+                  formularioCalificacion.get('gestion')?.touched
+                ) {
+
+                  <small>
+                    {{ mensajes.CALIFICATION_MANAGEMENT_INVALID }}
+                  </small>
+
+                }
 
               </div>
 
@@ -511,7 +571,7 @@
                   class="boton-secundario"
                   (click)="cerrarFormularioCalificacion()"
                 >
-                  Cancelar
+                  {{ mensajes.CALIFICATION_CANCEL_BUTTON }}
                 </button>
 
                 <button
@@ -520,7 +580,7 @@
                   [disabled]="formularioCalificacion.invalid"
                   (click)="abrirConfirmacion()"
                 >
-                  Continuar
+                  {{ mensajes.CALIFICATION_CONTINUE_BUTTON }}
                 </button>
 
               </div>
@@ -532,44 +592,82 @@
               <div class="confirmacion-calificacion">
 
                 <h3>
-                  Confirmar calificación
+                  {{ mensajes.CALIFICATION_CONFIRM_TITLE }}
                 </h3>
+
+                <p>
+                  {{ mensajes.CALIFICATION_CONFIRM_DESCRIPTION }}
+                </p>
 
                 <div class="confirmacion-calificacion__resumen">
 
                   <p>
-                    <strong>Materia:</strong>
+                    <strong>
+                      {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
+                    </strong>
+
                     {{ materia.nombre }}
                   </p>
 
                   <p>
-                    <strong>Dificultad:</strong>
+                    <strong>
+                      {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
+                    </strong>
+
                     {{ formularioCalificacion.value.dificultad }}/10
                   </p>
 
                   <p>
-                    <strong>Carga:</strong>
+                    <strong>
+                      {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
+                    </strong>
+
                     {{ formularioCalificacion.value.carga }}/10
                   </p>
 
                   <p>
-                    <strong>Conocimiento previo:</strong>
+                    <strong>
+                      {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
+                    </strong>
+
                     {{
                       formularioCalificacion.value.conocimientoPrevio
                     }}/10
                   </p>
 
                   <p>
-                    <strong>Prerequisitos:</strong>
+                    <strong>
+                      {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}:
+                    </strong>
+
                     {{ obtenerPrerequisitosParaMostrar() }}
                   </p>
 
                   <p>
-                    <strong>Gestión:</strong>
+                    <strong>
+                      {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}:
+                    </strong>
+
+                    {{
+                      obtenerPredominioParaMostrar(
+                        formularioCalificacion.value.predominio
+                      )
+                    }}
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
+                    </strong>
+
                     {{ formularioCalificacion.value.gestion }}
                   </p>
 
                 </div>
+
+                <p>
+                  {{ mensajes.CALIFICATION_CONFIRM_NOTICE }}
+                </p>
 
                 <div class="confirmacion-calificacion__acciones">
 
@@ -579,7 +677,7 @@
                     [disabled]="enviandoCalificacion"
                     (click)="cancelarConfirmacion()"
                   >
-                    Volver
+                    {{ mensajes.CALIFICATION_BACK_BUTTON }}
                   </button>
 
                   <button
@@ -590,9 +688,13 @@
                   >
 
                     @if (enviandoCalificacion) {
-                      Registrando...
+
+                      {{ mensajes.CALIFICATION_REGISTERING }}
+
                     } @else {
-                      Confirmar calificación
+
+                      {{ mensajes.CALIFICATION_CONFIRM_BUTTON }}
+
                     }
 
                   </button>
