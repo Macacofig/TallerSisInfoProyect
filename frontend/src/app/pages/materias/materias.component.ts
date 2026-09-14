@@ -23,6 +23,7 @@ export class MateriasComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private consulta?: Subscription;
+  private botonExplorar?: HTMLButtonElement;
   readonly materias = signal<Materia[]>([]);
   readonly busqueda = signal('');
   readonly carreraSeleccionada = signal('');
@@ -82,7 +83,8 @@ export class MateriasComponent implements OnInit {
       });
   }
 
-  explorarMateria(materia: Materia): void {
+  explorarMateria(materia: Materia, origen?: HTMLButtonElement): void {
+    this.botonExplorar = origen;
     this.materiaSeleccionada.set(materia);
     this.changeDetector.detectChanges();
     this.detalle.nativeElement.showModal();
@@ -94,6 +96,8 @@ export class MateriasComponent implements OnInit {
 
   limpiarSeleccion(): void {
     this.materiaSeleccionada.set(null);
+    this.botonExplorar?.focus({ preventScroll: true });
+    this.botonExplorar = undefined;
   }
 
   getAnchoIndicador(valor?: number): string {
