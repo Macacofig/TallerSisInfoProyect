@@ -104,6 +104,10 @@ Para levantar el proyecto:
 docker compose up -d --build
 ```
 
+Abre el frontend en `http://localhost:4200/materias`. Usa `localhost`, ya que es el origen permitido por el backend en la configuración local.
+
+Docker sincroniza `frontend/src` con el contenedor y Angular detecta los cambios automáticamente. Si cambias dependencias o configuración del frontend, actualiza solo ese servicio con `docker compose up -d --no-deps --build frontend`. Evita ejecutar a la vez `npm start` en el puerto 4200 mientras el frontend de Docker está activo.
+
 Para detenerlo:
 
 ```bash

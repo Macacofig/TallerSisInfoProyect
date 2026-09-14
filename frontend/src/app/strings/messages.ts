@@ -58,6 +58,7 @@ export const MESSAGES = {
   NO_DATA: 'Sin datos',
 
   // Niveles de semestre
+  SEMESTER_LABEL: 'Semestre',
   LEVEL_BASIC: 'Básico',
   LEVEL_INTERMEDIATE: 'Intermedio',
   LEVEL_ADVANCED: 'Avanzado',
@@ -72,11 +73,14 @@ export const MESSAGES = {
   EXPLORE_BUTTON: 'Explorar materia',
   BACK_TO_CATALOG_BUTTON: 'Volver al catálogo',
 
-  // Modal y diálogos
+  // Detalle de materia (HU-04)
   MODAL_EYEBROW: 'Información de la materia',
   MODAL_CODE_LABEL: 'Código',
   MODAL_CAREER_LABEL: 'Carrera',
-  MODAL_SEMESTER_LABEL: 'Semestre',
+  MODAL_SEMESTER_LABEL: 'Semestre sugerido',
+  MODAL_DESCRIPTION_LABEL: 'Descripción general',
+  MODAL_RECOMMENDED_PREREQUISITES_LABEL: 'Conocimientos previos recomendados',
+  MODAL_INFORMATION_UNAVAILABLE: 'Información no disponible.',
   MODAL_DOMINANCE_LABEL: 'Predominio',
   MODAL_DIFFICULTY_LABEL: 'Dificultad',
   MODAL_WORKLOAD_LABEL: 'Carga de trabajo',
