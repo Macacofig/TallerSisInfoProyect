@@ -1,10 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Materia } from '../../models/materia';
-import { APP_CONFIG } from '../../strings/app-config';
-import { DEMO_MATERIAS } from '../../strings/demo-data';
-import { MateriasComponent } from './materias.component';
+import { Materia } from '../../../models/materia';
+import { APP_CONFIG } from '../../../config/app-config';
+import { DEMO_MATERIAS } from '../../../data/demo-materias';
+import { MateriasComponent } from '../materias.component';
 
 describe('HU-01: catálogo de materias', () => {
   let fixture: ComponentFixture<MateriasComponent>;

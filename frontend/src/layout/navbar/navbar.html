@@ -4,7 +4,7 @@
     <button
       type="button"
       class="navbar__notification"
-      aria-label="Notificaciones"
+      [attr.aria-label]="NAVBAR_MESSAGES.NOTIFICATIONS_ARIA_LABEL"
     >
 
       <svg
@@ -42,11 +42,11 @@
       <div class="navbar__user-info">
 
         <span class="navbar__user-name">
-          Ana Torres
+          {{ NAVBAR_MESSAGES.USER_NAME }}
         </span>
 
         <span class="navbar__user-semester">
-          Semestre 5
+          {{ NAVBAR_MESSAGES.USER_SEMESTER }}
         </span>
 
       </div>

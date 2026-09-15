@@ -13,15 +13,13 @@ import {
 
 import {
   CalificacionMateriaPromedioResponse
-} from '../../../../models/calificacion-materia.model';
+} from '../../../../../../models/calificacion-materia.model';
 
 import {
   CalificacionesMateriaService
-} from '../../../../services/calificaciones-materia.service';
+} from '../../../../../../services/calificaciones-materia.service';
 
-import {
-  MESSAGES
-} from '../../../../strings';
+import { MESSAGES } from '../../../../../../strings/materias/materias.messages';
 
 export type ModoFiltroGestiones =
   'gestion' |
@@ -199,7 +197,7 @@ export class FiltroGestionesComponent implements OnChanges {
       )
       .subscribe({
 
-        next: (promedios) => {
+        next: (promedios: CalificacionMateriaPromedioResponse) => {
 
           this.cargando =
             false;
@@ -219,7 +217,7 @@ export class FiltroGestionesComponent implements OnChanges {
           });
         },
 
-        error: (error) => {
+        error: (error: { status?: number }) => {
 
           this.cargando =
             false;
@@ -271,7 +269,7 @@ export class FiltroGestionesComponent implements OnChanges {
       )
       .subscribe({
 
-        next: (promedios) => {
+        next: (promedios: CalificacionMateriaPromedioResponse) => {
 
           this.cargando =
             false;
@@ -291,7 +289,7 @@ export class FiltroGestionesComponent implements OnChanges {
           });
         },
 
-        error: (error) => {
+        error: (error: { status?: number }) => {
 
           this.cargando =
             false;

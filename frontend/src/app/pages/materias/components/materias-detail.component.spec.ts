@@ -1,11 +1,11 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Materia } from '../../models/materia';
-import { APP_CONFIG } from '../../strings/app-config';
-import { DEMO_MATERIAS } from '../../strings/demo-data';
-import { MESSAGES } from '../../strings/messages';
-import { MateriasComponent } from './materias.component';
+import { Materia } from '../../../models/materia';
+import { APP_CONFIG } from '../../../config/app-config';
+import { DEMO_MATERIAS } from '../../../data/demo-materias';
+import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { MateriasComponent } from '../materias.component';
 
 describe('HU-04: visualizar información de una materia', () => {
   let fixture: ComponentFixture<MateriasComponent>;

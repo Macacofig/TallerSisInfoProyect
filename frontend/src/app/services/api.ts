@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Materia } from '../models/materia';
-import { APP_CONFIG } from '../strings/app-config';
+import { APP_CONFIG } from '../config/app-config';
 
 @Injectable({
   providedIn: 'root'

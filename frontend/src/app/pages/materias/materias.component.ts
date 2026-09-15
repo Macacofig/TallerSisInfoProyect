@@ -4,9 +4,9 @@ import { Router } from '@angular/router';
 import { of, Subscription, switchMap, timeout, timer } from 'rxjs';
 import { Materia } from '../../models/materia';
 import { ApiService } from '../../services/api';
-import { APP_CONFIG } from '../../strings/app-config';
-import { DEMO_MATERIAS } from '../../strings/demo-data';
-import { MESSAGES } from '../../strings/messages';
+import { APP_CONFIG } from '../../config/app-config';
+import { DEMO_MATERIAS } from '../../data/demo-materias';
+import { MESSAGES } from '../../strings/materias/materias.messages';
 
 @Component({
   selector: 'app-materias',

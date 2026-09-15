@@ -34,23 +34,21 @@ import {
   CalificacionesMateriaService
 } from '../../../services/calificaciones-materia.service';
 
-import {
-  APP_CONFIG,
-  MESSAGES
-} from '../../../strings';
+import { APP_CONFIG } from '../../../config/app-config';
+import { MESSAGES } from '../../../strings/materias/materias.messages';
 
 import {
   CalificacionGraficosComponent
-} from './calificacion-graficos/calificacion-graficos.component';
+} from './components/calificacion-graficos/calificacion-graficos/calificacion-graficos.component';
 
 import {
   FiltroGestionesComponent,
   FiltroGestionesResultado
-} from './filtro-gestiones/filtro-gestiones.component';
+} from './components/filtro-gestiones/filtro-gestiones/filtro-gestiones.component';
 
 import {
   HistorialCalificacionesComponent
-} from './historial-calificaciones/historial-calificaciones.component';
+} from './components/historial-calificaciones/historial-calificaciones/historial-calificaciones.component';
 
 @Component({
   selector: 'app-materia-detalle',
