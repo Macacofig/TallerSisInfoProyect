@@ -1,5 +1,5 @@
 /**
- * Mensajes y etiquetas de la interfaz de usuario
+ * Mensajes y etiquetas de la interfaz de materias
  */
 export const MESSAGES = {
 

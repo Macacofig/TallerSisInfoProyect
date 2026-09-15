@@ -8,7 +8,7 @@ import {
   RegistrarCalificacionMateriaRequest
 } from '../models/calificacion-materia.model';
 
-import { APP_CONFIG } from '../strings/app-config';
+import { APP_CONFIG } from '../config/app-config';
 
 @Injectable({
   providedIn: 'root'

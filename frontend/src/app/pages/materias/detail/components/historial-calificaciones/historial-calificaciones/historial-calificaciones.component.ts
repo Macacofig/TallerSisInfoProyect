@@ -15,15 +15,13 @@ import {
 
 import {
   CalificacionMateriaPromedioResponse
-} from '../../../../models/calificacion-materia.model';
+} from '../../../../../../models/calificacion-materia.model';
 
 import {
   CalificacionesMateriaService
-} from '../../../../services/calificaciones-materia.service';
+} from '../../../../../../services/calificaciones-materia.service';
 
-import {
-  MESSAGES
-} from '../../../../strings';
+import { MESSAGES } from '../../../../../../strings/materias/materias.messages';
 
 type MetricaHistorial =
   'dificultad' |

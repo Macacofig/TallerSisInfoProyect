@@ -5,11 +5,9 @@ import {
 
 import {
   CalificacionMateriaPromedioResponse
-} from '../../../../models/calificacion-materia.model';
+} from '../../../../../../models/calificacion-materia.model';
 
-import {
-  MESSAGES
-} from '../../../../strings';
+import { MESSAGES } from '../../../../../../strings/materias/materias.messages';
 
 @Component({
   selector: 'app-calificacion-graficos',

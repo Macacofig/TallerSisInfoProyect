@@ -1,10 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Materia } from '../../models/materia';
-import { APP_CONFIG } from '../../strings/app-config';
-import { MESSAGES } from '../../strings/messages';
-import { MateriasComponent } from './materias.component';
+import { Materia } from '../../../models/materia';
+import { APP_CONFIG } from '../../../config/app-config';
+import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { MateriasComponent } from '../materias.component';
 
 describe('HU-03: filtrar materias por carrera', () => {
   let fixture: ComponentFixture<MateriasComponent>;

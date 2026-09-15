@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NAVBAR_MESSAGES } from '../../app/strings/layout/navbar.messages';
 
 @Component({
   selector: 'app-navbar',
@@ -6,4 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar {}
+export class Navbar {
+  readonly NAVBAR_MESSAGES = NAVBAR_MESSAGES;
+}

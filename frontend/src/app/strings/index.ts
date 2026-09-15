@@ -1,6 +1,4 @@
 /**
- * Barril de exportación para las constantes de strings
+ * Barril de exportación para textos de la interfaz.
  */
-export { MESSAGES } from './messages';
-export { APP_CONFIG } from './app-config';
-export { DEMO_MATERIAS } from './demo-data';
+export { MESSAGES } from './materias/materias.messages';
