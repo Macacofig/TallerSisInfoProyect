@@ -146,4 +146,21 @@ class MateriaControllerTest {
         verify(materiaService).obtenerMaterias("Programación", "Ingeniería de Sistemas", 1);
         mostrarResultado("Mostrar materias por nombre, carrera y semestre");
     }
+
+        @Test
+        void deberiaRetornarCarrerasUnicas() throws Exception {
+                when(materiaService.obtenerCarreras()).thenReturn(List.of(
+                                "Administración",
+                                "Ingeniería de Sistemas"
+                ));
+
+                mockMvc.perform(get("/api/materias/carreras").contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$[0]").value("Administración"))
+                                .andExpect(jsonPath("$[1]").value("Ingeniería de Sistemas"));
+
+                verify(materiaService).obtenerCarreras();
+                mostrarResultado("Mostrar carreras únicas");
+        }
 }
