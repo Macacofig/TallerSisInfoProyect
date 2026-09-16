@@ -24,7 +24,7 @@ export class MateriasComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private consulta?: Subscription;
-  private botonExplorar?: HTMLButtonElement;
+  private botonInformacion?: HTMLButtonElement;
   readonly materias = signal<Materia[]>([]);
   readonly busqueda = signal('');
   readonly carreraSeleccionada = signal('');
@@ -88,26 +88,15 @@ export class MateriasComponent implements OnInit {
       });
   }
 
-  explorarMateria(materia: Materia, origen?: HTMLButtonElement): void {
-    this.botonExplorar = origen;
+  abrirInformacion(materia: Materia, origen: HTMLButtonElement): void {
+    this.botonInformacion = origen;
     this.materiaSeleccionada.set(materia);
     this.changeDetector.detectChanges();
     this.detalle.nativeElement.showModal();
   }
 
-  verDetalleMateria(): void {
-    const materia = this.materiaSeleccionada();
-
-    if (!materia) {
-      return;
-    }
-
-    this.detalle.nativeElement.close();
-
-    void this.router.navigate([
-      '/materias',
-      materia.id
-    ]);
+  explorarMateria(materia: Materia): void {
+    void this.router.navigate(['/materias', materia.id]);
   }
 
   cerrarDetalle(): void {
@@ -116,8 +105,8 @@ export class MateriasComponent implements OnInit {
 
   limpiarSeleccion(): void {
     this.materiaSeleccionada.set(null);
-    this.botonExplorar?.focus({ preventScroll: true });
-    this.botonExplorar = undefined;
+    this.botonInformacion?.focus({ preventScroll: true });
+    this.botonInformacion = undefined;
   }
 
   getAnchoIndicador(valor?: number): string {
