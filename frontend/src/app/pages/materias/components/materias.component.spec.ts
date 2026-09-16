@@ -44,7 +44,7 @@ describe('HU-01: catálogo de materias', () => {
       expect(fixture.nativeElement.querySelectorAll('.materia-card').length).toBe(DEMO_MATERIAS.length);
       expect(fixture.nativeElement.querySelector('.materias-page__demo').textContent).toContain('Datos de demostración');
       expect(fixture.nativeElement.querySelector('.materia-card').textContent).toContain('7.4');
-      expect(fixture.nativeElement.querySelector('.materia-card button').textContent).toContain('Explorar materia');
+      expect(fixture.nativeElement.querySelector('.materia-card .materia-button').textContent).toContain('Explorar materia');
 
       fixture.componentInstance.cargarMaterias();
       fixture.detectChanges();
@@ -110,7 +110,7 @@ describe('HU-01: catálogo de materias', () => {
     dialogo.showModal = vi.fn();
     dialogo.close = vi.fn(() => dialogo.dispatchEvent(new Event('close')));
 
-    fixture.nativeElement.querySelectorAll('.materia-card button')[1].click();
+    fixture.nativeElement.querySelectorAll('.materia-card__informacion')[1].click();
     await fixture.whenStable();
     expect(dialogo.showModal).toHaveBeenCalledOnce();
     expect(dialogo.querySelector('h2')?.textContent).toBe('Matemática II');

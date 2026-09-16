@@ -119,6 +119,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materias-search__clear:focus-visible { outline: 2px solid #064bad; outline-offset: 2px; }
 
 .materia-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -131,7 +132,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   overflow-wrap: anywhere;
 }
 
-.materia-card header { min-height: 6.1rem; }
+.materia-card header { min-height: 6.1rem; padding-right: 2rem; }
 .materia-card h2 { margin: 0 0 0.65rem; font-size: 1.2rem; line-height: 1.35; }
 .materia-card__meta { margin: 0; color: #617794; font-size: 0.73rem; line-height: 1.6; }
 .materia-card__indicadores { margin-top: 1.25rem; }
@@ -212,6 +213,25 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materia-button:hover { background-color: #073b83; }
 .materia-button:focus-visible { outline: 3px solid #e5ac20; outline-offset: 3px; }
 
+.materia-icon-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #064bad;
+  cursor: pointer;
+}
+.materia-icon-button svg { width: 100%; height: 100%; }
+.materia-icon-button:hover { background-color: #dfebfa; }
+.materia-icon-button:focus-visible { outline: 2px solid #064bad; outline-offset: 2px; }
+
 .materias-page__message {
   padding: 3rem 1.5rem;
   border: 1px solid #d3e1f2;
@@ -245,7 +265,8 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   overflow-wrap: anywhere;
 }
 .materia-detalle::backdrop { background-color: #14243da6; }
-.materia-detalle h2 { margin: 0 0 1.5rem; }
+.materia-detalle h2 { margin: 0 0 1.5rem; padding-right: 2rem; }
+.materia-detalle > .materias-page__eyebrow { padding-right: 2rem; }
 .materia-detalle dl { margin: 0 0 1.5rem; }
 .materia-detalle dl div { padding: 0.75rem 0; border-bottom: 1px solid #e4ebf4; }
 .materia-detalle dt { margin-bottom: 0.3rem; color: #617794; font-size: 0.8rem; }

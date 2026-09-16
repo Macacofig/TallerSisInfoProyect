@@ -84,6 +84,15 @@
       <div class="materias-grid">
         @for (materia of materias(); track materia.id) {
           <article class="materia-card" [attr.aria-labelledby]="'materia-' + materia.id">
+            <button #informacion type="button" class="materia-icon-button materia-card__informacion"
+              [attr.aria-label]="MESSAGES.INFORMATION_BUTTON + ': ' + materia.nombre"
+              aria-haspopup="dialog"
+              (click)="abrirInformacion(materia, informacion)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 11v6M12 7v1"></path>
+              </svg>
+            </button>
             <header>
               <p class="materia-card__codigo">{{ materia.codigo }}</p>
               <h2 [id]="'materia-' + materia.id">{{ materia.nombre }}</h2>
@@ -185,10 +194,9 @@
                 {{ MESSAGES.EVALUATIONS_UNAVAILABLE }}
               </p>
             }
-            <button #explorar type="button" class="materia-button"
+            <button type="button" class="materia-button"
               [attr.aria-label]="MESSAGES.EXPLORE_BUTTON + ': ' + materia.nombre"
-              aria-haspopup="dialog"
-              (click)="explorarMateria(materia, explorar)">
+              (click)="explorarMateria(materia)">
               {{ MESSAGES.EXPLORE_BUTTON }}
             </button>
           </article>
@@ -199,6 +207,12 @@
 
   <dialog #detalle class="materia-detalle" aria-labelledby="titulo-detalle" (close)="limpiarSeleccion()">
     @if (materiaSeleccionada(); as materia) {
+      <button type="button" class="materia-icon-button materia-detalle__cerrar"
+        [attr.aria-label]="MESSAGES.CLOSE_INFORMATION_BUTTON" (click)="cerrarDetalle()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+          <path d="m6 6 12 12M18 6 6 18"></path>
+        </svg>
+      </button>
       <p class="materias-page__eyebrow">{{ MESSAGES.MODAL_EYEBROW }}</p>
       <h2 id="titulo-detalle" tabindex="-1" autofocus>{{ materia.nombre }}</h2>
       @if (mostrandoDemo()) {
@@ -209,9 +223,10 @@
         <div><dt>{{ MESSAGES.MODAL_CAREER_LABEL }}</dt><dd>{{ materia.carrera }}</dd></div>
         <div><dt>{{ MESSAGES.MODAL_SEMESTER_LABEL }}</dt><dd>{{ materia.semestre }}</dd></div>
       </dl>
-      <section class="materia-detalle__seccion" aria-labelledby="descripcion-detalle">
-        <h3 id="descripcion-detalle">{{ MESSAGES.MODAL_DESCRIPTION_LABEL }}</h3>
-        <p>{{ materia.descripcion?.trim() || MESSAGES.MODAL_INFORMATION_UNAVAILABLE }}</p>
+      <section class="materia-detalle__seccion" aria-labelledby="prerrequisitos-detalle">
+        <h3 id="prerrequisitos-detalle">{{ MESSAGES.MODAL_ACADEMIC_PREREQUISITES_LABEL }}</h3>
+        <!-- El contrato de materias aún no proporciona prerrequisitos académicos. -->
+        <p>{{ MESSAGES.MODAL_INFORMATION_UNAVAILABLE }}</p>
       </section>
       <section class="materia-detalle__seccion" aria-labelledby="conocimientos-detalle">
         <h3 id="conocimientos-detalle">{{ MESSAGES.MODAL_RECOMMENDED_PREREQUISITES_LABEL }}</h3>
@@ -234,9 +249,7 @@
           <div><dt>{{ MESSAGES.MODAL_EVALUATIONS_LABEL }}</dt><dd>{{ materia.cantidadEstudiantesEvaluados }} {{ MESSAGES.MODAL_STUDENTS_SUFFIX }}</dd></div>
         }
       </dl>
-      <button type="button" class="materia-button" autofocus (click)="cerrarDetalle()">{{ MESSAGES.BACK_TO_CATALOG_BUTTON }}</button>
-      <button type="button" class="materia-button" (click)="verDetalleMateria()">{{ MESSAGES.VIEW_DETAIL_BUTTON }}</button>
-      <button type="button" class="materia-button" (click)="cerrarDetalle()">{{ MESSAGES.BACK_TO_CATALOG_BUTTON }}</button>
+      <button type="button" class="materia-button" (click)="cerrarDetalle(); explorarMateria(materia)">{{ MESSAGES.VIEW_DETAIL_BUTTON }}</button>
     }
   </dialog>
 </section>

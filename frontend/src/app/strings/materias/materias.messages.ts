@@ -71,17 +71,18 @@ export const MESSAGES = {
 
   // Botones y acciones
   EXPLORE_BUTTON: 'Explorar materia',
+  INFORMATION_BUTTON: 'Ver información de la materia',
   VIEW_DETAIL_BUTTON: 'Ver detalle y calificaciones',
-  BACK_TO_CATALOG_BUTTON: 'Volver al catálogo',
+  CLOSE_INFORMATION_BUTTON: 'Cerrar información de la materia',
 
   // Detalle de materia (HU-04)
   MODAL_EYEBROW: 'Información de la materia',
   MODAL_CODE_LABEL: 'Código',
   MODAL_CAREER_LABEL: 'Carrera',
   MODAL_SEMESTER_LABEL: 'Semestre sugerido',
-  MODAL_DESCRIPTION_LABEL: 'Descripción general',
+  MODAL_ACADEMIC_PREREQUISITES_LABEL: 'Prerrequisitos',
   MODAL_RECOMMENDED_PREREQUISITES_LABEL: 'Conocimientos previos recomendados',
-  MODAL_INFORMATION_UNAVAILABLE: 'Información no disponible.',
+  MODAL_INFORMATION_UNAVAILABLE: 'Información no disponible',
   MODAL_DOMINANCE_LABEL: 'Predominio',
   MODAL_DIFFICULTY_LABEL: 'Dificultad',
   MODAL_WORKLOAD_LABEL: 'Carga de trabajo',
