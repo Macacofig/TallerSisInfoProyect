@@ -104,6 +104,9 @@ export class MateriaDetalleComponent implements OnInit {
 
   mostrarFormularioCalificacion = false;
   mostrarConfirmacion = false;
+  mostrarConfirmacionEliminacion = false;
+  modoEdicion = false;
+  eliminandoCalificacion = false;
 
   formularioCalificacion: FormGroup;
 
@@ -234,22 +237,104 @@ export class MateriaDetalleComponent implements OnInit {
       return;
     }
 
+    this.modoEdicion =
+      false;
+
     this.mostrarFormularioCalificacion =
       true;
 
     this.mostrarConfirmacion =
       false;
 
+    this.mostrarConfirmacionEliminacion =
+      false;
+
     this.errorCalificacion =
       '';
   }
 
+  abrirEdicionCalificacion(): void {
+
+    if (
+      !this.calificacionExistente ||
+      this.enviandoCalificacion ||
+      this.eliminandoCalificacion
+    ) {
+      return;
+    }
+
+    this.formularioCalificacion
+      .patchValue({
+
+        dificultad:
+          this.calificacionExistente.dificultad,
+
+        carga:
+          this.calificacionExistente.carga,
+
+        conocimientoPrevio:
+          this.calificacionExistente.conocimientoPrevio,
+
+        prerequisitos:
+          this.calificacionExistente.prerequisitosText,
+
+        predominio:
+          this.calificacionExistente.predominio,
+
+        gestion:
+          this.calificacionExistente.gestion
+      });
+
+    this.modoEdicion =
+      true;
+
+    this.mostrarConfirmacion =
+      false;
+
+    this.mostrarConfirmacionEliminacion =
+      false;
+
+    this.errorCalificacion =
+      '';
+
+    this.changeDetectorRef
+      .markForCheck();
+  }
+
+  cancelarEdicionCalificacion(): void {
+
+    this.modoEdicion =
+      false;
+
+    this.mostrarConfirmacion =
+      false;
+
+    this.errorCalificacion =
+      '';
+
+    this.changeDetectorRef
+      .markForCheck();
+  }
+
   cerrarFormularioCalificacion(): void {
+
+    if (
+      this.enviandoCalificacion ||
+      this.eliminandoCalificacion
+    ) {
+      return;
+    }
 
     this.mostrarFormularioCalificacion =
       false;
 
     this.mostrarConfirmacion =
+      false;
+
+    this.mostrarConfirmacionEliminacion =
+      false;
+
+    this.modoEdicion =
       false;
 
     this.errorCalificacion =
@@ -259,7 +344,10 @@ export class MateriaDetalleComponent implements OnInit {
   abrirConfirmacion(): void {
 
     if (
-      this.yaCalifico ||
+      (
+        this.yaCalifico &&
+        !this.modoEdicion
+      ) ||
       this.formularioCalificacion.invalid
     ) {
 
@@ -280,6 +368,39 @@ export class MateriaDetalleComponent implements OnInit {
 
     this.mostrarConfirmacion =
       false;
+  }
+
+  abrirConfirmacionEliminacion(): void {
+
+    if (
+      !this.calificacionExistente ||
+      this.enviandoCalificacion ||
+      this.eliminandoCalificacion
+    ) {
+      return;
+    }
+
+    this.errorCalificacion =
+      '';
+
+    this.mostrarConfirmacionEliminacion =
+      true;
+
+    this.changeDetectorRef
+      .markForCheck();
+  }
+
+  cancelarConfirmacionEliminacion(): void {
+
+    if (this.eliminandoCalificacion) {
+      return;
+    }
+
+    this.mostrarConfirmacionEliminacion =
+      false;
+
+    this.changeDetectorRef
+      .markForCheck();
   }
 
   normalizarGestion(
@@ -346,7 +467,10 @@ export class MateriaDetalleComponent implements OnInit {
       !materiaId ||
       this.formularioCalificacion.invalid ||
       this.enviandoCalificacion ||
-      this.yaCalifico
+      (
+        this.yaCalifico &&
+        !this.modoEdicion
+      )
     ) {
       return;
     }
@@ -403,16 +527,29 @@ export class MateriaDetalleComponent implements OnInit {
           valores.gestion
       };
 
+    const esEdicion =
+      this.modoEdicion;
+
     this.enviandoCalificacion =
       true;
 
     this.errorCalificacion =
       '';
 
-    this.calificacionesMateriaService
-      .registrarCalificacion(
-        calificacion
-      )
+    const operacion =
+      esEdicion
+        ? this.calificacionesMateriaService
+            .actualizarCalificacion(
+              this.idEstudianteActual,
+              materiaId,
+              calificacion
+            )
+        : this.calificacionesMateriaService
+            .registrarCalificacion(
+              calificacion
+            );
+
+    operacion
       .subscribe({
 
         next: (respuesta) => {
@@ -423,7 +560,7 @@ export class MateriaDetalleComponent implements OnInit {
           this.mostrarConfirmacion =
             false;
 
-          this.mostrarFormularioCalificacion =
+          this.mostrarConfirmacionEliminacion =
             false;
 
           this.yaCalifico =
@@ -431,6 +568,12 @@ export class MateriaDetalleComponent implements OnInit {
 
           this.calificacionExistente =
             respuesta;
+
+          this.modoEdicion =
+            false;
+
+          this.mostrarFormularioCalificacion =
+            esEdicion;
 
           this.filtroGestionesActivo =
             false;
@@ -470,7 +613,100 @@ export class MateriaDetalleComponent implements OnInit {
           } else {
 
             this.errorCalificacion =
-              MESSAGES.CALIFICATION_REGISTER_ERROR;
+              esEdicion
+                ? MESSAGES.CALIFICATION_UPDATE_ERROR
+                : MESSAGES.CALIFICATION_REGISTER_ERROR;
+          }
+
+          this.changeDetectorRef
+            .markForCheck();
+        }
+
+      });
+  }
+
+  confirmarEliminacionCalificacion(): void {
+
+    const materiaId =
+      this.obtenerMateriaId();
+
+    if (
+      !materiaId ||
+      !this.calificacionExistente ||
+      this.enviandoCalificacion ||
+      this.eliminandoCalificacion
+    ) {
+      return;
+    }
+
+    this.eliminandoCalificacion =
+      true;
+
+    this.errorCalificacion =
+      '';
+
+    this.calificacionesMateriaService
+      .eliminarCalificacion(
+        this.idEstudianteActual,
+        materiaId
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.eliminandoCalificacion =
+            false;
+
+          this.mostrarConfirmacionEliminacion =
+            false;
+
+          this.mostrarConfirmacion =
+            false;
+
+          this.mostrarFormularioCalificacion =
+            false;
+
+          this.modoEdicion =
+            false;
+
+          this.yaCalifico =
+            false;
+
+          this.calificacionExistente =
+            null;
+
+          this.filtroGestionesActivo =
+            false;
+
+          this.contextoPromedios =
+            MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+
+          this.cargarPromediosMateria(
+            materiaId
+          );
+
+          this.cargarGestiones();
+
+          this.changeDetectorRef
+            .markForCheck();
+        },
+
+        error: (error) => {
+
+          this.eliminandoCalificacion =
+            false;
+
+          if (
+            error.status === 404
+          ) {
+
+            this.errorCalificacion =
+              MESSAGES.CALIFICATION_DELETE_NOT_FOUND;
+
+          } else {
+
+            this.errorCalificacion =
+              MESSAGES.CALIFICATION_DELETE_ERROR;
           }
 
           this.changeDetectorRef

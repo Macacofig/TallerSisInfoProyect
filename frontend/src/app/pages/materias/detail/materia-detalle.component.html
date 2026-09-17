@@ -267,7 +267,8 @@
 
           @if (
             yaCalifico &&
-            calificacionExistente
+            calificacionExistente &&
+            !modoEdicion
           ) {
 
             <div class="calificacion-materia__encabezado">
@@ -284,13 +285,36 @@
 
               </div>
 
-              <button
-                type="button"
-                class="boton-cerrar"
-                (click)="cerrarFormularioCalificacion()"
-              >
-                {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
-              </button>
+              <div class="calificacion-materia__acciones">
+
+                <button
+                  type="button"
+                  class="boton-secundario"
+                  [disabled]="enviandoCalificacion || eliminandoCalificacion"
+                  (click)="abrirEdicionCalificacion()"
+                >
+                  {{ mensajes.CALIFICATION_EDIT_BUTTON }}
+                </button>
+
+                <button
+                  type="button"
+                  class="boton-secundario"
+                  [disabled]="enviandoCalificacion || eliminandoCalificacion"
+                  (click)="abrirConfirmacionEliminacion()"
+                >
+                  {{ mensajes.CALIFICATION_DELETE_BUTTON }}
+                </button>
+
+                <button
+                  type="button"
+                  class="boton-cerrar"
+                  [disabled]="enviandoCalificacion || eliminandoCalificacion"
+                  (click)="cerrarFormularioCalificacion()"
+                >
+                  {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
+                </button>
+
+              </div>
 
             </div>
 
@@ -362,6 +386,62 @@
               {{ mensajes.CALIFICATION_SINGLE_NOTICE }}
             </p>
 
+            @if (mostrarConfirmacionEliminacion) {
+
+              <div class="confirmacion-calificacion">
+
+                <h3>
+                  {{ mensajes.CALIFICATION_DELETE_CONFIRM_TITLE }}
+                </h3>
+
+                <p>
+                  {{ mensajes.CALIFICATION_DELETE_CONFIRM_DESCRIPTION }}
+                </p>
+
+                <div class="confirmacion-calificacion__acciones">
+
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    [disabled]="eliminandoCalificacion"
+                    (click)="cancelarConfirmacionEliminacion()"
+                  >
+                    {{ mensajes.CALIFICATION_CANCEL_BUTTON }}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    [disabled]="eliminandoCalificacion"
+                    (click)="confirmarEliminacionCalificacion()"
+                  >
+
+                    @if (eliminandoCalificacion) {
+
+                      {{ mensajes.CALIFICATION_DELETING }}
+
+                    } @else {
+
+                      {{ mensajes.CALIFICATION_DELETE_CONFIRM_BUTTON }}
+
+                    }
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            }
+
+            @if (errorCalificacion) {
+
+              <p class="mensaje-error">
+                {{ errorCalificacion }}
+              </p>
+
+            }
+
           } @else {
 
             <div class="calificacion-materia__encabezado">
@@ -369,11 +449,31 @@
               <div>
 
                 <h2>
-                  {{ mensajes.CALIFICATION_FORM_TITLE }}
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_EDIT_TITLE }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_FORM_TITLE }}
+
+                  }
+
                 </h2>
 
                 <p>
-                  {{ mensajes.CALIFICATION_FORM_DESCRIPTION }}
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_EDIT_DESCRIPTION }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_FORM_DESCRIPTION }}
+
+                  }
+
                 </p>
 
               </div>
@@ -381,6 +481,7 @@
               <button
                 type="button"
                 class="boton-cerrar"
+                [disabled]="enviandoCalificacion"
                 (click)="cerrarFormularioCalificacion()"
               >
                 {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
@@ -569,7 +670,8 @@
                 <button
                   type="button"
                   class="boton-secundario"
-                  (click)="cerrarFormularioCalificacion()"
+                  [disabled]="enviandoCalificacion"
+                  (click)="modoEdicion ? cancelarEdicionCalificacion() : cerrarFormularioCalificacion()"
                 >
                   {{ mensajes.CALIFICATION_CANCEL_BUTTON }}
                 </button>
@@ -577,7 +679,7 @@
                 <button
                   type="button"
                   class="boton-principal"
-                  [disabled]="formularioCalificacion.invalid"
+                  [disabled]="formularioCalificacion.invalid || enviandoCalificacion"
                   (click)="abrirConfirmacion()"
                 >
                   {{ mensajes.CALIFICATION_CONTINUE_BUTTON }}
@@ -592,11 +694,31 @@
               <div class="confirmacion-calificacion">
 
                 <h3>
-                  {{ mensajes.CALIFICATION_CONFIRM_TITLE }}
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_UPDATE_CONFIRM_TITLE }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_CONFIRM_TITLE }}
+
+                  }
+
                 </h3>
 
                 <p>
-                  {{ mensajes.CALIFICATION_CONFIRM_DESCRIPTION }}
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_UPDATE_CONFIRM_DESCRIPTION }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_CONFIRM_DESCRIPTION }}
+
+                  }
+
                 </p>
 
                 <div class="confirmacion-calificacion__resumen">
@@ -665,9 +787,13 @@
 
                 </div>
 
-                <p>
-                  {{ mensajes.CALIFICATION_CONFIRM_NOTICE }}
-                </p>
+                @if (!modoEdicion) {
+
+                  <p>
+                    {{ mensajes.CALIFICATION_CONFIRM_NOTICE }}
+                  </p>
+
+                }
 
                 <div class="confirmacion-calificacion__acciones">
 
@@ -689,11 +815,27 @@
 
                     @if (enviandoCalificacion) {
 
-                      {{ mensajes.CALIFICATION_REGISTERING }}
+                      @if (modoEdicion) {
+
+                        {{ mensajes.CALIFICATION_UPDATING }}
+
+                      } @else {
+
+                        {{ mensajes.CALIFICATION_REGISTERING }}
+
+                      }
 
                     } @else {
 
-                      {{ mensajes.CALIFICATION_CONFIRM_BUTTON }}
+                      @if (modoEdicion) {
+
+                        {{ mensajes.CALIFICATION_UPDATE_BUTTON }}
+
+                      } @else {
+
+                        {{ mensajes.CALIFICATION_CONFIRM_BUTTON }}
+
+                      }
 
                     }
 
