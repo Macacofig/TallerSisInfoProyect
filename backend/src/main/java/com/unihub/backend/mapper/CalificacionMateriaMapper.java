@@ -41,4 +41,19 @@ public class CalificacionMateriaMapper {
                 calificacion.getGestion()
         );
     }
+
+    public void actualizar(CalificacionMateria calificacion, CalificacionMateriaRequest request) {
+        String prerequisitos = request.prerequisitos().stream()
+                .map(String::trim)
+                .collect(Collectors.joining(","));
+
+        calificacion.actualizar(
+                request.dificultad(),
+                request.carga(),
+                request.conocimientoPrevio(),
+                prerequisitos,
+                request.predominio(),
+                request.gestion()
+        );
+    }
 }

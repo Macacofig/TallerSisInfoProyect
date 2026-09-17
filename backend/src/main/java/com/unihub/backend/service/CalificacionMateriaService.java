@@ -49,6 +49,27 @@ public class CalificacionMateriaService {
 		.map(calificacionMapper::toResponse);
     }
 
+    public Optional<CalificacionMateriaResponse> actualizar(
+		Long idEstudiante,
+		Long idMateria,
+		CalificacionMateriaRequest request
+	) {
+	return calificacionRepository.findFirstByIdEstudianteAndMateriaId(idEstudiante, idMateria)
+		.map(calificacion -> {
+		    calificacionMapper.actualizar(calificacion, request);
+		    return calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		});
+    }
+
+    public boolean eliminar(Long idEstudiante, Long idMateria) {
+	return calificacionRepository.findFirstByIdEstudianteAndMateriaId(idEstudiante, idMateria)
+		.map(calificacion -> {
+		    calificacionRepository.delete(calificacion);
+		    return true;
+		})
+		.orElse(false);
+    }
+
     public Optional<CalificacionMateriaPromedioResponse> obtenerPromediosPorGestion(String gestion) {
 	return crearPromedios(null, gestion, gestion, calificacionRepository.findByGestion(gestion));
     }
