@@ -20,6 +20,11 @@ public class MateriaController {
         this.materiaService = materiaService;
     }
 
+    @GetMapping("/carreras")
+    public ResponseEntity<List<String>> obtenerCarreras() {
+        return ResponseEntity.ok(materiaService.obtenerCarreras());
+    }
+
     @GetMapping
     public ResponseEntity<List<MateriaResponse>> obtenerMaterias(
 

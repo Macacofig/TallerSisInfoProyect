@@ -41,4 +41,8 @@ public class MateriaService {
                 .map(materiaMapper::toResponse)
                 .toList();
     }
+
+        public List<String> obtenerCarreras() {
+                return materiaRepository.findCarrerasUnicas();
+        }
 }

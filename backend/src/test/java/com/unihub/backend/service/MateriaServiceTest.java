@@ -176,4 +176,18 @@ class MateriaServiceTest {
         verificarConsulta();
         mostrarResultado("Mostrar materias por materia, nombre y carrera");
     }
+
+    @Test
+    @Order(10)
+    void deberiaRetornarCarrerasUnicas() {
+        when(materiaRepository.findCarrerasUnicas()).thenReturn(
+                List.of("Administración", "Ingeniería de Sistemas")
+        );
+
+        List<String> resultado = materiaService.obtenerCarreras();
+
+        assertEquals(List.of("Administración", "Ingeniería de Sistemas"), resultado);
+        verify(materiaRepository).findCarrerasUnicas();
+        mostrarResultado("Mostrar carreras únicas");
+    }
 }
