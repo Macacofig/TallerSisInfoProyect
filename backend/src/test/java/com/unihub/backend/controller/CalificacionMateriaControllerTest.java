@@ -17,8 +17,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -138,6 +140,47 @@ class CalificacionMateriaControllerTest {
 
         verify(calificacionService).obtenerPorEstudiante(25L, 2L);
         mostrarResultado("Devolver NULL cuando el estudiante no tiene calificación para la materia solicitada");
+          }
+
+          @Test
+          void deberiaActualizarLaCalificacionDeUnEstudiante() throws Exception {
+        when(calificacionService.actualizar(any(), any(), any())).thenReturn(
+          java.util.Optional.of(new CalificacionMateriaResponse(
+            4L, 1L, 25L, 10, 7, 9, "Algebra,Logica", "Teorico", "II-Año"
+          ))
+        );
+
+        mockMvc.perform(put("/api/calificacion-materia/estudiante/25/materia/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                    {
+                      "idMateria": 1,
+                      "idEstudiante": 25,
+                      "dificultad": 10,
+                      "carga": 7,
+                      "conocimientoPrevio": 9,
+                      "prerequisitos": ["Algebra", "Logica"],
+                      "predominio": "Teorico",
+                      "gestion": "II-Año"
+                    }
+                    """))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.dificultad").value(10))
+          .andExpect(jsonPath("$.gestion").value("II-Año"));
+
+        verify(calificacionService).actualizar(any(), any(), any());
+        mostrarResultado("Actualizar la calificación de un estudiante");
+          }
+
+          @Test
+          void deberiaEliminarLaCalificacionDeUnEstudiante() throws Exception {
+        when(calificacionService.eliminar(25L, 1L)).thenReturn(true);
+
+        mockMvc.perform(delete("/api/calificacion-materia/estudiante/25/materia/1"))
+          .andExpect(status().isNoContent());
+
+        verify(calificacionService).eliminar(25L, 1L);
+        mostrarResultado("Eliminar la calificación de un estudiante");
           }
 
           @Test

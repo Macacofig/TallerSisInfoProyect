@@ -143,6 +143,42 @@ class CalificacionMateriaServiceTest {
         }
 
     @Test
+    void deberiaActualizarLaCalificacionDeUnEstudiante() {
+        Materia materia = crearMateria();
+        CalificacionMateria calificacion = crearCalificacion(materia, 25L, 8, 6, 5, "I-Año");
+        CalificacionMateriaRequest request = new CalificacionMateriaRequest(
+                1L, 25L, 10, 7, 9, List.of("Algebra", "Logica"), "Teorico", "II-Año"
+        );
+        when(calificacionRepository.findFirstByIdEstudianteAndMateriaId(25L, 1L))
+                .thenReturn(Optional.of(calificacion));
+        when(calificacionRepository.save(calificacion)).thenReturn(calificacion);
+
+        CalificacionMateriaResponse resultado = calificacionService.actualizar(25L, 1L, request).orElseThrow();
+
+        assertEquals(10, resultado.dificultad());
+        assertEquals(7, resultado.carga());
+        assertEquals(9, resultado.conocimientoPrevio());
+        assertEquals("Algebra,Logica", resultado.prerequisitosText());
+        assertEquals("Teorico", resultado.predominio());
+        assertEquals("II-Año", resultado.gestion());
+        verify(calificacionRepository).save(calificacion);
+        mostrarResultado("Actualizar la calificación de un estudiante");
+    }
+
+    @Test
+    void deberiaEliminarLaCalificacionDeUnEstudiante() {
+        Materia materia = crearMateria();
+        CalificacionMateria calificacion = crearCalificacion(materia, 25L, 8, 6, 5, "I-Año");
+        when(calificacionRepository.findFirstByIdEstudianteAndMateriaId(25L, 1L))
+                .thenReturn(Optional.of(calificacion));
+
+        assertTrue(calificacionService.eliminar(25L, 1L));
+
+        verify(calificacionRepository).delete(calificacion);
+        mostrarResultado("Eliminar la calificación de un estudiante");
+    }
+
+    @Test
     void deberiaCalcularPromediosDeUnaGestionEspecifica() {
         Materia materia = crearMateria();
         when(calificacionRepository.findByGestion("I-Año")).thenReturn(List.of(

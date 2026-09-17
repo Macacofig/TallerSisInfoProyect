@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,6 +52,27 @@ public class CalificacionMateriaController {
 			@PathVariable Long idMateria
 	) {
 		return ResponseEntity.ok(calificacionService.obtenerPorEstudiante(idEstudiante, idMateria).orElse(null));
+	}
+
+	@PutMapping("/estudiante/{idEstudiante}/materia/{idMateria}")
+	public ResponseEntity<CalificacionMateriaResponse> actualizar(
+			@PathVariable Long idEstudiante,
+			@PathVariable Long idMateria,
+			@Valid @RequestBody CalificacionMateriaRequest request
+	) {
+		return calificacionService.actualizar(idEstudiante, idMateria, request)
+				.map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	@DeleteMapping("/estudiante/{idEstudiante}/materia/{idMateria}")
+	public ResponseEntity<Void> eliminar(
+			@PathVariable Long idEstudiante,
+			@PathVariable Long idMateria
+	) {
+		return calificacionService.eliminar(idEstudiante, idMateria)
+				? ResponseEntity.noContent().build()
+				: ResponseEntity.notFound().build();
 	}
 
 	@GetMapping("/periodo/{gestion}")

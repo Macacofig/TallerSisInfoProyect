@@ -102,4 +102,20 @@ public class CalificacionMateria {
 	public String getGestion() {
 		return gestion;
 	}
+
+	public void actualizar(
+			Integer dificultad,
+			Integer carga,
+			Integer conocimientoPrevio,
+			String prerequisitosText,
+			String predominio,
+			String gestion
+	) {
+		this.dificultad = dificultad;
+		this.carga = carga;
+		this.conocimientoPrevio = conocimientoPrevio;
+		this.prerequisitosText = prerequisitosText;
+		this.predominio = predominio;
+		this.gestion = gestion;
+	}
 }
