@@ -1,0 +1,99 @@
+<section class="tree-panel" aria-label="Malla curricular de materias">
+  <div class="tree-toolbar">
+    <div class="tree-toolbar__hint" *ngIf="selectedSigla()">
+      <span class="tree-toolbar__dot" aria-hidden="true"></span>
+      {{ selectedSigla() }}
+    </div>
+
+    <div class="tree-controls" aria-label="Controles del árbol">
+      <button
+        type="button"
+        class="tree-control"
+        aria-label="Alejar árbol"
+        title="Alejar"
+        (click)="zoomOut()"
+      >
+        <span aria-hidden="true">−</span>
+      </button>
+
+      <button
+        type="button"
+        class="tree-zoom-value"
+        aria-label="Restablecer zoom"
+        title="Restablecer zoom"
+        (click)="resetZoom()"
+      >
+        {{ zoom() * 100 | number: '1.0-0' }}%
+      </button>
+
+      <button
+        type="button"
+        class="tree-control"
+        aria-label="Acercar árbol"
+        title="Acercar"
+        (click)="zoomIn()"
+      >
+        <span aria-hidden="true">+</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="tree-viewport">
+    <div
+      class="tree-stage"
+      [style.width.px]="scaledWidth()"
+      [style.height.px]="scaledHeight()"
+    >
+      <div
+        class="tree-canvas"
+        [style.width.px]="layout.width"
+        [style.height.px]="layout.height"
+        [style.transform]="'scale(' + zoom() + ')'"
+        (click)="clearSelection()"
+      >
+        <svg
+          class="tree-connections"
+          [attr.viewBox]="'0 0 ' + layout.width + ' ' + layout.height"
+          [attr.width]="layout.width"
+          [attr.height]="layout.height"
+          aria-hidden="true"
+        >
+          <ng-container *ngFor="let connection of layout.connections">
+            <path
+              *ngIf="isConnectionHighlighted(connection)"
+              class="tree-connection"
+              [class.tree-connection--active]="isConnectionHighlighted(connection)"
+              [attr.d]="'M ' + connection.fromX + ' ' + connection.fromY + ' C ' + connection.fromX + ' ' + (connection.fromY + 32) + ', ' + connection.toX + ' ' + (connection.toY - 32) + ', ' + connection.toX + ' ' + connection.toY"
+            ></path>
+          </ng-container>
+        </svg>
+
+        <button
+          *ngFor="let node of layout.nodes; trackBy: trackBySigla"
+          type="button"
+          class="materia-node"
+          [class.materia-node--muted]="!isNodeHighlighted(node)"
+          [class.materia-node--selected]="selectedSigla() === node.sigla"
+          [ngClass]="'materia-node--' + node.area.toLowerCase()"
+          [style.left.px]="node.x"
+          [style.top.px]="node.y"
+          [attr.aria-label]="node.sigla + ': ' + node.nombre"
+          [title]="node.sigla + ' · ' + node.nombre"
+          (click)="selectMateria(node.sigla); $event.stopPropagation()"
+        >
+          <span class="materia-node__sigla">{{ node.sigla }}</span>
+          <span class="materia-node__name">{{ node.nombre }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <button
+    *ngIf="selectedSigla()"
+    type="button"
+    class="tree-clear-selection"
+    (click)="clearSelection()"
+  >
+    Limpiar selección
+  </button>
+</section>
