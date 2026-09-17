@@ -212,6 +212,52 @@ export const MESSAGES = {
   CALIFICATION_STATUS_ERROR:
     'No se pudo verificar si ya calificaste esta materia.',
 
+  // HU-05.2.2 - Edición y eliminación de calificación
+  CALIFICATION_EDIT_BUTTON:
+    'Editar',
+
+  CALIFICATION_DELETE_BUTTON:
+    'Eliminar',
+
+  CALIFICATION_EDIT_TITLE:
+    'Editar calificación',
+
+  CALIFICATION_EDIT_DESCRIPTION:
+    'Actualiza los datos de tu calificación registrada.',
+
+  CALIFICATION_UPDATE_CONFIRM_TITLE:
+    'Confirmar cambios',
+
+  CALIFICATION_UPDATE_CONFIRM_DESCRIPTION:
+    'Revisa los valores antes de actualizar tu calificación.',
+
+  CALIFICATION_UPDATE_BUTTON:
+    'Guardar cambios',
+
+  CALIFICATION_UPDATING:
+    'Actualizando...',
+
+  CALIFICATION_UPDATE_ERROR:
+    'No se pudo actualizar la calificación. Intenta nuevamente.',
+
+  CALIFICATION_DELETE_CONFIRM_TITLE:
+    'Eliminar calificación',
+
+  CALIFICATION_DELETE_CONFIRM_DESCRIPTION:
+    '¿Seguro que deseas eliminar esta calificación? Esta acción no se puede deshacer.',
+
+  CALIFICATION_DELETE_CONFIRM_BUTTON:
+    'Eliminar calificación',
+
+  CALIFICATION_DELETING:
+    'Eliminando...',
+
+  CALIFICATION_DELETE_NOT_FOUND:
+    'La calificación que intentas eliminar ya no existe.',
+
+  CALIFICATION_DELETE_ERROR:
+    'No se pudo eliminar la calificación. Intenta nuevamente.',
+
   // HU-05.2 - Visualización de calificaciones
   CALIFICATION_SUMMARY_TITLE:
     'Resumen de calificaciones',

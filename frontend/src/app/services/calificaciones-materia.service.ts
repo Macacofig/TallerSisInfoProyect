@@ -32,6 +32,34 @@ export class CalificacionesMateriaService {
     );
   }
 
+  actualizarCalificacion(
+    idEstudiante: number,
+    idMateria: number,
+    calificacion: RegistrarCalificacionMateriaRequest
+  ): Observable<CalificacionMateriaResponse> {
+
+    const url =
+      `${this.apiUrl}/estudiante/${idEstudiante}/materia/${idMateria}`;
+
+    return this.http.put<CalificacionMateriaResponse>(
+      url,
+      calificacion
+    );
+  }
+
+  eliminarCalificacion(
+    idEstudiante: number,
+    idMateria: number
+  ): Observable<void> {
+
+    const url =
+      `${this.apiUrl}/estudiante/${idEstudiante}/materia/${idMateria}`;
+
+    return this.http.delete<void>(
+      url
+    );
+  }
+
   obtenerCalificacionPorEstudiante(
     idEstudiante: number,
     idMateria: number
