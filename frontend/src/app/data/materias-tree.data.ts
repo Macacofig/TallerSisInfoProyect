@@ -16,14 +16,6 @@ export interface MateriaTree {
   prerrequisitos: string[];
 }
 
-/**
- * Datos de la malla curricular 2024.
- *
- * MAT-132 usa MAT-123 como prerrequisito porque MAT-030 no existe en la
- * malla proporcionada y se considera un error de transcripcion/OCR.
- * Los espacios de electivas libres se excluyen porque no representan
- * materias con sigla propia.
- */
 export const MATERIAS_TREE: MateriaTree[] = [
   {
     sigla: 'MAT-123',
