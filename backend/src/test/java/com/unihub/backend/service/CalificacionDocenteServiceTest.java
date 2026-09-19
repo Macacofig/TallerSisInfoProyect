@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 class CalificacionDocenteServiceTest {
@@ -68,8 +69,32 @@ class CalificacionDocenteServiceTest {
         CalificacionDocenteRequest request = new CalificacionDocenteRequest(99L, 25L, 8, 7, 9, "año-I");
         when(docenteRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> calificacionService.crear(request));
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> calificacionService.crear(request)
+        );
+
+        assertEquals("El docente no existe", excepcion.getMessage());
+        verify(calificacionRepository, never()).save(any(CalificacionDocente.class));
         mostrarResultado("Rechazar una calificación cuando el docente no existe");
+    }
+
+    @Test
+    void deberiaRechazarCalificacionDuplicadaDelMismoEstudianteYDocente() {
+        Docente docente = crearDocente();
+        CalificacionDocenteRequest request = new CalificacionDocenteRequest(1L, 25L, 8, 7, 9, "año-I");
+        when(docenteRepository.findById(1L)).thenReturn(Optional.of(docente));
+        when(calificacionRepository.findFirstByIdEstudianteAndDocenteId(25L, 1L))
+                .thenReturn(Optional.of(crearCalificacion(docente, 25L, 7, 7, 7, "año-I")));
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> calificacionService.crear(request)
+        );
+
+        assertEquals("El estudiante ya calificó a este docente", excepcion.getMessage());
+        verify(calificacionRepository, never()).save(any(CalificacionDocente.class));
+        mostrarResultado("Rechazar una calificación duplicada del mismo estudiante para el mismo docente");
     }
 
     @Test

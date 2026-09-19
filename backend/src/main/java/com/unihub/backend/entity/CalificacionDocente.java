@@ -9,9 +9,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "calificacionDocente")
+@Table(
+		name = "calificacionDocente",
+		uniqueConstraints = @UniqueConstraint(columnNames = {"id_estudiante", "id_docente"})
+)
 public class CalificacionDocente {
 
 	@Id

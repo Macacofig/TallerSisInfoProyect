@@ -35,6 +35,11 @@ public class CalificacionDocenteService {
 		Docente docente = docenteRepository.findById(request.idDocente())
 				.orElseThrow(() -> new IllegalArgumentException("El docente no existe"));
 
+		if (calificacionRepository.findFirstByIdEstudianteAndDocenteId(
+				request.idEstudiante(), request.idDocente()).isPresent()) {
+			throw new IllegalArgumentException("El estudiante ya calificó a este docente");
+		}
+
 		CalificacionDocente calificacion = calificacionMapper.toEntity(request, docente);
 		return calificacionMapper.toResponse(calificacionRepository.save(calificacion));
 	}
