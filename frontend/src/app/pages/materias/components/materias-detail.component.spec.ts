@@ -13,6 +13,7 @@ describe('HU-04: visualizar información de una materia', () => {
   let http: HttpTestingController;
   let dialogo: HTMLDialogElement;
   const endpoint = 'http://localhost:8081/api/materias';
+  const carrerasEndpoint = `${endpoint}/carreras`;
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
   const materia: Materia = {
@@ -32,6 +33,7 @@ describe('HU-04: visualizar información de una materia', () => {
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
+    http.expectOne(carrerasEndpoint).flush(['Ingeniería de Sistemas', 'Ingeniería Civil']);
     dialogo = fixture.nativeElement.querySelector('dialog');
     // jsdom no implementa la apertura modal ni el cierre nativo con Escape.
     dialogo.showModal = vi.fn();

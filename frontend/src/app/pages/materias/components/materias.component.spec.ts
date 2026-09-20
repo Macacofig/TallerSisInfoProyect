@@ -10,6 +10,7 @@ describe('HU-01: catálogo de materias', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
   const endpoint = 'http://localhost:8081/api/materias';
+  const carrerasEndpoint = `${endpoint}/carreras`;
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
   const materias: Materia[] = [
@@ -26,6 +27,7 @@ describe('HU-01: catálogo de materias', () => {
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
+    http.expectOne(carrerasEndpoint).flush(['Ingeniería de Sistemas', 'Ingeniería Civil']);
   });
 
   afterEach(() => {
