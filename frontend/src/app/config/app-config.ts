@@ -20,7 +20,20 @@ export const APP_CONFIG = {
       MATERIAS: '/materias',
       CALIFICACION_MATERIA: '/calificacion-materia',
       TEST: '/test',
+      AUTH_REGISTER: '/auth/register',
+      AUTH_LOGIN: '/auth/login',
     },
+  },
+
+  ROUTES: {
+    REGISTRO: '/registro',
+    // Pantallas a pantalla completa: se oculta el sidebar y el navbar.
+    SIN_LAYOUT: ['/', '/registro'],
+  },
+
+  AUTH: {
+    NOMBRE_MIN_LENGTH: 3,
+    CONTRASENA_MIN_LENGTH: 8,
   },
 
   TIMEOUTS: {
