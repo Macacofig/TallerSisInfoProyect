@@ -14,10 +14,14 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   obtenerMaterias(nombre = '', carrera = ''): Observable<Materia[]> {
-    const termino = nombre.trim();
+    const termino = nombre.trim().replace(/\s+/g, ' ');
     let params = termino ? new HttpParams().set('nombre', termino) : new HttpParams();
     if (carrera.trim()) params = params.set('carrera', carrera.trim());
     return this.http.get<Materia[]>(`${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.MATERIAS}`, { params });
+  }
+
+  obtenerCarreras(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.CARRERAS}`);
   }
 
   test() {

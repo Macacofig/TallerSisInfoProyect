@@ -10,6 +10,7 @@ describe('HU-03: filtrar materias por carrera', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
   const endpoint = 'http://localhost:8081/api/materias';
+  const carrerasEndpoint = `${endpoint}/carreras`;
   const sistemas = 'Ingeniería de Sistemas';
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
@@ -29,6 +30,9 @@ describe('HU-03: filtrar materias por carrera', () => {
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
+    http.expectOne(carrerasEndpoint).flush([
+      ' Ingeniería de Sistemas ', 'Ingeniería Civil', '', 'ingenieria de sistemas'
+    ]);
     http.expectOne(endpoint).flush(materias);
     fixture.detectChanges();
   });
@@ -69,10 +73,10 @@ describe('HU-03: filtrar materias por carrera', () => {
     return Array.from(codigos, codigo => codigo.textContent!.trim());
   }
 
-  it('ofrece solo Todas y Sistemas aunque el catálogo incluya otras carreras', () => {
+  it('obtiene las carreras de la API, elimina vacías y repetidas, y las ordena', () => {
     expect(selector().value).toBe('');
     expect(Array.from(selector().options, opcion => opcion.textContent)).toEqual([
-      'Todas', sistemas
+      'Todas', 'Ingeniería Civil', sistemas
     ]);
     expect(fixture.nativeElement.querySelector('label[for="filtrar-carrera"]').textContent).toBe('Carrera');
   });
@@ -85,7 +89,7 @@ describe('HU-03: filtrar materias por carrera', () => {
     expect(codigosVisibles()).toEqual(['INF-101', 'INF-201']);
     expect(fixture.nativeElement.querySelector('.materias-page__total').textContent)
       .toMatch(/2\s+materias encontradas/);
-    expect(selector().options.length).toBe(2);
+    expect(selector().options.length).toBe(3);
 
     seleccionar('');
     peticion().flush(materias);
@@ -126,7 +130,7 @@ describe('HU-03: filtrar materias por carrera', () => {
     expect(fixture.nativeElement.textContent).toContain(MESSAGES.CAREER_EMPTY_TITLE);
     expect(fixture.nativeElement.querySelector('.materias-page__demo')).toBeNull();
     expect(selector().value).toBe(sistemas);
-    expect(selector().options.length).toBe(2);
+    expect(selector().options.length).toBe(3);
   });
 
   it('distingue una búsqueda sin coincidencias dentro de una carrera', async () => {

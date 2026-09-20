@@ -36,6 +36,7 @@ import {
 
 import { APP_CONFIG } from '../../../config/app-config';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { NombreMateriaPipe } from '../../../pipes/nombre-materia.pipe';
 
 import {
   CalificacionGraficosComponent
@@ -55,6 +56,7 @@ import {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    NombreMateriaPipe,
     CalificacionGraficosComponent,
     FiltroGestionesComponent,
     HistorialCalificacionesComponent
