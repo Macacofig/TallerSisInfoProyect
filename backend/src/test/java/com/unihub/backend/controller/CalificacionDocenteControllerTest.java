@@ -2,6 +2,8 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.calificacion.CalificacionDocentePromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
+import com.unihub.backend.exception.CalificacionDocenteDuplicadaException;
+import com.unihub.backend.exception.DocenteInexistenteException;
 import com.unihub.backend.service.CalificacionDocenteService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +83,52 @@ class CalificacionDocenteControllerTest {
         verify(calificacionService, never()).crear(any());
         mostrarResultado("Rechazar calificación docente fuera del rango de 1 a 10");
     }
+
+                @Test
+                void deberiaResponder400CuandoElDocenteNoExiste() throws Exception {
+                                when(calificacionService.crear(any())).thenThrow(new DocenteInexistenteException());
+
+                                mockMvc.perform(post("/api/calificacion-docente")
+                                                                                                .contentType(MediaType.APPLICATION_JSON)
+                                                                                                .content("""
+                                                                                                                                {
+                                                                                                                                        "idDocente": 99,
+                                                                                                                                        "idEstudiante": 25,
+                                                                                                                                        "claridadExplicaciones": 8,
+                                                                                                                                        "metodologia": 7,
+                                                                                                                                        "relacionClasesEvaluaciones": 9,
+                                                                                                                                        "gestion": "año-I"
+                                                                                                                                }
+                                                                                                                                """))
+                                                                .andExpect(status().isBadRequest())
+                                                                .andExpect(content().string("Este docente no existe"));
+
+                                verify(calificacionService).crear(any());
+                                mostrarResultado("Responder 400 cuando el docente no existe");
+                }
+
+                @Test
+                void deberiaResponder409CuandoLaCalificacionEstaDuplicada() throws Exception {
+                                when(calificacionService.crear(any())).thenThrow(new CalificacionDocenteDuplicadaException());
+
+                                mockMvc.perform(post("/api/calificacion-docente")
+                                                                                                .contentType(MediaType.APPLICATION_JSON)
+                                                                                                .content("""
+                                                                                                                                {
+                                                                                                                                        "idDocente": 1,
+                                                                                                                                        "idEstudiante": 25,
+                                                                                                                                        "claridadExplicaciones": 8,
+                                                                                                                                        "metodologia": 7,
+                                                                                                                                        "relacionClasesEvaluaciones": 9,
+                                                                                                                                        "gestion": "año-I"
+                                                                                                                                }
+                                                                                                                                """))
+                                                                .andExpect(status().isConflict())
+                                                                .andExpect(content().string("Ya calificaste a este docente"));
+
+                                verify(calificacionService).crear(any());
+                                mostrarResultado("Responder 409 cuando la calificación está duplicada");
+                }
 
     @Test
     void deberiaObtenerPromediosDeUnDocente() throws Exception {

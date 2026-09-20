@@ -74,7 +74,7 @@ class CalificacionDocenteServiceTest {
                 () -> calificacionService.crear(request)
         );
 
-        assertEquals("El docente no existe", excepcion.getMessage());
+        assertEquals("Este docente no existe", excepcion.getMessage());
         verify(calificacionRepository, never()).save(any(CalificacionDocente.class));
         mostrarResultado("Rechazar una calificación cuando el docente no existe");
     }
@@ -92,7 +92,7 @@ class CalificacionDocenteServiceTest {
                 () -> calificacionService.crear(request)
         );
 
-        assertEquals("El estudiante ya calificó a este docente", excepcion.getMessage());
+        assertEquals("Ya calificaste a este docente", excepcion.getMessage());
         verify(calificacionRepository, never()).save(any(CalificacionDocente.class));
         mostrarResultado("Rechazar una calificación duplicada del mismo estudiante para el mismo docente");
     }

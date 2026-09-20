@@ -3,11 +3,14 @@ package com.unihub.backend.controller;
 import com.unihub.backend.dto.calificacion.CalificacionDocentePromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
+import com.unihub.backend.exception.CalificacionDocenteDuplicadaException;
+import com.unihub.backend.exception.DocenteInexistenteException;
 import com.unihub.backend.service.CalificacionDocenteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +37,16 @@ public class CalificacionDocenteController {
 	    @Valid @RequestBody CalificacionDocenteRequest request
     ) {
 	return ResponseEntity.status(HttpStatus.CREATED).body(calificacionService.crear(request));
+    }
+
+    @ExceptionHandler(DocenteInexistenteException.class)
+    public ResponseEntity<String> manejarDocenteInexistente(DocenteInexistenteException exception) {
+	return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(CalificacionDocenteDuplicadaException.class)
+    public ResponseEntity<String> manejarCalificacionDuplicada(CalificacionDocenteDuplicadaException exception) {
+	return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
     }
 
     @GetMapping("/docente/{idDocente}")
