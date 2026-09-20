@@ -34,6 +34,15 @@ export const MESSAGES = {
     'Selecciona otra carrera o elige Todas para ver las materias disponibles.',
   CAREER_SEARCH_EMPTY_DESCRIPTION:
     'No hay materias que coincidan con el nombre y la carrera seleccionados. Prueba con otro nombre o cambia la carrera.',
+  CAREER_EMPTY: 'No hay carreras disponibles para filtrar.',
+  CAREER_LOAD_ERROR: 'No se pudieron cargar las carreras.',
+
+  // Paginación
+  PAGINATION_LABEL: 'Paginación del catálogo de materias',
+  PREVIOUS_PAGE: 'Anterior',
+  NEXT_PAGE: 'Siguiente',
+  PAGE_LABEL: 'Página',
+  PAGE_OF: 'de',
 
   // Cargando
   LOADING_MESSAGE: 'Cargando materias…',

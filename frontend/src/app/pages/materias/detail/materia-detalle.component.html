@@ -27,7 +27,7 @@
         </p>
 
         <h1>
-          {{ materia.nombre }}
+          {{ materia.nombre | nombreMateria }}
         </h1>
 
       </div>
@@ -325,7 +325,7 @@
                   {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
                 </strong>
 
-                {{ materia.nombre }}
+                {{ materia.nombre | nombreMateria }}
               </p>
 
               <p>
@@ -728,7 +728,7 @@
                       {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
                     </strong>
 
-                    {{ materia.nombre }}
+                    {{ materia.nombre | nombreMateria }}
                   </p>
 
                   <p>

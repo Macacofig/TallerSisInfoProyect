@@ -62,4 +62,20 @@ describe('Api', () => {
     expect(peticion.request.params.keys()).toEqual([]);
     peticion.flush([]);
   });
+
+  it('elimina espacios adicionales del término antes de enviarlo', () => {
+    service.obtenerMaterias('  Introducción   a   la programación  ').subscribe();
+    const peticion = TestBed.inject(HttpTestingController).expectOne(req =>
+      req.url === 'http://localhost:8081/api/materias' &&
+      req.params.get('nombre') === 'Introducción a la programación');
+    peticion.flush([]);
+  });
+
+  it('obtiene las carreras desde el endpoint configurado', () => {
+    const carreras = ['Ingeniería Civil', 'Ingeniería de Sistemas'];
+    service.obtenerCarreras().subscribe(respuesta => expect(respuesta).toEqual(carreras));
+    TestBed.inject(HttpTestingController)
+      .expectOne({ method: 'GET', url: 'http://localhost:8081/api/materias/carreras' })
+      .flush(carreras);
+  });
 });

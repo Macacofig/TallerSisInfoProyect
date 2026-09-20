@@ -6,9 +6,6 @@ export const APP_CONFIG = {
   // Mostrar los resultados reales de la API por defecto.
   DEMO_MODE: true,
 
-  // La población del proyecto corresponde únicamente a Ingeniería de Sistemas.
-  CARRERAS: ['Ingeniería de Sistemas'],
-
   DEMO: {
     STUDENT_ID: 2,
   },
@@ -18,6 +15,7 @@ export const APP_CONFIG = {
 
     ENDPOINTS: {
       MATERIAS: '/materias',
+      CARRERAS: '/materias/carreras',
       CALIFICACION_MATERIA: '/calificacion-materia',
       TEST: '/test',
     },
@@ -43,6 +41,10 @@ export const APP_CONFIG = {
     INTERMEDIATE_START: 2,
     INTERMEDIATE_END: 4,
     ADVANCED_START: 5,
+  },
+
+  PAGINATION: {
+    PAGE_SIZE: 12,
   },
 
 } as const;

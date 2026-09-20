@@ -9,6 +9,7 @@ describe('HU-02: buscar materia por nombre mediante el backend', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
   const endpoint = 'http://localhost:8081/api/materias';
+  const carrerasEndpoint = `${endpoint}/carreras`;
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
   const materias: Materia[] = [
@@ -26,6 +27,7 @@ describe('HU-02: buscar materia por nombre mediante el backend', () => {
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
+    http.expectOne(carrerasEndpoint).flush(['Ingeniería de Sistemas', 'Ingeniería Civil']);
   });
 
   afterEach(() => {
@@ -62,7 +64,7 @@ describe('HU-02: buscar materia por nombre mediante el backend', () => {
     return Array.from(elementos, element => element.textContent!.trim());
   }
 
-  it.each(['Programación I', 'progra', 'pROGRAMACIÓN', '  Programación  '])(
+  it.each(['Programación I', 'programacion', 'progra', 'pROGRAMACIÓN', '  Programación  '])(
     'envía "%s" como nombre y presenta la respuesta del backend', async termino => {
       responderCatalogo();
       escribir(termino);
