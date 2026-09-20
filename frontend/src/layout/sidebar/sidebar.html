@@ -27,6 +27,43 @@
   >
 
     <a
+      routerLink="/home"
+      routerLinkActive="sidebar__item--active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="sidebar__item"
+    >
+
+      <span
+        class="sidebar__icon"
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M4 11.5L12 5L20 11.5V19C20 19.55 19.55 20 19 20H5C4.45 20 4 19.55 4 19V11.5Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 20V14H15V20"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </span>
+
+      <span class="sidebar__label">
+        {{ SIDEBAR_MESSAGES.MENU_HOME }}
+      </span>
+
+    </a>
+
+    <a
       routerLink="/materias"
       routerLinkActive="sidebar__item--active"
       [routerLinkActiveOptions]="{ exact: true }"
