@@ -56,14 +56,18 @@ class DocenteServiceTest {
         verify(materiaRepository).findById(1L);
         verify(docenteRepository).save(docenteCaptor.capture());
         assertEquals("Ana Pérez", docenteCaptor.getValue().getNombre());
+        mostrarResultado("Agregar docente a una materia");
     }
 
     @Test
     void deberiaRechazarDocenteCuandoLaMateriaNoExiste() {
         when(materiaRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
-                () -> docenteService.agregar(new DocenteRequest("Ana Pérez", 99L)));
+        IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class,
+            () -> docenteService.agregar(new DocenteRequest("Ana Pérez", 99L)));
+
+        assertEquals("La materia no existe", excepcion.getMessage());
+        mostrarResultado("Rechazar docente cuando la materia no existe");
     }
 
     @Test
@@ -82,5 +86,13 @@ class DocenteServiceTest {
         assertEquals(List.of(1L, 1L),
                 resultado.stream().map(DocenteResponse::idMateria).toList());
         verify(docenteRepository).findByMateriaIdOrderByNombreAsc(1L);
+        mostrarResultado("Mostrar docentes de una materia");
+    }
+
+    private void mostrarResultado(String descripcion) {
+        System.out.println("-----------------------------");
+        System.out.println(descripcion);
+        System.out.println("Resultado: OK");
+        System.out.println("-----------------------------");
     }
 }
