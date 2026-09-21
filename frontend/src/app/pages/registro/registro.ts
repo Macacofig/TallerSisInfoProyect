@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { APP_CONFIG } from '../../config/app-config';
-import { ErrorAuth, RegistroRequest } from '../../models/auth.model';
+import { ErrorAuth, RegistroRequest } from '../../models/registrar';
 import { AuthService } from '../../services/auth.service';
 import { REGISTRO_MESSAGES } from '../../strings/registro/registro.messages';
 import {
@@ -12,7 +12,7 @@ import {
   requeridoSinEspacios
 } from './registro.validators';
 
-type CampoRegistro = 'nombre' | 'carrera' | 'correo' | 'contrasena';
+type CampoRegistro = 'nombre' | 'carrera' | 'correo' | 'telefono' | 'contrasena';
 type ModoAcceso = 'registro' | 'login';
 
 interface DescripcionCampo {
@@ -75,6 +75,13 @@ export class Registro{
       autocompletar: 'email'
     },
     {
+      nombre: 'telefono',
+      tipo: 'text',
+      etiqueta: this.MESSAGES.FIELD_PHONE_LABEL,
+      placeholder: this.MESSAGES.FIELD_PHONE_PLACEHOLDER,
+      autocompletar: 'tel'
+    },
+    {
       nombre: 'contrasena',
       tipo: 'password',
       etiqueta: this.MESSAGES.FIELD_PASSWORD_LABEL,
@@ -88,6 +95,7 @@ export class Registro{
     nombre: ['', [requeridoSinEspacios, longitudMinimaSinEspacios(APP_CONFIG.AUTH.NOMBRE_MIN_LENGTH)]],
     carrera: ['Ingeniería de Sistemas', [Validators.required]],
     correo: ['', [requeridoSinEspacios, correoValido]],
+    telefono: ['', [ Validators.required, Validators.pattern(/^[67]\d{7}$/)]],
     contrasena: ['', [Validators.required, Validators.minLength(APP_CONFIG.AUTH.CONTRASENA_MIN_LENGTH)]]
   });
 
@@ -110,6 +118,7 @@ export class Registro{
   mensajeError(campo: CampoRegistro): string | null {
     const control = this.formulario.controls[campo];
     const errores = control.errors;
+
     if (!errores || !(control.touched || this.intentoEnvio())) return null;
 
     // Error devuelto por el servidor (400) para este campo.
@@ -117,15 +126,36 @@ export class Registro{
     if (typeof delServidor === 'string') return delServidor;
 
     const M = this.MESSAGES;
+
     switch (campo) {
       case 'nombre':
-        return errores['required'] ? M.ERROR_NAME_REQUIRED : M.ERROR_NAME_MIN_LENGTH;
+        return errores['required']
+          ? M.ERROR_NAME_REQUIRED
+          : M.ERROR_NAME_MIN_LENGTH;
+
       case 'carrera':
         return M.ERROR_CAREER_REQUIRED;
+
       case 'correo':
-        return errores['required'] ? M.ERROR_EMAIL_REQUIRED : M.ERROR_EMAIL_INVALID;
+        return errores['required']
+          ? M.ERROR_EMAIL_REQUIRED
+          : M.ERROR_EMAIL_INVALID;
+
+      case 'telefono':
+        if (errores['required']) {
+          return 'El teléfono es obligatorio';
+        }
+
+        if (errores['pattern']) {
+          return 'El teléfono debe empezar por 6 o 7 y tener 8 dígitos';
+        }
+
+        return 'El teléfono no es válido';
+
       case 'contrasena':
-        return errores['required'] ? M.ERROR_PASSWORD_REQUIRED : M.ERROR_PASSWORD_MIN_LENGTH;
+        return errores['required']
+          ? M.ERROR_PASSWORD_REQUIRED
+          : M.ERROR_PASSWORD_MIN_LENGTH;
     }
   }
 
@@ -144,10 +174,10 @@ export class Registro{
     const valores = this.formulario.getRawValue();
     const datos: RegistroRequest = {
       nombre: valores.nombre.trim(),
-      carrera: valores.carrera.trim(),
-      correoElectronico: valores.correo.trim().toLowerCase(),
       contrasena: valores.contrasena,
-      telefono: null
+      telefono: valores.telefono.trim(),
+      correoElectronico: valores.correo.trim().toLowerCase(),
+      carrera: valores.carrera.trim()
     };
 
     this.enviando.set(true);

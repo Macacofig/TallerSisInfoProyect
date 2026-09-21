@@ -3,7 +3,6 @@
  */
 export const APP_CONFIG = {
 
-  // Mostrar los resultados reales de la API por defecto.
   DEMO_MODE: true,
 
   DEMO: {
@@ -18,7 +17,7 @@ export const APP_CONFIG = {
       CARRERAS: '/materias/carreras',
       CALIFICACION_MATERIA: '/calificacion-materia',
       TEST: '/test',
-      AUTH_REGISTER: '/auth/register',
+      AUTH_REGISTER: '/estudiantes',
       AUTH_LOGIN: '/auth/login',
     },
   },

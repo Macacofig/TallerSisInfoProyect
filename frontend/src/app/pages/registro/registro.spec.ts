@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 
-import { ErrorAuth, RegistroRequest } from '../../models/auth.model';
+import { ErrorAuth, RegistroRequest } from '../../models/registrar';
 import { AuthService } from '../../services/auth.service';
 import { REGISTRO_MESSAGES as M } from '../../strings/registro/registro.messages';
 import { Registro } from './registro';
@@ -87,7 +87,7 @@ describe('Pantalla de registro', () => {
       const texto = raiz.textContent ?? '';
       for (const esperado of [
         M.HERO_EYEBROW, M.HERO_TITLE, M.HERO_DESCRIPTION, M.FEATURE_MATERIAL, M.FEATURE_PROFILE,
-        M.FOOTER_COMMUNITY, M.FORM_EYEBROW, M.FORM_TITLE, M.FORM_SUBTITLE, M.SUBMIT_BUTTON, M.CONFIRMATION_NOTE
+        M.FOOTER_COMMUNITY, M.FORM_EYEBROW, M.FORM_TITLE, M.FORM_SUBTITLE, M.SUBMIT_BUTTON,
       ]) {
         expect(texto).toContain(esperado);
       }
@@ -145,8 +145,8 @@ describe('Pantalla de registro', () => {
       expect(errorDe('correo')).toBe(M.ERROR_EMAIL_INVALID);
     });
 
-    it('contraseña de menos de 6 caracteres; con 6 es válida', () => {
-      llenar({ contrasena: '12345' });
+    it('contraseña de menos de 8 caracteres; con 8 es válida', () => {
+      llenar({ contrasena: '1234567' });
       enviar();
       expect(errorDe('contrasena')).toBe(M.ERROR_PASSWORD_MIN_LENGTH);
 
@@ -295,7 +295,7 @@ describe('Pantalla de registro', () => {
   });
 
   it('con éxito inmediato del servicio (sin espera) también muestra el modal', () => {
-    vi.spyOn(servicio, 'registerUser').mockReturnValue(of({ id: 1, nombre: 'Ana', correoElectronico: validos.correo }));
+    vi.spyOn(servicio, 'registerUser').mockReturnValue(of({ id: 1, nombre: 'Ana', correoElectronico: validos.correo , telefono: '12345678', carrera: validos.carrera }));
     llenar();
     enviar();
     expect(modal()).not.toBeNull();

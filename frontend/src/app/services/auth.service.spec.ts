@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { TimeoutError } from 'rxjs';
 
-import { ErrorAuth, RegistroRequest, RegistroResponse } from '../models/auth.model';
+import { ErrorAuth, RegistroRequest, RegistroResponse } from '../models/registrar';
 import { AuthService, mapearErrorHttp } from './auth.service';
 
 // Pruebas del servicio con el MOCK activo (no dependen del backend real).
@@ -14,7 +14,7 @@ describe('AuthService (mock)', () => {
     carrera: 'Ingeniería de Sistemas',
     correoElectronico: 'ana.torres@ucb.edu.bo',
     contrasena: 'secreta1',
-    telefono: null
+    telefono: '12345678'
   };
 
   beforeEach(() => {

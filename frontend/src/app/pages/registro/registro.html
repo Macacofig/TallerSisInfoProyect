@@ -93,6 +93,7 @@
                 [formControlName]="campo.nombre"
                 [placeholder]="campo.placeholder"
                 [attr.autocomplete]="campo.autocompletar"
+                [attr.inputmode]="campo.nombre === 'telefono' ? 'numeric' : null"
                 [attr.aria-invalid]="mensajeError(campo.nombre) ? 'true' : null"
                 [attr.aria-describedby]="mensajeError(campo.nombre) ? 'registro-' + campo.nombre + '-error' : null"
                 [readonly]="campo.nombre === 'carrera'"

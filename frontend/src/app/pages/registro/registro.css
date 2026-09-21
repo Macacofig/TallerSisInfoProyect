@@ -204,8 +204,9 @@
   margin-top: 1.75rem;
 }
 
-.registro__campo:first-child,
-.registro__campo:nth-child(4) {
+.registro__campo:nth-child(1),
+.registro__campo:nth-child(2),
+.registro__campo:nth-child(3) {
   grid-column: 1 / -1;
 }
 
@@ -410,8 +411,9 @@
     grid-template-columns: 1fr;
   }
 
-  .registro__campo:first-child,
-  .registro__campo:last-child {
+  .registro__campo:nth-child(1),
+  .registro__campo:nth-child(2),
+  .registro__campo:nth-child(3) {
     grid-column: auto;
   }
 }

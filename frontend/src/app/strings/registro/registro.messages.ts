@@ -35,8 +35,10 @@ export const REGISTRO_MESSAGES = {
   FIELD_CAREER_PLACEHOLDER: 'Ej. Ingeniería de Sistemas',
   FIELD_EMAIL_LABEL: 'Correo',
   FIELD_EMAIL_PLACEHOLDER: 'nombre.primerapellido@ucb.edu.bo',
+  FIELD_PHONE_LABEL: 'Teléfono',
+  FIELD_PHONE_PLACEHOLDER: 'Ej. 71234567',
   FIELD_PASSWORD_LABEL: 'Contraseña',
-  FIELD_PASSWORD_PLACEHOLDER: 'Mínimo 6 caracteres',
+  FIELD_PASSWORD_PLACEHOLDER: 'Mínimo 8 caracteres',
 
   // Botón y nota
   SUBMIT_BUTTON: 'Crear mi cuenta',
@@ -63,4 +65,5 @@ export const REGISTRO_MESSAGES = {
   MODAL_DESCRIPTION: 'Enviamos un correo de confirmación a',
   MODAL_HINT: 'Revisa tu bandeja de entrada para activar tu cuenta.',
   MODAL_BUTTON: 'Entendido',
+  
 } as const;
