@@ -90,15 +90,6 @@
       <div class="materias-grid">
         @for (materia of materiasPaginadas(); track materia.id) {
           <article class="materia-card" [attr.aria-labelledby]="'materia-' + materia.id">
-            <button #informacion type="button" class="materia-icon-button materia-card__informacion"
-              [attr.aria-label]="MESSAGES.INFORMATION_BUTTON + ': ' + (materia.nombre | nombreMateria)"
-              aria-haspopup="dialog"
-              (click)="abrirInformacion(materia, informacion)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M12 11v6M12 7v1"></path>
-              </svg>
-            </button>
             <header>
               <p class="materia-card__codigo">{{ materia.codigo }}</p>
               <h2 [id]="'materia-' + materia.id">{{ materia.nombre | nombreMateria }}</h2>
