@@ -109,4 +109,14 @@ public class CalificacionDocenteController {
     ) {
         return ResponseEntity.ok(calificacionService.obtenerPromediosPorMateriaYRango(idMateria, desde, hasta));
     }
+
+        @ExceptionHandler(DocenteInexistenteException.class)
+        public ResponseEntity<String> manejarDocenteInexistente(DocenteInexistenteException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+
+        @ExceptionHandler(CalificacionDocenteDuplicadaException.class)
+        public ResponseEntity<String> manejarCalificacionDuplicada(CalificacionDocenteDuplicadaException exception) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+        }
 }
