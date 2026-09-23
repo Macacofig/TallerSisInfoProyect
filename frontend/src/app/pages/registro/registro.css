@@ -1,0 +1,419 @@
+/* =========================================================
+   Paleta y tipografías tomadas del proyecto:
+   - #063b78 / #064bad / #073b83: sidebar, navbar y botones
+   - #c9a227 / #f4c542: dorado del logo y del splash
+   - #10213f, #667085, #d3e1f2, #f7faff, #dfebfa: textos y superficies
+   - #991b1b / #fef2f2: errores
+   - Georgia (títulos) y Arial (texto)
+   Nota: el proyecto no tiene un :root global; las variables viven aquí.
+   ========================================================= */
+:host {
+  --azul-marino: #063b78;
+  --azul-marino-oscuro: #052f63;
+  --azul-boton: #064bad;
+  --azul-boton-hover: #073b83;
+  --azul-suave: #dfebfa;
+  --dorado: #c9a227;
+  --dorado-claro: #f4c542;
+  --fondo: #f7faff;
+  --texto: #10213f;
+  --texto-suave: #667085;
+  --borde: #d3e1f2;
+  --error: #991b1b;
+  --error-fondo: #fef2f2;
+  --exito: #0f8f7a;
+  --fuente-titulo: Georgia, 'Times New Roman', serif;
+  --fuente-texto: Arial, Helvetica, sans-serif;
+
+  display: block;
+  min-height: 100vh;
+  font-family: var(--fuente-texto);
+}
+
+.registro {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Panel izquierdo ===== */
+.registro__marca {
+  flex: 0 0 45%;
+  max-width: 45%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 3.25rem 2.5rem;
+  background: linear-gradient(160deg, var(--azul-marino) 0%, var(--azul-marino-oscuro) 100%);
+  color: #fff;
+}
+
+.registro__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.registro__logo {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border: 0.0625rem solid rgba(201, 162, 39, 0.55);
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--dorado);
+}
+
+.registro__logo svg { width: 1.5rem; height: 1.5rem; }
+
+.registro__brand-text { display: flex; flex-direction: column; min-width: 0; }
+
+.registro__brand-name {
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.registro__brand-subtitle {
+  margin-top: 0.2rem;
+  color: var(--dorado);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16rem;
+  white-space: nowrap;
+}
+
+.registro__hero { margin: auto 0; padding: 2.5rem 0; }
+
+.registro__hero-eyebrow {
+  margin: 0 0 1.25rem;
+  color: var(--dorado-claro);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18rem;
+}
+
+.registro__hero-title {
+  margin: 0;
+  max-width: 32rem;
+  font-family: var(--fuente-titulo);
+  font-size: clamp(2.25rem, 3.6vw, 3.4rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.registro__hero-description {
+  margin: 1.5rem 0 0;
+  max-width: 26rem;
+  color: #b9d0ee;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.registro__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.registro__feature {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.registro__feature svg { width: 1.25rem; height: 1.25rem; flex-shrink: 0; color: var(--dorado-claro); }
+
+.registro__pie { color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; }
+
+/* ===== Panel derecho ===== */
+.registro__formulario {
+  flex: 1 1 55%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 3rem;
+  background-color: var(--fondo);
+}
+
+.registro__contenido { width: 100%; max-width: 36rem; }
+
+.registro__eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--azul-boton);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16rem;
+}
+
+.registro__titulo {
+  margin: 0;
+  color: var(--texto);
+  font-family: var(--fuente-titulo);
+  font-size: clamp(1.9rem, 2.6vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.registro__subtitulo { margin: 0.6rem 0 1.75rem; color: var(--texto-suave); font-size: 1rem; }
+
+/* Selector de pestañas */
+.registro__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.6rem;
+  background-color: rgba(223, 235, 250, 0.65);
+}
+
+.registro__tab {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: var(--texto-suave);
+  font: 600 0.9rem var(--fuente-texto);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.registro__tab:hover { color: var(--texto); }
+
+.registro__tab--activa {
+  background-color: #fff;
+  color: var(--texto);
+  box-shadow: 0 0.0625rem 0.25rem rgba(16, 33, 63, 0.12);
+}
+
+/* Formulario */
+.registro__form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+  margin-top: 1.75rem;
+}
+
+.registro__campo:nth-child(1),
+.registro__campo:nth-child(2),
+.registro__campo:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.registro__campo { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.registro__label { color: var(--texto); font-size: 0.9rem; font-weight: 700; }
+
+.registro__input {
+  width: 100%;
+  min-height: 2.9rem;
+  box-sizing: border-box;
+  padding: 0.7rem 0.9rem;
+  border: 0.0625rem solid var(--borde);
+  border-radius: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0 0.0625rem 0.125rem rgba(16, 33, 63, 0.06);
+  color: var(--texto);
+  font: 400 0.95rem var(--fuente-texto);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.registro__input::placeholder { color: var(--texto-suave); }
+
+.registro__input:focus {
+  border-color: var(--azul-boton);
+  box-shadow: 0 0 0 0.19rem rgba(6, 75, 173, 0.16);
+  outline: none;
+}
+
+.registro__input--error,
+.registro__input--error:focus { border-color: var(--error); }
+.registro__input--error:focus { box-shadow: 0 0 0 0.19rem rgba(153, 27, 27, 0.16); }
+
+.registro__error { margin: 0; color: var(--error); font-size: 0.82rem; line-height: 1.4; }
+
+.registro__error-general {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--error-fondo);
+  color: var(--error);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.registro__boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  grid-column: 1 / -1;
+  gap: 0.6rem;
+  width: 60%;
+  min-height: 3rem;
+  margin-top: 0.4rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background-color: var(--azul-boton);
+  color: #fff;
+  font: 700 0.95rem var(--fuente-texto);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.registro__boton:hover:not(:disabled) { background-color: var(--azul-boton-hover); }
+.registro__boton:disabled { opacity: 0.75; cursor: not-allowed; }
+
+.registro__spinner {
+  width: 1rem;
+  height: 1rem;
+  box-sizing: border-box;
+  border: 0.15rem solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: registro-giro 0.8s linear infinite;
+}
+
+.registro__nota { margin: 0; color: var(--texto-suave); font-size: 0.8rem; text-align: center; }
+
+/* Pestaña "Iniciar sesión" (aún sin backend) */
+.registro__pendiente {
+  margin-top: 1.75rem;
+  padding: 1.5rem;
+  border: 0.0625rem solid var(--borde);
+  border-radius: 0.5rem;
+  background-color: #fff;
+}
+
+.registro__pendiente-titulo { margin: 0; color: var(--texto); font-weight: 700; }
+.registro__pendiente-texto { margin: 0.5rem 0 0; color: var(--texto-suave); font-size: 0.9rem; line-height: 1.5; }
+
+/* ojo de contraseña */
+.registro__input-contenedor {
+  position: relative;
+  width: 100%;
+}
+
+.registro__input-contrasena {
+  padding-right: 3rem;
+}
+
+.registro__mostrar-contrasena {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.registro__mostrar-contrasena:hover {
+  opacity: 0.7;
+}
+
+.registro__mostrar-contrasena:focus-visible {
+  outline: 0.15rem solid var(--azul-boton);
+  outline-offset: 0.1rem;
+  border-radius: 0.25rem;
+}
+
+/* Foco visible con teclado */
+.registro__tab:focus-visible,
+.registro__boton:focus-visible { outline: 0.19rem solid var(--dorado-claro); outline-offset: 0.19rem; }
+
+/* ===== Modal de confirmación ===== */
+.registro-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+  background-color: rgba(16, 33, 63, 0.6);
+}
+
+.registro-modal__caja {
+  width: 100%;
+  max-width: 24rem;
+  box-sizing: border-box;
+  padding: 2rem 1.75rem;
+  border-radius: 0.75rem;
+  background-color: #fff;
+  box-shadow: 0 1.5rem 3rem rgba(16, 33, 63, 0.3);
+  text-align: center;
+  animation: registro-aparecer 0.2s ease-out;
+}
+
+.registro-modal__icono {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(15, 143, 122, 0.12);
+  color: var(--exito);
+}
+
+.registro-modal__icono svg { width: 1.75rem; height: 1.75rem; }
+
+.registro-modal__titulo { margin: 0; color: var(--texto); font-family: var(--fuente-titulo); font-size: 1.5rem; }
+
+.registro-modal__texto { margin: 0.75rem 0 1.5rem; color: var(--texto-suave); font-size: 0.95rem; line-height: 1.6; }
+.registro-modal__texto strong { color: var(--texto); overflow-wrap: anywhere; }
+
+@keyframes registro-giro { to { transform: rotate(360deg); } }
+@keyframes registro-aparecer { from { opacity: 0; transform: translateY(0.5rem); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .registro__spinner { animation-duration: 2.4s; }
+  .registro-modal__caja { animation: none; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 64rem) {
+  .registro__marca { padding: 2.5rem 2rem 2rem; }
+  .registro__formulario { padding: 2.5rem 2rem; }
+}
+
+/* En pantallas pequeñas el panel de marca se reduce a una barra superior. */
+@media (max-width: 48rem) {
+  .registro { flex-direction: column; }
+
+  .registro__marca { flex: none; max-width: none; padding: 1.1rem 1.25rem; }
+  .registro__hero,
+  .registro__pie { display: none; }
+
+  .registro__formulario { align-items: flex-start; padding: 2rem 1.25rem 2.5rem; }
+
+  .registro__form {
+    grid-template-columns: 1fr;
+  }
+
+  .registro__campo:nth-child(1),
+  .registro__campo:nth-child(2),
+  .registro__campo:nth-child(3) {
+    grid-column: auto;
+  }
+}

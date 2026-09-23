@@ -3,7 +3,6 @@
  */
 export const APP_CONFIG = {
 
-  // Mostrar los resultados reales de la API por defecto.
   DEMO_MODE: true,
 
   DEMO: {
@@ -20,7 +19,20 @@ export const APP_CONFIG = {
       DOCENTES: '/docentes',
       CALIFICACION_DOCENTE: '/calificacion-docente',
       TEST: '/test',
+      AUTH_REGISTER: '/estudiantes',
+      AUTH_LOGIN: '/auth/login',
     },
+  },
+
+  ROUTES: {
+    REGISTRO: '/registro',
+    // Pantallas a pantalla completa: se oculta el sidebar y el navbar.
+    SIN_LAYOUT: ['/', '/registro'],
+  },
+
+  AUTH: {
+    NOMBRE_MIN_LENGTH: 3,
+    CONTRASENA_MIN_LENGTH: 8,
   },
 
   TIMEOUTS: {
