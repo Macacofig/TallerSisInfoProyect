@@ -110,6 +110,28 @@ export const MESSAGES = {
   MATERIA_DETAIL_CODE_LABEL: 'Código',
   MATERIA_DETAIL_SEMESTER_LABEL: 'Semestre',
 
+  // Navegación interna del detalle de materia
+  MATERIA_DETAIL_SECTIONS_ARIA:
+    'Secciones de información de la materia',
+
+  MATERIA_DETAIL_SECTION_SUMMARY:
+    'Resumen',
+
+  MATERIA_DETAIL_SECTION_TEACHERS:
+    'Docentes',
+
+  MATERIA_DETAIL_SECTION_MATERIAL:
+    'Material',
+
+  MATERIA_DETAIL_SECTION_EVALUATIONS:
+    'Evaluaciones',
+
+  MATERIA_DETAIL_SECTION_ASSISTANTS:
+    'Ayudantes',
+
+  MATERIA_DETAIL_SECTION_PENDING:
+    'Esta sección estará disponible próximamente.',
+
   CALIFICATION_VERIFYING:
     'Verificando calificación...',
 
