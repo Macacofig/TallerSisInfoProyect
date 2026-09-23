@@ -10,7 +10,6 @@ export interface RegistroRequest {
   correoElectronico: string;
 }
 
-/** Respuesta esperada de POST /api/auth/register (201). Ajustar al contrato real. */
 export interface RegistroResponse {
   id: number;
   nombre: string;
