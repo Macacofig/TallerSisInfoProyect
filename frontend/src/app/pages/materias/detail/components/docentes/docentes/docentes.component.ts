@@ -1,10 +1,16 @@
 import {
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   Input,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  inject
 } from '@angular/core';
+
+import {
+  takeUntilDestroyed
+} from '@angular/core/rxjs-interop';
 
 import {
   FormBuilder,
@@ -18,7 +24,13 @@ import {
 } from '@angular/common/http';
 
 import {
-  forkJoin
+  Observable,
+  Subscription,
+  catchError,
+  forkJoin,
+  map,
+  of,
+  switchMap
 } from 'rxjs';
 
 import {
@@ -54,6 +66,12 @@ import {
 interface DocenteConCalificacion {
   docente: Docente;
   calificacion: CalificacionDocenteResponse | null;
+  estadoCalificacionDisponible: boolean;
+}
+
+interface ResultadoCargaDocentes {
+  items: DocenteConCalificacion[];
+  estadoCalificacionesIncompleto: boolean;
 }
 
 @Component({
@@ -105,6 +123,7 @@ export class DocentesComponent implements OnChanges {
   eliminandoCalificacion = false;
 
   error = '';
+  advertenciaEstado = '';
   errorEnvio = '';
   mensajeExito = '';
 
@@ -125,6 +144,11 @@ export class DocentesComponent implements OnChanges {
 
   private readonly idEstudianteActual =
     APP_CONFIG.DEMO.STUDENT_ID;
+
+  private readonly destroyRef =
+    inject(DestroyRef);
+
+  private cargaDocentes?: Subscription;
 
   constructor(
     private readonly docentesService:
@@ -189,27 +213,37 @@ export class DocentesComponent implements OnChanges {
 
   cargarDocentes(): void {
 
+    this.cargaDocentes?.unsubscribe();
     this.cargando = true;
     this.error = '';
+    this.advertenciaEstado = '';
     this.docentes = [];
 
-    this.docentesService
+    this.cargaDocentes = this.docentesService
       .obtenerPorMateria(
         this.materia.id
       )
+      .pipe(
+        switchMap(
+          (docentes) =>
+            this.cargarCalificaciones(docentes)
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
 
-        next: (docentes) => {
+        next: (resultado) => {
 
-          if (docentes.length === 0) {
-            this.cargando = false;
-            this.changeDetectorRef.detectChanges();
-            return;
-          }
+          this.docentes =
+            resultado.items;
 
-          this.cargarCalificaciones(
-            docentes
-          );
+          this.advertenciaEstado =
+            resultado.estadoCalificacionesIncompleto
+              ? this.mensajes.STATUS_ERROR
+              : '';
+
+          this.cargando = false;
+          this.changeDetectorRef.detectChanges();
         },
 
         error: () => {
@@ -393,6 +427,9 @@ export class DocentesComponent implements OnChanges {
         this.idEstudianteActual,
         this.docenteSeleccionado.id
       )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
 
         next: () => {
@@ -431,34 +468,12 @@ export class DocentesComponent implements OnChanges {
   obtenerNombreVisible(
     docente: Docente
   ): string {
-
-    const posicion =
-      this.obtenerPosicionNombreDuplicado(
-        docente
-      );
-
-    if (posicion === 0) {
-      return docente.nombre;
-    }
-
-    return `Docente ${this.convertirARomano(posicion)}`;
+    return docente.nombre;
   }
 
   obtenerIdentificadorVisual(
     docente: Docente
   ): string {
-
-    const posicion =
-      this.obtenerPosicionNombreDuplicado(
-        docente
-      );
-
-    if (posicion > 0) {
-      return this.convertirARomano(
-        posicion
-      );
-    }
-
     return docente.nombre
       .trim()
       .split(/\s+/)
@@ -502,6 +517,9 @@ export class DocentesComponent implements OnChanges {
     this.calificacionesDocenteService
       .registrarCalificacion(
         request
+      )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
 
@@ -555,6 +573,9 @@ export class DocentesComponent implements OnChanges {
         this.idEstudianteActual,
         this.docenteSeleccionado.id,
         request
+      )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
 
@@ -650,7 +671,14 @@ export class DocentesComponent implements OnChanges {
 
   private cargarCalificaciones(
     docentes: Docente[]
-  ): void {
+  ): Observable<ResultadoCargaDocentes> {
+
+    if (docentes.length === 0) {
+      return of<ResultadoCargaDocentes>({
+        items: [],
+        estadoCalificacionesIncompleto: false
+      });
+    }
 
     const consultas =
       docentes.map(
@@ -660,67 +688,42 @@ export class DocentesComponent implements OnChanges {
               this.idEstudianteActual,
               docente.id
             )
+            .pipe(
+              map(
+                (calificacion) => ({
+                  docente,
+                  calificacion,
+                  error: false
+                })
+              ),
+              catchError(
+                () => of({
+                  docente,
+                  calificacion: null,
+                  error: true
+                })
+              )
+            )
       );
 
-    forkJoin(
+    return forkJoin(
       consultas
-    ).subscribe({
-
-      next: (calificaciones) => {
-
-        this.docentes =
-          docentes.map(
-            (docente, indice) => ({
+    ).pipe(
+      map(
+        (resultados): ResultadoCargaDocentes => ({
+          items: resultados.map(
+            ({ docente, calificacion, error }) => ({
               docente,
-              calificacion:
-                calificaciones[indice]
+              calificacion,
+              estadoCalificacionDisponible: !error
             })
-          );
-
-        this.cargando = false;
-        this.changeDetectorRef.detectChanges();
-      },
-
-      error: () => {
-
-        this.error =
-          this.mensajes.STATUS_ERROR;
-
-        this.cargando = false;
-        this.changeDetectorRef.detectChanges();
-      }
-    });
-  }
-
-  private obtenerPosicionNombreDuplicado(
-    docente: Docente
-  ): number {
-
-    const nombreNormalizado =
-      docente.nombre
-        .trim()
-        .toLocaleLowerCase('es');
-
-    const docentesMismoNombre =
-      this.docentes.filter(
-        (item) =>
-          item.docente.nombre
-            .trim()
-            .toLocaleLowerCase('es') ===
-          nombreNormalizado
-      );
-
-    if (
-      docentesMismoNombre.length <= 1
-    ) {
-      return 0;
-    }
-
-    return (
-      docentesMismoNombre.findIndex(
-        (item) =>
-          item.docente.id === docente.id
-      ) + 1
+          ),
+          estadoCalificacionesIncompleto:
+            resultados.some(
+              (resultado) => resultado.error
+            )
+        })
+      )
     );
   }
 
@@ -732,47 +735,4 @@ export class DocentesComponent implements OnChanges {
       : 'año-II';
   }
 
-  private convertirARomano(
-    numero: number
-  ): string {
-
-    const valores: Array<
-      [number, string]
-    > = [
-      [1000, 'M'],
-      [900, 'CM'],
-      [500, 'D'],
-      [400, 'CD'],
-      [100, 'C'],
-      [90, 'XC'],
-      [50, 'L'],
-      [40, 'XL'],
-      [10, 'X'],
-      [9, 'IX'],
-      [5, 'V'],
-      [4, 'IV'],
-      [1, 'I']
-    ];
-
-    let restante =
-      numero;
-
-    let resultado =
-      '';
-
-    for (
-      const [valor, simbolo]
-      of valores
-    ) {
-
-      while (
-        restante >= valor
-      ) {
-        resultado += simbolo;
-        restante -= valor;
-      }
-    }
-
-    return resultado;
-  }
 }
