@@ -1,12 +1,15 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 
-import { ErrorAuth, RegistroRequest } from '../../models/registrar';
+import { ErrorAuth, RegistroRequest, RegistroResponse } from '../../models/registrar';
 import { AuthService } from '../../services/auth.service';
 import { REGISTRO_MESSAGES as M } from '../../strings/registro/registro.messages';
 import { Registro } from './registro';
 
-// Estas pruebas usan el MOCK de AuthService (no dependen del backend real).
+// Estas pruebas nunca llaman al backend: siempre reemplazan `registerUser`
+// (con vi.spyOn) por un Observable controlado por la propia prueba.
 describe('Pantalla de registro', () => {
   let fixture: ComponentFixture<Registro>;
   let componente: Registro;
@@ -17,7 +20,16 @@ describe('Pantalla de registro', () => {
     nombre: 'Ana Torres',
     carrera: 'Ingeniería de Sistemas',
     correo: 'ana.torres@ucb.edu.bo',
-    contrasena: 'secreta1'
+    telefono: '71234567',
+    contrasena: 'secreta1' // 8 caracteres: cumple el mínimo actual
+  };
+
+  const respuestaValida: RegistroResponse = {
+    id: 1,
+    nombre: validos.nombre,
+    telefono: validos.telefono,
+    correoElectronico: validos.correo,
+    carrera: validos.carrera
   };
 
   const campo = (nombre: string) => raiz.querySelector<HTMLInputElement>(`#registro-${nombre}`)!;
@@ -43,14 +55,12 @@ describe('Pantalla de registro', () => {
     fixture.detectChanges();
   }
 
-  async function esperarServidor(ms = 1000): Promise<void> {
-    await vi.advanceTimersByTimeAsync(ms);
-    fixture.detectChanges();
-  }
-
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [Registro] }).compileComponents();
-    vi.useFakeTimers();
+    await TestBed.configureTestingModule({
+      imports: [Registro],
+      providers: [provideHttpClient(), provideHttpClientTesting()]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(Registro);
     componente = fixture.componentInstance;
     servicio = TestBed.inject(AuthService);
@@ -58,18 +68,22 @@ describe('Pantalla de registro', () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => vi.useRealTimers());
-
   describe('renderizado', () => {
-    it('muestra Nombre completo, Carrera, Correo y Contraseña en ese orden', () => {
+    it('muestra Nombre completo, Carrera, Correo, Teléfono y Contraseña en ese orden', () => {
       const etiquetas = Array.from(raiz.querySelectorAll('.registro__label')).map((l) => l.textContent?.trim());
-      expect(etiquetas).toEqual(['Nombre completo', 'Carrera', 'Correo', 'Contraseña']);
+      expect(etiquetas).toEqual(['Nombre completo', 'Carrera', 'Correo', 'Teléfono', 'Contraseña']);
 
       expect(campo('nombre').placeholder).toBe('Tu nombre completo');
       expect(campo('carrera').placeholder).toBe('Ej. Ingeniería de Sistemas');
       expect(campo('correo').placeholder).toBe('nombre.primerapellido@ucb.edu.bo');
-      expect(campo('contrasena').placeholder).toBe('Mínimo 6 caracteres');
+      expect(campo('telefono').placeholder).toBe('Ej. 71234567');
+      expect(campo('contrasena').placeholder).toBe('Mínimo 8 caracteres');
       expect(campo('contrasena').type).toBe('password');
+    });
+
+    it('la carrera viene precargada y de solo lectura (única carrera del proyecto)', () => {
+      expect(campo('carrera').value).toBe('Ingeniería de Sistemas');
+      expect(campo('carrera').readOnly).toBe(true);
     });
 
     it('NO muestra el campo Semestre (ni en el formulario ni en el estado)', () => {
@@ -110,6 +124,19 @@ describe('Pantalla de registro', () => {
       fixture.detectChanges();
       expect(raiz.querySelector('form')).not.toBeNull();
     });
+
+    it('el botón del ojo alterna entre mostrar y ocultar la contraseña', () => {
+      const botonOjo = raiz.querySelector<HTMLButtonElement>('.registro__mostrar-contrasena')!;
+      expect(campo('contrasena').type).toBe('password');
+
+      botonOjo.click();
+      fixture.detectChanges();
+      expect(campo('contrasena').type).toBe('text');
+
+      botonOjo.click();
+      fixture.detectChanges();
+      expect(campo('contrasena').type).toBe('password');
+    });
   });
 
   describe('validaciones', () => {
@@ -118,8 +145,11 @@ describe('Pantalla de registro', () => {
       enviar();
 
       expect(errorDe('nombre')).toBe(M.ERROR_NAME_REQUIRED);
-      expect(errorDe('carrera')).toBe(M.ERROR_CAREER_REQUIRED);
+      // La carrera viene precargada con un valor válido ('Ingeniería de Sistemas'),
+      // así que un envío vacío no la marca en error.
+      expect(errorDe('carrera')).toBeNull();
       expect(errorDe('correo')).toBe(M.ERROR_EMAIL_REQUIRED);
+      expect(errorDe('telefono')).toBe('El teléfono es obligatorio');
       expect(errorDe('contrasena')).toBe(M.ERROR_PASSWORD_REQUIRED);
       expect(registrar).not.toHaveBeenCalled();
       expect(campo('nombre').getAttribute('aria-invalid')).toBe('true');
@@ -127,10 +157,9 @@ describe('Pantalla de registro', () => {
     });
 
     it('trata los espacios en blanco como vacío', () => {
-      llenar({ nombre: '     ', carrera: '   ' });
+      llenar({ nombre: '     ' });
       enviar();
       expect(errorDe('nombre')).toBe(M.ERROR_NAME_REQUIRED);
-      expect(errorDe('carrera')).toBe(M.ERROR_CAREER_REQUIRED);
     });
 
     it('nombre de menos de 3 caracteres', () => {
@@ -145,12 +174,25 @@ describe('Pantalla de registro', () => {
       expect(errorDe('correo')).toBe(M.ERROR_EMAIL_INVALID);
     });
 
+    it.each(['12345678', '7123456', '712345678', '7abcdefg'])('teléfono inválido: "%s"', (telefono) => {
+      llenar({ telefono });
+      enviar();
+      expect(errorDe('telefono')).not.toBeNull();
+      expect(errorDe('telefono')).not.toBe('El teléfono es obligatorio');
+    });
+
+    it.each(['71234567', '60000000'])('teléfono válido: "%s"', (telefono) => {
+      llenar({ telefono });
+      enviar();
+      expect(errorDe('telefono')).toBeNull();
+    });
+
     it('contraseña de menos de 8 caracteres; con 8 es válida', () => {
-      llenar({ contrasena: '1234567' });
+      llenar({ contrasena: '1234567' }); // 7 caracteres
       enviar();
       expect(errorDe('contrasena')).toBe(M.ERROR_PASSWORD_MIN_LENGTH);
 
-      escribir('contrasena', '123456');
+      escribir('contrasena', '12345678'); // 8 caracteres
       fixture.detectChanges();
       expect(errorDe('contrasena')).toBeNull();
     });
@@ -165,11 +207,10 @@ describe('Pantalla de registro', () => {
   });
 
   describe('registro exitoso', () => {
-    it('llama al servicio con el payload correcto (sin semestre) y muestra el modal de confirmación', async () => {
-      const registrar = vi.spyOn(servicio, 'registerUser');
+    it('llama al servicio con el payload correcto (sin semestre) y muestra el modal de confirmación', () => {
+      const registrar = vi.spyOn(servicio, 'registerUser').mockReturnValue(of(respuestaValida));
       llenar({ nombre: '  Ana Torres ', correo: ' Ana.Torres@UCB.edu.bo ' });
       enviar();
-      await esperarServidor();
 
       expect(registrar).toHaveBeenCalledOnce();
       const payload: RegistroRequest = registrar.mock.calls[0][0];
@@ -178,9 +219,10 @@ describe('Pantalla de registro', () => {
         carrera: 'Ingeniería de Sistemas',
         correoElectronico: 'ana.torres@ucb.edu.bo',
         contrasena: 'secreta1',
-        telefono: null
+        telefono: '71234567'
       });
       expect(payload).not.toHaveProperty('semestre');
+      expect(payload.telefono).not.toBeNull(); // el teléfono es obligatorio: siempre viaja con valor
 
       expect(modal()).not.toBeNull();
       expect(modal()!.textContent).toContain(M.MODAL_TITLE);
@@ -188,10 +230,10 @@ describe('Pantalla de registro', () => {
       expect(errorGeneral()).toBeNull();
     });
 
-    it('el modal recibe el foco y al cerrarlo (botón o Escape) se limpia el formulario', async () => {
+    it('el modal recibe el foco y al cerrarlo (botón o Escape) se limpia el formulario', () => {
+      vi.spyOn(servicio, 'registerUser').mockReturnValue(of(respuestaValida));
       llenar();
       enviar();
-      await esperarServidor();
 
       const entendido = modal()!.querySelector<HTMLButtonElement>('button')!;
       expect(raiz.ownerDocument.activeElement).toBe(entendido);
@@ -205,7 +247,6 @@ describe('Pantalla de registro', () => {
       // Segunda vez, ahora con Escape
       llenar({ correo: 'otra.persona@ucb.edu.bo' });
       enviar();
-      await esperarServidor();
       raiz.querySelector('.registro-modal')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
       fixture.detectChanges();
       expect(modal()).toBeNull();
@@ -213,7 +254,10 @@ describe('Pantalla de registro', () => {
   });
 
   describe('estado de carga', () => {
-    it('deshabilita el botón y muestra "Creando cuenta..." mientras se procesa', async () => {
+    it('deshabilita el botón y muestra "Creando cuenta..." mientras espera al servidor', () => {
+      const enProgreso = new Subject<RegistroResponse>();
+      vi.spyOn(servicio, 'registerUser').mockReturnValue(enProgreso.asObservable());
+
       llenar();
       expect(boton().disabled).toBe(false);
       enviar();
@@ -221,12 +265,14 @@ describe('Pantalla de registro', () => {
       expect(boton().disabled).toBe(true);
       expect(boton().textContent).toContain('Creando cuenta...');
 
-      await esperarServidor();
+      enProgreso.next(respuestaValida);
+      enProgreso.complete();
+      fixture.detectChanges();
       expect(componente.enviando()).toBe(false);
     });
 
     it('un segundo envío mientras carga no repite la petición', () => {
-      const registrar = vi.spyOn(servicio, 'registerUser');
+      const registrar = vi.spyOn(servicio, 'registerUser').mockReturnValue(new Subject<RegistroResponse>());
       llenar();
       enviar();
       componente.enviar(); // p. ej. Enter repetido con el botón ya deshabilitado
@@ -235,28 +281,37 @@ describe('Pantalla de registro', () => {
   });
 
   describe('errores del servidor', () => {
-    it('409: muestra "Este correo ya está registrado" encima del botón, sin modal', async () => {
-      llenar({ correo: 'test@ucb.edu.bo' });
+    it('409: muestra "Este correo ya está registrado" encima del botón, sin modal', () => {
+      const error: ErrorAuth = { codigo: 'CORREO_DUPLICADO', estado: 409 };
+      vi.spyOn(servicio, 'registerUser').mockReturnValue(throwError(() => error));
+      llenar();
       enviar();
-      await esperarServidor();
 
       expect(errorGeneral()).toBe('Este correo ya está registrado.');
       expect(raiz.querySelector('form')!.contains(raiz.querySelector('.registro__error-general'))).toBe(true);
       expect(modal()).toBeNull();
       expect(boton().disabled).toBe(false);
-      expect(campo('correo').value).toBe('test@ucb.edu.bo'); // no se pierde lo escrito
+      expect(campo('correo').value).toBe(validos.correo); // no se pierde lo escrito
     });
 
-    it('el mensaje general se limpia al reintentar', async () => {
-      llenar({ correo: 'test@ucb.edu.bo' });
+    it('el mensaje general se limpia al reintentar, antes de esperar la nueva respuesta', () => {
+      const espia = vi.spyOn(servicio, 'registerUser').mockReturnValue(
+        throwError(() => ({ codigo: 'CORREO_DUPLICADO', estado: 409 }) satisfies ErrorAuth)
+      );
+      llenar();
       enviar();
-      await esperarServidor();
       expect(errorGeneral()).not.toBeNull();
 
+      // El segundo intento se deja "colgado" (Subject sin resolver) para comprobar
+      // que el aviso se limpia apenas se reintenta, sin esperar la respuesta.
+      const enProgreso = new Subject<RegistroResponse>();
+      espia.mockReturnValue(enProgreso.asObservable());
       escribir('correo', 'otro@ucb.edu.bo');
       enviar();
       expect(errorGeneral()).toBeNull();
-      await esperarServidor();
+
+      enProgreso.next(respuestaValida);
+      enProgreso.complete();
     });
 
     it.each<[ErrorAuth, string]>([
@@ -278,26 +333,19 @@ describe('Pantalla de registro', () => {
       const error: ErrorAuth = {
         codigo: 'VALIDACION',
         estado: 400,
-        campos: { correoElectronico: 'Ese dominio no está permitido.' }
+        campos: { telefono: 'Ese teléfono ya está en uso.' }
       };
       vi.spyOn(servicio, 'registerUser').mockReturnValue(throwError(() => error));
       llenar();
       enviar();
 
-      expect(errorDe('correo')).toBe('Ese dominio no está permitido.');
+      expect(errorDe('telefono')).toBe('Ese teléfono ya está en uso.');
       expect(errorGeneral()).toBeNull();
 
       // Al corregir el campo, el error del servidor desaparece.
-      escribir('correo', 'ana.torres@ucb.edu.bo');
+      escribir('telefono', '71234567');
       fixture.detectChanges();
-      expect(errorDe('correo')).toBeNull();
+      expect(errorDe('telefono')).toBeNull();
     });
-  });
-
-  it('con éxito inmediato del servicio (sin espera) también muestra el modal', () => {
-    vi.spyOn(servicio, 'registerUser').mockReturnValue(of({ id: 1, nombre: 'Ana', correoElectronico: validos.correo , telefono: '12345678', carrera: validos.carrera }));
-    llenar();
-    enviar();
-    expect(modal()).not.toBeNull();
   });
 });

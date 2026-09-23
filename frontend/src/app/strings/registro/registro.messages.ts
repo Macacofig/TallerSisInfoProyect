@@ -62,8 +62,8 @@ export const REGISTRO_MESSAGES = {
 
   // Modal de confirmación
   MODAL_TITLE: '¡Cuenta creada!',
-  MODAL_DESCRIPTION: 'Enviamos un correo de confirmación a',
-  MODAL_HINT: 'Revisa tu bandeja de entrada para activar tu cuenta.',
+  MODAL_DESCRIPTION: 'Registramos tu cuenta con el correo',
+  MODAL_HINT: 'Gracias.',
   MODAL_BUTTON: 'Entendido',
-  
+
 } as const;

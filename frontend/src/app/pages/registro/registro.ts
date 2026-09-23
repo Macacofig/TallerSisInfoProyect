@@ -240,6 +240,7 @@ export class Registro{
       carrera: 'carrera',
       correoElectronico: 'correo',
       correo: 'correo',
+      telefono: 'telefono',
       contrasena: 'contrasena'
     };
 
