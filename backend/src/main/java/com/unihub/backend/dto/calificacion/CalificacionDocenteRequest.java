@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 public record CalificacionDocenteRequest(
 
         @NotNull Long idDocente,
+        @NotNull Long idMateria,
         Long idEstudiante,
 
         @NotNull @Min(1) @Max(10) Integer claridadExplicaciones,

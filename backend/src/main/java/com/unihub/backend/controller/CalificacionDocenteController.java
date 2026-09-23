@@ -19,8 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.unihub.backend.common.Constants.CalificacionDocente.ACTUALIZAR_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.CREAR_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.ELIMINAR_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.GESTIONES_POR_MATERIA_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.OBTENER_POR_ESTUDIANTE_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.PROMEDIOS_POR_GESTION_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.PROMEDIOS_POR_MATERIA_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.PROMEDIOS_POR_RANGO_URL;
+
 @RestController
-@RequestMapping("/api/calificacion-docente")
+@RequestMapping
 public class CalificacionDocenteController {
 
     private final CalificacionDocenteService calificacionService;
@@ -29,72 +38,72 @@ public class CalificacionDocenteController {
 	this.calificacionService = calificacionService;
     }
 
-    @PostMapping
+    @PostMapping(CREAR_URL)
     public ResponseEntity<CalificacionDocenteResponse> crear(
 	    @Valid @RequestBody CalificacionDocenteRequest request
     ) {
 	return ResponseEntity.status(HttpStatus.CREATED).body(calificacionService.crear(request));
     }
 
-    @GetMapping("/docente/{idDocente}")
-    public ResponseEntity<CalificacionDocentePromedioResponse> obtenerPromediosPorDocente(
-	    @PathVariable Long idDocente
+    @GetMapping(PROMEDIOS_POR_MATERIA_URL)
+    public ResponseEntity<List<CalificacionDocentePromedioResponse>> obtenerPromediosPorMateria(
+            @PathVariable Long idMateria
     ) {
-	return calificacionService.obtenerPromediosPorDocente(idDocente)
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(calificacionService.obtenerPromediosPorMateria(idMateria));
     }
 
-    @GetMapping("/estudiante/{idEstudiante}/docente/{idDocente}")
-    public ResponseEntity<CalificacionDocenteResponse> obtenerPorEstudiante(
-	    @PathVariable Long idEstudiante,
-	    @PathVariable Long idDocente
-    ) {
-	return ResponseEntity.ok(calificacionService.obtenerPorEstudiante(idEstudiante, idDocente).orElse(null));
+    @GetMapping(OBTENER_POR_ESTUDIANTE_URL)
+        public ResponseEntity<CalificacionDocenteResponse> obtenerPorEstudianteEnMateria(
+            @PathVariable Long idEstudiante,
+            @PathVariable Long idDocente,
+            @PathVariable Long idMateria
+        ) {
+        return ResponseEntity.ok(calificacionService
+            .obtenerPorEstudiante(idEstudiante, idDocente, idMateria).orElse(null));
+        }
+
+    @PutMapping(ACTUALIZAR_URL)
+        public ResponseEntity<CalificacionDocenteResponse> actualizarEnMateria(
+            @PathVariable Long idEstudiante,
+            @PathVariable Long idDocente,
+            @PathVariable Long idMateria,
+            @Valid @RequestBody CalificacionDocenteRequest request
+        ) {
+        return calificacionService.actualizar(idEstudiante, idDocente, idMateria, request)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
+        }
+
+    @DeleteMapping(ELIMINAR_URL)
+        public ResponseEntity<Void> eliminarEnMateria(
+            @PathVariable Long idEstudiante,
+            @PathVariable Long idDocente,
+            @PathVariable Long idMateria
+        ) {
+        return calificacionService.eliminar(idEstudiante, idDocente, idMateria)
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.notFound().build();
+        }
+
+    @GetMapping(PROMEDIOS_POR_GESTION_URL)
+        public ResponseEntity<List<CalificacionDocentePromedioResponse>> obtenerPromediosPorMateriaYGestion(
+            @PathVariable Long idMateria,
+            @PathVariable String gestion
+        ) {
+        return ResponseEntity.ok(calificacionService.obtenerPromediosPorMateriaYGestion(idMateria, gestion));
+        }
+
+    @GetMapping(GESTIONES_POR_MATERIA_URL)
+    public ResponseEntity<List<String>> obtenerGestionesPorMateria(@PathVariable Long idMateria) {
+        return ResponseEntity.ok(calificacionService.obtenerGestiones(idMateria));
     }
 
-    @PutMapping("/estudiante/{idEstudiante}/docente/{idDocente}")
-    public ResponseEntity<CalificacionDocenteResponse> actualizar(
-	    @PathVariable Long idEstudiante,
-	    @PathVariable Long idDocente,
-	    @Valid @RequestBody CalificacionDocenteRequest request
+        @GetMapping(PROMEDIOS_POR_RANGO_URL)
+        public ResponseEntity<List<CalificacionDocentePromedioResponse>> obtenerPromediosPorMateriaYRango(
+            @PathVariable Long idMateria,
+            @RequestParam String desde,
+            @RequestParam String hasta
     ) {
-	return calificacionService.actualizar(idEstudiante, idDocente, request)
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/estudiante/{idEstudiante}/docente/{idDocente}")
-    public ResponseEntity<Void> eliminar(
-	    @PathVariable Long idEstudiante,
-	    @PathVariable Long idDocente
-    ) {
-	return calificacionService.eliminar(idEstudiante, idDocente)
-		? ResponseEntity.noContent().build()
-		: ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/periodo/{gestion}")
-    public ResponseEntity<CalificacionDocentePromedioResponse> obtenerPromediosPorGestion(
-	    @PathVariable String gestion
-    ) {
-	return calificacionService.obtenerPromediosPorGestion(gestion)
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/gestiones")
-    public ResponseEntity<List<String>> obtenerGestiones() {
-	return ResponseEntity.ok(calificacionService.obtenerGestiones());
-    }
-
-    @GetMapping("/periodo/rango")
-    public ResponseEntity<CalificacionDocentePromedioResponse> obtenerPromediosPorRango(
-	    @RequestParam String desde,
-	    @RequestParam String hasta
-    ) {
-	return calificacionService.obtenerPromediosPorRango(desde, hasta)
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(calificacionService.obtenerPromediosPorMateriaYRango(idMateria, desde, hasta));
     }
 }

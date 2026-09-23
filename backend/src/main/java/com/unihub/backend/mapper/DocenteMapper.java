@@ -10,8 +10,7 @@ public class DocenteMapper {
 	public DocenteResponse toResponse(Docente docente) {
 		return new DocenteResponse(
 				docente.getId(),
-				docente.getNombre(),
-				docente.getMateria().getId()
+				docente.getNombre()
 		);
 	}
 }

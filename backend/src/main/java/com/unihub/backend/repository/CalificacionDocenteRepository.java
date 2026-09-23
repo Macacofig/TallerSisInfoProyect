@@ -8,13 +8,12 @@ import java.util.Optional;
 
 public interface CalificacionDocenteRepository extends JpaRepository<CalificacionDocente, Long> {
 
-	List<CalificacionDocente> findByDocenteId(Long idDocente);
+	List<CalificacionDocente> findByMateriaId(Long idMateria);
 
-	Optional<CalificacionDocente> findFirstByIdEstudianteAndDocenteId(Long idEstudiante, Long idDocente);
+	Optional<CalificacionDocente> findFirstByIdEstudianteAndDocenteIdAndMateriaId(Long idEstudiante, Long idDocente, Long idMateria);
 
-	List<CalificacionDocente> findByGestion(String gestion);
+	List<CalificacionDocente> findByMateriaIdAndGestion(Long idMateria, String gestion);
 
-	List<CalificacionDocente> findByGestionBetween(String gestionDesde, String gestionHasta);
-
-	List<CalificacionDocente> findAllByOrderByGestionAsc();
+	List<CalificacionDocente> findByMateriaIdAndGestionBetween(Long idMateria, String gestionDesde, String gestionHasta);
+	List<CalificacionDocente> findByMateriaIdOrderByGestionAsc(Long idMateria);
 }

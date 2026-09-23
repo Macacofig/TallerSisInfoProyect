@@ -14,7 +14,7 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @Table(
 		name = "calificacionDocente",
-		uniqueConstraints = @UniqueConstraint(columnNames = {"id_estudiante", "id_docente"})
+		uniqueConstraints = @UniqueConstraint(columnNames = {"id_estudiante", "id_docente", "id_materia"})
 )
 public class CalificacionDocente {
 
@@ -25,6 +25,10 @@ public class CalificacionDocente {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "id_docente", nullable = false)
 	private Docente docente;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "id_materia", nullable = false)
+	private Materia materia;
 
 	@Column(name = "id_estudiante")
 	private Long idEstudiante;
@@ -46,6 +50,7 @@ public class CalificacionDocente {
 
 	public CalificacionDocente(
 			Docente docente,
+			Materia materia,
 			Long idEstudiante,
 			Integer claridadExplicaciones,
 			Integer metodologia,
@@ -53,6 +58,7 @@ public class CalificacionDocente {
 			String gestion
 	) {
 		this.docente = docente;
+		this.materia = materia;
 		this.idEstudiante = idEstudiante;
 		this.claridadExplicaciones = claridadExplicaciones;
 		this.metodologia = metodologia;
@@ -60,8 +66,21 @@ public class CalificacionDocente {
 		this.gestion = gestion;
 	}
 
+	public CalificacionDocente(
+			Docente docente,
+			Long idEstudiante,
+			Integer claridadExplicaciones,
+			Integer metodologia,
+			Integer relacionClasesEvaluaciones,
+			String gestion
+	) {
+		this(docente, docente.getMateria(), idEstudiante, claridadExplicaciones, metodologia,
+				relacionClasesEvaluaciones, gestion);
+	}
+
 	public Long getId() { return id; }
 	public Docente getDocente() { return docente; }
+	public Materia getMateria() { return materia; }
 	public Long getIdEstudiante() { return idEstudiante; }
 	public Integer getClaridadExplicaciones() { return claridadExplicaciones; }
 	public Integer getMetodologia() { return metodologia; }
