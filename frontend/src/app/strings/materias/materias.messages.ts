@@ -34,6 +34,15 @@ export const MESSAGES = {
     'Selecciona otra carrera o elige Todas para ver las materias disponibles.',
   CAREER_SEARCH_EMPTY_DESCRIPTION:
     'No hay materias que coincidan con el nombre y la carrera seleccionados. Prueba con otro nombre o cambia la carrera.',
+  CAREER_EMPTY: 'No hay carreras disponibles para filtrar.',
+  CAREER_LOAD_ERROR: 'No se pudieron cargar las carreras.',
+
+  // Paginación
+  PAGINATION_LABEL: 'Paginación del catálogo de materias',
+  PREVIOUS_PAGE: 'Anterior',
+  NEXT_PAGE: 'Siguiente',
+  PAGE_LABEL: 'Página',
+  PAGE_OF: 'de',
 
   // Cargando
   LOADING_MESSAGE: 'Cargando materias…',
@@ -100,6 +109,28 @@ export const MESSAGES = {
   MATERIA_DETAIL_LOADING: 'Cargando materia...',
   MATERIA_DETAIL_CODE_LABEL: 'Código',
   MATERIA_DETAIL_SEMESTER_LABEL: 'Semestre',
+
+  // Navegación interna del detalle de materia
+  MATERIA_DETAIL_SECTIONS_ARIA:
+    'Secciones de información de la materia',
+
+  MATERIA_DETAIL_SECTION_SUMMARY:
+    'Resumen',
+
+  MATERIA_DETAIL_SECTION_TEACHERS:
+    'Docentes',
+
+  MATERIA_DETAIL_SECTION_MATERIAL:
+    'Material',
+
+  MATERIA_DETAIL_SECTION_EVALUATIONS:
+    'Evaluaciones',
+
+  MATERIA_DETAIL_SECTION_ASSISTANTS:
+    'Ayudantes',
+
+  MATERIA_DETAIL_SECTION_PENDING:
+    'Esta sección estará disponible próximamente.',
 
   CALIFICATION_VERIFYING:
     'Verificando calificación...',

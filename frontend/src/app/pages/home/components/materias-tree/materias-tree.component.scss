@@ -1,0 +1,210 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.tree-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #dbe5ef;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 1rem 2.5rem rgba(16, 45, 80, 0.08);
+}
+
+.tree-toolbar {
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.85rem 0.65rem 1.1rem;
+  box-sizing: border-box;
+  border-bottom: 1px solid #e5ecf3;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.tree-toolbar__hint {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #52677f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.tree-toolbar__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #c9a227;
+}
+
+.tree-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+}
+
+.tree-control,
+.tree-zoom-value {
+  height: 2rem;
+  border: 1px solid #dbe5ef;
+  color: #244466;
+  background: #ffffff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.tree-control {
+  width: 2rem;
+  border-radius: 0.35rem;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.tree-control:hover,
+.tree-zoom-value:hover {
+  border-color: #b89422;
+  color: #8a6b0f;
+  background: #fffdf5;
+}
+
+.tree-zoom-value {
+  min-width: 3.4rem;
+  padding: 0 0.45rem;
+  border-radius: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.tree-viewport {
+  height: min(68vh, 48rem);
+  min-height: 28rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background:
+    linear-gradient(rgba(231, 238, 245, 0.56) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(231, 238, 245, 0.56) 1px, transparent 1px),
+    #f9fbfd;
+  background-size: 2rem 2rem;
+}
+
+.tree-stage {
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.tree-canvas {
+  position: relative;
+  transform-origin: top left;
+}
+
+.tree-connections {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.tree-connection {
+  fill: none;
+  stroke: #c9a227;
+  stroke-width: 3;
+  transition: stroke 0.2s ease, opacity 0.2s ease, stroke-width 0.2s ease;
+}
+
+.tree-connection--active {
+  opacity: 1;
+}
+
+.materia-node {
+  position: absolute;
+  z-index: 1;
+  width: 12rem;
+  height: 6.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.35rem 0.8rem 0.7rem;
+  box-sizing: border-box;
+  border: 1px solid #d2dee9;
+  border-top: 0.28rem solid #537696;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  color: #163b62;
+  box-shadow: 0 0.35rem 0.8rem rgba(23, 54, 86, 0.08);
+  cursor: pointer;
+  text-align: center;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.materia-node:hover,
+.materia-node--selected {
+  z-index: 2;
+  border-color: #c9a227;
+  box-shadow: 0 0.55rem 1.15rem rgba(23, 54, 86, 0.16);
+  transform: translateY(-0.15rem);
+}
+
+.materia-node--muted {
+  opacity: 0.25;
+}
+
+.materia-node__sigla {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.7rem;
+  color: #637b92;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.materia-node__name {
+  max-width: 100%;
+  color: #163b62;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.22;
+}
+
+.materia-node--ciencias_basicas { border-top-color: #327b87; }
+.materia-node--ing_software { border-top-color: #5574b8; }
+.materia-node--ia { border-top-color: #9b5c8b; }
+.materia-node--sistemas_info { border-top-color: #c28b2c; }
+.materia-node--hardware_redes { border-top-color: #4f8b5d; }
+.materia-node--optativa { border-top-color: #9a6d4d; }
+.materia-node--generica { border-top-color: #7c8290; }
+
+.tree-clear-selection {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #d8c477;
+  border-radius: 0.35rem;
+  background: #fffdf5;
+  color: #806211;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+@media (max-width: 48rem) {
+  .tree-panel {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .tree-viewport {
+    height: calc(100vh - 11rem);
+    min-height: 25rem;
+  }
+}

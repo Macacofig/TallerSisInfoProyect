@@ -48,6 +48,7 @@ class DocenteServiceTest {
         var docenteCaptor = forClass(Docente.class);
         verify(docenteRepository).save(docenteCaptor.capture());
         assertEquals("Ana Pérez", docenteCaptor.getValue().getNombre());
+        mostrarResultado("Agregar docente a una materia");
     }
 
     @Test
@@ -62,5 +63,13 @@ class DocenteServiceTest {
         assertEquals(List.of("Ana Pérez", "Luis Gómez"),
                 resultado.stream().map(DocenteResponse::nombre).toList());
         verify(docenteRepository).findByMateriaIdOrderByNombreAsc(1L);
+        mostrarResultado("Mostrar docentes de una materia");
+    }
+
+    private void mostrarResultado(String descripcion) {
+        System.out.println("-----------------------------");
+        System.out.println(descripcion);
+        System.out.println("Resultado: OK");
+        System.out.println("-----------------------------");
     }
 }

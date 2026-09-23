@@ -39,13 +39,19 @@
       <label for="filtrar-carrera">{{ MESSAGES.CAREER_LABEL }}</label>
       <select #filtrarCarrera id="filtrar-carrera"
         [value]="carreraSeleccionada()"
+        [attr.aria-busy]="estadoCarreras() === APP_CONFIG.COMPONENT_STATES.LOADING"
         (change)="actualizarCarrera(filtrarCarrera.value)"
         aria-controls="resultados-materias">
         <option value="">{{ MESSAGES.CAREER_ALL }}</option>
-        @for (carrera of carreras; track carrera) {
+        @for (carrera of carreras(); track carrera) {
           <option [value]="carrera">{{ carrera }}</option>
         }
       </select>
+      @if (estadoCarreras() === APP_CONFIG.COMPONENT_STATES.ERROR && carreras().length === 0) {
+        <small class="materias-search__help" role="status">{{ MESSAGES.CAREER_LOAD_ERROR }}</small>
+      } @else if (estadoCarreras() === APP_CONFIG.COMPONENT_STATES.READY && carreras().length === 0) {
+        <small class="materias-search__help" role="status">{{ MESSAGES.CAREER_EMPTY }}</small>
+      }
     </div>
   </div>
 
@@ -82,10 +88,10 @@
       </div>
     } @else {
       <div class="materias-grid">
-        @for (materia of materias(); track materia.id) {
+        @for (materia of materiasPaginadas(); track materia.id) {
           <article class="materia-card" [attr.aria-labelledby]="'materia-' + materia.id">
             <button #informacion type="button" class="materia-icon-button materia-card__informacion"
-              [attr.aria-label]="MESSAGES.INFORMATION_BUTTON + ': ' + materia.nombre"
+              [attr.aria-label]="MESSAGES.INFORMATION_BUTTON + ': ' + (materia.nombre | nombreMateria)"
               aria-haspopup="dialog"
               (click)="abrirInformacion(materia, informacion)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
@@ -95,7 +101,7 @@
             </button>
             <header>
               <p class="materia-card__codigo">{{ materia.codigo }}</p>
-              <h2 [id]="'materia-' + materia.id">{{ materia.nombre }}</h2>
+              <h2 [id]="'materia-' + materia.id">{{ materia.nombre | nombreMateria }}</h2>
               <p class="materia-card__meta">{{ materia.carrera }} · {{ MESSAGES.SEMESTER_LABEL }} {{ materia.semestre }}
                 @if (materia.semestre === 1) { · {{ MESSAGES.LEVEL_BASIC }} }
                 @else if (materia.semestre >= APP_CONFIG.SEMESTER_LEVELS.INTERMEDIATE_START && materia.semestre <= APP_CONFIG.SEMESTER_LEVELS.INTERMEDIATE_END) { · {{ MESSAGES.LEVEL_INTERMEDIATE }} }
@@ -195,13 +201,38 @@
               </p>
             }
             <button type="button" class="materia-button"
-              [attr.aria-label]="MESSAGES.EXPLORE_BUTTON + ': ' + materia.nombre"
+              [attr.aria-label]="MESSAGES.EXPLORE_BUTTON + ': ' + (materia.nombre | nombreMateria)"
               (click)="explorarMateria(materia)">
               {{ MESSAGES.EXPLORE_BUTTON }}
             </button>
           </article>
         }
       </div>
+      @if (totalPaginas() > 1) {
+        <nav class="materias-pagination" [attr.aria-label]="MESSAGES.PAGINATION_LABEL">
+          <button type="button" (click)="cambiarPagina(paginaActual() - 1)"
+            [disabled]="paginaActual() === 1" [attr.aria-label]="MESSAGES.PREVIOUS_PAGE">
+            {{ MESSAGES.PREVIOUS_PAGE }}
+          </button>
+          <div class="materias-pagination__pages">
+            @for (pagina of numerosPagina(); track pagina) {
+              <button type="button" (click)="cambiarPagina(pagina)"
+                [class.is-active]="pagina === paginaActual()"
+                [attr.aria-current]="pagina === paginaActual() ? 'page' : null"
+                [attr.aria-label]="MESSAGES.PAGE_LABEL + ' ' + pagina">
+                {{ pagina }}
+              </button>
+            }
+          </div>
+          <button type="button" (click)="cambiarPagina(paginaActual() + 1)"
+            [disabled]="paginaActual() === totalPaginas()" [attr.aria-label]="MESSAGES.NEXT_PAGE">
+            {{ MESSAGES.NEXT_PAGE }}
+          </button>
+          <span class="materias-pagination__status" aria-live="polite">
+            {{ MESSAGES.PAGE_LABEL }} {{ paginaActual() }} {{ MESSAGES.PAGE_OF }} {{ totalPaginas() }}
+          </span>
+        </nav>
+      }
     }
   </div>
 
@@ -214,7 +245,7 @@
         </svg>
       </button>
       <p class="materias-page__eyebrow">{{ MESSAGES.MODAL_EYEBROW }}</p>
-      <h2 id="titulo-detalle" tabindex="-1" autofocus>{{ materia.nombre }}</h2>
+      <h2 id="titulo-detalle" tabindex="-1" autofocus>{{ materia.nombre | nombreMateria }}</h2>
       @if (mostrandoDemo()) {
         <p class="materias-page__demo">{{ MESSAGES.DEMO_NOTICE }}</p>
       }

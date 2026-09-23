@@ -36,6 +36,7 @@ import {
 
 import { APP_CONFIG } from '../../../config/app-config';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { NombreMateriaPipe } from '../../../pipes/nombre-materia.pipe';
 
 import {
   CalificacionGraficosComponent
@@ -50,14 +51,25 @@ import {
   HistorialCalificacionesComponent
 } from './components/historial-calificaciones/historial-calificaciones/historial-calificaciones.component';
 
+import {
+  SeccionesDetalleComponent,
+  SeccionDetalleMateria
+} from './components/secciones-detalle/secciones-detalle/secciones-detalle.component';
+
+import {
+  DocentesComponent
+} from './components/docentes/docentes/docentes.component';
 @Component({
   selector: 'app-materia-detalle',
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    NombreMateriaPipe,
     CalificacionGraficosComponent,
     FiltroGestionesComponent,
-    HistorialCalificacionesComponent
+    HistorialCalificacionesComponent,
+    SeccionesDetalleComponent,
+    DocentesComponent
   ],
   templateUrl: './materia-detalle.component.html',
   styleUrl: './materia-detalle.component.scss'
@@ -65,6 +77,7 @@ import {
 export class MateriaDetalleComponent implements OnInit {
 
   readonly mensajes = MESSAGES;
+  seccionActiva: SeccionDetalleMateria = 'resumen';
 
   materia: Materia | null = null;
 
@@ -231,6 +244,12 @@ export class MateriaDetalleComponent implements OnInit {
       .markForCheck();
   }
 
+  seleccionarSeccion(
+    seccion: SeccionDetalleMateria
+  ): void {
+    this.seccionActiva =
+      seccion;
+  }
   abrirFormularioCalificacion(): void {
 
     if (this.verificandoCalificacion) {

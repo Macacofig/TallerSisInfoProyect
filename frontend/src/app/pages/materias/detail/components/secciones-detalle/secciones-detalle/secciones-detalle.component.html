@@ -1,0 +1,23 @@
+<nav
+  class="secciones-detalle"
+  [attr.aria-label]="mensajes.MATERIA_DETAIL_SECTIONS_ARIA"
+>
+  @for (
+    seccion of secciones;
+    track seccion.id
+  ) {
+    <button
+      type="button"
+      class="secciones-detalle__opcion"
+      [class.secciones-detalle__opcion--activa]="
+        seccionActiva === seccion.id
+      "
+      [attr.aria-pressed]="
+        seccionActiva === seccion.id
+      "
+      (click)="seleccionar(seccion.id)"
+    >
+      {{ seccion.etiqueta }}
+    </button>
+  }
+</nav>

@@ -1,0 +1,602 @@
+<section
+  class="docentes"
+  aria-labelledby="docentes-titulo"
+>
+  <header class="docentes__encabezado">
+    <div>
+      <h2 id="docentes-titulo">
+        {{ mensajes.TITLE }}
+      </h2>
+
+      <p>
+        {{ mensajes.DESCRIPTION }}
+      </p>
+    </div>
+  </header>
+
+  @if (mensajeExito) {
+    <p
+      class="docentes__exito"
+      role="status"
+    >
+      {{ mensajeExito }}
+    </p>
+  }
+
+  @if (cargando) {
+
+    <p
+      class="docentes__estado"
+      role="status"
+    >
+      {{ mensajes.LOADING }}
+    </p>
+
+  } @else if (error) {
+
+    <div
+      class="docentes__error"
+      role="alert"
+    >
+      <p>
+        {{ error }}
+      </p>
+
+      <button
+        type="button"
+        (click)="cargarDocentes()"
+      >
+        {{ mensajes.RETRY }}
+      </button>
+    </div>
+
+  } @else if (docentes.length === 0) {
+
+    <div class="docentes__vacio">
+      <h3>
+        {{ mensajes.EMPTY_TITLE }}
+      </h3>
+
+      <p>
+        {{ mensajes.EMPTY_DESCRIPTION }}
+      </p>
+    </div>
+
+  } @else {
+
+    <div class="docentes__lista">
+
+      @for (
+        item of docentes;
+        track item.docente.id
+      ) {
+
+        <article class="docente-card">
+
+          <div class="docente-card__identidad">
+
+            <div
+              class="docente-card__avatar"
+              aria-hidden="true"
+            >
+              {{
+                obtenerIdentificadorVisual(
+                  item.docente
+                )
+              }}
+            </div>
+
+            <div>
+              <h3>
+                {{
+                  obtenerNombreVisible(
+                    item.docente
+                  )
+                }}
+              </h3>
+
+              <p>
+                {{ materia.nombre }}
+              </p>
+            </div>
+
+          </div>
+
+          <div class="docente-card__acciones">
+
+            @if (item.calificacion) {
+
+              <span
+                class="docente-card__estado docente-card__estado--registrada"
+              >
+                {{ mensajes.REGISTERED_STATUS }}
+              </span>
+
+              <button
+                type="button"
+                class="boton-secundario"
+                (click)="abrirDetalle(item)"
+              >
+                {{ mensajes.VIEW_BUTTON }}
+              </button>
+
+            } @else {
+
+              <span class="docente-card__estado">
+                {{ mensajes.PENDING_STATUS }}
+              </span>
+
+              <button
+                type="button"
+                class="boton-primario"
+                (click)="abrirFormulario(item.docente)"
+              >
+                {{ mensajes.RATE_BUTTON }}
+              </button>
+
+            }
+
+          </div>
+
+        </article>
+      }
+
+    </div>
+  }
+</section>
+
+@if (
+  (mostrarFormulario || mostrarDetalle) &&
+  docenteSeleccionado
+) {
+
+  <div
+    class="modal-docente"
+    (click)="cerrarModal()"
+  >
+
+    <section
+      class="modal-docente__contenido"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-docente-titulo"
+      (click)="$event.stopPropagation()"
+    >
+
+      @if (
+        mostrarDetalle &&
+        calificacionSeleccionada &&
+        !mostrarConfirmacionEliminacion
+      ) {
+
+        <header class="modal-docente__encabezado">
+
+          <div>
+            <span class="modal-docente__eyebrow">
+              {{ materia.nombre }}
+            </span>
+
+            <h2 id="modal-docente-titulo">
+              {{ mensajes.DETAIL_TITLE }}
+            </h2>
+
+            <p>
+              {{
+                obtenerNombreVisible(
+                  docenteSeleccionado
+                )
+              }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="modal-docente__cerrar"
+            aria-label="Cerrar"
+            (click)="cerrarModal()"
+          >
+            ×
+          </button>
+
+        </header>
+
+        <p class="modal-docente__descripcion">
+          {{ mensajes.DETAIL_DESCRIPTION }}
+        </p>
+
+        <div class="confirmacion-docente">
+
+          <div class="confirmacion-docente__fila">
+            <span>
+              {{ mensajes.CLARITY_LABEL }}
+            </span>
+
+            <strong>
+              {{
+                calificacionSeleccionada.claridadExplicaciones
+              }}/{{ escalaMaxima }}
+            </strong>
+          </div>
+
+          <div class="confirmacion-docente__fila">
+            <span>
+              {{ mensajes.METHODOLOGY_LABEL }}
+            </span>
+
+            <strong>
+              {{
+                calificacionSeleccionada.metodologia
+              }}/{{ escalaMaxima }}
+            </strong>
+          </div>
+
+          <div class="confirmacion-docente__fila">
+            <span>
+              {{ mensajes.RELATION_LABEL }}
+            </span>
+
+            <strong>
+              {{
+                calificacionSeleccionada.relacionClasesEvaluaciones
+              }}/{{ escalaMaxima }}
+            </strong>
+          </div>
+
+          <div class="confirmacion-docente__fila">
+            <span>
+              {{ mensajes.PERIOD_LABEL }}
+            </span>
+
+            <strong>
+              {{ obtenerPeriodoRegistrado() }}
+            </strong>
+          </div>
+
+        </div>
+
+        @if (errorEnvio) {
+          <p
+            class="docentes__error"
+            role="alert"
+          >
+            {{ errorEnvio }}
+          </p>
+        }
+
+        <div class="modal-docente__acciones">
+
+          <button
+            type="button"
+            class="boton-secundario"
+            (click)="abrirConfirmacionEliminacion()"
+          >
+            {{ mensajes.DELETE_BUTTON }}
+          </button>
+
+          <button
+            type="button"
+            class="boton-primario"
+            (click)="abrirEdicion()"
+          >
+            {{ mensajes.EDIT_BUTTON }}
+          </button>
+
+        </div>
+
+      } @else if (
+        mostrarDetalle &&
+        calificacionSeleccionada &&
+        mostrarConfirmacionEliminacion
+      ) {
+
+        <header class="modal-docente__encabezado">
+
+          <div>
+            <span class="modal-docente__eyebrow">
+              {{
+                obtenerNombreVisible(
+                  docenteSeleccionado
+                )
+              }}
+            </span>
+
+            <h2 id="modal-docente-titulo">
+              {{ mensajes.DELETE_CONFIRM_TITLE }}
+            </h2>
+
+            <p>
+              {{ mensajes.DELETE_CONFIRM_DESCRIPTION }}
+            </p>
+          </div>
+
+        </header>
+
+        @if (errorEnvio) {
+          <p
+            class="docentes__error"
+            role="alert"
+          >
+            {{ errorEnvio }}
+          </p>
+        }
+
+        <div class="modal-docente__acciones">
+
+          <button
+            type="button"
+            class="boton-secundario"
+            [disabled]="eliminandoCalificacion"
+            (click)="cancelarEliminacion()"
+          >
+            {{ mensajes.CANCEL_BUTTON }}
+          </button>
+
+          <button
+            type="button"
+            class="boton-primario"
+            [disabled]="eliminandoCalificacion"
+            (click)="eliminarCalificacion()"
+          >
+            @if (eliminandoCalificacion) {
+              {{ mensajes.DELETING }}
+            } @else {
+              {{ mensajes.DELETE_CONFIRM_BUTTON }}
+            }
+          </button>
+
+        </div>
+
+      } @else if (
+        mostrarFormulario &&
+        !mostrarConfirmacion
+      ) {
+
+        <header class="modal-docente__encabezado">
+
+          <div>
+            <span class="modal-docente__eyebrow">
+              {{ materia.nombre }}
+            </span>
+
+            <h2 id="modal-docente-titulo">
+              @if (modoEdicion) {
+                {{ mensajes.EDIT_TITLE }}
+              } @else {
+                {{ mensajes.MODAL_TITLE }}
+              }
+            </h2>
+
+            <p>
+              {{
+                obtenerNombreVisible(
+                  docenteSeleccionado
+                )
+              }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="modal-docente__cerrar"
+            aria-label="Cerrar"
+            (click)="cerrarModal()"
+          >
+            ×
+          </button>
+
+        </header>
+
+        <p class="modal-docente__descripcion">
+          @if (modoEdicion) {
+            {{ mensajes.EDIT_DESCRIPTION }}
+          } @else {
+            {{ mensajes.MODAL_DESCRIPTION }}
+          }
+        </p>
+
+        <form
+          [formGroup]="formularioCalificacion"
+          (ngSubmit)="continuarConfirmacion()"
+        >
+
+          @for (
+            criterio of criteriosCalificacion;
+            track criterio.control
+          ) {
+
+            <div class="criterio-docente">
+
+              <div class="criterio-docente__encabezado">
+
+                <label
+                  [for]="criterio.control"
+                >
+                  {{ criterio.label }}
+                </label>
+
+                <strong>
+                  {{
+                    obtenerValor(
+                      criterio.control
+                    )
+                  }}/{{ escalaMaxima }}
+                </strong>
+
+              </div>
+
+              <input
+                [id]="criterio.control"
+                type="range"
+                min="1"
+                [max]="escalaMaxima"
+                step="1"
+                [formControlName]="criterio.control"
+              />
+
+              <div
+                class="criterio-docente__escala"
+                aria-hidden="true"
+              >
+                <span>1</span>
+                <span>{{ escalaMaxima }}</span>
+              </div>
+
+            </div>
+          }
+
+          <div class="periodo-docente">
+            <span>
+              @if (modoEdicion) {
+                {{ mensajes.PERIOD_LABEL }}
+              } @else {
+                {{ mensajes.CURRENT_PERIOD_LABEL }}
+              }
+            </span>
+
+            <strong>
+              @if (
+                modoEdicion &&
+                calificacionSeleccionada
+              ) {
+                {{ obtenerPeriodoRegistrado() }}
+              } @else {
+                {{ periodoActual }}
+              }
+            </strong>
+          </div>
+
+          <div class="modal-docente__acciones">
+
+            <button
+              type="button"
+              class="boton-secundario"
+              (click)="cerrarModal()"
+            >
+              {{ mensajes.CANCEL_BUTTON }}
+            </button>
+
+            <button
+              type="submit"
+              class="boton-primario"
+            >
+              {{ mensajes.CONTINUE_BUTTON }}
+            </button>
+
+          </div>
+
+        </form>
+
+      } @else if (
+        mostrarFormulario &&
+        mostrarConfirmacion
+      ) {
+
+        <header class="modal-docente__encabezado">
+
+          <div>
+            <span class="modal-docente__eyebrow">
+              {{
+                obtenerNombreVisible(
+                  docenteSeleccionado
+                )
+              }}
+            </span>
+
+            <h2 id="modal-docente-titulo">
+              @if (modoEdicion) {
+                {{ mensajes.UPDATE_CONFIRM_TITLE }}
+              } @else {
+                {{ mensajes.CONFIRM_TITLE }}
+              }
+            </h2>
+
+            <p>
+              @if (modoEdicion) {
+                {{ mensajes.UPDATE_CONFIRM_DESCRIPTION }}
+              } @else {
+                {{ mensajes.CONFIRM_DESCRIPTION }}
+              }
+            </p>
+          </div>
+
+        </header>
+
+        <div class="confirmacion-docente">
+
+          @for (
+            criterio of criteriosCalificacion;
+            track criterio.control
+          ) {
+
+            <div class="confirmacion-docente__fila">
+
+              <span>
+                {{ criterio.label }}
+              </span>
+
+              <strong>
+                {{
+                  obtenerValor(
+                    criterio.control
+                  )
+                }}/{{ escalaMaxima }}
+              </strong>
+
+            </div>
+          }
+
+        </div>
+
+        @if (errorEnvio) {
+          <p
+            class="docentes__error"
+            role="alert"
+          >
+            {{ errorEnvio }}
+          </p>
+        }
+
+        <div class="modal-docente__acciones">
+
+          <button
+            type="button"
+            class="boton-secundario"
+            [disabled]="enviandoCalificacion"
+            (click)="volverFormulario()"
+          >
+            {{ mensajes.BACK_BUTTON }}
+          </button>
+
+          <button
+            type="button"
+            class="boton-primario"
+            [disabled]="enviandoCalificacion"
+            (click)="guardarCalificacion()"
+          >
+            @if (enviandoCalificacion) {
+
+              @if (modoEdicion) {
+                {{ mensajes.UPDATING }}
+              } @else {
+                {{ mensajes.SENDING }}
+              }
+
+            } @else {
+
+              @if (modoEdicion) {
+                {{ mensajes.SAVE_BUTTON }}
+              } @else {
+                {{ mensajes.CONFIRM_BUTTON }}
+              }
+
+            }
+          </button>
+
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+}

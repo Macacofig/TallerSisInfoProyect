@@ -47,6 +47,7 @@ class DocenteControllerTest {
                 .andExpect(jsonPath("$.nombre").value("Ana Pérez"));
 
         verify(docenteService).agregar(any());
+        mostrarResultado("Agregar un docente");
     }
 
     @Test
@@ -61,6 +62,7 @@ class DocenteControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(docenteService, never()).agregar(any());
+        mostrarResultado("Rechazar docente sin nombre");
     }
 
     @Test
@@ -77,5 +79,13 @@ class DocenteControllerTest {
                 .andExpect(jsonPath("$[1].nombre").value("Luis Gómez"));
 
         verify(docenteService).obtenerPorMateria(1L);
+                mostrarResultado("Mostrar docentes de una materia");
+        }
+
+        private void mostrarResultado(String descripcion) {
+                System.out.println("-----------------------------");
+                System.out.println(descripcion);
+                System.out.println("Resultado: OK");
+                System.out.println("-----------------------------");
     }
 }

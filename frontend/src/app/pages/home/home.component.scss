@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.home-page {
+  min-height: calc(100vh - 4.25rem);
+  padding: 2.25rem clamp(1.25rem, 3vw, 3rem) 3rem;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(201, 162, 39, 0.1), transparent 22rem),
+    #f4f7fb;
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  color: #102d50;
+  font-family: Georgia, serif;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+@media (max-width: 48rem) {
+  .home-page {
+    min-height: calc(100vh - 4.25rem);
+    padding: 1.5rem 0 2rem;
+  }
+
+  h1 {
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+}
