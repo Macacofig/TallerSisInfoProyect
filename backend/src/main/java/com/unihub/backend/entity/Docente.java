@@ -9,6 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "docentes")
@@ -21,16 +25,19 @@ public class Docente {
 	@Column(nullable = false)
 	private String nombre;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "id_materia", nullable = false)
-	private Materia materia;
+	@OneToMany(mappedBy = "docente", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+	private List<DocenteMateria> materias = new ArrayList<>();
 
 	protected Docente() {
 	}
 
 	public Docente(String nombre, Materia materia) {
 		this.nombre = nombre;
-		this.materia = materia;
+		agregarMateria(materia);
+	}
+
+	public Docente(String nombre) {
+		this.nombre = nombre;
 	}
 
 	public Long getId() {
@@ -42,6 +49,14 @@ public class Docente {
 	}
 
 	public Materia getMateria() {
-		return materia;
+		return materias.isEmpty() ? null : materias.get(0).getMateria();
+	}
+
+	public List<DocenteMateria> getMaterias() {
+		return materias;
+	}
+
+	public void agregarMateria(Materia materia) {
+		materias.add(new DocenteMateria(this, materia));
 	}
 }
