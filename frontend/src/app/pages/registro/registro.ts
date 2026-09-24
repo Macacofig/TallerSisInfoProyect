@@ -149,6 +149,10 @@ export class Registro {
     this.mostrarContrasena.update(valor => !valor);
   }
 
+  irALogin(): void {
+    this.router.navigate(['/login']);
+  }
+
   mensajeError(campo: CampoRegistro): string | null {
     const control = this.formulario.controls[campo];
     const errores = control.errors;

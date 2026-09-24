@@ -3,117 +3,124 @@
   <!-- ===== Panel izquierdo: marca ===== -->
 
   <aside class="login__marca">
-  <header class="login__brand">
 
-    <div class="login__logo" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M4 4v16M8 8v12M12 6v14M16 6l4 14"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-        />
-      </svg>
-    </div>
+    <header class="login__brand">
 
-    <div class="login__brand-text">
-      <span class="login__brand-name">
-        {{ MESSAGES.BRAND_NAME }}
-      </span>
-
-      <span class="login__brand-subtitle">
-        {{ MESSAGES.BRAND_SUBTITLE }}
-      </span>
-    </div>
-
-  </header>
-
-  <div class="login__hero">
-
-    <p class="login__hero-eyebrow">
-      {{ MESSAGES.HERO_EYEBROW }}
-    </p>
-
-    <p class="login__hero-title">
-      {{ MESSAGES.HERO_TITLE }}
-    </p>
-
-    <p class="login__hero-description">
-      {{ MESSAGES.HERO_DESCRIPTION }}
-    </p>
-
-    <ul class="login__features">
-
-      <li class="login__feature">
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
+      <div class="login__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
-            d="M12 6.5C10.5 5.3 8.3 4.7 5 4.7v12.6c3.3 0 5.5.6 7 1.8 1.5-1.2 3.7-1.8 7-1.8V4.7c-3.3 0-5.5.6-7 1.8Z"
+            d="M4 4v16M8 8v12M12 6v14M16 6l4 14"
             stroke="currentColor"
-            stroke-width="1.7"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M12 6.5v12.6"
-            stroke="currentColor"
-            stroke-width="1.7"
-          />
-        </svg>
-
-        <span>
-          {{ MESSAGES.FEATURE_MATERIAL }}
-        </span>
-
-      </li>
-
-      <li class="login__feature">
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            d="M12 4 2.5 9 12 14l9.5-5L12 4Z"
-            stroke="currentColor"
-            stroke-width="1.7"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M6 11.5V16c1.2 1.6 3.4 2.5 6 2.5s4.8-.9 6-2.5v-4.5M21.5 9v6"
-            stroke="currentColor"
-            stroke-width="1.7"
+            stroke-width="1.8"
             stroke-linecap="round"
-            stroke-linejoin="round"
           />
         </svg>
+      </div>
 
-        <span>
-          {{ MESSAGES.FEATURE_PROFILE }}
+      <div class="login__brand-text">
+
+        <span class="login__brand-name">
+          {{ MESSAGES.BRAND_NAME }}
         </span>
 
-      </li>
+        <span class="login__brand-subtitle">
+          {{ MESSAGES.BRAND_SUBTITLE }}
+        </span>
 
-    </ul>
+      </div>
 
-  </div>
+    </header>
 
-  <footer class="login__pie">
-    {{ MESSAGES.FOOTER_COMMUNITY }}
-  </footer>
 
+    <div class="login__hero">
+
+      <p class="login__hero-eyebrow">
+        {{ MESSAGES.HERO_EYEBROW }}
+      </p>
+
+      <p class="login__hero-title">
+        {{ MESSAGES.HERO_TITLE }}
+      </p>
+
+      <p class="login__hero-description">
+        {{ MESSAGES.HERO_DESCRIPTION }}
+      </p>
+
+      <ul class="login__features">
+
+        <li class="login__feature">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 6.5C10.5 5.3 8.3 4.7 5 4.7v12.6c3.3 0 5.5.6 7 1.8 1.5-1.2 3.7-1.8 7-1.8V4.7c-3.3 0-5.5.6-7 1.8Z"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M12 6.5v12.6"
+              stroke="currentColor"
+              stroke-width="1.7"
+            />
+          </svg>
+
+          <span>
+            {{ MESSAGES.FEATURE_MATERIAL }}
+          </span>
+
+        </li>
+
+
+        <li class="login__feature">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 4 2.5 9 12 14l9.5-5L12 4Z"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M6 11.5V16c1.2 1.6 3.4 2.5 6 2.5s4.8-.9 6-2.5v-4.5M21.5 9v6"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+
+          <span>
+            {{ MESSAGES.FEATURE_PROFILE }}
+          </span>
+
+        </li>
+
+      </ul>
+
+    </div>
+
+
+    <footer class="login__pie">
+      {{ MESSAGES.FOOTER_COMMUNITY }}
+    </footer>
 
   </aside>
+
 
   <!-- ===== Panel derecho: login ===== -->
 
   <main class="login__formulario">
+
     <div class="login__contenido">
 
       <p class="login__eyebrow">
@@ -129,30 +136,83 @@
       </p>
 
 
-      <form class="login__form" novalidate>
+      <!-- ===== Google ===== -->
 
-        <!-- Google -->
+      <button
+        type="button"
+        class="login__google"
+      >
+
+        <span class="login__google-icon">
+          G
+        </span>
+
+        <span>
+          {{ MESSAGES.GOOGLE_BUTTON }}
+        </span>
+
+      </button>
+
+
+      <!-- ===== Barra Registro / Iniciar sesión ===== -->
+
+      <div class="login__tabs">
+
         <button
           type="button"
-          class="login__google"
+          class="login__tab"
+          (click)="irARegistro()"
         >
-          <span class="login__google-icon">G</span>
-
-          <span>
-            {{ MESSAGES.GOOGLE_BUTTON }}
-          </span>
+          {{ MESSAGES.REGISTER_TAB }}
         </button>
 
+        <button
+          type="button"
+          class="login__tab login__tab--activa"
+          aria-current="page"
+        >
+          {{ MESSAGES.LOGIN_TAB }}
+        </button>
+
+      </div>
+
+
+      <!-- ===== Formulario ===== -->
+
+      <form
+        class="login__form"
+        [formGroup]="formulario"
+        (ngSubmit)="enviar()"
+        novalidate
+      >
 
         <!-- Separador -->
+
         <div class="login__separador">
+
           <span>
             {{ MESSAGES.SEPARATOR }}
           </span>
+
         </div>
 
 
+        <!-- Error general -->
+
+        @if (errorGeneral()) {
+
+          <p
+            class="login__error-general"
+            role="alert"
+          >
+            {{ errorGeneral() }}
+          </p>
+
+        }
+
+
         <!-- Correo -->
+
         <div class="login__campo">
 
           <label
@@ -164,16 +224,30 @@
 
           <input
             class="login__input"
+            [class.login__input--error]="mensajeError('correo')"
             id="login-correo"
             type="email"
             [placeholder]="MESSAGES.EMAIL_PLACEHOLDER"
+            formControlName="correo"
             autocomplete="email"
           />
+
+          @if (mensajeError('correo'); as error) {
+
+            <p
+              id="login-correo-error"
+              class="login__error"
+            >
+              {{ error }}
+            </p>
+
+          }
 
         </div>
 
 
         <!-- Contraseña -->
+
         <div class="login__campo">
 
           <label
@@ -183,18 +257,49 @@
             {{ MESSAGES.PASSWORD_LABEL }}
           </label>
 
-          <input
-            class="login__input"
-            id="login-contrasena"
-            type="password"
-            [placeholder]="MESSAGES.PASSWORD_PLACEHOLDER"
-            autocomplete="current-password"
-          />
+          <div class="login__input-contenedor">
+
+            <input
+              class="login__input login__input-contrasena"
+              [class.login__input--error]="mensajeError('contrasena')"
+              id="login-contrasena"
+              [type]="mostrarContrasena() ? 'text' : 'password'"
+              [placeholder]="MESSAGES.PASSWORD_PLACEHOLDER"
+              formControlName="contrasena"
+              autocomplete="current-password"
+            />
+
+            <button
+              type="button"
+              class="login__mostrar-contrasena"
+              (click)="alternarContrasena()"
+              [attr.aria-label]="
+                mostrarContrasena()
+                  ? MESSAGES.HIDE_PASSWORD
+                  : MESSAGES.SHOW_PASSWORD
+              "
+            >
+              {{ mostrarContrasena() ? '◉' : '◌' }}
+            </button>
+
+          </div>
+
+          @if (mensajeError('contrasena'); as error) {
+
+            <p
+              id="login-contrasena-error"
+              class="login__error"
+            >
+              {{ error }}
+            </p>
+
+          }
 
         </div>
 
 
         <!-- Recuperar contraseña -->
+
         <div class="login__recuperar">
 
           <button
@@ -208,11 +313,26 @@
 
 
         <!-- Iniciar sesión -->
+
         <button
-          type="button"
+          type="submit"
           class="login__boton"
+          [disabled]="enviando()"
         >
-          {{ MESSAGES.LOGIN_BUTTON }}
+
+          @if (enviando()) {
+
+            <span
+              class="login__spinner"
+              aria-hidden="true"
+            ></span>
+
+          }
+
+          <span>
+            {{ MESSAGES.LOGIN_BUTTON }}
+          </span>
+
         </button>
 
       </form>

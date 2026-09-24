@@ -20,7 +20,7 @@ export const APP_CONFIG = {
       CALIFICACION_DOCENTE: '/calificacion-docente',
       TEST: '/test',
       AUTH_REGISTER: '/estudiantes',
-      AUTH_LOGIN: '/auth/login',
+      AUTH_LOGIN: '/estudiantes/login',
     },
   },
 

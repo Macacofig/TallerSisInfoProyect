@@ -247,6 +247,45 @@ font-size: 1rem;
 }
 
 /* =========================================================
+   SELECTOR DE PESTAÑAS
+   ========================================================= */
+
+.login__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.6rem;
+  background-color: rgba(223, 235, 250, 0.65);
+}
+
+.login__tab {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: var(--texto-suave);
+  font: 600 0.9rem var(--fuente-texto);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.login__tab:hover {
+  color: var(--texto);
+}
+
+.login__tab--activa {
+  background-color: #fff;
+  color: var(--texto);
+  box-shadow: 0 0.0625rem 0.25rem rgba(16, 33, 63, 0.12);
+}
+
+.login__tab:focus-visible {
+  outline: 0.19rem solid var(--dorado-claro);
+  outline-offset: 0.19rem;
+}
+
+/* =========================================================
 FORMULARIO
 ========================================================= */
 
@@ -273,7 +312,7 @@ gap: 0.6rem;
 width: 60%;
 min-height: 3rem;
 
-margin: 0 auto;
+margin: 0 auto 1.25rem;
 
 border: 0.0625rem solid var(--borde);
 border-radius: 0.5rem;
@@ -395,6 +434,57 @@ outline: none;
 }
 
 /* =========================================================
+   MOSTRAR / OCULTAR CONTRASEÑA
+   ========================================================= */
+
+.login__input-contenedor {
+  position: relative;
+  width: 100%;
+}
+
+.login__input-contrasena {
+  padding-right: 3rem;
+}
+
+.login__mostrar-contrasena {
+  position: absolute;
+
+  top: 50%;
+  right: 0.75rem;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 2rem;
+  height: 2rem;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 0.25rem;
+
+  background: transparent;
+  color: var(--texto-suave);
+
+  font-size: 1rem;
+
+  cursor: pointer;
+}
+
+.login__mostrar-contrasena:hover {
+  color: var(--texto);
+  background-color: var(--azul-suave);
+}
+
+.login__mostrar-contrasena:focus-visible {
+  outline: 0.15rem solid var(--azul-boton);
+  outline-offset: 0.1rem;
+}
+
+/* =========================================================
 RECUPERAR CONTRASEÑA
 ========================================================= */
 
@@ -467,53 +557,109 @@ outline-offset: 0.19rem;
 }
 
 /* =========================================================
+   ERRORES Y ESTADO DE CARGA
+   ========================================================= */
+
+.login__input--error,
+.login__input--error:focus {
+  border-color: #991b1b;
+}
+
+.login__input--error:focus {
+  box-shadow: 0 0 0 0.19rem rgba(153, 27, 27, 0.16);
+}
+
+.login__error {
+  margin: 0;
+  color: #991b1b;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.login__error-general {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #fef2f2;
+  color: #991b1b;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.login__boton:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.login__spinner {
+  width: 1rem;
+  height: 1rem;
+  box-sizing: border-box;
+  border: 0.15rem solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: login-giro 0.8s linear infinite;
+}
+
+@keyframes login-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
 RESPONSIVE
 ========================================================= */
 
 @media (max-width: 64rem) {
 
-.login__marca {
-padding: 2.5rem 2rem 2rem;
-}
+    .login__marca {
+    padding: 2.5rem 2rem 2rem;
+    }
 
-.login__formulario {
-padding: 2.5rem 2rem;
-}
+    .login__formulario {
+    padding: 2.5rem 2rem;
+    }
 
-}
+    }
 
-@media (max-width: 48rem) {
+    @media (max-width: 48rem) {
 
-.login {
-flex-direction: column;
-}
+    .login {
+    flex-direction: column;
+    }
 
-.login__marca {
-flex: none;
-max-width: none;
-padding: 1.1rem 1.25rem;
+    .login__marca {
+    flex: none;
+    max-width: none;
+    padding: 1.1rem 1.25rem;
 
 
-}
+    }
 
-.login__hero,
-.login__pie {
-display: none;
-}
+    .login__hero,
+    .login__pie {
+    display: none;
+    }
 
-.login__formulario {
-align-items: flex-start;
-padding: 2rem 1.25rem 2.5rem;
+    .login__formulario {
+    align-items: flex-start;
+    padding: 2rem 1.25rem 2.5rem;
 
-}
+    }
 
-.login__contenido {
-max-width: 36rem;
-}
+    .login__contenido {
+    max-width: 36rem;
+    }
 
-.login__google,
-.login__boton {
-width: 100%;
-}
+    .login__google,
+    .login__boton {
+    width: 100%;
+    }
 
+    @media (prefers-reduced-motion: reduce) {
+    .login__spinner {
+        animation-duration: 2.4s;
+    }
+    }
 }

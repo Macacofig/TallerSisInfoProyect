@@ -133,6 +133,24 @@
         {{ MESSAGES.FORM_SUBTITLE }}
       </p>
 
+      <div class="registro__tabs">
+        <button
+          type="button"
+          class="registro__tab registro__tab--activa"
+          aria-current="page"
+        >
+          {{ MESSAGES.REGISTER_TAB }}
+        </button>
+
+        <button
+          type="button"
+          class="registro__tab"
+          (click)="irALogin()"
+        >
+          {{ MESSAGES.LOGIN_TAB }}
+        </button>
+      </div>
+      
       <form
         class="registro__form"
         [formGroup]="formulario"
