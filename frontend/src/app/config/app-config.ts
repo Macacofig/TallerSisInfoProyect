@@ -27,7 +27,7 @@ export const APP_CONFIG = {
   ROUTES: {
     REGISTRO: '/registro',
     // Pantallas a pantalla completa: se oculta el sidebar y el navbar.
-    SIN_LAYOUT: ['/', '/registro'],
+    SIN_LAYOUT: ['/', '/registro', '/login'],
   },
 
   AUTH: {
