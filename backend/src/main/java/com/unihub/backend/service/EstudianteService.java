@@ -1,5 +1,6 @@
 package com.unihub.backend.service;
 
+import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
@@ -34,5 +35,19 @@ public class EstudianteService {
                 request.carrera()
         );
         return estudianteMapper.toResponse(estudianteRepository.save(estudiante));
+    }
+
+    public EstudianteResponse iniciarSesion(EstudianteLoginRequest request) {
+        String correoElectronico = request.correoElectronico();
+        String contrasena = request.contrasena();
+
+        Estudiante estudiante = estudianteRepository.findByCorreoElectronicoIgnoreCase(correoElectronico)
+                .orElseThrow(() -> new IllegalArgumentException("Correo electrónico o contraseña incorrectos"));
+
+        if (!estudiante.getContrasena().equals(contrasena)) {
+            throw new IllegalArgumentException("Correo electrónico o contraseña incorrectos");
+        }
+
+        return estudianteMapper.toResponse(estudiante);
     }
 }
