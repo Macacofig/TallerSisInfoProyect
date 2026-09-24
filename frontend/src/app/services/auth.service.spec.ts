@@ -137,21 +137,3 @@ describe('mapearErrorHttp', () => {
   });
 });
 
-// Prueba manual contra el backend levantado en http://localhost:8081 (no se ejecuta en CI).
-// Usar un correo y teléfono distintos en cada corrida o el backend responderá 409.
-describe.skip('Integración real: POST /api/estudiantes', () => {
-  it('crea un usuario y responde 201', async () => {
-    const respuesta = await fetch(`${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_REGISTER}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nombre: 'Ana Torres',
-        carrera: 'Ingeniería de Sistemas',
-        correoElectronico: `prueba.${Date.now()}@ucb.edu.bo`,
-        contrasena: 'secreta1',
-        telefono: '71234567'
-      })
-    });
-    expect(respuesta.status).toBe(201);
-  });
-});

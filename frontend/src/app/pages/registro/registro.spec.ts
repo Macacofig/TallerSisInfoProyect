@@ -8,8 +8,6 @@ import { AuthService } from '../../services/auth.service';
 import { REGISTRO_MESSAGES as M } from '../../strings/registro/registro.messages';
 import { Registro } from './registro';
 
-// Estas pruebas nunca llaman al backend: siempre reemplazan `registerUser`
-// (con vi.spyOn) por un Observable controlado por la propia prueba.
 describe('Pantalla de registro', () => {
   let fixture: ComponentFixture<Registro>;
   let componente: Registro;
@@ -21,7 +19,7 @@ describe('Pantalla de registro', () => {
     carrera: 'Ingeniería de Sistemas',
     correo: 'ana.torres@ucb.edu.bo',
     telefono: '71234567',
-    contrasena: 'secreta1' // 8 caracteres: cumple el mínimo actual
+    contrasena: 'Password1!' 
   };
 
   const respuestaValida: RegistroResponse = {
@@ -145,8 +143,6 @@ describe('Pantalla de registro', () => {
       enviar();
 
       expect(errorDe('nombre')).toBe(M.ERROR_NAME_REQUIRED);
-      // La carrera viene precargada con un valor válido ('Ingeniería de Sistemas'),
-      // así que un envío vacío no la marca en error.
       expect(errorDe('carrera')).toBeNull();
       expect(errorDe('correo')).toBe(M.ERROR_EMAIL_REQUIRED);
       expect(errorDe('telefono')).toBe('El teléfono es obligatorio');
@@ -174,6 +170,13 @@ describe('Pantalla de registro', () => {
       expect(errorDe('correo')).toBe(M.ERROR_EMAIL_INVALID);
     });
 
+    it('correo válido pero fuera del dominio UCB', () => {
+      llenar({ correo: 'ana@gmail.com' });
+      enviar();
+
+      expect(errorDe('correo')).toBe(M.ERROR_EMAIL_UCB);
+    });
+
     it.each(['12345678', '7123456', '712345678', '7abcdefg'])('teléfono inválido: "%s"', (telefono) => {
       llenar({ telefono });
       enviar();
@@ -187,12 +190,24 @@ describe('Pantalla de registro', () => {
       expect(errorDe('telefono')).toBeNull();
     });
 
-    it('contraseña de menos de 8 caracteres; con 8 es válida', () => {
-      llenar({ contrasena: '1234567' }); // 7 caracteres
+    it('valida los requisitos de la contraseña', () => {
+      llenar({ contrasena: 'abc' });
       enviar();
       expect(errorDe('contrasena')).toBe(M.ERROR_PASSWORD_MIN_LENGTH);
 
-      escribir('contrasena', '12345678'); // 8 caracteres
+      escribir('contrasena', 'abcdefgh');
+      fixture.detectChanges();
+      expect(errorDe('contrasena')).toBe(M.ERROR_PASSWORD_UPPERCASE);
+
+      escribir('contrasena', 'Abcdefgh');
+      fixture.detectChanges();
+      expect(errorDe('contrasena')).toBe(M.ERROR_PASSWORD_NUMBER);
+
+      escribir('contrasena', 'Abcdefg1');
+      fixture.detectChanges();
+      expect(errorDe('contrasena')).toBe(M.ERROR_PASSWORD_SPECIAL);
+
+      escribir('contrasena', 'Abcdefg1!');
       fixture.detectChanges();
       expect(errorDe('contrasena')).toBeNull();
     });
@@ -218,7 +233,7 @@ describe('Pantalla de registro', () => {
         nombre: 'Ana Torres',
         carrera: 'Ingeniería de Sistemas',
         correoElectronico: 'ana.torres@ucb.edu.bo',
-        contrasena: 'secreta1',
+        contrasena: 'Password1!',
         telefono: '71234567'
       });
       expect(payload).not.toHaveProperty('semestre');
@@ -244,7 +259,6 @@ describe('Pantalla de registro', () => {
       expect(campo('nombre').value).toBe('');
       expect(errorDe('nombre')).toBeNull();
 
-      // Segunda vez, ahora con Escape
       llenar({ correo: 'otra.persona@ucb.edu.bo' });
       enviar();
       raiz.querySelector('.registro-modal')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
@@ -275,7 +289,7 @@ describe('Pantalla de registro', () => {
       const registrar = vi.spyOn(servicio, 'registerUser').mockReturnValue(new Subject<RegistroResponse>());
       llenar();
       enviar();
-      componente.enviar(); // p. ej. Enter repetido con el botón ya deshabilitado
+      componente.enviar(); 
       expect(registrar).toHaveBeenCalledOnce();
     });
   });
@@ -302,8 +316,6 @@ describe('Pantalla de registro', () => {
       enviar();
       expect(errorGeneral()).not.toBeNull();
 
-      // El segundo intento se deja "colgado" (Subject sin resolver) para comprobar
-      // que el aviso se limpia apenas se reintenta, sin esperar la respuesta.
       const enProgreso = new Subject<RegistroResponse>();
       espia.mockReturnValue(enProgreso.asObservable());
       escribir('correo', 'otro@ucb.edu.bo');
@@ -341,8 +353,6 @@ describe('Pantalla de registro', () => {
 
       expect(errorDe('telefono')).toBe('Ese teléfono ya está en uso.');
       expect(errorGeneral()).toBeNull();
-
-      // Al corregir el campo, el error del servidor desaparece.
       escribir('telefono', '71234567');
       fixture.detectChanges();
       expect(errorDe('telefono')).toBeNull();

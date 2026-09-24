@@ -6,10 +6,14 @@ import { APP_CONFIG } from '../../config/app-config';
 import { ErrorAuth, RegistroRequest } from '../../models/registrar';
 import { AuthService } from '../../services/auth.service';
 import { REGISTRO_MESSAGES } from '../../strings/registro/registro.messages';
+
 import {
   correoValido,
+  correoUcb,
+  contrasenaValida,
   longitudMinimaSinEspacios,
-  requeridoSinEspacios
+  requeridoSinEspacios,
+  telefonoValido
 } from './registro.validators';
 
 type CampoRegistro = 'nombre' | 'carrera' | 'correo' | 'telefono' | 'contrasena';
@@ -90,14 +94,45 @@ export class Registro{
     }
   ];
 
-  // No hay campo "semestre": tampoco existe en el estado ni en el payload.
-  readonly formulario = this.formBuilder.group({
-    nombre: ['', [requeridoSinEspacios, longitudMinimaSinEspacios(APP_CONFIG.AUTH.NOMBRE_MIN_LENGTH)]],
-    carrera: ['Ingeniería de Sistemas', [Validators.required]],
-    correo: ['', [requeridoSinEspacios, correoValido]],
-    telefono: ['', [ Validators.required, Validators.pattern(/^[67]\d{7}$/)]],
-    contrasena: ['', [Validators.required, Validators.minLength(APP_CONFIG.AUTH.CONTRASENA_MIN_LENGTH)]]
-  });
+readonly formulario = this.formBuilder.group({
+  nombre: [
+    '',
+    [
+      requeridoSinEspacios,
+      longitudMinimaSinEspacios(APP_CONFIG.AUTH.NOMBRE_MIN_LENGTH)
+    ]
+  ],
+
+  carrera: [
+    'Ingeniería de Sistemas',
+    [Validators.required]
+  ],
+
+  correo: [
+    '',
+    [
+      requeridoSinEspacios,
+      correoValido,
+      correoUcb
+    ]
+  ],
+
+  telefono: [
+    '',
+    [
+      requeridoSinEspacios,
+      telefonoValido
+    ]
+  ],
+
+  contrasena: [
+    '',
+    [
+      requeridoSinEspacios,
+      contrasenaValida
+    ]
+  ]
+});
 
   constructor() {
     // Al abrirse el modal, el foco pasa a su botón (accesibilidad por teclado).
@@ -114,48 +149,95 @@ export class Registro{
     this.mostrarContrasena.update(valor => !valor);
   }
 
-  /** Mensaje de error de un campo, o null si no hay que mostrarlo todavía. */
   mensajeError(campo: CampoRegistro): string | null {
     const control = this.formulario.controls[campo];
     const errores = control.errors;
 
-    if (!errores || !(control.touched || this.intentoEnvio())) return null;
+    if (!errores || !(control.touched || this.intentoEnvio())) {
+      return null;
+    }
 
-    // Error devuelto por el servidor (400) para este campo.
+    // Error devuelto por el servidor.
     const delServidor = errores['servidor'];
-    if (typeof delServidor === 'string') return delServidor;
+
+    if (typeof delServidor === 'string') {
+      return delServidor;
+    }
 
     const M = this.MESSAGES;
 
     switch (campo) {
+
       case 'nombre':
-        return errores['required']
-          ? M.ERROR_NAME_REQUIRED
-          : M.ERROR_NAME_MIN_LENGTH;
+        if (errores['required']) {
+          return M.ERROR_NAME_REQUIRED;
+        }
+
+        if (errores['minlength']) {
+          return M.ERROR_NAME_MIN_LENGTH;
+        }
+
+        return 'El nombre no es válido.';
+
 
       case 'carrera':
-        return M.ERROR_CAREER_REQUIRED;
+        if (errores['required']) {
+          return M.ERROR_CAREER_REQUIRED;
+        }
+
+        return 'La carrera no es válida.';
+
 
       case 'correo':
-        return errores['required']
-          ? M.ERROR_EMAIL_REQUIRED
-          : M.ERROR_EMAIL_INVALID;
+        if (errores['required']) {
+          return M.ERROR_EMAIL_REQUIRED;
+        }
+
+        if (errores['correo']) {
+          return M.ERROR_EMAIL_INVALID;
+        }
+
+        if (errores['correoUcb']) {
+          return M.ERROR_EMAIL_UCB;
+        }
+
+        return 'El correo no es válido.';
+
 
       case 'telefono':
         if (errores['required']) {
           return 'El teléfono es obligatorio';
         }
 
-        if (errores['pattern']) {
-          return 'El teléfono debe empezar por 6 o 7 y tener 8 dígitos';
+        if (errores['telefono']) {
+          return M.ERROR_PHONE_INVALID;
         }
 
-        return 'El teléfono no es válido';
+        return 'El teléfono no es válido.';
+
 
       case 'contrasena':
-        return errores['required']
-          ? M.ERROR_PASSWORD_REQUIRED
-          : M.ERROR_PASSWORD_MIN_LENGTH;
+        if (errores['required']) {
+          return M.ERROR_PASSWORD_REQUIRED;
+        }
+
+        if (errores['passwordMinLength']) {
+          return M.ERROR_PASSWORD_MIN_LENGTH;
+        }
+
+        if (errores['passwordUppercase']) {
+          return M.ERROR_PASSWORD_UPPERCASE;
+        }
+
+        if (errores['passwordNumber']) {
+          return M.ERROR_PASSWORD_NUMBER;
+        }
+
+        if (errores['passwordSpecial']) {
+          return M.ERROR_PASSWORD_SPECIAL;
+        }
+
+        return 'La contraseña no es válida.';
     }
   }
 

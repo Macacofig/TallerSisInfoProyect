@@ -50,8 +50,13 @@ export const REGISTRO_MESSAGES = {
   ERROR_CAREER_REQUIRED: 'Ingresa tu carrera.',
   ERROR_EMAIL_REQUIRED: 'Ingresa tu correo.',
   ERROR_EMAIL_INVALID: 'Ingresa un correo válido, por ejemplo nombre@ucb.edu.bo.',
+  ERROR_EMAIL_UCB: 'El correo debe pertenecer al dominio @ucb.edu.bo.',
+  ERROR_PHONE_INVALID: 'El teléfono debe empezar por 6 o 7 y tener 8 dígitos.',
   ERROR_PASSWORD_REQUIRED: 'Ingresa una contraseña.',
   ERROR_PASSWORD_MIN_LENGTH: 'La contraseña debe tener al menos 8 caracteres.',
+  ERROR_PASSWORD_UPPERCASE: 'La contraseña debe tener al menos una letra mayúscula.',
+  ERROR_PASSWORD_NUMBER: 'La contraseña debe tener al menos un número.',
+  ERROR_PASSWORD_SPECIAL: 'La contraseña debe tener al menos un carácter especial.',
 
   // Errores generales (encima del botón)
   ERROR_EMAIL_TAKEN: 'Este correo ya está registrado.',
@@ -63,7 +68,7 @@ export const REGISTRO_MESSAGES = {
   // Modal de confirmación
   MODAL_TITLE: '¡Cuenta creada!',
   MODAL_DESCRIPTION: 'Registramos tu cuenta con el correo',
-  MODAL_HINT: 'Gracias.',
+  MODAL_HINT: 'Gracias por ingresar a Unihub. Te invitamos a explorar la plataforma y aprovechar todos los recursos que tenemos para ti.',
   MODAL_BUTTON: 'Entendido',
 
 } as const;
