@@ -1,5 +1,6 @@
 package com.unihub.backend.controller;
 
+import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.service.EstudianteService;
@@ -26,5 +27,12 @@ public class EstudianteController {
             @Valid @RequestBody EstudianteRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(estudianteService.registrar(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<EstudianteResponse> iniciarSesion(
+            @Valid @RequestBody EstudianteLoginRequest request
+    ) {
+        return ResponseEntity.ok(estudianteService.iniciarSesion(request));
     }
 }
