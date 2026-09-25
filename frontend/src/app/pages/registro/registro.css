@@ -167,12 +167,14 @@
 
 .registro__subtitulo { margin: 0.6rem 0 1.75rem; color: var(--texto-suave); font-size: 1rem; }
 
-/* Selector de pestañas */
+/* ===== Selector Registro / Iniciar sesión ===== */
+
 .registro__tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.25rem;
   padding: 0.25rem;
+  margin-top: 1.25rem;
   border-radius: 0.6rem;
   background-color: rgba(223, 235, 250, 0.65);
 }
@@ -185,15 +187,24 @@
   color: var(--texto-suave);
   font: 600 0.9rem var(--fuente-texto);
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
-.registro__tab:hover { color: var(--texto); }
+.registro__tab:hover {
+  color: var(--texto);
+}
 
 .registro__tab--activa {
   background-color: #fff;
   color: var(--texto);
   box-shadow: 0 0.0625rem 0.25rem rgba(16, 33, 63, 0.12);
+}
+
+.registro__tab:focus-visible {
+  outline: 0.19rem solid var(--dorado-claro);
+  outline-offset: 0.19rem;
 }
 
 /* Formulario */
@@ -286,18 +297,6 @@
 
 .registro__nota { margin: 0; color: var(--texto-suave); font-size: 0.8rem; text-align: center; }
 
-/* Pestaña "Iniciar sesión" (aún sin backend) */
-.registro__pendiente {
-  margin-top: 1.75rem;
-  padding: 1.5rem;
-  border: 0.0625rem solid var(--borde);
-  border-radius: 0.5rem;
-  background-color: #fff;
-}
-
-.registro__pendiente-titulo { margin: 0; color: var(--texto); font-weight: 700; }
-.registro__pendiente-texto { margin: 0.5rem 0 0; color: var(--texto-suave); font-size: 0.9rem; line-height: 1.5; }
-
 /* ojo de contraseña */
 .registro__input-contenedor {
   position: relative;
@@ -382,6 +381,11 @@
 
 .registro-modal__texto { margin: 0.75rem 0 1.5rem; color: var(--texto-suave); font-size: 0.95rem; line-height: 1.6; }
 .registro-modal__texto strong { color: var(--texto); overflow-wrap: anywhere; }
+
+.registro__boton:focus-visible {
+  outline: 0.19rem solid var(--dorado-claro);
+  outline-offset: 0.19rem;
+}
 
 @keyframes registro-giro { to { transform: rotate(360deg); } }
 @keyframes registro-aparecer { from { opacity: 0; transform: translateY(0.5rem); } }

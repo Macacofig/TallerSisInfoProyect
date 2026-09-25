@@ -1,4 +1,6 @@
 import { Component, DestroyRef, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
+
+import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -16,8 +18,12 @@ import {
   telefonoValido
 } from './registro.validators';
 
-type CampoRegistro = 'nombre' | 'carrera' | 'correo' | 'telefono' | 'contrasena';
-type ModoAcceso = 'registro' | 'login';
+type CampoRegistro =
+  | 'nombre'
+  | 'carrera'
+  | 'correo'
+  | 'telefono'
+  | 'contrasena';
 
 interface DescripcionCampo {
   nombre: CampoRegistro;
@@ -34,20 +40,20 @@ interface DescripcionCampo {
   templateUrl: './registro.html',
   styleUrl: './registro.css'
 })
-export class Registro{
+export class Registro {
 
-  // Constantes disponibles en el template
   readonly MESSAGES = REGISTRO_MESSAGES;
 
   private readonly authService = inject(AuthService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly router = inject(Router);
 
-  /** Botón del modal: se enfoca cuando el modal se abre. */
-  private readonly botonModal = viewChild<ElementRef<HTMLButtonElement>>('botonModal');
+  /** Botón del modal: recibe el foco cuando se abre. */
+  private readonly botonModal =
+    viewChild<ElementRef<HTMLButtonElement>>('botonModal');
 
-  readonly modo = signal<ModoAcceso>('registro');
   readonly enviando = signal(false);
   readonly intentoEnvio = signal(false);
   readonly errorGeneral = signal<string | null>(null);
@@ -55,7 +61,6 @@ export class Registro{
   readonly correoRegistrado = signal('');
   readonly mostrarContrasena = signal(false);
 
-  /** Orden = orden visual del formulario. Una fila por campo (Carrera ocupa todo el ancho). */
   readonly campos: readonly DescripcionCampo[] = [
     {
       nombre: 'nombre',
@@ -94,59 +99,58 @@ export class Registro{
     }
   ];
 
-readonly formulario = this.formBuilder.group({
-  nombre: [
-    '',
-    [
-      requeridoSinEspacios,
-      longitudMinimaSinEspacios(APP_CONFIG.AUTH.NOMBRE_MIN_LENGTH)
-    ]
-  ],
+  readonly formulario = this.formBuilder.group({
+    nombre: [
+      '',
+      [
+        requeridoSinEspacios,
+        longitudMinimaSinEspacios(APP_CONFIG.AUTH.NOMBRE_MIN_LENGTH)
+      ]
+    ],
 
-  carrera: [
-    'Ingeniería de Sistemas',
-    [Validators.required]
-  ],
+    carrera: [
+      'Ingeniería de Sistemas',
+      [Validators.required]
+    ],
 
-  correo: [
-    '',
-    [
-      requeridoSinEspacios,
-      correoValido,
-      correoUcb
-    ]
-  ],
+    correo: [
+      '',
+      [
+        requeridoSinEspacios,
+        correoValido,
+        correoUcb
+      ]
+    ],
 
-  telefono: [
-    '',
-    [
-      requeridoSinEspacios,
-      telefonoValido
-    ]
-  ],
+    telefono: [
+      '',
+      [
+        requeridoSinEspacios,
+        telefonoValido
+      ]
+    ],
 
-  contrasena: [
-    '',
-    [
-      requeridoSinEspacios,
-      contrasenaValida
+    contrasena: [
+      '',
+      [
+        requeridoSinEspacios,
+        contrasenaValida
+      ]
     ]
-  ]
-});
+  });
 
   constructor() {
-    // Al abrirse el modal, el foco pasa a su botón (accesibilidad por teclado).
     effect(() => {
       this.botonModal()?.nativeElement.focus();
     });
   }
 
-  cambiarModo(modo: ModoAcceso): void {
-    this.modo.set(modo);
-  }
-
   alternarContrasena(): void {
     this.mostrarContrasena.update(valor => !valor);
+  }
+
+  irALogin(): void {
+    this.router.navigate(['/login']);
   }
 
   mensajeError(campo: CampoRegistro): string | null {
@@ -157,7 +161,6 @@ readonly formulario = this.formBuilder.group({
       return null;
     }
 
-    // Error devuelto por el servidor.
     const delServidor = errores['servidor'];
 
     if (typeof delServidor === 'string') {
@@ -179,14 +182,12 @@ readonly formulario = this.formBuilder.group({
 
         return 'El nombre no es válido.';
 
-
       case 'carrera':
         if (errores['required']) {
           return M.ERROR_CAREER_REQUIRED;
         }
 
         return 'La carrera no es válida.';
-
 
       case 'correo':
         if (errores['required']) {
@@ -203,7 +204,6 @@ readonly formulario = this.formBuilder.group({
 
         return 'El correo no es válido.';
 
-
       case 'telefono':
         if (errores['required']) {
           return 'El teléfono es obligatorio';
@@ -214,7 +214,6 @@ readonly formulario = this.formBuilder.group({
         }
 
         return 'El teléfono no es válido.';
-
 
       case 'contrasena':
         if (errores['required']) {
@@ -254,6 +253,7 @@ readonly formulario = this.formBuilder.group({
     }
 
     const valores = this.formulario.getRawValue();
+
     const datos: RegistroRequest = {
       nombre: valores.nombre.trim(),
       contrasena: valores.contrasena,
@@ -264,7 +264,6 @@ readonly formulario = this.formBuilder.group({
 
     this.enviando.set(true);
 
-    // Nunca se imprime ni se guarda `datos.contrasena`.
     this.authService
       .registerUser(datos)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -274,6 +273,7 @@ readonly formulario = this.formBuilder.group({
           this.correoRegistrado.set(datos.correoElectronico);
           this.registroExitoso.set(true);
         },
+
         error: (error: ErrorAuth) => {
           this.enviando.set(false);
           this.manejarError(error);
@@ -285,38 +285,46 @@ readonly formulario = this.formBuilder.group({
     this.registroExitoso.set(false);
     this.intentoEnvio.set(false);
     this.formulario.reset();
-    this.enfocarCampo('nombre');
+
+    this.router.navigate(['/login']);
   }
 
   private manejarError(error: ErrorAuth): void {
     const M = this.MESSAGES;
 
     switch (error?.codigo) {
+
       case 'CORREO_DUPLICADO':
         this.errorGeneral.set(M.ERROR_EMAIL_TAKEN);
         break;
+
       case 'VALIDACION':
-        // Si el servidor indica qué campo falló, se muestra bajo ese campo.
         this.errorGeneral.set(
-          this.aplicarErroresDelServidor(error.campos) ? null : M.ERROR_VALIDATION_SERVER
+          this.aplicarErroresDelServidor(error.campos)
+            ? null
+            : M.ERROR_VALIDATION_SERVER
         );
         break;
+
       case 'SIN_CONEXION':
         this.errorGeneral.set(M.ERROR_CONNECTION);
         break;
+
       case 'TIEMPO_AGOTADO':
         this.errorGeneral.set(M.ERROR_TIMEOUT);
         break;
+
       default:
         this.errorGeneral.set(M.ERROR_SERVER);
     }
   }
 
-  /** Marca en el formulario los errores por campo del servidor. Devuelve true si aplicó alguno. */
-  private aplicarErroresDelServidor(campos?: Record<string, string>): boolean {
+  private aplicarErroresDelServidor(
+    campos?: Record<string, string>
+  ): boolean {
+
     if (!campos) return false;
 
-    // El backend usa "correoElectronico"; el formulario usa "correo".
     const equivalencias: Record<string, CampoRegistro> = {
       nombre: 'nombre',
       carrera: 'carrera',
@@ -327,23 +335,40 @@ readonly formulario = this.formBuilder.group({
     };
 
     let aplicado = false;
+
     for (const [campoServidor, mensaje] of Object.entries(campos)) {
+
       const campo = equivalencias[campoServidor];
+
       if (!campo) continue;
+
       const control = this.formulario.controls[campo];
-      control.setErrors({ servidor: mensaje });
+
+      control.setErrors({
+        servidor: mensaje
+      });
+
       control.markAsTouched();
+
       aplicado = true;
     }
+
     return aplicado;
   }
 
   private enfocarPrimerCampoInvalido(): void {
-    const primero = this.campos.find((campo) => this.formulario.controls[campo.nombre].invalid);
-    if (primero) this.enfocarCampo(primero.nombre);
+    const primero = this.campos.find(
+      campo => this.formulario.controls[campo.nombre].invalid
+    );
+
+    if (primero) {
+      this.enfocarCampo(primero.nombre);
+    }
   }
 
   private enfocarCampo(campo: CampoRegistro): void {
-    this.host.nativeElement.querySelector<HTMLElement>(`#registro-${campo}`)?.focus();
+    this.host.nativeElement
+      .querySelector<HTMLElement>(`#registro-${campo}`)
+      ?.focus();
   }
 }

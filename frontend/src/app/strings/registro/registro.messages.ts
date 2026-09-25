@@ -20,6 +20,9 @@ export const REGISTRO_MESSAGES = {
   FORM_TITLE: 'Bienvenido a UniHub',
   FORM_SUBTITLE: 'Ingresa a tu cuenta o crea tu perfil universitario.',
 
+  REGISTER_TAB: 'Registrarse',
+  LOGIN_TAB: 'Iniciar sesión',
+
   // Selector de pestañas
   TABS_ARIA_LABEL: 'Elige entre iniciar sesión o crear cuenta',
   TAB_LOGIN: 'Iniciar sesión',

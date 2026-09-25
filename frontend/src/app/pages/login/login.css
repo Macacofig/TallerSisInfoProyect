@@ -1,0 +1,665 @@
+:host {
+--azul-marino: #063b78;
+--azul-marino-oscuro: #052f63;
+--azul-boton: #064bad;
+--azul-boton-hover: #073b83;
+--azul-suave: #dfebfa;
+--dorado: #c9a227;
+--dorado-claro: #f4c542;
+--fondo: #f7faff;
+--texto: #10213f;
+--texto-suave: #667085;
+--borde: #d3e1f2;
+
+--fuente-titulo: Georgia, 'Times New Roman', serif;
+--fuente-texto: Arial, Helvetica, sans-serif;
+
+display: block;
+min-height: 100vh;
+font-family: var(--fuente-texto);
+}
+
+/* =========================================================
+ESTRUCTURA PRINCIPAL
+Igual que Registro
+========================================================= */
+
+.login {
+display: flex;
+min-height: 100vh;
+}
+
+/* =========================================================
+PANEL IZQUIERDO
+========================================================= */
+
+.login__marca {
+flex: 0 0 45%;
+max-width: 45%;
+
+box-sizing: border-box;
+
+display: flex;
+flex-direction: column;
+
+padding: 3rem 3.25rem 2.5rem;
+
+background: linear-gradient(
+160deg,
+var(--azul-marino) 0%,
+var(--azul-marino-oscuro) 100%
+);
+
+color: #fff;
+}
+
+.login__brand {
+display: flex;
+align-items: center;
+gap: 0.75rem;
+}
+
+.login__logo {
+width: 3rem;
+height: 3rem;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+flex-shrink: 0;
+box-sizing: border-box;
+
+border: 0.0625rem solid rgba(201, 162, 39, 0.55);
+border-radius: 0.5rem;
+
+background-color: rgba(255, 255, 255, 0.08);
+
+color: var(--dorado);
+}
+
+.login__logo svg {
+width: 1.5rem;
+height: 1.5rem;
+}
+
+.login__brand-text {
+display: flex;
+flex-direction: column;
+min-width: 0;
+}
+
+.login__brand-name {
+font-family: var(--fuente-titulo);
+font-size: 1.5rem;
+font-weight: 600;
+line-height: 1.2;
+}
+
+.login__brand-subtitle {
+margin-top: 0.2rem;
+
+color: var(--dorado);
+
+font-size: 0.65rem;
+font-weight: 700;
+letter-spacing: 0.16rem;
+
+white-space: nowrap;
+}
+
+/* =========================================================
+TEXTO DEL PANEL IZQUIERDO
+========================================================= */
+
+.login__hero {
+margin: auto 0;
+padding: 2.5rem 0;
+}
+
+.login__hero-eyebrow {
+margin: 0 0 1.25rem;
+
+color: var(--dorado-claro);
+
+font-size: 0.75rem;
+font-weight: 700;
+letter-spacing: 0.18rem;
+}
+
+.login__hero-title {
+margin: 0;
+
+max-width: 32rem;
+
+font-family: var(--fuente-titulo);
+
+font-size: clamp(2.25rem, 3.6vw, 3.4rem);
+
+font-weight: 500;
+line-height: 1.15;
+}
+
+.login__hero-description {
+margin: 1.5rem 0 0;
+
+max-width: 26rem;
+
+color: #b9d0ee;
+
+font-size: 1.05rem;
+line-height: 1.7;
+}
+
+.login__features {
+display: flex;
+flex-wrap: wrap;
+
+gap: 1rem 2rem;
+
+margin: 2rem 0 0;
+padding: 0;
+
+list-style: none;
+}
+
+.login__feature {
+display: flex;
+align-items: center;
+
+gap: 0.6rem;
+
+font-size: 0.9rem;
+}
+
+.login__feature svg {
+width: 1.25rem;
+height: 1.25rem;
+
+flex-shrink: 0;
+
+color: var(--dorado-claro);
+}
+
+.login__pie {
+color: rgba(255, 255, 255, 0.6);
+font-size: 0.8rem;
+}
+
+/* =========================================================
+PANEL DERECHO
+Igual que Registro
+========================================================= */
+
+.login__formulario {
+flex: 1 1 55%;
+min-width: 0;
+
+box-sizing: border-box;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+padding: 2.5rem 3rem;
+
+background-color: var(--fondo);
+}
+
+.login__contenido {
+width: 100%;
+max-width: 36rem;
+}
+
+/* =========================================================
+ENCABEZADO
+========================================================= */
+
+.login__eyebrow {
+margin: 0 0 0.5rem;
+
+color: var(--azul-boton);
+
+font-size: 0.75rem;
+font-weight: 700;
+letter-spacing: 0.16rem;
+}
+
+.login__titulo {
+margin: 0;
+
+color: var(--texto);
+
+font-family: var(--fuente-titulo);
+
+font-size: clamp(1.9rem, 2.6vw, 2.5rem);
+
+font-weight: 600;
+line-height: 1.2;
+}
+
+.login__subtitulo {
+margin: 0.6rem 0 1.75rem;
+
+color: var(--texto-suave);
+
+font-size: 1rem;
+}
+
+/* =========================================================
+   SELECTOR DE PESTAÑAS
+   ========================================================= */
+
+.login__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.6rem;
+  background-color: rgba(223, 235, 250, 0.65);
+}
+
+.login__tab {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: var(--texto-suave);
+  font: 600 0.9rem var(--fuente-texto);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.login__tab:hover {
+  color: var(--texto);
+}
+
+.login__tab--activa {
+  background-color: #fff;
+  color: var(--texto);
+  box-shadow: 0 0.0625rem 0.25rem rgba(16, 33, 63, 0.12);
+}
+
+.login__tab:focus-visible {
+  outline: 0.19rem solid var(--dorado-claro);
+  outline-offset: 0.19rem;
+}
+
+/* =========================================================
+FORMULARIO
+========================================================= */
+
+.login__form {
+display: flex;
+flex-direction: column;
+
+gap: 1.1rem;
+
+margin-top: 1.75rem;
+}
+
+/* =========================================================
+GOOGLE
+========================================================= */
+
+.login__google {
+display: flex;
+align-items: center;
+justify-content: center;
+
+gap: 0.6rem;
+
+width: 60%;
+min-height: 3rem;
+
+margin: 0 auto 1.25rem;
+
+border: 0.0625rem solid var(--borde);
+border-radius: 0.5rem;
+
+background-color: #fff;
+color: var(--texto);
+
+font: 600 0.9rem var(--fuente-texto);
+
+cursor: pointer;
+
+box-shadow: 0 0.0625rem 0.125rem rgba(16, 33, 63, 0.06);
+
+transition:
+border-color 0.15s ease,
+box-shadow 0.15s ease;
+}
+
+.login__google:hover {
+border-color: #b8cce5;
+
+box-shadow:
+0 0.125rem 0.35rem rgba(16, 33, 63, 0.08);
+}
+
+.login__google-icon {
+color: #4285f4;
+
+font-weight: 700;
+font-size: 1rem;
+}
+
+/* =========================================================
+SEPARADOR
+========================================================= */
+
+.login__separador {
+display: flex;
+align-items: center;
+
+gap: 0.75rem;
+
+width: 100%;
+
+color: var(--texto-suave);
+
+font-size: 0.75rem;
+}
+
+.login__separador::before,
+.login__separador::after {
+content: '';
+
+flex: 1;
+
+height: 0.0625rem;
+
+background-color: var(--borde);
+}
+
+.login__separador span {
+white-space: nowrap;
+}
+
+/* =========================================================
+CAMPOS
+========================================================= */
+
+.login__campo {
+display: flex;
+flex-direction: column;
+
+gap: 0.4rem;
+}
+
+.login__label {
+color: var(--texto);
+
+font-size: 0.9rem;
+font-weight: 700;
+}
+
+.login__input {
+width: 100%;
+min-height: 2.9rem;
+
+box-sizing: border-box;
+
+padding: 0.7rem 0.9rem;
+
+border: 0.0625rem solid var(--borde);
+border-radius: 0.5rem;
+
+background-color: #fff;
+
+box-shadow:
+0 0.0625rem 0.125rem rgba(16, 33, 63, 0.06);
+
+color: var(--texto);
+
+font: 400 0.95rem var(--fuente-texto);
+
+transition:
+border-color 0.15s ease,
+box-shadow 0.15s ease;
+}
+
+.login__input::placeholder {
+color: var(--texto-suave);
+}
+
+.login__input:focus {
+border-color: var(--azul-boton);
+
+box-shadow:
+0 0 0 0.19rem rgba(6, 75, 173, 0.16);
+
+outline: none;
+}
+
+/* =========================================================
+   MOSTRAR / OCULTAR CONTRASEÑA
+   ========================================================= */
+
+.login__input-contenedor {
+  position: relative;
+  width: 100%;
+}
+
+.login__input-contrasena {
+  padding-right: 3rem;
+}
+
+.login__mostrar-contrasena {
+  position: absolute;
+
+  top: 50%;
+  right: 0.75rem;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 2rem;
+  height: 2rem;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 0.25rem;
+
+  background: transparent;
+  color: var(--texto-suave);
+
+  font-size: 1rem;
+
+  cursor: pointer;
+}
+
+.login__mostrar-contrasena:hover {
+  color: var(--texto);
+  background-color: var(--azul-suave);
+}
+
+.login__mostrar-contrasena:focus-visible {
+  outline: 0.15rem solid var(--azul-boton);
+  outline-offset: 0.1rem;
+}
+
+/* =========================================================
+RECUPERAR CONTRASEÑA
+========================================================= */
+
+.login__recuperar {
+display: flex;
+justify-content: flex-end;
+
+margin-top: -0.35rem;
+}
+
+.login__recuperar-boton {
+padding: 0;
+
+border: 0;
+
+background: transparent;
+
+color: var(--azul-boton);
+
+font: 600 0.85rem var(--fuente-texto);
+
+cursor: pointer;
+}
+
+.login__recuperar-boton:hover {
+text-decoration: underline;
+}
+
+/* =========================================================
+BOTÓN INICIAR SESIÓN
+========================================================= */
+
+.login__boton {
+display: flex;
+align-items: center;
+justify-content: center;
+
+width: 60%;
+min-height: 3rem;
+
+margin: 0.4rem auto 0;
+
+border: 0;
+border-radius: 0.5rem;
+
+background-color: var(--azul-boton);
+
+color: #fff;
+
+font: 700 0.95rem var(--fuente-texto);
+
+cursor: pointer;
+
+transition: background-color 0.15s ease;
+}
+
+.login__boton:hover {
+background-color: var(--azul-boton-hover);
+}
+
+/* =========================================================
+FOCO
+========================================================= */
+
+.login__google:focus-visible,
+.login__recuperar-boton:focus-visible,
+.login__boton:focus-visible {
+outline: 0.19rem solid var(--dorado-claro);
+outline-offset: 0.19rem;
+}
+
+/* =========================================================
+   ERRORES Y ESTADO DE CARGA
+   ========================================================= */
+
+.login__input--error,
+.login__input--error:focus {
+  border-color: #991b1b;
+}
+
+.login__input--error:focus {
+  box-shadow: 0 0 0 0.19rem rgba(153, 27, 27, 0.16);
+}
+
+.login__error {
+  margin: 0;
+  color: #991b1b;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.login__error-general {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #fef2f2;
+  color: #991b1b;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.login__boton:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.login__spinner {
+  width: 1rem;
+  height: 1rem;
+  box-sizing: border-box;
+  border: 0.15rem solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: login-giro 0.8s linear infinite;
+}
+
+@keyframes login-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+RESPONSIVE
+========================================================= */
+
+@media (max-width: 64rem) {
+
+    .login__marca {
+    padding: 2.5rem 2rem 2rem;
+    }
+
+    .login__formulario {
+    padding: 2.5rem 2rem;
+    }
+
+    }
+
+    @media (max-width: 48rem) {
+
+    .login {
+    flex-direction: column;
+    }
+
+    .login__marca {
+    flex: none;
+    max-width: none;
+    padding: 1.1rem 1.25rem;
+
+
+    }
+
+    .login__hero,
+    .login__pie {
+    display: none;
+    }
+
+    .login__formulario {
+    align-items: flex-start;
+    padding: 2rem 1.25rem 2.5rem;
+
+    }
+
+    .login__contenido {
+    max-width: 36rem;
+    }
+
+    .login__google,
+    .login__boton {
+    width: 100%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+    .login__spinner {
+        animation-duration: 2.4s;
+    }
+    }
+}

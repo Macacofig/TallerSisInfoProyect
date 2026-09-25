@@ -4,107 +4,207 @@
   <aside class="registro__marca">
 
     <header class="registro__brand">
+
       <div class="registro__logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 4v16M8 8v12M12 6v14M16 6l4 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M4 4v16M8 8v12M12 6v14M16 6l4 14"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
         </svg>
       </div>
 
       <div class="registro__brand-text">
-        <span class="registro__brand-name">{{ MESSAGES.BRAND_NAME }}</span>
-        <span class="registro__brand-subtitle">{{ MESSAGES.BRAND_SUBTITLE }}</span>
+        <span class="registro__brand-name">
+          {{ MESSAGES.BRAND_NAME }}
+        </span>
+
+        <span class="registro__brand-subtitle">
+          {{ MESSAGES.BRAND_SUBTITLE }}
+        </span>
       </div>
+
     </header>
 
     <div class="registro__hero">
-      <p class="registro__hero-eyebrow">{{ MESSAGES.HERO_EYEBROW }}</p>
-      <p class="registro__hero-title">{{ MESSAGES.HERO_TITLE }}</p>
-      <p class="registro__hero-description">{{ MESSAGES.HERO_DESCRIPTION }}</p>
+
+      <p class="registro__hero-eyebrow">
+        {{ MESSAGES.HERO_EYEBROW }}
+      </p>
+
+      <p class="registro__hero-title">
+        {{ MESSAGES.HERO_TITLE }}
+      </p>
+
+      <p class="registro__hero-description">
+        {{ MESSAGES.HERO_DESCRIPTION }}
+      </p>
 
       <ul class="registro__features">
+
         <li class="registro__feature">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 6.5C10.5 5.3 8.3 4.7 5 4.7v12.6c3.3 0 5.5.6 7 1.8 1.5-1.2 3.7-1.8 7-1.8V4.7c-3.3 0-5.5.6-7 1.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
-            <path d="M12 6.5v12.6" stroke="currentColor" stroke-width="1.7" />
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 6.5C10.5 5.3 8.3 4.7 5 4.7v12.6c3.3 0 5.5.6 7 1.8 1.5-1.2 3.7-1.8 7-1.8V4.7c-3.3 0-5.5.6-7 1.8Z"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linejoin="round"
+            />
+
+            <path
+              d="M12 6.5v12.6"
+              stroke="currentColor"
+              stroke-width="1.7"
+            />
           </svg>
-          <span>{{ MESSAGES.FEATURE_MATERIAL }}</span>
+
+          <span>
+            {{ MESSAGES.FEATURE_MATERIAL }}
+          </span>
+
         </li>
 
         <li class="registro__feature">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 4 2.5 9 12 14l9.5-5L12 4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
-            <path d="M6 11.5V16c1.2 1.6 3.4 2.5 6 2.5s4.8-.9 6-2.5v-4.5M21.5 9v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 4 2.5 9 12 14l9.5-5L12 4Z"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linejoin="round"
+            />
+
+            <path
+              d="M6 11.5V16c1.2 1.6 3.4 2.5 6 2.5s4.8-.9 6-2.5v-4.5M21.5 9v6"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
-          <span>{{ MESSAGES.FEATURE_PROFILE }}</span>
+
+          <span>
+            {{ MESSAGES.FEATURE_PROFILE }}
+          </span>
+
         </li>
+
       </ul>
+
     </div>
 
-    <footer class="registro__pie">{{ MESSAGES.FOOTER_COMMUNITY }}</footer>
+    <footer class="registro__pie">
+      {{ MESSAGES.FOOTER_COMMUNITY }}
+    </footer>
+
   </aside>
 
   <!-- ===== Panel derecho: formulario ===== -->
   <main class="registro__formulario">
+
     <div class="registro__contenido">
 
-      <p class="registro__eyebrow">{{ MESSAGES.FORM_EYEBROW }}</p>
-      <h1 class="registro__titulo">{{ MESSAGES.FORM_TITLE }}</h1>
-      <p class="registro__subtitulo">{{ MESSAGES.FORM_SUBTITLE }}</p>
+      <p class="registro__eyebrow">
+        {{ MESSAGES.FORM_EYEBROW }}
+      </p>
 
-      <div class="registro__tabs" role="group" [attr.aria-label]="MESSAGES.TABS_ARIA_LABEL">
+      <h1 class="registro__titulo">
+        {{ MESSAGES.FORM_TITLE }}
+      </h1>
+
+      <p class="registro__subtitulo">
+        {{ MESSAGES.FORM_SUBTITLE }}
+      </p>
+
+      <div class="registro__tabs">
         <button
           type="button"
-          class="registro__tab"
-          [class.registro__tab--activa]="modo() === 'login'"
-          [attr.aria-pressed]="modo() === 'login'"
-          (click)="cambiarModo('login')"
+          class="registro__tab registro__tab--activa"
+          aria-current="page"
         >
-          {{ MESSAGES.TAB_LOGIN }}
+          {{ MESSAGES.REGISTER_TAB }}
         </button>
 
         <button
           type="button"
           class="registro__tab"
-          [class.registro__tab--activa]="modo() === 'registro'"
-          [attr.aria-pressed]="modo() === 'registro'"
-          (click)="cambiarModo('registro')"
+          (click)="irALogin()"
         >
-          {{ MESSAGES.TAB_REGISTER }}
+          {{ MESSAGES.LOGIN_TAB }}
         </button>
       </div>
+      
+      <form
+        class="registro__form"
+        [formGroup]="formulario"
+        (ngSubmit)="enviar()"
+        novalidate
+      >
 
-      @if (modo() === 'registro') {
-        <form class="registro__form" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+        @for (campo of campos; track campo.nombre) {
 
-          @for (campo of campos; track campo.nombre) {
-            <div class="registro__campo">
-              <label class="registro__label" [for]="'registro-' + campo.nombre">{{ campo.etiqueta }}</label>
+          <div class="registro__campo">
 
-              <div class="registro__input-contenedor">
+            <label
+              class="registro__label"
+              [for]="'registro-' + campo.nombre"
+            >
+              {{ campo.etiqueta }}
+            </label>
+
+            <div class="registro__input-contenedor">
 
               <input
                 class="registro__input"
                 [class.registro__input--error]="mensajeError(campo.nombre)"
                 [class.registro__input--contrasena]="campo.nombre === 'contrasena'"
                 [id]="'registro-' + campo.nombre"
-                [type]="campo.nombre === 'contrasena'
-                  ? (mostrarContrasena() ? 'text' : 'password')
-                  : campo.tipo"
+                [type]="
+                  campo.nombre === 'contrasena'
+                    ? (mostrarContrasena() ? 'text' : 'password')
+                    : campo.tipo
+                "
                 [formControlName]="campo.nombre"
                 [placeholder]="campo.placeholder"
                 [attr.autocomplete]="campo.autocompletar"
                 [attr.inputmode]="campo.nombre === 'telefono' ? 'numeric' : null"
                 [attr.aria-invalid]="mensajeError(campo.nombre) ? 'true' : null"
-                [attr.aria-describedby]="mensajeError(campo.nombre) ? 'registro-' + campo.nombre + '-error' : null"
+                [attr.aria-describedby]="
+                  mensajeError(campo.nombre)
+                    ? 'registro-' + campo.nombre + '-error'
+                    : null
+                "
                 [readonly]="campo.nombre === 'carrera'"
               />
 
               @if (campo.nombre === 'contrasena') {
+
                 <button
                   type="button"
                   class="registro__mostrar-contrasena"
                   (click)="alternarContrasena()"
-                  [attr.aria-label]="mostrarContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  [attr.aria-label]="
+                    mostrarContrasena()
+                      ? 'Ocultar contraseña'
+                      : 'Mostrar contraseña'
+                  "
                 >
                   @if (mostrarContrasena()) {
                     🙊
@@ -112,45 +212,78 @@
                     🙈
                   }
                 </button>
+
               }
 
             </div>
 
-              @if (mensajeError(campo.nombre); as mensaje) {
-                <p class="registro__error" [id]="'registro-' + campo.nombre + '-error'">{{ mensaje }}</p>
-              }
-            </div>
-          }
+            @if (mensajeError(campo.nombre); as mensaje) {
 
-          @if (errorGeneral(); as mensaje) {
-            <p class="registro__error-general" role="alert">{{ mensaje }}</p>
-          }
+              <p
+                class="registro__error"
+                [id]="'registro-' + campo.nombre + '-error'"
+              >
+                {{ mensaje }}
+              </p>
 
-          <button type="submit" class="registro__boton" [disabled]="enviando()" [attr.aria-busy]="enviando()">
-            @if (enviando()) {
-              <span class="registro__spinner" aria-hidden="true"></span>
-              {{ MESSAGES.SUBMIT_BUTTON_LOADING }}
-            } @else {
-              {{ MESSAGES.SUBMIT_BUTTON }}
             }
-          </button>
 
-        </form>
-      } @else {
-        <div class="registro__pendiente">
-          <p class="registro__pendiente-titulo">{{ MESSAGES.LOGIN_PENDING_TITLE }}</p>
-          <p class="registro__pendiente-texto">{{ MESSAGES.LOGIN_PENDING_DESCRIPTION }}</p>
-        </div>
-      }
+          </div>
+
+        }
+
+        @if (errorGeneral(); as mensaje) {
+
+          <p
+            class="registro__error-general"
+            role="alert"
+          >
+            {{ mensaje }}
+          </p>
+
+        }
+
+        <button
+          type="submit"
+          class="registro__boton"
+          [disabled]="enviando()"
+          [attr.aria-busy]="enviando()"
+        >
+
+          @if (enviando()) {
+
+            <span
+              class="registro__spinner"
+              aria-hidden="true"
+            ></span>
+
+            {{ MESSAGES.SUBMIT_BUTTON_LOADING }}
+
+          } @else {
+
+            {{ MESSAGES.SUBMIT_BUTTON }}
+
+          }
+
+        </button>
+
+      </form>
 
     </div>
+
   </main>
 
 </div>
 
+
 <!-- ===== Modal de confirmación ===== -->
 @if (registroExitoso()) {
-  <div class="registro-modal" (keydown.escape)="cerrarModal()">
+
+  <div
+    class="registro-modal"
+    (keydown.escape)="cerrarModal()"
+  >
+
     <div
       class="registro-modal__caja"
       role="dialog"
@@ -158,23 +291,59 @@
       aria-labelledby="registro-modal-titulo"
       aria-describedby="registro-modal-descripcion"
     >
-      <div class="registro-modal__icono" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+
+      <div
+        class="registro-modal__icono"
+        aria-hidden="true"
+      >
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12.5l4.5 4.5L19 7.5"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
+
       </div>
 
-      <h2 class="registro-modal__titulo" id="registro-modal-titulo">{{ MESSAGES.MODAL_TITLE }}</h2>
+      <h2
+        class="registro-modal__titulo"
+        id="registro-modal-titulo"
+      >
+        {{ MESSAGES.MODAL_TITLE }}
+      </h2>
 
-      <p class="registro-modal__texto" id="registro-modal-descripcion">
+      <p
+        class="registro-modal__texto"
+        id="registro-modal-descripcion"
+      >
         {{ MESSAGES.MODAL_DESCRIPTION }}
-        <strong>{{ correoRegistrado() }}</strong>.
+
+        <strong>
+          {{ correoRegistrado() }}
+        </strong>.
+
         {{ MESSAGES.MODAL_HINT }}
       </p>
 
-      <button #botonModal type="button" class="registro__boton" (click)="cerrarModal()">
+      <button
+        #botonModal
+        type="button"
+        class="registro__boton"
+        (click)="cerrarModal()"
+      >
         {{ MESSAGES.MODAL_BUTTON }}
       </button>
+
     </div>
+
   </div>
+
 }
