@@ -32,12 +32,13 @@ export class CalificacionesDocenteService {
   }
 
   obtenerPorEstudiante(
-    idEstudiante: number,
-    idDocente: number
+  idEstudiante: number,
+  idDocente: number,
+  idMateria: number
   ): Observable<CalificacionDocenteResponse | null> {
 
     const url =
-      `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}`;
+      `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}/materia/${idMateria}`;
 
     return this.http.get<CalificacionDocenteResponse | null>(
       url
@@ -45,13 +46,14 @@ export class CalificacionesDocenteService {
   }
 
   actualizarCalificacion(
-    idEstudiante: number,
-    idDocente: number,
-    calificacion: RegistrarCalificacionDocenteRequest
+  idEstudiante: number,
+  idDocente: number,
+  idMateria: number,
+  calificacion: RegistrarCalificacionDocenteRequest
   ): Observable<CalificacionDocenteResponse> {
 
     const url =
-      `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}`;
+      `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}/materia/${idMateria}`;
 
     return this.http.put<CalificacionDocenteResponse>(
       url,
@@ -60,12 +62,13 @@ export class CalificacionesDocenteService {
   }
 
   eliminarCalificacion(
-    idEstudiante: number,
-    idDocente: number
+  idEstudiante: number,
+  idDocente: number,
+  idMateria: number
   ): Observable<void> {
 
     const url =
-      `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}`;
+      `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}/materia/${idMateria}`;
 
     return this.http.delete<void>(
       url

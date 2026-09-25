@@ -4,6 +4,7 @@ export type GestionDocente =
 
 export interface RegistrarCalificacionDocenteRequest {
   idDocente: number;
+  idMateria: number;
   idEstudiante: number | null;
   claridadExplicaciones: number;
   metodologia: number;
@@ -14,6 +15,7 @@ export interface RegistrarCalificacionDocenteRequest {
 export interface CalificacionDocenteResponse {
   id: number;
   idDocente: number;
+  idMateria: number;
   idEstudiante: number | null;
   claridadExplicaciones: number;
   metodologia: number;
