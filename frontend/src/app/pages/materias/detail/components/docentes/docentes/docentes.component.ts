@@ -391,7 +391,8 @@ export class DocentesComponent implements OnChanges {
     this.calificacionesDocenteService
       .eliminarCalificacion(
         this.idEstudianteActual,
-        this.docenteSeleccionado.id
+        this.docenteSeleccionado.id,
+        this.materia.id
       )
       .subscribe({
 
@@ -554,6 +555,7 @@ export class DocentesComponent implements OnChanges {
       .actualizarCalificacion(
         this.idEstudianteActual,
         this.docenteSeleccionado.id,
+        this.materia.id,
         request
       )
       .subscribe({
@@ -592,6 +594,9 @@ export class DocentesComponent implements OnChanges {
     return {
       idDocente:
         this.docenteSeleccionado!.id,
+
+      idMateria:
+        this.materia.id,
 
       idEstudiante:
         this.idEstudianteActual,
@@ -658,7 +663,8 @@ export class DocentesComponent implements OnChanges {
           this.calificacionesDocenteService
             .obtenerPorEstudiante(
               this.idEstudianteActual,
-              docente.id
+              docente.id,
+              this.materia.id
             )
       );
 
