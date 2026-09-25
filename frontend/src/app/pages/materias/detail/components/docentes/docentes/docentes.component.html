@@ -23,6 +23,15 @@
     </p>
   }
 
+  @if (advertenciaEstado) {
+    <p
+      class="docentes__estado"
+      role="status"
+    >
+      {{ advertenciaEstado }}
+    </p>
+  }
+
   @if (cargando) {
 
     <p
@@ -104,7 +113,13 @@
 
           <div class="docente-card__acciones">
 
-            @if (item.calificacion) {
+            @if (!item.estadoCalificacionDisponible) {
+
+              <span class="docente-card__estado">
+                {{ mensajes.UNAVAILABLE_STATUS }}
+              </span>
+
+            } @else if (item.calificacion) {
 
               <span
                 class="docente-card__estado docente-card__estado--registrada"

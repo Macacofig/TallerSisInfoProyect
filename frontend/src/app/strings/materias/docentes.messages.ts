@@ -4,7 +4,7 @@ export const DOCENTES_MESSAGES = {
 
   LOADING: 'Cargando docentes...',
   LOAD_ERROR: 'No se pudieron cargar los docentes de esta materia.',
-  STATUS_ERROR: 'No se pudo verificar el estado de las evaluaciones.',
+  STATUS_ERROR: 'Los docentes se cargaron, pero no se pudo verificar el estado de algunas evaluaciones.',
   RETRY: 'Reintentar',
 
   EMPTY_TITLE: 'No hay docentes registrados',
@@ -12,6 +12,7 @@ export const DOCENTES_MESSAGES = {
 
   PENDING_STATUS: 'Pendiente de evaluación',
   REGISTERED_STATUS: 'Evaluación registrada',
+  UNAVAILABLE_STATUS: 'Estado de evaluación no disponible',
 
   RATE_BUTTON: 'Calificar docente',
   VIEW_BUTTON: 'Ver evaluación',
