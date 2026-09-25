@@ -9,5 +9,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
 
     boolean existsByCorreoElectronicoIgnoreCase(String correoElectronico);
 
+    boolean existsByCorreoElectronicoIgnoreCaseAndIdNot(String correoElectronico, Long id);
+
     Optional<Estudiante> findByCorreoElectronicoIgnoreCase(String correoElectronico);
 }

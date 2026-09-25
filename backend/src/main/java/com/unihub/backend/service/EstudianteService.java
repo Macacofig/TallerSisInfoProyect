@@ -37,6 +37,26 @@ public class EstudianteService {
         return estudianteMapper.toResponse(estudianteRepository.save(estudiante));
     }
 
+    public EstudianteResponse actualizar(Long id, EstudianteRequest request) {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Estudiante no encontrado"));
+
+        if (estudianteRepository.existsByCorreoElectronicoIgnoreCaseAndIdNot(
+                request.correoElectronico(), id
+        )) {
+            throw new IllegalArgumentException("El correo electrónico ya está registrado");
+        }
+
+        estudiante.actualizar(
+                request.nombre(),
+                request.contrasena(),
+                request.telefono(),
+                request.correoElectronico(),
+                request.carrera()
+        );
+        return estudianteMapper.toResponse(estudianteRepository.save(estudiante));
+    }
+
     public EstudianteResponse iniciarSesion(EstudianteLoginRequest request) {
         String correoElectronico = request.correoElectronico();
         String contrasena = request.contrasena();
