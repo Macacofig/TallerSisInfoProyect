@@ -96,6 +96,58 @@ class EstudianteServiceTest {
     }
 
     @Test
+    @Order(6)
+    void deberiaActualizarTodosLosCampos() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        EstudianteRequest request = new EstudianteRequest(
+                "Ana María Pérez", "NuevaClave2!", "71234568", "ana.maria@ucb.edu.bo", "Medicina"
+        );
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(estudianteRepository.existsByCorreoElectronicoIgnoreCaseAndIdNot("ana.maria@ucb.edu.bo", 1L))
+                .thenReturn(false);
+        when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
+
+        EstudianteResponse resultado = estudianteService.actualizar(1L, request);
+
+        assertEquals("Ana María Pérez", resultado.nombre());
+        assertEquals("71234568", resultado.telefono());
+        assertEquals("ana.maria@ucb.edu.bo", resultado.correoElectronico());
+        assertEquals("Medicina", resultado.carrera());
+        assertEquals("NuevaClave2!", estudiante.getContrasena());
+        verify(estudianteRepository).save(estudiante);
+        System.out.println("Test 1");
+        System.out.println("Actualizar todos los campos");
+        System.out.println("Respuesta OK");
+    }
+
+    @Test
+    @Order(7)
+    void deberiaRechazarActualizacionConCorreoDeOtroEstudiante() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        EstudianteRequest request = new EstudianteRequest(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "otro@ucb.edu.bo", "Ingeniería"
+        );
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(estudianteRepository.existsByCorreoElectronicoIgnoreCaseAndIdNot("otro@ucb.edu.bo", 1L))
+                .thenReturn(true);
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> estudianteService.actualizar(1L, request)
+        );
+
+        assertEquals("El correo electrónico ya está registrado", excepcion.getMessage());
+        verify(estudianteRepository, never()).save(any(Estudiante.class));
+        System.out.println("Test 2");
+        System.out.println("Rechazar correo ya usado por otro estudiante");
+        System.out.println("Respuesta OK");
+    }
+
+    @Test
     @Order(3)
     void deberiaIniciarSesionConCredencialesValidas() {
         Estudiante estudiante = new Estudiante(

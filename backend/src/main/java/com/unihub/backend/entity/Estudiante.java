@@ -70,4 +70,18 @@ public class Estudiante {
     public String getCarrera() {
         return carrera;
     }
+
+    public void actualizar(
+            String nombre,
+            String contrasena,
+            String telefono,
+            String correoElectronico,
+            String carrera
+    ) {
+        this.nombre = nombre;
+        this.contrasena = contrasena;
+        this.telefono = telefono;
+        this.correoElectronico = correoElectronico;
+        this.carrera = carrera;
+    }
 }
