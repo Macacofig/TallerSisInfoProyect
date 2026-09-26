@@ -17,14 +17,14 @@
 
 .docentes__lista {
   display: grid;
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 18px;
 }
 
 .docente-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  display: grid;
+  align-content: start;
+  gap: 20px;
   padding: 20px;
   border: 1px solid #d9e2ef;
   border-radius: 14px;
@@ -68,6 +68,65 @@
   flex-wrap: wrap;
 }
 
+.docente-card__promedios {
+  display: grid;
+  gap: 16px;
+}
+
+.docente-metrica {
+  display: grid;
+  gap: 8px;
+}
+
+.docente-metrica__encabezado {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: #344054;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.docente-metrica__encabezado strong {
+  color: #165dab;
+  white-space: nowrap;
+}
+
+.docente-metrica__barra {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5eaf1;
+}
+
+.docente-metrica__progreso {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+.docente-metrica__progreso--claridad {
+  background: #d97706;
+}
+
+.docente-metrica__progreso--metodologia {
+  background: #165dab;
+}
+
+.docente-metrica__progreso--relacion {
+  background: #0f8f7a;
+}
+
+.docente-card__sin-promedios {
+  margin: 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 .docente-card__estado {
   padding: 6px 10px;
   border-radius: 999px;
@@ -84,7 +143,8 @@
 
 .boton-primario,
 .boton-secundario,
-.docentes__error button {
+.docentes__error button,
+.docentes__promedios-error button {
   min-height: 42px;
   padding: 10px 16px;
   border-radius: 9px;
@@ -115,6 +175,7 @@
 .boton-primario:focus-visible,
 .boton-secundario:focus-visible,
 .docentes__error button:focus-visible,
+.docentes__promedios-error button:focus-visible,
 .modal-docente__cerrar:focus-visible,
 .criterio-docente input:focus-visible {
   outline: 3px solid rgba(22, 93, 171, 0.25);
@@ -129,6 +190,7 @@ button:disabled {
 .docentes__estado,
 .docentes__vacio,
 .docentes__error,
+.docentes__promedios-error,
 .docentes__exito {
   padding: 16px 18px;
   border-radius: 10px;
@@ -144,13 +206,27 @@ button:disabled {
   color: #991b1b;
 }
 
+.docentes__promedios-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.docentes__promedios-error p {
+  margin: 0;
+}
+
 .docentes__exito {
   background: #ecfdf5;
   color: #166534;
   font-weight: 700;
 }
 
-.docentes__error button {
+.docentes__error button,
+.docentes__promedios-error button {
   border: 0;
   background: #165dab;
   color: #ffffff;
@@ -288,11 +364,15 @@ button:disabled {
 
 @media (max-width: 768px) {
   .docente-card {
+    gap: 18px;
+  }
+
+  .docente-card__acciones {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .docente-card__acciones {
+  .docentes__promedios-error {
     align-items: stretch;
     flex-direction: column;
   }

@@ -5,6 +5,9 @@ export const DOCENTES_MESSAGES = {
   LOADING: 'Cargando docentes...',
   LOAD_ERROR: 'No se pudieron cargar los docentes de esta materia.',
   STATUS_ERROR: 'Los docentes se cargaron, pero no se pudo verificar el estado de algunas evaluaciones.',
+  AVERAGES_LOADING: 'Actualizando promedios de docentes...',
+  AVERAGES_ERROR: 'Los docentes se cargaron, pero no se pudieron obtener sus promedios.',
+  NO_AVERAGES: 'Este docente todavía no tiene promedios disponibles.',
   RETRY: 'Reintentar',
 
   EMPTY_TITLE: 'No hay docentes registrados',
