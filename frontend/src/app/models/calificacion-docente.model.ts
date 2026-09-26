@@ -22,3 +22,14 @@ export interface CalificacionDocenteResponse {
   relacionClasesEvaluaciones: number;
   gestion: GestionDocente;
 }
+
+export interface CalificacionDocentePromedioResponse {
+  idDocente: number;
+  gestionDesde: string | null;
+  gestionHasta: string | null;
+  claridadExplicacionesPromedio: number;
+  metodologiaPromedio: number;
+  relacionClasesEvaluacionesPromedio: number;
+  idMateria: number;
+  nombreDocente: string;
+}
