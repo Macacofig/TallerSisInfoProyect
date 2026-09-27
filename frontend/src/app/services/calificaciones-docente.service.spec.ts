@@ -10,6 +10,7 @@ CalificacionesDocenteService
 } from './calificaciones-docente.service';
 
 import {
+CalificacionDocentePromedioResponse,
 RegistrarCalificacionDocenteRequest
 } from '../models/calificacion-docente.model';
 
@@ -53,6 +54,36 @@ beforeEach(async () => {
 
 afterEach(() => {
 httpTestingController.verify();
+});
+
+it('debería obtener los promedios de docentes con el id real de la materia', () => {
+  const respuesta: CalificacionDocentePromedioResponse[] = [{
+    idDocente: 1,
+    gestionDesde: null,
+    gestionHasta: null,
+    claridadExplicacionesPromedio: 7.4,
+    metodologiaPromedio: 8.1,
+    relacionClasesEvaluacionesPromedio: 6.2,
+    idMateria: 25,
+    nombreDocente: 'Ana Pérez'
+  }];
+
+  service
+    .obtenerPromediosPorMateria(25)
+    .subscribe(
+      resultado =>
+        expect(resultado).toEqual(respuesta)
+    );
+
+  const request =
+    httpTestingController.expectOne(
+      'http://localhost:8081/api/calificacion-docente/materia/25/docentes'
+    );
+
+  expect(request.request.method)
+    .toBe('GET');
+
+  request.flush(respuesta);
 });
 
 it('debería obtener la evaluación de un estudiante para un docente', () => {

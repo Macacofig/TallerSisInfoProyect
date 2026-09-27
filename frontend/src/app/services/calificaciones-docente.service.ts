@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { APP_CONFIG } from '../config/app-config';
 
 import {
+  CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse,
   RegistrarCalificacionDocenteRequest
 } from '../models/calificacion-docente.model';
@@ -20,6 +21,18 @@ export class CalificacionesDocenteService {
   constructor(
     private readonly http: HttpClient
   ) {}
+
+  obtenerPromediosPorMateria(
+    idMateria: number
+  ): Observable<CalificacionDocentePromedioResponse[]> {
+
+    const url =
+      `${this.apiUrl}/materia/${idMateria}/docentes`;
+
+    return this.http.get<CalificacionDocentePromedioResponse[]>(
+      url
+    );
+  }
 
   registrarCalificacion(
     calificacion: RegistrarCalificacionDocenteRequest
