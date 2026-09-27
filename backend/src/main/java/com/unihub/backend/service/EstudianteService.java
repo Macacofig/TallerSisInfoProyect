@@ -4,6 +4,8 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
 import org.springframework.stereotype.Service;
@@ -39,12 +41,12 @@ public class EstudianteService {
 
     public EstudianteResponse actualizar(Long id, EstudianteRequest request) {
         Estudiante estudiante = estudianteRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Estudiante no encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
 
         if (estudianteRepository.existsByCorreoElectronicoIgnoreCaseAndIdNot(
                 request.correoElectronico(), id
         )) {
-            throw new IllegalArgumentException("El correo electrónico ya está registrado");
+            throw new BadRequestException("El correo electrónico ya está registrado");
         }
 
         estudiante.actualizar(

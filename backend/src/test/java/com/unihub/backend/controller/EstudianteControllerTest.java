@@ -1,6 +1,8 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
+import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.service.EstudianteService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -113,6 +116,28 @@ class EstudianteControllerTest {
             .andExpect(jsonPath("$.contrasena").doesNotExist());
 
         verify(estudianteService).actualizar(eq(1L), any());
+        }
+
+        @Test
+        void deberiaResponder400CuandoElCorreoPerteneceAOtroEstudiante() throws Exception {
+        doThrow(new BadRequestException("El correo electrónico ya está registrado"))
+            .when(estudianteService).actualizar(eq(1L), any());
+
+        mockMvc.perform(put("/api/estudiantes/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(cuerpo("ClaveSegura1!", "71234567", "otro@ucb.edu.bo")))
+            .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void deberiaResponder404CuandoElEstudianteNoExiste() throws Exception {
+        doThrow(new ResourceNotFoundException("Estudiante no encontrado"))
+            .when(estudianteService).actualizar(eq(99L), any());
+
+        mockMvc.perform(put("/api/estudiantes/99")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(cuerpo("ClaveSegura1!")))
+            .andExpect(status().isNotFound());
         }
 
         @Test
