@@ -12,6 +12,10 @@ import {
 } from '@angular/forms';
 
 import {
+  forkJoin
+} from 'rxjs';
+
+import {
   CalificacionMateriaPromedioResponse
 } from '../../../../../../models/calificacion-materia.model';
 
@@ -26,7 +30,13 @@ export type ModoFiltroGestiones =
   'rango';
 
 export interface FiltroGestionesResultado {
-  promedios: CalificacionMateriaPromedioResponse;
+  promedios: CalificacionMateriaPromedioResponse | null;
+  descripcion: string;
+  error?: string;
+}
+
+export interface FiltroGestionesConsulta {
+  gestion: string | null;
   descripcion: string;
 }
 
@@ -45,6 +55,15 @@ export class FiltroGestionesComponent implements OnChanges {
 
   @Input()
   gestiones: string[] = [];
+
+  @Input({
+    required: true
+  })
+  idMateria!: number;
+
+  @Output()
+  filtroIniciado =
+    new EventEmitter<FiltroGestionesConsulta>();
 
   @Output()
   filtroAplicado =
@@ -89,7 +108,16 @@ export class FiltroGestionesComponent implements OnChanges {
 
     if (
       changes['gestiones'] &&
-      this.gestiones.length > 0
+      this.gestiones.length > 0 &&
+      this.idMateria > 0
+    ) {
+
+      this.inicializarGestiones();
+
+    } else if (
+      changes['idMateria'] &&
+      this.gestiones.length > 0 &&
+      this.idMateria > 0
     ) {
 
       this.inicializarGestiones();
@@ -163,6 +191,16 @@ export class FiltroGestionesComponent implements OnChanges {
       '';
 
     this.filtroLimpiado.emit();
+
+    if (this.gestiones.length > 0) {
+
+      this.gestionSeleccionada =
+        this.gestiones[
+          this.gestiones.length - 1
+        ];
+
+      this.filtrarPorGestion();
+    }
   }
 
   esGestionActiva(
@@ -191,8 +229,17 @@ export class FiltroGestionesComponent implements OnChanges {
     this.cargando =
       true;
 
+    const descripcion =
+      `${MESSAGES.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${this.gestionSeleccionada}`;
+
+    this.filtroIniciado.emit({
+      gestion: this.gestionSeleccionada,
+      descripcion
+    });
+
     this.calificacionesMateriaService
-      .obtenerPromediosPorGestion(
+      .obtenerPromediosPorMateriaYGestion(
+        this.idMateria,
         this.gestionSeleccionada
       )
       .subscribe({
@@ -211,9 +258,7 @@ export class FiltroGestionesComponent implements OnChanges {
           this.filtroAplicado.emit({
 
             promedios,
-
-            descripcion:
-              `${MESSAGES.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${this.gestionSeleccionada}`
+            descripcion
           });
         },
 
@@ -226,6 +271,12 @@ export class FiltroGestionesComponent implements OnChanges {
             error.status === 404
               ? MESSAGES.CALIFICATION_FILTER_MANAGEMENT_EMPTY
               : MESSAGES.CALIFICATION_FILTER_MANAGEMENT_LOAD_ERROR;
+
+          this.filtroAplicado.emit({
+            promedios: null,
+            descripcion,
+            error: this.error
+          });
         }
 
       });
@@ -259,48 +310,179 @@ export class FiltroGestionesComponent implements OnChanges {
       return;
     }
 
+    const indiceDesde =
+      this.obtenerIndiceGestion(this.gestionDesde);
+
+    const indiceHasta =
+      this.obtenerIndiceGestion(this.gestionHasta);
+
+    const gestionesSeleccionadas =
+      this.gestiones.slice(
+        indiceDesde,
+        indiceHasta + 1
+      );
+
+    const descripcion =
+      `${MESSAGES.CALIFICATION_FILTER_RANGE_CONTEXT} ${this.gestionDesde} ${MESSAGES.CALIFICATION_FILTER_RANGE_SEPARATOR} ${this.gestionHasta}`;
+
     this.cargando =
       true;
 
-    this.calificacionesMateriaService
-      .obtenerPromediosPorRango(
-        this.gestionDesde,
-        this.gestionHasta
+    this.filtroIniciado.emit({
+      gestion: null,
+      descripcion
+    });
+
+    forkJoin(
+      gestionesSeleccionadas.map(
+        (gestion) =>
+          this.calificacionesMateriaService
+            .obtenerPromediosPorMateriaYGestion(
+              this.idMateria,
+              gestion
+            )
       )
-      .subscribe({
+    ).subscribe({
 
-        next: (promedios: CalificacionMateriaPromedioResponse) => {
+      next: (resultados) => {
 
-          this.cargando =
-            false;
+        const utilizables =
+          resultados.filter(
+            (resultado) =>
+              resultado.informacionSuficiente !== false &&
+              resultado.dificultadPromedio !== null &&
+              resultado.cargaPromedio !== null &&
+              resultado.conocimientoPrevioPromedio !== null
+          );
 
-          this.filtroActivo =
-            true;
+        const faltaConteo =
+          resultados.some(
+            (resultado) =>
+              resultado.cantidadEvaluaciones == null
+          );
 
-          this.gestionAplicada =
-            '';
+        if (faltaConteo && utilizables.length > 0) {
 
-          this.filtroAplicado.emit({
+          this.finalizarErrorRango(
+            MESSAGES.CALIFICATION_FILTER_RANGE_COUNT_UNAVAILABLE,
+            descripcion
+          );
 
-            promedios,
-
-            descripcion:
-              `${MESSAGES.CALIFICATION_FILTER_RANGE_CONTEXT} ${this.gestionDesde} ${MESSAGES.CALIFICATION_FILTER_RANGE_SEPARATOR} ${this.gestionHasta}`
-          });
-        },
-
-        error: (error: { status?: number }) => {
-
-          this.cargando =
-            false;
-
-          this.error =
-            error.status === 404
-              ? MESSAGES.CALIFICATION_FILTER_RANGE_EMPTY
-              : MESSAGES.CALIFICATION_FILTER_RANGE_LOAD_ERROR;
+          return;
         }
 
-      });
+        const cantidadEvaluaciones =
+          resultados.reduce(
+            (total, resultado) =>
+              total + (resultado.cantidadEvaluaciones ?? 0),
+            0
+          );
+
+        const pesoTotal =
+          utilizables.reduce(
+            (total, resultado) =>
+              total + (resultado.cantidadEvaluaciones ?? 0),
+            0
+          );
+
+        const promedios: CalificacionMateriaPromedioResponse = {
+          idMateria: this.idMateria,
+          gestionDesde: this.gestionDesde,
+          gestionHasta: this.gestionHasta,
+          dificultadPromedio: this.calcularPromedioPonderado(
+            utilizables,
+            'dificultadPromedio',
+            pesoTotal
+          ),
+          cargaPromedio: this.calcularPromedioPonderado(
+            utilizables,
+            'cargaPromedio',
+            pesoTotal
+          ),
+          conocimientoPrevioPromedio: this.calcularPromedioPonderado(
+            utilizables,
+            'conocimientoPrevioPromedio',
+            pesoTotal
+          ),
+          cantidadEvaluaciones:
+            faltaConteo
+              ? null
+              : cantidadEvaluaciones,
+          informacionSuficiente:
+            resultados.length > 0 &&
+            resultados.every(
+              (resultado) =>
+                resultado.informacionSuficiente === false
+            )
+              ? false
+              : undefined
+        };
+
+        this.cargando =
+          false;
+
+        this.filtroActivo =
+          true;
+
+        this.gestionAplicada =
+          '';
+
+        this.filtroAplicado.emit({
+          promedios,
+          descripcion
+        });
+      },
+
+      error: (error: { status?: number }) => {
+
+        this.finalizarErrorRango(
+          error.status === 404
+            ? MESSAGES.CALIFICATION_FILTER_RANGE_EMPTY
+            : MESSAGES.CALIFICATION_FILTER_RANGE_LOAD_ERROR,
+          descripcion
+        );
+      }
+    });
+  }
+
+  private calcularPromedioPonderado(
+    respuestas: CalificacionMateriaPromedioResponse[],
+    metrica:
+      | 'dificultadPromedio'
+      | 'cargaPromedio'
+      | 'conocimientoPrevioPromedio',
+    pesoTotal: number
+  ): number | null {
+
+    if (pesoTotal === 0) {
+      return null;
+    }
+
+    return respuestas.reduce(
+      (total, respuesta) =>
+        total +
+        (respuesta[metrica] ?? 0) *
+        (respuesta.cantidadEvaluaciones ?? 0),
+      0
+    ) / pesoTotal;
+  }
+
+  private finalizarErrorRango(
+    mensaje: string,
+    descripcion: string
+  ): void {
+
+    this.cargando =
+      false;
+
+    this.error =
+      mensaje;
+
+    this.filtroAplicado.emit({
+      promedios: null,
+      descripcion,
+      error: mensaje
+    });
   }
 
   private inicializarGestiones(): void {
@@ -322,6 +504,8 @@ export class FiltroGestionesComponent implements OnChanges {
             this.gestiones.length - 2
           ]
         : ultimaGestion;
+
+    this.filtrarPorGestion();
   }
 
   private obtenerIndiceGestion(

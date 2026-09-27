@@ -311,6 +311,18 @@ export const MESSAGES = {
   CALIFICATION_SUMMARY_EMPTY:
     'No existen calificaciones suficientes para mostrar promedios.',
 
+  CALIFICATION_INSUFFICIENT_INFORMATION:
+    'Información insuficiente',
+
+  CALIFICATION_INSUFFICIENT_INFORMATION_DESCRIPTION:
+    'No existen suficientes evaluaciones registradas para este semestre.',
+
+  CALIFICATION_EVALUATIONS_COUNT_SUFFIX:
+    'evaluaciones registradas en este semestre',
+
+  CALIFICATION_EVALUATIONS_COUNT_UNAVAILABLE:
+    'Cantidad de evaluaciones no disponible.',
+
   CALIFICATION_SUMMARY_LOAD_ERROR:
     'No se pudieron cargar los datos de calificación de la materia.',
 
@@ -394,6 +406,9 @@ export const MESSAGES = {
   CALIFICATION_FILTER_RANGE_LOAD_ERROR:
     'No se pudieron cargar los datos del rango.',
 
+  CALIFICATION_FILTER_RANGE_COUNT_UNAVAILABLE:
+    'No se puede calcular el promedio del rango porque el backend no proporcionó la cantidad de evaluaciones.',
+
   CALIFICATION_FILTER_RANGE_CONTEXT:
     'Promedio general del rango',
 
@@ -417,7 +432,13 @@ export const MESSAGES = {
     'Evolución histórica de las calificaciones por gestión',
 
   CALIFICATION_HISTORY_NOTE:
-    'El historial corresponde a los promedios generales disponibles por gestión.',
+    'El historial corresponde a los indicadores de esta materia por gestión.',
+
+  CALIFICATION_HISTORY_EVALUATIONS_LABEL:
+    'Evaluaciones',
+
+  CALIFICATION_HISTORY_UNAVAILABLE_VALUE:
+    'No disponible',
 
   CALIFICATION_HISTORY_EMPTY:
     'No existen suficientes gestiones para construir el historial.',

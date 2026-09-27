@@ -147,7 +147,9 @@
       } @else if (gestiones.length > 0) {
 
         <app-filtro-gestiones
+          [idMateria]="materia.id"
           [gestiones]="gestiones"
+          (filtroIniciado)="iniciarConsultaGestiones($event)"
           (filtroAplicado)="aplicarFiltroGestiones($event)"
           (filtroLimpiado)="limpiarFiltroGestiones()"
         />
@@ -167,6 +169,31 @@
         </p>
 
       } @else if (promediosMostrados) {
+
+        @if (promediosMostrados.informacionSuficiente === false) {
+
+          <section class="informacion-insuficiente" role="status">
+            <h3>
+              {{ mensajes.CALIFICATION_INSUFFICIENT_INFORMATION }}
+            </h3>
+
+            <p>
+              {{ mensajes.CALIFICATION_INSUFFICIENT_INFORMATION_DESCRIPTION }}
+            </p>
+
+            @if (promediosMostrados.cantidadEvaluaciones != null) {
+              <p>
+                {{ promediosMostrados.cantidadEvaluaciones }}
+                {{ mensajes.CALIFICATION_EVALUATIONS_COUNT_SUFFIX }}
+              </p>
+            } @else {
+              <p>
+                {{ mensajes.CALIFICATION_EVALUATIONS_COUNT_UNAVAILABLE }}
+              </p>
+            }
+          </section>
+
+        } @else {
 
         <div class="metricas-resumen">
 
@@ -237,6 +264,19 @@
           [contexto]="contextoPromedios"
         />
 
+        @if (promediosMostrados.cantidadEvaluaciones != null) {
+          <p class="conteo-evaluaciones">
+            {{ promediosMostrados.cantidadEvaluaciones }}
+            {{ mensajes.CALIFICATION_EVALUATIONS_COUNT_SUFFIX }}
+          </p>
+        } @else {
+          <p class="conteo-evaluaciones">
+            {{ mensajes.CALIFICATION_EVALUATIONS_COUNT_UNAVAILABLE }}
+          </p>
+        }
+
+        }
+
       } @else {
 
         <p class="estado-carga">
@@ -252,6 +292,7 @@
       ) {
 
         <app-historial-calificaciones
+          [idMateria]="materia.id"
           [gestiones]="gestiones"
         />
 

@@ -31,6 +31,38 @@
   overflow-x: auto;
 }
 
+.tabla-historial {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.tabla-historial table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tabla-historial th,
+.tabla-historial td {
+  padding: 11px 13px;
+  border-bottom: 1px solid #e3e8ef;
+  white-space: nowrap;
+}
+
+.tabla-historial thead {
+  color: #475467;
+  background: #f8fafc;
+  font-size: 13px;
+}
+
+.tabla-historial tbody th {
+  color: #10213f;
+}
+
+.tabla-historial .insuficiente {
+  color: #667085;
+}
+
 svg {
   display: block;
   width: 100%;

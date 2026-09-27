@@ -30,9 +30,11 @@ type MetricaHistorial =
 
 interface HistorialGestion {
   gestion: string;
-  dificultad: number;
-  carga: number;
-  conocimiento: number;
+  dificultad: number | null;
+  carga: number | null;
+  conocimiento: number | null;
+  cantidadEvaluaciones: number | null;
+  informacionSuficiente?: boolean | null;
 }
 
 @Component({
@@ -49,6 +51,11 @@ export class HistorialCalificacionesComponent
 
   @Input()
   gestiones: string[] = [];
+
+  @Input({
+    required: true
+  })
+  idMateria!: number;
 
   readonly anchoGrafico = 1000;
   readonly altoGrafico = 280;
@@ -84,12 +91,80 @@ export class HistorialCalificacionesComponent
   ): void {
 
     if (
-      changes['gestiones'] &&
-      this.gestiones.length > 0
+      (changes['gestiones'] || changes['idMateria']) &&
+      this.idMateria > 0
     ) {
 
-      this.cargarHistorial();
+      if (this.gestiones.length > 0) {
+        this.cargarHistorial();
+      } else {
+        this.datos = [];
+        this.error = '';
+        this.cargando = false;
+      }
     }
+  }
+
+  get hayDatosGraficables(): boolean {
+
+    return this.datos.filter(
+      (dato) =>
+        this.esMetricaDisponible(dato, 'dificultad') ||
+        this.esMetricaDisponible(dato, 'carga') ||
+        this.esMetricaDisponible(dato, 'conocimiento')
+    ).length > 1;
+  }
+
+  obtenerSegmentos(
+    metrica: MetricaHistorial
+  ): string[] {
+
+    const segmentos: string[][] = [];
+    let segmentoActual: string[] = [];
+
+    this.datos.forEach(
+      (dato, indice) => {
+
+        const valor =
+          this.obtenerValor(dato, metrica);
+
+        if (
+          dato.informacionSuficiente === false ||
+          valor === null
+        ) {
+
+          if (segmentoActual.length > 1) {
+            segmentos.push(segmentoActual);
+          }
+
+          segmentoActual = [];
+          return;
+        }
+
+        segmentoActual.push(
+          `${this.obtenerX(indice)},${this.obtenerY(valor)}`
+        );
+      }
+    );
+
+    if (segmentoActual.length > 1) {
+      segmentos.push(segmentoActual);
+    }
+
+    return segmentos.map(
+      (segmento) => segmento.join(' ')
+    );
+  }
+
+  esMetricaDisponible(
+    dato: HistorialGestion,
+    metrica: MetricaHistorial
+  ): boolean {
+
+    return (
+      dato.informacionSuficiente !== false &&
+      this.obtenerValor(dato, metrica) !== null
+    );
   }
 
   obtenerPuntos(
@@ -136,8 +211,12 @@ export class HistorialCalificacionesComponent
   }
 
   obtenerY(
-    valor: number
+    valor: number | null
   ): number {
+
+    if (valor === null) {
+      return Number.NaN;
+    }
 
     const altoDisponible =
       this.altoGrafico -
@@ -157,7 +236,7 @@ export class HistorialCalificacionesComponent
   obtenerValor(
     dato: HistorialGestion,
     metrica: MetricaHistorial
-  ): number {
+  ): number | null {
 
     switch (metrica) {
 
@@ -173,10 +252,12 @@ export class HistorialCalificacionesComponent
   }
 
   obtenerPromedioFormateado(
-    promedio: number
+    promedio: number | null
   ): string {
 
-    return promedio.toFixed(1);
+    return promedio === null
+      ? '—'
+      : promedio.toFixed(1);
   }
 
   private cargarHistorial(): void {
@@ -194,7 +275,8 @@ export class HistorialCalificacionesComponent
       this.gestiones.map(
         (gestion) =>
           this.calificacionesMateriaService
-            .obtenerPromediosPorGestion(
+            .obtenerPromediosPorMateriaYGestion(
+              this.idMateria,
               gestion
             )
             .pipe(
@@ -255,7 +337,15 @@ export class HistorialCalificacionesComponent
 
                   conocimiento:
                     resultado.promedios
-                      .conocimientoPrevioPromedio
+                      .conocimientoPrevioPromedio,
+
+                  cantidadEvaluaciones:
+                    resultado.promedios
+                      .cantidadEvaluaciones ?? null,
+
+                  informacionSuficiente:
+                    resultado.promedios
+                      .informacionSuficiente
 
                 })
               );

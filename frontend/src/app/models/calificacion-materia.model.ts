@@ -29,7 +29,9 @@ export interface CalificacionMateriaPromedioResponse {
   idMateria: number | null;
   gestionDesde: string | null;
   gestionHasta: string | null;
-  dificultadPromedio: number;
-  cargaPromedio: number;
-  conocimientoPrevioPromedio: number;
+  dificultadPromedio: number | null;
+  cargaPromedio: number | null;
+  conocimientoPrevioPromedio: number | null;
+  cantidadEvaluaciones?: number | null;
+  informacionSuficiente?: boolean | null;
 }

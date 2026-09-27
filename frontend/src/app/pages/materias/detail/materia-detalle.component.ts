@@ -44,6 +44,7 @@ import {
 
 import {
   FiltroGestionesComponent,
+  FiltroGestionesConsulta,
   FiltroGestionesResultado
 } from './components/filtro-gestiones/filtro-gestiones/filtro-gestiones.component';
 
@@ -83,9 +84,6 @@ export class MateriaDetalleComponent implements OnInit {
 
   calificacionExistente:
     CalificacionMateriaResponse | null = null;
-
-  promediosMateria:
-    CalificacionMateriaPromedioResponse | null = null;
 
   promediosMostrados:
     CalificacionMateriaPromedioResponse | null = null;
@@ -222,6 +220,12 @@ export class MateriaDetalleComponent implements OnInit {
     this.contextoPromedios =
       resultado.descripcion;
 
+    this.errorPromedios =
+      resultado.error ?? '';
+
+    this.cargandoPromedios =
+      false;
+
     this.filtroGestionesActivo =
       true;
 
@@ -229,13 +233,29 @@ export class MateriaDetalleComponent implements OnInit {
       .markForCheck();
   }
 
-  limpiarFiltroGestiones(): void {
+  iniciarConsultaGestiones(
+    consulta: FiltroGestionesConsulta
+  ): void {
+
+    if (consulta.gestion) {
+      this.gestionActual =
+        consulta.gestion;
+    }
 
     this.promediosMostrados =
-      this.promediosMateria;
+      null;
 
     this.contextoPromedios =
-      MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+      consulta.descripcion;
+
+    this.cargandoPromedios =
+      true;
+
+    this.errorPromedios =
+      '';
+  }
+
+  limpiarFiltroGestiones(): void {
 
     this.filtroGestionesActivo =
       false;
@@ -757,10 +777,12 @@ export class MateriaDetalleComponent implements OnInit {
   }
 
   obtenerPromedioFormateado(
-    promedio: number
+    promedio: number | null
   ): string {
 
-    return promedio.toFixed(1);
+    return promedio === null
+      ? '—'
+      : promedio.toFixed(1);
   }
 
   private convertirPrerequisitos(
@@ -922,6 +944,10 @@ export class MateriaDetalleComponent implements OnInit {
     materiaId: number
   ): void {
 
+    if (!this.gestionActual) {
+      return;
+    }
+
     this.cargandoPromedios =
       true;
 
@@ -929,23 +955,16 @@ export class MateriaDetalleComponent implements OnInit {
       '';
 
     this.calificacionesMateriaService
-      .obtenerPromediosPorMateria(
-        materiaId
+      .obtenerPromediosPorMateriaYGestion(
+        materiaId,
+        this.gestionActual
       )
       .subscribe({
 
         next: (promedios) => {
 
-          this.promediosMateria =
+          this.promediosMostrados =
             promedios;
-
-          if (
-            !this.filtroGestionesActivo
-          ) {
-
-            this.promediosMostrados =
-              promedios;
-          }
 
           this.cargandoPromedios =
             false;
@@ -963,16 +982,11 @@ export class MateriaDetalleComponent implements OnInit {
             error.status === 404
           ) {
 
-            this.promediosMateria =
+            this.promediosMostrados =
               null;
 
-            if (
-              !this.filtroGestionesActivo
-            ) {
-
-              this.promediosMostrados =
-                null;
-            }
+            this.errorPromedios =
+              MESSAGES.CALIFICATION_SUMMARY_EMPTY;
 
           } else {
 

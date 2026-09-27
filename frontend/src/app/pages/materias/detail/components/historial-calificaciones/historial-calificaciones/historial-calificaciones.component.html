@@ -28,9 +28,11 @@
       {{ error }}
     </p>
 
-  } @else if (datos.length > 1) {
+  } @else if (datos.length > 0) {
 
-    <div class="grafico">
+    @if (hayDatosGraficables) {
+
+      <div class="grafico">
 
       <svg
         [attr.viewBox]="
@@ -102,26 +104,35 @@
           "
         />
 
-        <polyline
-          class="linea dificultad"
-          [attr.points]="
-            obtenerPuntos('dificultad')
-          "
-        />
+        @for (
+          segmento of obtenerSegmentos('dificultad');
+          track $index
+        ) {
+          <polyline
+            class="linea dificultad"
+            [attr.points]="segmento"
+          />
+        }
 
-        <polyline
-          class="linea carga"
-          [attr.points]="
-            obtenerPuntos('carga')
-          "
-        />
+        @for (
+          segmento of obtenerSegmentos('carga');
+          track $index
+        ) {
+          <polyline
+            class="linea carga"
+            [attr.points]="segmento"
+          />
+        }
 
-        <polyline
-          class="linea conocimiento"
-          [attr.points]="
-            obtenerPuntos('conocimiento')
-          "
-        />
+        @for (
+          segmento of obtenerSegmentos('conocimiento');
+          track $index
+        ) {
+          <polyline
+            class="linea conocimiento"
+            [attr.points]="segmento"
+          />
+        }
 
         @for (
           dato of datos;
@@ -129,71 +140,53 @@
           let indice = $index
         ) {
 
-          <circle
-            class="punto dificultad"
-            [attr.cx]="obtenerX(indice)"
-            [attr.cy]="
-              obtenerY(
-                dato.dificultad
-              )
-            "
-            r="5"
-          >
-            <title>
-              {{ dato.gestion }}
-              -
-              {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
-              {{
-                obtenerPromedioFormateado(
-                  dato.dificultad
-                )
-              }}/10
-            </title>
-          </circle>
+          @if (esMetricaDisponible(dato, 'dificultad')) {
+            <circle
+              class="punto dificultad"
+              [attr.cx]="obtenerX(indice)"
+              [attr.cy]="obtenerY(dato.dificultad)"
+              r="5"
+            >
+              <title>
+                {{ dato.gestion }}
+                -
+                {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
+                {{ obtenerPromedioFormateado(dato.dificultad) }}/10
+              </title>
+            </circle>
+          }
 
-          <circle
-            class="punto carga"
-            [attr.cx]="obtenerX(indice)"
-            [attr.cy]="
-              obtenerY(
-                dato.carga
-              )
-            "
-            r="5"
-          >
-            <title>
-              {{ dato.gestion }}
-              -
-              {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
-              {{
-                obtenerPromedioFormateado(
-                  dato.carga
-                )
-              }}/10
-            </title>
-          </circle>
+          @if (esMetricaDisponible(dato, 'carga')) {
+            <circle
+              class="punto carga"
+              [attr.cx]="obtenerX(indice)"
+              [attr.cy]="obtenerY(dato.carga)"
+              r="5"
+            >
+              <title>
+                {{ dato.gestion }}
+                -
+                {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
+                {{ obtenerPromedioFormateado(dato.carga) }}/10
+              </title>
+            </circle>
+          }
 
-          <circle
-            class="punto conocimiento"
-            [attr.cx]="obtenerX(indice)"
-            [attr.cy]="
-              obtenerY(
-                dato.conocimiento
-              )
-            "
-            r="5"
-          >
-            <title>
-              {{ dato.gestion }}
-              -
-              {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
-              {{
-                obtenerPromedioFormateado(
-                  dato.conocimiento
-                )
-              }}/10
-            </title>
-          </circle>
+          @if (esMetricaDisponible(dato, 'conocimiento')) {
+            <circle
+              class="punto conocimiento"
+              [attr.cx]="obtenerX(indice)"
+              [attr.cy]="obtenerY(dato.conocimiento)"
+              r="5"
+            >
+              <title>
+                {{ dato.gestion }}
+                -
+                {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
+                {{ obtenerPromedioFormateado(dato.conocimiento) }}/10
+              </title>
+            </circle>
+          }
 
           <text
             class="etiqueta-x"
@@ -210,9 +203,9 @@
 
       </svg>
 
-    </div>
+      </div>
 
-    <div class="leyenda">
+      <div class="leyenda">
 
       <span>
         <i class="leyenda__linea dificultad"></i>
@@ -229,11 +222,46 @@
         {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
       </span>
 
-    </div>
+      </div>
 
-    <p class="historial-calificaciones__nota">
-      {{ mensajes.CALIFICATION_HISTORY_NOTE }}
-    </p>
+      <p class="historial-calificaciones__nota">
+        {{ mensajes.CALIFICATION_HISTORY_NOTE }}
+      </p>
+
+    }
+
+    <div class="tabla-historial">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">{{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}</th>
+            <th scope="col">{{ mensajes.CALIFICATION_HISTORY_EVALUATIONS_LABEL }}</th>
+            <th scope="col">{{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}</th>
+            <th scope="col">{{ mensajes.CALIFICATION_WORKLOAD_LABEL }}</th>
+            <th scope="col">{{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dato of datos; track dato.gestion) {
+            <tr>
+              <th scope="row">{{ dato.gestion }}</th>
+              <td>
+                {{ dato.cantidadEvaluaciones ?? mensajes.CALIFICATION_HISTORY_UNAVAILABLE_VALUE }}
+              </td>
+              @if (dato.informacionSuficiente === false) {
+                <td colspan="3" class="insuficiente">
+                  {{ mensajes.CALIFICATION_INSUFFICIENT_INFORMATION }}
+                </td>
+              } @else {
+                <td>{{ obtenerPromedioFormateado(dato.dificultad) }}</td>
+                <td>{{ obtenerPromedioFormateado(dato.carga) }}</td>
+                <td>{{ obtenerPromedioFormateado(dato.conocimiento) }}</td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
   } @else {
 

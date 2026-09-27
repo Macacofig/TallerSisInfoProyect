@@ -28,15 +28,21 @@ export class CalificacionGraficosComponent {
     MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
 
   obtenerPromedioFormateado(
-    promedio: number
+    promedio: number | null
   ): string {
 
-    return promedio.toFixed(1);
+    return promedio === null
+      ? '—'
+      : promedio.toFixed(1);
   }
 
   obtenerPorcentaje(
-    promedio: number
-  ): number {
+    promedio: number | null
+  ): number | null {
+
+    if (promedio === null) {
+      return null;
+    }
 
     return Math.max(
       0,
