@@ -620,10 +620,6 @@ export class MateriaDetalleComponent implements OnInit {
           this.contextoPromedios =
             MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
 
-          this.cargarPromediosMateria(
-            materiaId
-          );
-
           this.cargarGestiones();
 
           this.changeDetectorRef
@@ -719,10 +715,6 @@ export class MateriaDetalleComponent implements OnInit {
 
           this.contextoPromedios =
             MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
-
-          this.cargarPromediosMateria(
-            materiaId
-          );
 
           this.cargarGestiones();
 
@@ -857,10 +849,6 @@ export class MateriaDetalleComponent implements OnInit {
             materiaId
           );
 
-          this.cargarPromediosMateria(
-            materiaId
-          );
-
           this.cargarGestiones();
 
           this.changeDetectorRef
@@ -932,67 +920,6 @@ export class MateriaDetalleComponent implements OnInit {
 
           this.errorEstadoCalificacion =
             MESSAGES.CALIFICATION_STATUS_ERROR;
-
-          this.changeDetectorRef
-            .markForCheck();
-        }
-
-      });
-  }
-
-  private cargarPromediosMateria(
-    materiaId: number
-  ): void {
-
-    if (!this.gestionActual) {
-      return;
-    }
-
-    this.cargandoPromedios =
-      true;
-
-    this.errorPromedios =
-      '';
-
-    this.calificacionesMateriaService
-      .obtenerPromediosPorMateriaYGestion(
-        materiaId,
-        this.gestionActual
-      )
-      .subscribe({
-
-        next: (promedios) => {
-
-          this.promediosMostrados =
-            promedios;
-
-          this.cargandoPromedios =
-            false;
-
-          this.changeDetectorRef
-            .markForCheck();
-        },
-
-        error: (error) => {
-
-          this.cargandoPromedios =
-            false;
-
-          if (
-            error.status === 404
-          ) {
-
-            this.promediosMostrados =
-              null;
-
-            this.errorPromedios =
-              MESSAGES.CALIFICATION_SUMMARY_EMPTY;
-
-          } else {
-
-            this.errorPromedios =
-              MESSAGES.CALIFICATION_SUMMARY_LOAD_ERROR;
-          }
 
           this.changeDetectorRef
             .markForCheck();
@@ -1075,17 +1002,36 @@ export class MateriaDetalleComponent implements OnInit {
       return;
     }
 
+    const fechaActual =
+      new Date();
+
+    const periodoActual =
+      fechaActual.getMonth() < 6
+        ? ['1', 'I']
+        : ['2', 'II'];
+
+    const gestionesCalendarioActuales =
+      periodoActual.map(
+        (periodo) =>
+          `${fechaActual.getFullYear()}-${periodo}`
+      );
+
+    const indiceGestionActual =
+      this.gestiones.findIndex(
+        (gestion) =>
+          gestionesCalendarioActuales.includes(gestion)
+      );
+
+    const indiceSeleccionado =
+      indiceGestionActual >= 0
+        ? indiceGestionActual
+        : this.gestiones.length - 1;
+
     this.gestionActual =
-      this.gestiones[
-        this.gestiones.length - 1
-      ];
+      this.gestiones[indiceSeleccionado];
 
     this.gestionAnterior =
-      this.gestiones.length > 1
-        ? this.gestiones[
-            this.gestiones.length - 2
-          ]
-        : null;
+      this.gestiones[indiceSeleccionado - 1] ?? null;
   }
 
   private compararGestiones(

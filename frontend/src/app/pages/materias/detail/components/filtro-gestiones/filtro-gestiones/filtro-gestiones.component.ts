@@ -2,6 +2,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnChanges,
   Output,
   SimpleChanges
@@ -12,7 +13,7 @@ import {
 } from '@angular/forms';
 
 import {
-  forkJoin
+  Subscription
 } from 'rxjs';
 
 import {
@@ -49,17 +50,15 @@ export interface FiltroGestionesConsulta {
   templateUrl: './filtro-gestiones.component.html',
   styleUrl: './filtro-gestiones.component.scss'
 })
-export class FiltroGestionesComponent implements OnChanges {
+export class FiltroGestionesComponent implements OnChanges, OnDestroy {
 
   readonly mensajes = MESSAGES;
 
   @Input()
   gestiones: string[] = [];
 
-  @Input({
-    required: true
-  })
-  idMateria!: number;
+  @Input()
+  gestionInicial: string | null = null;
 
   @Output()
   filtroIniciado =
@@ -97,6 +96,8 @@ export class FiltroGestionesComponent implements OnChanges {
   error =
     '';
 
+  private consultaActual?: Subscription;
+
   constructor(
     private readonly calificacionesMateriaService:
       CalificacionesMateriaService
@@ -107,17 +108,8 @@ export class FiltroGestionesComponent implements OnChanges {
   ): void {
 
     if (
-      changes['gestiones'] &&
-      this.gestiones.length > 0 &&
-      this.idMateria > 0
-    ) {
-
-      this.inicializarGestiones();
-
-    } else if (
-      changes['idMateria'] &&
-      this.gestiones.length > 0 &&
-      this.idMateria > 0
+      (changes['gestiones'] || changes['gestionInicial']) &&
+      this.gestiones.length > 0
     ) {
 
       this.inicializarGestiones();
@@ -140,6 +132,31 @@ export class FiltroGestionesComponent implements OnChanges {
 
     this.error =
       '';
+  }
+
+  seleccionarGestion(
+    gestion: string
+  ): void {
+
+    if (this.cargando || !gestion) {
+      return;
+    }
+
+    this.modo =
+      'gestion';
+
+    this.gestionSeleccionada =
+      gestion;
+
+    this.error =
+      '';
+
+    this.filtrarPorGestion();
+  }
+
+  ngOnDestroy(): void {
+
+    this.consultaActual?.unsubscribe();
   }
 
   seleccionarGestionRapida(
@@ -195,9 +212,11 @@ export class FiltroGestionesComponent implements OnChanges {
     if (this.gestiones.length > 0) {
 
       this.gestionSeleccionada =
-        this.gestiones[
-          this.gestiones.length - 1
-        ];
+        this.gestiones.includes(this.gestionInicial ?? '')
+          ? this.gestionInicial!
+          : this.gestiones[
+              this.gestiones.length - 1
+            ];
 
       this.filtrarPorGestion();
     }
@@ -237,9 +256,10 @@ export class FiltroGestionesComponent implements OnChanges {
       descripcion
     });
 
-    this.calificacionesMateriaService
-      .obtenerPromediosPorMateriaYGestion(
-        this.idMateria,
+    this.consultaActual?.unsubscribe();
+
+    this.consultaActual = this.calificacionesMateriaService
+      .obtenerPromediosPorGestion(
         this.gestionSeleccionada
       )
       .subscribe({
@@ -269,7 +289,7 @@ export class FiltroGestionesComponent implements OnChanges {
 
           this.error =
             error.status === 404
-              ? MESSAGES.CALIFICATION_FILTER_MANAGEMENT_EMPTY
+              ? MESSAGES.CALIFICATION_INSUFFICIENT_INFORMATION
               : MESSAGES.CALIFICATION_FILTER_MANAGEMENT_LOAD_ERROR;
 
           this.filtroAplicado.emit({
@@ -310,18 +330,6 @@ export class FiltroGestionesComponent implements OnChanges {
       return;
     }
 
-    const indiceDesde =
-      this.obtenerIndiceGestion(this.gestionDesde);
-
-    const indiceHasta =
-      this.obtenerIndiceGestion(this.gestionHasta);
-
-    const gestionesSeleccionadas =
-      this.gestiones.slice(
-        indiceDesde,
-        indiceHasta + 1
-      );
-
     const descripcion =
       `${MESSAGES.CALIFICATION_FILTER_RANGE_CONTEXT} ${this.gestionDesde} ${MESSAGES.CALIFICATION_FILTER_RANGE_SEPARATOR} ${this.gestionHasta}`;
 
@@ -333,90 +341,14 @@ export class FiltroGestionesComponent implements OnChanges {
       descripcion
     });
 
-    forkJoin(
-      gestionesSeleccionadas.map(
-        (gestion) =>
-          this.calificacionesMateriaService
-            .obtenerPromediosPorMateriaYGestion(
-              this.idMateria,
-              gestion
-            )
+    this.calificacionesMateriaService
+      .obtenerPromediosPorRango(
+        this.gestionDesde,
+        this.gestionHasta
       )
-    ).subscribe({
+      .subscribe({
 
-      next: (resultados) => {
-
-        const utilizables =
-          resultados.filter(
-            (resultado) =>
-              resultado.informacionSuficiente !== false &&
-              resultado.dificultadPromedio !== null &&
-              resultado.cargaPromedio !== null &&
-              resultado.conocimientoPrevioPromedio !== null
-          );
-
-        const faltaConteo =
-          resultados.some(
-            (resultado) =>
-              resultado.cantidadEvaluaciones == null
-          );
-
-        if (faltaConteo && utilizables.length > 0) {
-
-          this.finalizarErrorRango(
-            MESSAGES.CALIFICATION_FILTER_RANGE_COUNT_UNAVAILABLE,
-            descripcion
-          );
-
-          return;
-        }
-
-        const cantidadEvaluaciones =
-          resultados.reduce(
-            (total, resultado) =>
-              total + (resultado.cantidadEvaluaciones ?? 0),
-            0
-          );
-
-        const pesoTotal =
-          utilizables.reduce(
-            (total, resultado) =>
-              total + (resultado.cantidadEvaluaciones ?? 0),
-            0
-          );
-
-        const promedios: CalificacionMateriaPromedioResponse = {
-          idMateria: this.idMateria,
-          gestionDesde: this.gestionDesde,
-          gestionHasta: this.gestionHasta,
-          dificultadPromedio: this.calcularPromedioPonderado(
-            utilizables,
-            'dificultadPromedio',
-            pesoTotal
-          ),
-          cargaPromedio: this.calcularPromedioPonderado(
-            utilizables,
-            'cargaPromedio',
-            pesoTotal
-          ),
-          conocimientoPrevioPromedio: this.calcularPromedioPonderado(
-            utilizables,
-            'conocimientoPrevioPromedio',
-            pesoTotal
-          ),
-          cantidadEvaluaciones:
-            faltaConteo
-              ? null
-              : cantidadEvaluaciones,
-          informacionSuficiente:
-            resultados.length > 0 &&
-            resultados.every(
-              (resultado) =>
-                resultado.informacionSuficiente === false
-            )
-              ? false
-              : undefined
-        };
+        next: (promedios: CalificacionMateriaPromedioResponse) => {
 
         this.cargando =
           false;
@@ -437,34 +369,12 @@ export class FiltroGestionesComponent implements OnChanges {
 
         this.finalizarErrorRango(
           error.status === 404
-            ? MESSAGES.CALIFICATION_FILTER_RANGE_EMPTY
+            ? MESSAGES.CALIFICATION_INSUFFICIENT_INFORMATION
             : MESSAGES.CALIFICATION_FILTER_RANGE_LOAD_ERROR,
           descripcion
         );
       }
     });
-  }
-
-  private calcularPromedioPonderado(
-    respuestas: CalificacionMateriaPromedioResponse[],
-    metrica:
-      | 'dificultadPromedio'
-      | 'cargaPromedio'
-      | 'conocimientoPrevioPromedio',
-    pesoTotal: number
-  ): number | null {
-
-    if (pesoTotal === 0) {
-      return null;
-    }
-
-    return respuestas.reduce(
-      (total, respuesta) =>
-        total +
-        (respuesta[metrica] ?? 0) *
-        (respuesta.cantidadEvaluaciones ?? 0),
-      0
-    ) / pesoTotal;
   }
 
   private finalizarErrorRango(
@@ -488,9 +398,11 @@ export class FiltroGestionesComponent implements OnChanges {
   private inicializarGestiones(): void {
 
     const ultimaGestion =
-      this.gestiones[
-        this.gestiones.length - 1
-      ];
+      this.gestiones.includes(this.gestionInicial ?? '')
+        ? this.gestionInicial!
+        : this.gestiones[
+            this.gestiones.length - 1
+          ];
 
     this.gestionSeleccionada =
       ultimaGestion;
@@ -516,4 +428,5 @@ export class FiltroGestionesComponent implements OnChanges {
       gestion
     );
   }
+
 }

@@ -26,7 +26,7 @@
           class="gestion-rapida"
           [class.activa]="esGestionActiva(gestion)"
           [disabled]="cargando"
-          (click)="seleccionarGestionRapida(gestion)"
+          (click)="seleccionarGestion(gestion)"
         >
 
           {{ gestion }}
@@ -97,6 +97,8 @@
 
           <select
             [(ngModel)]="gestionSeleccionada"
+            [disabled]="cargando"
+            (ngModelChange)="seleccionarGestion($event)"
           >
 
             @for (
