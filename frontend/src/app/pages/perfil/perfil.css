@@ -1,0 +1,125 @@
+.perfil {
+  min-height: 100%;
+  padding: 40px 24px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.perfil__container {
+  width: 100%;
+  max-width: 650px;
+}
+
+.perfil__header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  margin-bottom: 24px;
+}
+
+.perfil__avatar {
+  width: 64px;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e5e7eb;
+
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.perfil__header h1 {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.perfil__header p {
+  margin: 5px 0 0;
+
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.perfil__card {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 32px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.perfil__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  margin-bottom: 20px;
+}
+
+.perfil__field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.perfil__field input {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 11px 13px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition: border-color 0.2s;
+}
+
+.perfil__field input:focus {
+  border-color: #2563eb;
+}
+
+.perfil__actions {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 28px;
+}
+
+.perfil__save-button {
+  padding: 11px 20px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.perfil__save-button:hover {
+  background: #1d4ed8;
+}

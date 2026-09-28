@@ -1,0 +1,81 @@
+<section class="perfil">
+
+  <div class="perfil__container">
+
+    <div class="perfil__header">
+      <div class="perfil__avatar">
+        {{ usuario?.nombre?.charAt(0)?.toUpperCase() }}
+      </div>
+
+      <div>
+        <h1>Mi perfil</h1>
+        <p>Administra tu información personal</p>
+      </div>
+    </div>
+
+    <form class="perfil__card" [formGroup]="formulario">
+
+      <div class="perfil__field">
+        <label for="nombre">Nombre completo</label>
+        <input
+          id="nombre"
+          type="text"
+          formControlName="nombre"
+        />
+      </div>
+
+      <div class="perfil__field">
+        <label for="correo">Correo electrónico</label>
+        <input
+          id="correo"
+          type="email"
+          formControlName="correoElectronico"
+        />
+      </div>
+
+      <div class="perfil__field">
+        <label for="telefono">Teléfono</label>
+        <input
+          id="telefono"
+          type="tel"
+          formControlName="telefono"
+        />
+      </div>
+
+      <div class="perfil__field">
+        <label for="carrera">Carrera</label>
+        <input
+          id="carrera"
+          type="text"
+          formControlName="carrera"
+        />
+      </div>
+
+      <div class="perfil__field">
+        <label for="contrasena">Contraseña nueva</label>
+
+        <input
+            id="contrasena"
+            type="password"
+            formControlName="contrasena"
+            placeholder="Ingresa tu nueva contraseña para guardar"
+        />
+      </div>
+
+      <div class="perfil__actions">
+
+        <button
+          type="button"
+          class="perfil__save-button"
+          (click)="guardarCambios()"
+        >
+          Guardar cambios
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</section>

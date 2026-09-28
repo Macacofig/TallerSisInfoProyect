@@ -76,6 +76,25 @@ export class AuthService {
         )
       );
   }
+
+  actualizarUsuario(
+    id: number,
+    datos: RegistroRequest
+  ): Observable<LoginResponse> {
+
+    const url = `${APP_CONFIG.API.BASE_URL}/estudiantes/${id}`;
+
+    return this.http
+      .put<LoginResponse>(url, datos, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .pipe(
+        timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
+        catchError((error: unknown) =>
+          throwError(() => mapearErrorHttp(error))
+        )
+      );
+  }
 }
 
 export function mapearErrorHttp(error: unknown): ErrorAuth {
