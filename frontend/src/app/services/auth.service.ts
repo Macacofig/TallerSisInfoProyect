@@ -12,17 +12,34 @@ import { LoginRequest, LoginResponse } from '../models/login';
 export class AuthService {
 
   private readonly http = inject(HttpClient);
-  private usuarioActual = signal<LoginResponse | null>(null);
 
+  private usuarioActual = signal<LoginResponse | null>(
+    this.obtenerUsuarioGuardado()
+  );
   private readonly urlRegistro =
     `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_REGISTER}`;  
 
   private readonly urlLogin =
   `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_LOGIN}`;
 
+  private obtenerUsuarioGuardado(): LoginResponse | null {
+    const usuarioGuardado = localStorage.getItem('usuario');
+
+    if (!usuarioGuardado) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(usuarioGuardado) as LoginResponse;
+    } catch {
+      localStorage.removeItem('usuario');
+      return null;
+    }
+  }
 
   guardarUsuario(usuario: LoginResponse): void {
     this.usuarioActual.set(usuario);
+    localStorage.setItem('usuario', JSON.stringify(usuario));
   }
 
   obtenerUsuario(): LoginResponse | null {
@@ -30,7 +47,8 @@ export class AuthService {
   }
 
   cerrarSesion(): void {
-    this.usuarioActual.set(null);
+      this.usuarioActual.set(null);
+      localStorage.removeItem('usuario');
   }
 
   registerUser(datos: RegistroRequest): Observable<RegistroResponse> {
