@@ -5,7 +5,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 
 import { AuthService } from '../../services/auth.service';
 import { ErrorAuth } from '../../models/registrar';
-import { LoginRequest } from '../../models/login';
+import { LoginRequest, LoginResponse } from '../../models/login';
 import { LOGIN_MESSAGES } from '../../strings/login/login.messages';
 
 
@@ -127,9 +127,9 @@ export class Login {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
 
-        next: () => {
+        next: (usuario: LoginResponse) => {
           this.enviando.set(false);
-
+          this.authService.guardarUsuario(usuario);
           this.router.navigate(['/home']);
         },
 

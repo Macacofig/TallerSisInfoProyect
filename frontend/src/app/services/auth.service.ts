@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, TimeoutError, catchError, timeout, throwError } from 'rxjs';
 
 import { APP_CONFIG } from '../config/app-config';
@@ -12,12 +12,26 @@ import { LoginRequest, LoginResponse } from '../models/login';
 export class AuthService {
 
   private readonly http = inject(HttpClient);
+  private usuarioActual = signal<LoginResponse | null>(null);
 
   private readonly urlRegistro =
     `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_REGISTER}`;  
 
   private readonly urlLogin =
   `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_LOGIN}`;
+
+
+  guardarUsuario(usuario: LoginResponse): void {
+    this.usuarioActual.set(usuario);
+  }
+
+  obtenerUsuario(): LoginResponse | null {
+    return this.usuarioActual();
+  }
+
+  cerrarSesion(): void {
+    this.usuarioActual.set(null);
+  }
 
   registerUser(datos: RegistroRequest): Observable<RegistroResponse> {
     return this.http
