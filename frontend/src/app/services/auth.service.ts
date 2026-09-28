@@ -46,6 +46,11 @@ export class AuthService {
     return this.usuarioActual();
   }
 
+
+  obtenerUsuarioSignal() {
+    return this.usuarioActual.asReadonly();
+  }
+
   cerrarSesion(): void {
       this.usuarioActual.set(null);
       localStorage.removeItem('usuario');
@@ -79,7 +84,11 @@ export class AuthService {
 
   actualizarUsuario(
     id: number,
-    datos: RegistroRequest
+    datos: {
+      nombre: string;
+      telefono: string;
+      carrera: string;
+    }
   ): Observable<LoginResponse> {
 
     const url = `${APP_CONFIG.API.BASE_URL}/estudiantes/${id}`;

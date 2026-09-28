@@ -25,15 +25,6 @@
       </div>
 
       <div class="perfil__field">
-        <label for="correo">Correo electrónico</label>
-        <input
-          id="correo"
-          type="email"
-          formControlName="correoElectronico"
-        />
-      </div>
-
-      <div class="perfil__field">
         <label for="telefono">Teléfono</label>
         <input
           id="telefono"
@@ -48,17 +39,6 @@
           id="carrera"
           type="text"
           formControlName="carrera"
-        />
-      </div>
-
-      <div class="perfil__field">
-        <label for="contrasena">Contraseña nueva</label>
-
-        <input
-            id="contrasena"
-            type="password"
-            formControlName="contrasena"
-            placeholder="Ingresa tu nueva contraseña para guardar"
         />
       </div>
 
@@ -79,3 +59,36 @@
   </div>
 
 </section>
+
+@if (modalVisible()) {
+  <div class="perfil-modal__overlay">
+
+    <div class="perfil-modal">
+
+      <div
+        class="perfil-modal__icon"
+        [class.perfil-modal__icon--error]="!modalExito()"
+      >
+        {{ modalExito() ? '✓' : '!' }}
+      </div>
+
+      <h2>
+        {{ modalExito() ? 'Cambios guardados' : 'No se pudieron guardar' }}
+      </h2>
+
+      <p>
+        {{ modalMensaje() }}
+      </p>
+
+      <button
+        type="button"
+        class="perfil-modal__button"
+        (click)="cerrarModal()"
+      >
+        Aceptar
+      </button>
+
+    </div>
+
+  </div>
+}
