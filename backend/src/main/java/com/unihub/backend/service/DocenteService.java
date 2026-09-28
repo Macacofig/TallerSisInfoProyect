@@ -1,5 +1,6 @@
 package com.unihub.backend.service;
 
+import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.docente.DocenteRequest;
 import com.unihub.backend.dto.docente.DocenteResponse;
 import com.unihub.backend.entity.Docente;
@@ -25,7 +26,9 @@ public class DocenteService {
 
     public DocenteResponse agregar(DocenteRequest request) {
         Docente docente = new Docente(request.nombre().trim());
-        return docenteMapper.toResponse(docenteRepository.save(docente));
+        DocenteResponse response = docenteMapper.toResponse(docenteRepository.save(docente));
+        LogHelper.info(DocenteService.class, "Docente registrado correctamente");
+        return response;
     }
 
     public List<DocenteResponse> obtenerPorMateria(Long idMateria) {
