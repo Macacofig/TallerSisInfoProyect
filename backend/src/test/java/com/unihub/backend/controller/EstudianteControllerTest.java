@@ -1,7 +1,6 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
-import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.service.EstudianteService;
 import org.junit.jupiter.api.Test;
@@ -102,9 +101,7 @@ class EstudianteControllerTest {
                 .content("""
                     {
                       "nombre": "Ana María Pérez",
-                      "contrasena": "NuevaClave2!",
                       "telefono": "71234568",
-                      "correoElectronico": "ana.maria@ucb.edu.bo",
                       "carrera": "Medicina"
                     }
                     """))
@@ -119,42 +116,31 @@ class EstudianteControllerTest {
         }
 
         @Test
-        void deberiaResponder400CuandoElCorreoPerteneceAOtroEstudiante() throws Exception {
-        doThrow(new BadRequestException("El correo electrónico ya está registrado"))
-            .when(estudianteService).actualizar(eq(1L), any());
-
-        mockMvc.perform(put("/api/estudiantes/1")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(cuerpo("ClaveSegura1!", "71234567", "otro@ucb.edu.bo")))
-            .andExpect(status().isBadRequest());
-        }
-
-        @Test
         void deberiaResponder404CuandoElEstudianteNoExiste() throws Exception {
         doThrow(new ResourceNotFoundException("Estudiante no encontrado"))
             .when(estudianteService).actualizar(eq(99L), any());
 
         mockMvc.perform(put("/api/estudiantes/99")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(cuerpo("ClaveSegura1!")))
+            .content(cuerpoActualizacion("Ana Pérez", "71234567", "Ingeniería de Sistemas")))
             .andExpect(status().isNotFound());
         }
 
         @Test
-        void deberiaRechazarActualizacionConContrasenaInvalida() throws Exception {
+        void deberiaRechazarActualizacionConNombreVacio() throws Exception {
         mockMvc.perform(put("/api/estudiantes/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(cuerpo("Clave1!")))
+                .content(cuerpoActualizacion("", "71234567", "Ingeniería")))
             .andExpect(status().isBadRequest());
 
         verify(estudianteService, never()).actualizar(anyLong(), any());
         }
 
         @Test
-        void deberiaRechazarActualizacionConCorreoFueraDelDominioUcb() throws Exception {
+        void deberiaRechazarActualizacionConTelefonoInvalido() throws Exception {
         mockMvc.perform(put("/api/estudiantes/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(cuerpo("ClaveSegura1!", "71234567", "ana@gmail.com")))
+            .content(cuerpoActualizacion("Ana Pérez", "51234567", "Ingeniería")))
             .andExpect(status().isBadRequest());
 
         verify(estudianteService, never()).actualizar(anyLong(), any());
@@ -175,4 +161,14 @@ class EstudianteControllerTest {
                 }
                 """.formatted(contrasena, telefono, correo);
     }
+
+        private String cuerpoActualizacion(String nombre, String telefono, String carrera) {
+                return """
+                                {
+                                    "nombre": "%s",
+                                    "telefono": "%s",
+                                    "carrera": "%s"
+                                }
+                                """.formatted(nombre, telefono, carrera);
+        }
 }
