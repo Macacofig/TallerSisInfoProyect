@@ -1,5 +1,6 @@
 package com.unihub.backend.service;
 
+import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.calificacion.CalificacionDocentePromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
@@ -60,7 +61,9 @@ public class CalificacionDocenteService {
 		}
 
 		CalificacionDocente calificacion = calificacionMapper.toEntity(request, docente, materia);
-		return calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		CalificacionDocenteResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		LogHelper.info(CalificacionDocenteService.class, "Calificación docente creada correctamente");
+		return response;
 	}
 
 	public List<CalificacionDocentePromedioResponse> obtenerPromediosPorMateria(Long idMateria) {
@@ -83,7 +86,9 @@ public class CalificacionDocenteService {
 				idEstudiante, idDocente, idMateria)
 				.map(calificacion -> {
 					calificacionMapper.actualizar(calificacion, request);
-					return calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+					CalificacionDocenteResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+					LogHelper.info(CalificacionDocenteService.class, "Calificación docente actualizada correctamente");
+					return response;
 				});
 	}
 
@@ -92,6 +97,7 @@ public class CalificacionDocenteService {
 				idEstudiante, idDocente, idMateria)
 				.map(calificacion -> {
 					calificacionRepository.delete(calificacion);
+					LogHelper.info(CalificacionDocenteService.class, "Calificación docente eliminada correctamente");
 					return true;
 				})
 				.orElse(false);

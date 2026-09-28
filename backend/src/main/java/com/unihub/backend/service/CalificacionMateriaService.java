@@ -1,5 +1,6 @@
 package com.unihub.backend.service;
 
+import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaRequest;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
@@ -37,7 +38,9 @@ public class CalificacionMateriaService {
 
 	CalificacionMateria calificacion = calificacionMapper.toEntity(request, materia);
 
-        return calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		CalificacionMateriaResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		LogHelper.info(CalificacionMateriaService.class, "Calificación de materia creada correctamente");
+		return response;
     }
 
     public Optional<CalificacionMateriaPromedioResponse> obtenerPromediosPorMateria(Long idMateria) {
@@ -57,7 +60,9 @@ public class CalificacionMateriaService {
 	return calificacionRepository.findFirstByIdEstudianteAndMateriaId(idEstudiante, idMateria)
 		.map(calificacion -> {
 		    calificacionMapper.actualizar(calificacion, request);
-		    return calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		    CalificacionMateriaResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		    LogHelper.info(CalificacionMateriaService.class, "Calificación de materia actualizada correctamente");
+		    return response;
 		});
     }
 
@@ -65,6 +70,7 @@ public class CalificacionMateriaService {
 	return calificacionRepository.findFirstByIdEstudianteAndMateriaId(idEstudiante, idMateria)
 		.map(calificacion -> {
 		    calificacionRepository.delete(calificacion);
+		    LogHelper.info(CalificacionMateriaService.class, "Calificación de materia eliminada correctamente");
 		    return true;
 		})
 		.orElse(false);

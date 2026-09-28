@@ -25,6 +25,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      HIBERNATE_SQL_LOG_LEVEL: ${HIBERNATE_SQL_LOG_LEVEL:-OFF}
+    volumes:
+      - ./backend/logs:/app/logs
     depends_on:
       - db
 
