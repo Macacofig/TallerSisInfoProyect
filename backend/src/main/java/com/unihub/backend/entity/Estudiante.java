@@ -73,15 +73,11 @@ public class Estudiante {
 
     public void actualizar(
             String nombre,
-            String contrasena,
             String telefono,
-            String correoElectronico,
             String carrera
     ) {
         this.nombre = nombre;
-        this.contrasena = contrasena;
         this.telefono = telefono;
-        this.correoElectronico = correoElectronico;
         this.carrera = carrera;
     }
 }

@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
+import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
@@ -42,21 +43,13 @@ public class EstudianteService {
         return response;
     }
 
-    public EstudianteResponse actualizar(Long id, EstudianteRequest request) {
+    public EstudianteResponse actualizar(Long id, EstudianteActualizacionRequest request) {
         Estudiante estudiante = estudianteRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
 
-        if (estudianteRepository.existsByCorreoElectronicoIgnoreCaseAndIdNot(
-                request.correoElectronico(), id
-        )) {
-            throw new BadRequestException("El correo electrónico ya está registrado");
-        }
-
         estudiante.actualizar(
                 request.nombre(),
-                request.contrasena(),
                 request.telefono(),
-                request.correoElectronico(),
                 request.carrera()
         );
         EstudianteResponse response = estudianteMapper.toResponse(estudianteRepository.save(estudiante));

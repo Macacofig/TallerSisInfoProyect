@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
+import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.service.EstudianteService;
@@ -34,7 +35,7 @@ public class EstudianteController {
     @PutMapping("/{id}")
     public ResponseEntity<EstudianteResponse> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody EstudianteRequest request
+            @Valid @RequestBody EstudianteActualizacionRequest request
     ) {
         return ResponseEntity.ok(estudianteService.actualizar(id, request));
     }
