@@ -28,9 +28,6 @@
     HIDE_PASSWORD: 'Ocultar contraseña',
 
     // Login
-    GOOGLE_BUTTON: 'Continuar con Google',
-    SEPARATOR: 'o usa tu correo universitario',
-
     EMAIL_LABEL: 'Correo',
     EMAIL_PLACEHOLDER: 'nombre.primerapellido@ucb.edu.bo',
 
