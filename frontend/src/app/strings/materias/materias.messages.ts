@@ -37,6 +37,10 @@ export const MESSAGES = {
   CAREER_EMPTY: 'No hay carreras disponibles para filtrar.',
   CAREER_LOAD_ERROR: 'No se pudieron cargar las carreras.',
 
+  // Filtro por semestre
+  SEMESTER_FILTER_LABEL: 'Semestre',
+  SEMESTER_FILTER_ALL: 'Todos',
+
   // Paginación
   PAGINATION_LABEL: 'Paginación del catálogo de materias',
   PREVIOUS_PAGE: 'Anterior',

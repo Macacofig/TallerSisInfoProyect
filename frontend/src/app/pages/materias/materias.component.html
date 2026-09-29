@@ -53,11 +53,26 @@
         <small class="materias-search__help" role="status">{{ MESSAGES.CAREER_EMPTY }}</small>
       }
     </div>
-  </div>
 
-  @if (mostrandoDemo()) {
-    <p class="materias-page__demo" role="status">{{ MESSAGES.DEMO_NOTICE }}</p>
-  }
+    <div class="materias-search__semester">
+    <label for="filtrar-semestre">{{ MESSAGES.SEMESTER_LABEL }}</label>
+
+    <select #filtrarSemestre
+      id="filtrar-semestre"
+      [value]="semestreSeleccionado()"
+      (change)="actualizarSemestre(filtrarSemestre.value)"
+      aria-controls="resultados-materias">
+
+      <option value="">{{ MESSAGES.SEMESTER_FILTER_ALL }}</option>
+
+      @for (semestre of semestres(); track semestre) {
+        <option [value]="semestre">
+          {{ MESSAGES.SEMESTER_LABEL }} {{ semestre }}
+        </option>
+      }
+    </select>
+  </div>
+  </div>
 
   <div id="resultados-materias" [attr.aria-busy]="estado() === APP_CONFIG.COMPONENT_STATES.LOADING">
     @if (estado() === APP_CONFIG.COMPONENT_STATES.LOADING) {
@@ -246,9 +261,6 @@
       </button>
       <p class="materias-page__eyebrow">{{ MESSAGES.MODAL_EYEBROW }}</p>
       <h2 id="titulo-detalle" tabindex="-1" autofocus>{{ materia.nombre | nombreMateria }}</h2>
-      @if (mostrandoDemo()) {
-        <p class="materias-page__demo">{{ MESSAGES.DEMO_NOTICE }}</p>
-      }
       <dl>
         <div><dt>{{ MESSAGES.MODAL_CODE_LABEL }}</dt><dd>{{ materia.codigo }}</dd></div>
         <div><dt>{{ MESSAGES.MODAL_CAREER_LABEL }}</dt><dd>{{ materia.carrera }}</dd></div>
