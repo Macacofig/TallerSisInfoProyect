@@ -7,6 +7,7 @@ import { MateriaDetalleComponent } from './pages/materias/detail/materia-detalle
 
 import { Registro } from './pages/registro/registro';
 import { Login } from './pages/login/login';
+import { Perfil } from './pages/perfil/perfil';
 
 export const routes: Routes = [
 
@@ -38,6 +39,11 @@ export const routes: Routes = [
   {
     path: 'materias/:materiaId',
     component: MateriaDetalleComponent
-  }
+  },
+
+  {
+    path: 'perfil',
+    component: Perfil
+  },
 
 ];

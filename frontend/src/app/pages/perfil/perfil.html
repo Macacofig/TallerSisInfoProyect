@@ -1,0 +1,94 @@
+<section class="perfil">
+
+  <div class="perfil__container">
+
+    <div class="perfil__header">
+      <div class="perfil__avatar">
+        {{ usuario?.nombre?.charAt(0)?.toUpperCase() }}
+      </div>
+
+      <div>
+        <h1>Mi perfil</h1>
+        <p>Administra tu información personal</p>
+      </div>
+    </div>
+
+    <form class="perfil__card" [formGroup]="formulario">
+
+      <div class="perfil__field">
+        <label for="nombre">Nombre completo</label>
+        <input
+          id="nombre"
+          type="text"
+          formControlName="nombre"
+        />
+      </div>
+
+      <div class="perfil__field">
+        <label for="telefono">Teléfono</label>
+        <input
+          id="telefono"
+          type="tel"
+          formControlName="telefono"
+        />
+      </div>
+
+      <div class="perfil__field">
+        <label for="carrera">Carrera</label>
+        <input
+          id="carrera"
+          type="text"
+          formControlName="carrera"
+        />
+      </div>
+
+      <div class="perfil__actions">
+
+        <button
+          type="button"
+          class="perfil__save-button"
+          (click)="guardarCambios()"
+        >
+          Guardar cambios
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</section>
+
+@if (modalVisible()) {
+  <div class="perfil-modal__overlay">
+
+    <div class="perfil-modal">
+
+      <div
+        class="perfil-modal__icon"
+        [class.perfil-modal__icon--error]="!modalExito()"
+      >
+        {{ modalExito() ? '✓' : '!' }}
+      </div>
+
+      <h2>
+        {{ modalExito() ? 'Cambios guardados' : 'No se pudieron guardar' }}
+      </h2>
+
+      <p>
+        {{ modalMensaje() }}
+      </p>
+
+      <button
+        type="button"
+        class="perfil-modal__button"
+        (click)="cerrarModal()"
+      >
+        Aceptar
+      </button>
+
+    </div>
+
+  </div>
+}
