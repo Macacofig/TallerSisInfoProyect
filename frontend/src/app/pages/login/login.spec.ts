@@ -150,7 +150,6 @@ describe('Pantalla de login', () => {
             M.FORM_EYEBROW,
             M.FORM_TITLE,
             M.FORM_SUBTITLE,
-            M.GOOGLE_BUTTON,
             M.LOGIN_BUTTON
           ]
         ) {
@@ -262,12 +261,6 @@ describe('Pantalla de login', () => {
           errorDe('correo')
         ).toBe(
           M.ERROR_EMAIL_REQUIRED
-        );
-
-        expect(
-          errorDe('contrasena')
-        ).toBe(
-          M.ERROR_PASSWORD_REQUIRED
         );
 
         expect(

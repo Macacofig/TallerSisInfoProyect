@@ -299,85 +299,6 @@ margin-top: 1.75rem;
 }
 
 /* =========================================================
-GOOGLE
-========================================================= */
-
-.login__google {
-display: flex;
-align-items: center;
-justify-content: center;
-
-gap: 0.6rem;
-
-width: 60%;
-min-height: 3rem;
-
-margin: 0 auto 1.25rem;
-
-border: 0.0625rem solid var(--borde);
-border-radius: 0.5rem;
-
-background-color: #fff;
-color: var(--texto);
-
-font: 600 0.9rem var(--fuente-texto);
-
-cursor: pointer;
-
-box-shadow: 0 0.0625rem 0.125rem rgba(16, 33, 63, 0.06);
-
-transition:
-border-color 0.15s ease,
-box-shadow 0.15s ease;
-}
-
-.login__google:hover {
-border-color: #b8cce5;
-
-box-shadow:
-0 0.125rem 0.35rem rgba(16, 33, 63, 0.08);
-}
-
-.login__google-icon {
-color: #4285f4;
-
-font-weight: 700;
-font-size: 1rem;
-}
-
-/* =========================================================
-SEPARADOR
-========================================================= */
-
-.login__separador {
-display: flex;
-align-items: center;
-
-gap: 0.75rem;
-
-width: 100%;
-
-color: var(--texto-suave);
-
-font-size: 0.75rem;
-}
-
-.login__separador::before,
-.login__separador::after {
-content: '';
-
-flex: 1;
-
-height: 0.0625rem;
-
-background-color: var(--borde);
-}
-
-.login__separador span {
-white-space: nowrap;
-}
-
-/* =========================================================
 CAMPOS
 ========================================================= */
 
@@ -386,6 +307,26 @@ display: flex;
 flex-direction: column;
 
 gap: 0.4rem;
+}
+
+.login__mostrar-contrasena {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+}
+
+.login__icono-contrasena {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .login__label {
@@ -485,35 +426,6 @@ outline: none;
 }
 
 /* =========================================================
-RECUPERAR CONTRASEÑA
-========================================================= */
-
-.login__recuperar {
-display: flex;
-justify-content: flex-end;
-
-margin-top: -0.35rem;
-}
-
-.login__recuperar-boton {
-padding: 0;
-
-border: 0;
-
-background: transparent;
-
-color: var(--azul-boton);
-
-font: 600 0.85rem var(--fuente-texto);
-
-cursor: pointer;
-}
-
-.login__recuperar-boton:hover {
-text-decoration: underline;
-}
-
-/* =========================================================
 BOTÓN INICIAR SESIÓN
 ========================================================= */
 
@@ -549,8 +461,6 @@ background-color: var(--azul-boton-hover);
 FOCO
 ========================================================= */
 
-.login__google:focus-visible,
-.login__recuperar-boton:focus-visible,
 .login__boton:focus-visible {
 outline: 0.19rem solid var(--dorado-claro);
 outline-offset: 0.19rem;
@@ -652,10 +562,6 @@ RESPONSIVE
     max-width: 36rem;
     }
 
-    .login__google,
-    .login__boton {
-    width: 100%;
-    }
 
     @media (prefers-reduced-motion: reduce) {
     .login__spinner {
