@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioMateriaResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.service.CalificacionMateriaService;
 import org.junit.jupiter.api.Test;
@@ -110,6 +111,27 @@ class CalificacionMateriaControllerTest {
 
         verify(calificacionService).obtenerPromediosPorMateria(1L);
         mostrarResultado("Obtener los promedios de dificultad, carga y conocimiento previo de una materia");
+          }
+
+          @Test
+          void deberiaObtenerPromediosDeTodasLasMaterias() throws Exception {
+        when(calificacionService.obtenerPromediosMaterias()).thenReturn(List.of(
+          new CalificacionMateriaPromedioMateriaResponse(1L, 7.5, 6.0, 8.0, "Teorico"),
+          new CalificacionMateriaPromedioMateriaResponse(2L, 6.0, 7.0, 5.0, "Practico")
+        ));
+
+        mockMvc.perform(get("/api/calificacion-materia/promedios/materias"))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$[0].idMateria").value(1))
+          .andExpect(jsonPath("$[0].dificultadPromedio").value(7.5))
+          .andExpect(jsonPath("$[0].cargaPromedio").value(6.0))
+          .andExpect(jsonPath("$[0].conocimientoPrevioPromedio").value(8.0))
+          .andExpect(jsonPath("$[0].predominio").value("Teorico"))
+          .andExpect(jsonPath("$[1].idMateria").value(2))
+          .andExpect(jsonPath("$[1].predominio").value("Practico"));
+
+        verify(calificacionService).obtenerPromediosMaterias();
+        mostrarResultado("Obtener promedios de todas las materias con sus campos explícitos");
           }
 
           @Test
