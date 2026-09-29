@@ -9,11 +9,13 @@ import { MESSAGES } from '../../strings/materias/materias.messages';
 import { NombreMateriaPipe } from '../../pipes/nombre-materia.pipe';
 import { contieneTexto, normalizarTexto } from '../../utils/text.utils';
 import { CalificacionMateriaPromedioMateriaResponse } from '../../models/calificacion-materia.model';
+import { DecimalPipe } from '@angular/common';
+import { DEMO_MATERIAS } from '../../data/demo-materias';
 
 @Component({
   selector: 'app-materias',
   standalone: true,
-  imports: [NombreMateriaPipe],
+  imports: [NombreMateriaPipe , DecimalPipe],
   templateUrl: './materias.component.html',
   styleUrl: './materias.component.scss'
 })
@@ -29,6 +31,7 @@ export class MateriasComponent implements OnInit {
 
   readonly materias = signal<Materia[]>([]);
   readonly promediosMaterias = signal<CalificacionMateriaPromedioMateriaResponse[]>([]);
+  readonly mostrarDatosDemo = signal(false);
   readonly busqueda = signal('');
   readonly carreraSeleccionada = signal('');
   readonly carreras = signal<string[]>([]);
@@ -126,6 +129,7 @@ export class MateriasComponent implements OnInit {
     const carrera = this.carreraSeleccionada();
 
     this.estado.set(APP_CONFIG.COMPONENT_STATES.LOADING);
+    this.mostrarDatosDemo.set(false);
     this.materias.set([]);
 
     this.consulta = (
@@ -142,10 +146,17 @@ export class MateriasComponent implements OnInit {
       )
       .subscribe({
         next: materias => {
-          this.prepararSemestres(materias);
+          const usarDatosDemo = APP_CONFIG.DEMO_MODE &&
+            materias.length === 0 &&
+            !nombre &&
+            !carrera &&
+            !this.semestreSeleccionado();
+          const catalogo = usarDatosDemo ? DEMO_MATERIAS : materias;
 
+          this.mostrarDatosDemo.set(usarDatosDemo);
+          this.prepararSemestres(catalogo);
           this.materias.set(
-            this.filtrarMaterias(materias, nombre, carrera)
+            this.filtrarMaterias(catalogo, nombre, carrera)
           );
 
           this.ajustarPaginaActual();

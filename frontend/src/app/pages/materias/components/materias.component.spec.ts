@@ -11,6 +11,7 @@ describe('HU-01: catálogo de materias', () => {
   let http: HttpTestingController;
   const endpoint = 'http://localhost:8081/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
+  const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
   const materias: Materia[] = [
@@ -28,6 +29,7 @@ describe('HU-01: catálogo de materias', () => {
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
     http.expectOne(carrerasEndpoint).flush(['Ingeniería de Sistemas', 'Ingeniería Civil']);
+    http.expectOne(promediosEndpoint).flush([]);
   });
 
   afterEach(() => {

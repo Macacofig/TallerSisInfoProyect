@@ -11,6 +11,7 @@ describe('catálogo: normalización, presentación y paginación', () => {
   let api: {
     obtenerMaterias: ReturnType<typeof vi.fn>;
     obtenerCarreras: ReturnType<typeof vi.fn>;
+    obtenerPromediosMaterias: ReturnType<typeof vi.fn>;
   };
 
   const sistemas = 'Ingeniería de Sistemas';
@@ -29,6 +30,7 @@ describe('catálogo: normalización, presentación y paginación', () => {
       obtenerCarreras: vi.fn((): Observable<string[]> => of([
         sistemas, '', ' ingenieria de sistemas ', 'Ingeniería Civil'
       ])),
+      obtenerPromediosMaterias: vi.fn(() => of([])),
     };
     await TestBed.configureTestingModule({
       imports: [MateriasComponent],
