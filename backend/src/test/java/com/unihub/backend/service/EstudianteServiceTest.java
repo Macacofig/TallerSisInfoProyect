@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
+import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -93,6 +96,32 @@ class EstudianteServiceTest {
         assertEquals("El correo electrónico ya está registrado", excepcion.getMessage());
         verify(estudianteRepository, never()).save(any(Estudiante.class));
         mostrarResultado("Rechazar registro cuando el correo ya está registrado");
+    }
+
+    @Test
+    @Order(6)
+    void deberiaActualizarTodosLosCampos() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        EstudianteActualizacionRequest request = new EstudianteActualizacionRequest(
+                "Ana María Pérez", "71234568", "Medicina"
+        );
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
+
+        EstudianteResponse resultado = estudianteService.actualizar(1L, request);
+
+        assertEquals("Ana María Pérez", resultado.nombre());
+        assertEquals("71234568", resultado.telefono());
+        assertEquals("ana@ucb.edu.bo", resultado.correoElectronico());
+        assertEquals("Medicina", resultado.carrera());
+        assertEquals("ClaveSegura1!", estudiante.getContrasena());
+        verify(estudianteRepository).save(estudiante);
+        verify(estudianteRepository, never()).existsByCorreoElectronicoIgnoreCaseAndIdNot(anyString(), anyLong());
+        System.out.println("Test 1");
+        System.out.println("Actualizar todos los campos");
+        System.out.println("Respuesta OK");
     }
 
     @Test

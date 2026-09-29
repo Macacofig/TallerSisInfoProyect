@@ -42,6 +42,7 @@ import {
 } from '../../../../../../models/docente.model';
 
 import {
+  CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse,
   GestionDocente,
   RegistrarCalificacionDocenteRequest
@@ -66,12 +67,14 @@ import {
 interface DocenteConCalificacion {
   docente: Docente;
   calificacion: CalificacionDocenteResponse | null;
+  promedio: CalificacionDocentePromedioResponse | null;
   estadoCalificacionDisponible: boolean;
 }
 
 interface ResultadoCargaDocentes {
   items: DocenteConCalificacion[];
   estadoCalificacionesIncompleto: boolean;
+  errorPromedios: boolean;
 }
 
 @Component({
@@ -119,11 +122,13 @@ export class DocentesComponent implements OnChanges {
     CalificacionDocenteResponse | null = null;
 
   cargando = false;
+  cargandoPromedios = false;
   enviandoCalificacion = false;
   eliminandoCalificacion = false;
 
   error = '';
   advertenciaEstado = '';
+  errorPromedios = '';
   errorEnvio = '';
   mensajeExito = '';
 
@@ -149,6 +154,7 @@ export class DocentesComponent implements OnChanges {
     inject(DestroyRef);
 
   private cargaDocentes?: Subscription;
+  private cargaPromedios?: Subscription;
 
   constructor(
     private readonly docentesService:
@@ -214,9 +220,12 @@ export class DocentesComponent implements OnChanges {
   cargarDocentes(): void {
 
     this.cargaDocentes?.unsubscribe();
+    this.cargaPromedios?.unsubscribe();
     this.cargando = true;
+    this.cargandoPromedios = false;
     this.error = '';
     this.advertenciaEstado = '';
+    this.errorPromedios = '';
     this.docentes = [];
 
     this.cargaDocentes = this.docentesService
@@ -226,7 +235,7 @@ export class DocentesComponent implements OnChanges {
       .pipe(
         switchMap(
           (docentes) =>
-            this.cargarCalificaciones(docentes)
+            this.cargarDatosDocentes(docentes)
         ),
         takeUntilDestroyed(this.destroyRef)
       )
@@ -242,6 +251,11 @@ export class DocentesComponent implements OnChanges {
               ? this.mensajes.STATUS_ERROR
               : '';
 
+          this.errorPromedios =
+            resultado.errorPromedios
+              ? this.mensajes.AVERAGES_ERROR
+              : '';
+
           this.cargando = false;
           this.changeDetectorRef.detectChanges();
         },
@@ -252,6 +266,42 @@ export class DocentesComponent implements OnChanges {
             this.mensajes.LOAD_ERROR;
 
           this.cargando = false;
+          this.changeDetectorRef.detectChanges();
+        }
+      });
+  }
+
+  reintentarPromedios(): void {
+
+    this.cargaPromedios?.unsubscribe();
+    this.cargandoPromedios = true;
+    this.errorPromedios = '';
+
+    this.cargaPromedios = this.calificacionesDocenteService
+      .obtenerPromediosPorMateria(
+        this.materia.id
+      )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+
+        next: (promedios) => {
+
+          this.actualizarPromediosLocales(
+            promedios
+          );
+
+          this.cargandoPromedios = false;
+          this.changeDetectorRef.detectChanges();
+        },
+
+        error: () => {
+
+          this.errorPromedios =
+            this.mensajes.AVERAGES_ERROR;
+
+          this.cargandoPromedios = false;
           this.changeDetectorRef.detectChanges();
         }
       });
@@ -440,6 +490,8 @@ export class DocentesComponent implements OnChanges {
             null
           );
 
+          this.reintentarPromedios();
+
           this.eliminandoCalificacion = false;
 
           this.mostrarDetalle = false;
@@ -497,6 +549,26 @@ export class DocentesComponent implements OnChanges {
     );
   }
 
+  obtenerPromedioFormateado(
+    promedio: number
+  ): string {
+
+    return promedio.toFixed(1);
+  }
+
+  obtenerPorcentaje(
+    promedio: number
+  ): number {
+
+    return Math.max(
+      0,
+      Math.min(
+        100,
+        promedio / this.escalaMaxima * 100
+      )
+    );
+  }
+
   obtenerPeriodoRegistrado(): string {
 
     return this.calificacionSeleccionada?.gestion ===
@@ -530,6 +602,8 @@ export class DocentesComponent implements OnChanges {
             calificacion.idDocente,
             calificacion
           );
+
+          this.reintentarPromedios();
 
           this.finalizarGuardado(
             this.mensajes.SUCCESS
@@ -587,6 +661,8 @@ export class DocentesComponent implements OnChanges {
             calificacion.idDocente,
             calificacion
           );
+
+          this.reintentarPromedios();
 
           this.finalizarGuardado(
             this.mensajes.UPDATE_SUCCESS
@@ -681,7 +757,8 @@ export class DocentesComponent implements OnChanges {
     if (docentes.length === 0) {
       return of<ResultadoCargaDocentes>({
         items: [],
-        estadoCalificacionesIncompleto: false
+        estadoCalificacionesIncompleto: false,
+        errorPromedios: false
       });
     }
 
@@ -721,15 +798,113 @@ export class DocentesComponent implements OnChanges {
             ({ docente, calificacion, error }) => ({
               docente,
               calificacion,
+              promedio: null,
               estadoCalificacionDisponible: !error
             })
           ),
           estadoCalificacionesIncompleto:
             resultados.some(
               (resultado) => resultado.error
-            )
+            ),
+          errorPromedios: false
         })
       )
+    );
+  }
+
+  private cargarDatosDocentes(
+    docentes: Docente[]
+  ): Observable<ResultadoCargaDocentes> {
+
+    if (docentes.length === 0) {
+      return this.cargarCalificaciones(docentes);
+    }
+
+    return forkJoin({
+      estadoEvaluaciones:
+        this.cargarCalificaciones(docentes),
+
+      promedios:
+        this.calificacionesDocenteService
+          .obtenerPromediosPorMateria(
+            this.materia.id
+          )
+          .pipe(
+            map(
+              (items) => ({
+                items,
+                error: false
+              })
+            ),
+            catchError(
+              () => of({
+                items: [] as CalificacionDocentePromedioResponse[],
+                error: true
+              })
+            )
+          )
+    }).pipe(
+      map(
+        ({ estadoEvaluaciones, promedios }) => {
+
+          const promediosPorDocente = new Map(
+            promedios.items.map(
+              (promedio) => [
+                promedio.idDocente,
+                promedio
+              ]
+            )
+          );
+
+          return {
+            items: this.combinarConPromedios(
+              estadoEvaluaciones.items,
+              promediosPorDocente
+            ),
+            estadoCalificacionesIncompleto:
+              estadoEvaluaciones.estadoCalificacionesIncompleto,
+            errorPromedios: promedios.error
+          };
+        }
+      )
+    );
+  }
+
+  private actualizarPromediosLocales(
+    promedios: CalificacionDocentePromedioResponse[]
+  ): void {
+
+    const promediosPorDocente = new Map(
+      promedios.map(
+        (promedio) => [
+          promedio.idDocente,
+          promedio
+        ]
+      )
+    );
+
+    this.docentes = this.combinarConPromedios(
+      this.docentes,
+      promediosPorDocente
+    );
+  }
+
+  private combinarConPromedios(
+    docentes: DocenteConCalificacion[],
+    promediosPorDocente: Map<
+      number,
+      CalificacionDocentePromedioResponse
+    >
+  ): DocenteConCalificacion[] {
+
+    return docentes.map(
+      (item) => ({
+        ...item,
+        promedio:
+          promediosPorDocente.get(
+            item.docente.id
+          ) ?? null
+      })
     );
   }
 

@@ -1,9 +1,13 @@
 package com.unihub.backend.service;
 
+import com.unihub.backend.common.LogHelper;
+import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
 import org.springframework.stereotype.Service;
@@ -34,7 +38,23 @@ public class EstudianteService {
                 request.correoElectronico(),
                 request.carrera()
         );
-        return estudianteMapper.toResponse(estudianteRepository.save(estudiante));
+        EstudianteResponse response = estudianteMapper.toResponse(estudianteRepository.save(estudiante));
+        LogHelper.info(EstudianteService.class, "Estudiante registrado correctamente");
+        return response;
+    }
+
+    public EstudianteResponse actualizar(Long id, EstudianteActualizacionRequest request) {
+        Estudiante estudiante = estudianteRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
+
+        estudiante.actualizar(
+                request.nombre(),
+                request.telefono(),
+                request.carrera()
+        );
+        EstudianteResponse response = estudianteMapper.toResponse(estudianteRepository.save(estudiante));
+        LogHelper.info(EstudianteService.class, "Estudiante actualizado correctamente");
+        return response;
     }
 
     public EstudianteResponse iniciarSesion(EstudianteLoginRequest request) {
@@ -48,6 +68,7 @@ public class EstudianteService {
             throw new IllegalArgumentException("Correo electrónico o contraseña incorrectos");
         }
 
+        LogHelper.debug(EstudianteService.class, "Inicio de sesión completado correctamente");
         return estudianteMapper.toResponse(estudiante);
     }
 }

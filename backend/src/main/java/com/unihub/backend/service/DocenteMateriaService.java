@@ -1,5 +1,6 @@
 package com.unihub.backend.service;
 
+import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.docente.DocenteMateriaRequest;
 import com.unihub.backend.dto.docente.DocenteMateriaResponse;
 import com.unihub.backend.entity.DocenteMateria;
@@ -36,6 +37,7 @@ public class DocenteMateriaService {
         }
 
         DocenteMateria relacion = docenteMateriaRepository.save(new DocenteMateria(docente, materia));
+        LogHelper.info(DocenteMateriaService.class, "Relación docente-materia creada correctamente");
         return new DocenteMateriaResponse(relacion.getId(), docente.getId(), materia.getId());
     }
 }

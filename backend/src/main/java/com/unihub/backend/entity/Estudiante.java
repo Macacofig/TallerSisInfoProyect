@@ -70,4 +70,14 @@ public class Estudiante {
     public String getCarrera() {
         return carrera;
     }
+
+    public void actualizar(
+            String nombre,
+            String telefono,
+            String carrera
+    ) {
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.carrera = carrera;
+    }
 }

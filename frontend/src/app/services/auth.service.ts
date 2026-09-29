@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, TimeoutError, catchError, timeout, throwError } from 'rxjs';
 
 import { APP_CONFIG } from '../config/app-config';
@@ -13,11 +13,48 @@ export class AuthService {
 
   private readonly http = inject(HttpClient);
 
+  private usuarioActual = signal<LoginResponse | null>(
+    this.obtenerUsuarioGuardado()
+  );
   private readonly urlRegistro =
     `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_REGISTER}`;  
 
   private readonly urlLogin =
   `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_LOGIN}`;
+
+  private obtenerUsuarioGuardado(): LoginResponse | null {
+    const usuarioGuardado = localStorage.getItem('usuario');
+
+    if (!usuarioGuardado) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(usuarioGuardado) as LoginResponse;
+    } catch {
+      localStorage.removeItem('usuario');
+      return null;
+    }
+  }
+
+  guardarUsuario(usuario: LoginResponse): void {
+    this.usuarioActual.set(usuario);
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+  }
+
+  obtenerUsuario(): LoginResponse | null {
+    return this.usuarioActual();
+  }
+
+
+  obtenerUsuarioSignal() {
+    return this.usuarioActual.asReadonly();
+  }
+
+  cerrarSesion(): void {
+      this.usuarioActual.set(null);
+      localStorage.removeItem('usuario');
+  }
 
   registerUser(datos: RegistroRequest): Observable<RegistroResponse> {
     return this.http
@@ -35,6 +72,29 @@ export class AuthService {
   loginUser(datos: LoginRequest): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(this.urlLogin, datos, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .pipe(
+        timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
+        catchError((error: unknown) =>
+          throwError(() => mapearErrorHttp(error))
+        )
+      );
+  }
+
+  actualizarUsuario(
+    id: number,
+    datos: {
+      nombre: string;
+      telefono: string;
+      carrera: string;
+    }
+  ): Observable<LoginResponse> {
+
+    const url = `${APP_CONFIG.API.BASE_URL}/estudiantes/${id}`;
+
+    return this.http
+      .put<LoginResponse>(url, datos, {
         headers: { 'Content-Type': 'application/json' }
       })
       .pipe(

@@ -1,12 +1,10 @@
 <header class="navbar">
   <div class="navbar__actions">
-
     <button
       type="button"
       class="navbar__notification"
       [attr.aria-label]="NAVBAR_MESSAGES.NOTIFICATIONS_ARIA_LABEL"
     >
-
       <svg
         class="navbar__notification-icon"
         viewBox="0 0 24 24"
@@ -29,30 +27,47 @@
           stroke-linecap="round"
         />
       </svg>
-
     </button>
 
+    <div class="navbar__user-container">
 
-    <div class="navbar__user">
+      <div
+        class="navbar__user"
+        (click)="alternarMenuUsuario()"
+      >
+        <div class="navbar__avatar">
+          {{ obtenerIniciales() }}
+        </div>
 
-      <div class="navbar__avatar">
-        AT
+        <div class="navbar__user-info">
+          <span class="navbar__user-name">
+            {{ usuario()?.nombre }}
+          </span>
+        </div>
       </div>
 
-      <div class="navbar__user-info">
+      @if (menuUsuarioAbierto()) {
+        <div class="navbar__user-menu">
 
-        <span class="navbar__user-name">
-          {{ NAVBAR_MESSAGES.USER_NAME }}
-        </span>
+          <button
+            type="button"
+            class="navbar__user-menu-item"
+            (click)="irAPerfil()"
+          >
+            Perfil
+          </button>
 
-        <span class="navbar__user-semester">
-          {{ NAVBAR_MESSAGES.USER_SEMESTER }}
-        </span>
+          <button
+            type="button"
+            class="navbar__user-menu-item"
+            (click)="cerrarSesion()"
+          >
+            Cerrar sesión
+          </button>
 
-      </div>
+        </div>
+      }
 
     </div>
-
   </div>
-
 </header>

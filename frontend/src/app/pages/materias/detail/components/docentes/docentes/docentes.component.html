@@ -73,6 +73,33 @@
 
   } @else {
 
+    @if (cargandoPromedios) {
+      <p
+        class="docentes__estado"
+        role="status"
+      >
+        {{ mensajes.AVERAGES_LOADING }}
+      </p>
+    }
+
+    @if (errorPromedios) {
+      <div
+        class="docentes__promedios-error"
+        role="alert"
+      >
+        <p>
+          {{ errorPromedios }}
+        </p>
+
+        <button
+          type="button"
+          (click)="reintentarPromedios()"
+        >
+          {{ mensajes.RETRY }}
+        </button>
+      </div>
+    }
+
     <div class="docentes__lista">
 
       @for (
@@ -110,6 +137,83 @@
             </div>
 
           </div>
+
+          @if (item.promedio) {
+
+            <div class="docente-card__promedios">
+
+              <div class="docente-metrica">
+                <div class="docente-metrica__encabezado">
+                  <span>{{ mensajes.CLARITY_LABEL }}</span>
+                  <strong>{{ obtenerPromedioFormateado(item.promedio.claridadExplicacionesPromedio) }}/{{ escalaMaxima }}</strong>
+                </div>
+
+                <div
+                  class="docente-metrica__barra"
+                  role="progressbar"
+                  [attr.aria-label]="mensajes.CLARITY_LABEL"
+                  aria-valuemin="0"
+                  [attr.aria-valuemax]="escalaMaxima"
+                  [attr.aria-valuenow]="item.promedio.claridadExplicacionesPromedio"
+                >
+                  <div
+                    class="docente-metrica__progreso docente-metrica__progreso--claridad"
+                    [style.width.%]="obtenerPorcentaje(item.promedio.claridadExplicacionesPromedio)"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="docente-metrica">
+                <div class="docente-metrica__encabezado">
+                  <span>{{ mensajes.METHODOLOGY_LABEL }}</span>
+                  <strong>{{ obtenerPromedioFormateado(item.promedio.metodologiaPromedio) }}/{{ escalaMaxima }}</strong>
+                </div>
+
+                <div
+                  class="docente-metrica__barra"
+                  role="progressbar"
+                  [attr.aria-label]="mensajes.METHODOLOGY_LABEL"
+                  aria-valuemin="0"
+                  [attr.aria-valuemax]="escalaMaxima"
+                  [attr.aria-valuenow]="item.promedio.metodologiaPromedio"
+                >
+                  <div
+                    class="docente-metrica__progreso docente-metrica__progreso--metodologia"
+                    [style.width.%]="obtenerPorcentaje(item.promedio.metodologiaPromedio)"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="docente-metrica">
+                <div class="docente-metrica__encabezado">
+                  <span>{{ mensajes.RELATION_LABEL }}</span>
+                  <strong>{{ obtenerPromedioFormateado(item.promedio.relacionClasesEvaluacionesPromedio) }}/{{ escalaMaxima }}</strong>
+                </div>
+
+                <div
+                  class="docente-metrica__barra"
+                  role="progressbar"
+                  [attr.aria-label]="mensajes.RELATION_LABEL"
+                  aria-valuemin="0"
+                  [attr.aria-valuemax]="escalaMaxima"
+                  [attr.aria-valuenow]="item.promedio.relacionClasesEvaluacionesPromedio"
+                >
+                  <div
+                    class="docente-metrica__progreso docente-metrica__progreso--relacion"
+                    [style.width.%]="obtenerPorcentaje(item.promedio.relacionClasesEvaluacionesPromedio)"
+                  ></div>
+                </div>
+              </div>
+
+            </div>
+
+          } @else if (!errorPromedios) {
+
+            <p class="docente-card__sin-promedios">
+              {{ mensajes.NO_AVERAGES }}
+            </p>
+
+          }
 
           <div class="docente-card__acciones">
 
