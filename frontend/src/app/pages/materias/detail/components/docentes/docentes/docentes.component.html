@@ -387,6 +387,14 @@
           <button
             type="button"
             class="boton-secundario"
+            (click)="cerrarModal()"
+          >
+            {{ mensajes.CLOSE_BUTTON }}
+          </button>
+
+          <button
+            type="button"
+            class="boton-secundario"
             (click)="abrirConfirmacionEliminacion()"
           >
             {{ mensajes.DELETE_BUTTON }}

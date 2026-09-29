@@ -22,6 +22,7 @@ import {
 } from '../../../../../../services/calificaciones-materia.service';
 
 import { MESSAGES } from '../../../../../../strings/materias/materias.messages';
+import { formatearGestion } from '../../../../../../utils/gestion.utils';
 
 type MetricaHistorial =
   'dificultad' |
@@ -46,6 +47,7 @@ export class HistorialCalificacionesComponent
   implements OnChanges {
 
   readonly mensajes = MESSAGES;
+  readonly formatearGestion = formatearGestion;
 
   @Input()
   gestiones: string[] = [];

@@ -39,8 +39,7 @@
 }
 
 .gestion-rapida,
-.filtro-gestiones__modos button,
-.filtro-gestiones__acciones button {
+.filtro-gestiones__modos button {
   padding: 9px 13px;
   border: 1px solid #cfd7e4;
   border-radius: 8px;
@@ -84,8 +83,7 @@
   background: #fff;
 }
 
-.filtro-gestiones__modos .activo,
-.filtro-gestiones__acciones .principal {
+.filtro-gestiones__modos .activo {
   color: #fff;
   background: #165dab;
   border-color: #165dab;
@@ -117,18 +115,6 @@
   border-radius: 8px;
 }
 
-.filtro-gestiones__acciones {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-.filtro-gestiones__acciones .secundario {
-  color: #344054;
-  background: #fff;
-}
-
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -152,8 +138,7 @@ button:disabled {
     justify-content: flex-start;
   }
 
-  .filtro-gestiones__modos,
-  .filtro-gestiones__acciones {
+  .filtro-gestiones__modos {
     flex-direction: column;
   }
 

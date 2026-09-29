@@ -20,6 +20,7 @@ import {
 } from '../../../../../../services/calificaciones-materia.service';
 
 import { MESSAGES } from '../../../../../../strings/materias/materias.messages';
+import { formatearGestion } from '../../../../../../utils/gestion.utils';
 
 export type ModoFiltroGestiones =
   'gestion' |
@@ -42,6 +43,7 @@ export interface FiltroGestionesResultado {
 export class FiltroGestionesComponent implements OnChanges {
 
   readonly mensajes = MESSAGES;
+  readonly formatearGestion = formatearGestion;
 
   @Input()
   gestiones: string[] = [];
@@ -49,10 +51,6 @@ export class FiltroGestionesComponent implements OnChanges {
   @Output()
   filtroAplicado =
     new EventEmitter<FiltroGestionesResultado>();
-
-  @Output()
-  filtroLimpiado =
-    new EventEmitter<void>();
 
   modo: ModoFiltroGestiones =
     'gestion';
@@ -112,6 +110,8 @@ export class FiltroGestionesComponent implements OnChanges {
 
     this.error =
       '';
+
+    this.filtrarAutomaticamente();
   }
 
   seleccionarGestionRapida(
@@ -134,10 +134,16 @@ export class FiltroGestionesComponent implements OnChanges {
     this.filtrarPorGestion();
   }
 
-  aplicarFiltro(): void {
+  filtrarAutomaticamente(): void {
 
     this.error =
       '';
+
+    if (
+      this.cargando
+    ) {
+      return;
+    }
 
     if (
       this.modo === 'gestion'
@@ -150,21 +156,6 @@ export class FiltroGestionesComponent implements OnChanges {
 
     this.filtrarPorRango();
   }
-
-  limpiarFiltro(): void {
-
-    this.error =
-      '';
-
-    this.filtroActivo =
-      false;
-
-    this.gestionAplicada =
-      '';
-
-    this.filtroLimpiado.emit();
-  }
-
   esGestionActiva(
     gestion: string
   ): boolean {
@@ -213,7 +204,7 @@ export class FiltroGestionesComponent implements OnChanges {
             promedios,
 
             descripcion:
-              `${MESSAGES.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${this.gestionSeleccionada}`
+              `${MESSAGES.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${formatearGestion(this.gestionSeleccionada)}`
           });
         },
 
@@ -285,7 +276,7 @@ export class FiltroGestionesComponent implements OnChanges {
             promedios,
 
             descripcion:
-              `${MESSAGES.CALIFICATION_FILTER_RANGE_CONTEXT} ${this.gestionDesde} ${MESSAGES.CALIFICATION_FILTER_RANGE_SEPARATOR} ${this.gestionHasta}`
+              `${MESSAGES.CALIFICATION_FILTER_RANGE_CONTEXT} ${formatearGestion(this.gestionDesde)} ${MESSAGES.CALIFICATION_FILTER_RANGE_SEPARATOR} ${formatearGestion(this.gestionHasta)}`
           });
         },
 

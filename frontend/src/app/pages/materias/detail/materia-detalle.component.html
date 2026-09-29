@@ -115,21 +115,6 @@
 
         </div>
 
-        @if (filtroGestionesActivo) {
-
-          <span class="gestion-destacada">
-            {{ mensajes.CALIFICATION_FILTER_APPLIED }}
-          </span>
-
-        } @else if (gestionActual) {
-
-          <span class="gestion-destacada">
-            {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}
-            {{ gestionActual }}
-          </span>
-
-        }
-
       </div>
 
       @if (cargandoGestiones) {
@@ -149,7 +134,6 @@
         <app-filtro-gestiones
           [gestiones]="gestiones"
           (filtroAplicado)="aplicarFiltroGestiones($event)"
-          (filtroLimpiado)="limpiarFiltroGestiones()"
         />
 
       }
@@ -400,7 +384,7 @@
                   {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
                 </strong>
 
-                {{ calificacionExistente.gestion }}
+                {{ formatearGestion(calificacionExistente.gestion) }}
               </p>
 
             </div>
@@ -667,12 +651,14 @@
                 <input
                   id="gestion"
                   type="text"
-                  formControlName="gestion"
-                  [placeholder]="mensajes.CALIFICATION_MANAGEMENT_PLACEHOLDER"
-                  autocomplete="off"
-                  inputmode="numeric"
-                  maxlength="10"
-                  (input)="normalizarGestion($event)"
+                  [value]="
+                    formatearGestion(
+                      formularioCalificacion.get('gestion')?.value ||
+                      gestionActual
+                    )
+                  "
+                  readonly
+                  aria-readonly="true"
                 />
 
                 @if (
@@ -805,7 +791,7 @@
                       {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
                     </strong>
 
-                    {{ formularioCalificacion.value.gestion }}
+                    {{ formatearGestion(formularioCalificacion.value.gestion || gestionActual) }}
                   </p>
 
                 </div>

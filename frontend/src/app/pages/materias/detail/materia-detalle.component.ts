@@ -39,6 +39,13 @@ import { MESSAGES } from '../../../strings/materias/materias.messages';
 import { NombreMateriaPipe } from '../../../pipes/nombre-materia.pipe';
 
 import {
+  compararGestiones,
+  esGestionFutura,
+  formatearGestion,
+  obtenerGestionActual
+} from '../../../utils/gestion.utils';
+
+import {
   CalificacionGraficosComponent
 } from './components/calificacion-graficos/calificacion-graficos/calificacion-graficos.component';
 
@@ -77,6 +84,7 @@ import {
 export class MateriaDetalleComponent implements OnInit {
 
   readonly mensajes = MESSAGES;
+  readonly formatearGestion = formatearGestion;
   seccionActiva: SeccionDetalleMateria = 'resumen';
 
   materia: Materia | null = null;
@@ -92,7 +100,7 @@ export class MateriaDetalleComponent implements OnInit {
 
   gestiones: string[] = [];
 
-  gestionActual: string | null = null;
+  gestionActual = obtenerGestionActual();
   gestionAnterior: string | null = null;
 
   contextoPromedios: string =
@@ -229,20 +237,6 @@ export class MateriaDetalleComponent implements OnInit {
       .markForCheck();
   }
 
-  limpiarFiltroGestiones(): void {
-
-    this.promediosMostrados =
-      this.promediosMateria;
-
-    this.contextoPromedios =
-      MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
-
-    this.filtroGestionesActivo =
-      false;
-
-    this.changeDetectorRef
-      .markForCheck();
-  }
 
   seleccionarSeccion(
     seccion: SeccionDetalleMateria
@@ -258,6 +252,15 @@ export class MateriaDetalleComponent implements OnInit {
 
     this.modoEdicion =
       false;
+
+    this.gestionActual =
+      obtenerGestionActual();
+
+    this.formularioCalificacion
+      .patchValue({
+        gestion:
+          this.gestionActual
+      });
 
     this.mostrarFormularioCalificacion =
       true;
@@ -422,60 +425,6 @@ export class MateriaDetalleComponent implements OnInit {
       .markForCheck();
   }
 
-  normalizarGestion(
-    event: Event
-  ): void {
-
-    const input =
-      event.target as HTMLInputElement;
-
-    let valor =
-      input.value.replace(
-        /[^0-9-]/g,
-        ''
-      );
-
-    const tieneGuion =
-      valor.includes('-');
-
-    const partes =
-      valor.split('-');
-
-    const anio =
-      partes[0];
-
-    let semestre =
-      partes
-        .slice(1)
-        .join('')
-        .replace(
-          /[^12]/g,
-          ''
-        );
-
-    semestre =
-      semestre.slice(
-        0,
-        1
-      );
-
-    const gestion =
-      tieneGuion
-        ? `${anio}-${semestre}`
-        : anio;
-
-    input.value =
-      gestion;
-
-    this.formularioCalificacion
-      .get('gestion')
-      ?.setValue(
-        gestion,
-        {
-          emitEvent: false
-        }
-      );
-  }
 
   confirmarCalificacion(): void {
 
@@ -1002,16 +951,14 @@ export class MateriaDetalleComponent implements OnInit {
         next: (gestiones) => {
 
           this.gestiones =
-            [...gestiones].sort(
-              (
-                a,
-                b
-              ) =>
-                this.compararGestiones(
-                  a,
-                  b
-                )
-            );
+            [...gestiones]
+              .filter(
+                (gestion) =>
+                  !esGestionFutura(gestion)
+              )
+              .sort(
+                compararGestiones
+              );
 
           this.actualizarGestionesReferencia();
 
@@ -1029,9 +976,6 @@ export class MateriaDetalleComponent implements OnInit {
 
           this.gestiones =
             [];
-
-          this.gestionActual =
-            null;
 
           this.gestionAnterior =
             null;
@@ -1052,19 +996,11 @@ export class MateriaDetalleComponent implements OnInit {
       this.gestiones.length === 0
     ) {
 
-      this.gestionActual =
-        null;
-
       this.gestionAnterior =
         null;
 
       return;
     }
-
-    this.gestionActual =
-      this.gestiones[
-        this.gestiones.length - 1
-      ];
 
     this.gestionAnterior =
       this.gestiones.length > 1
@@ -1072,42 +1008,5 @@ export class MateriaDetalleComponent implements OnInit {
             this.gestiones.length - 2
           ]
         : null;
-  }
-
-  private compararGestiones(
-    primeraGestion: string,
-    segundaGestion: string
-  ): number {
-
-    const [
-      anioPrimera,
-      periodoPrimera
-    ] =
-      primeraGestion
-        .split('-')
-        .map(Number);
-
-    const [
-      anioSegunda,
-      periodoSegunda
-    ] =
-      segundaGestion
-        .split('-')
-        .map(Number);
-
-    if (
-      anioPrimera !== anioSegunda
-    ) {
-
-      return (
-        anioPrimera -
-        anioSegunda
-      );
-    }
-
-    return (
-      periodoPrimera -
-      periodoSegunda
-    );
   }
 }
