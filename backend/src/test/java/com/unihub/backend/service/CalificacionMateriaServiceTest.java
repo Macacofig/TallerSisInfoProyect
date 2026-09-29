@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.dto.calificacion.CalificacionMateriaRequest;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioMateriaResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.entity.CalificacionMateria;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -116,6 +118,48 @@ class CalificacionMateriaServiceTest {
         assertEquals(6.0, resultado.conocimientoPrevioPromedio());
         mostrarResultado("Calcular los promedios de todas las calificaciones de una materia");
     }
+
+        @Test
+        void deberiaObtenerPromediosAgrupadosPorMateriaConPredominioMasFrecuente() {
+                Materia primeraMateria = mock(Materia.class);
+                Materia segundaMateria = mock(Materia.class);
+                when(primeraMateria.getId()).thenReturn(1L);
+                when(segundaMateria.getId()).thenReturn(2L);
+                when(calificacionRepository.findAll()).thenReturn(List.of(
+                        crearCalificacion(primeraMateria, 10L, 8, 6, 4, "I-Año", "Teorico"),
+                        crearCalificacion(segundaMateria, 20L, 5, 9, 7, "I-Año", "Practico"),
+                        crearCalificacion(primeraMateria, 11L, 6, 8, 8, "II-Año", "Practico"),
+                        crearCalificacion(primeraMateria, 12L, 10, 4, 6, "II-Año", "Teorico"),
+                        crearCalificacion(segundaMateria, 21L, 7, 5, 9, "II-Año", "Practico")
+                ));
+
+                List<CalificacionMateriaPromedioMateriaResponse> resultados = calificacionService.obtenerPromediosMaterias();
+
+                assertEquals(2, resultados.size(), "Debe devolver un resumen por cada materia calificada");
+                assertEquals(1L, resultados.get(0).idMateria(), "El primer resumen debe identificar la primera materia");
+                assertEquals(8.0, resultados.get(0).dificultadPromedio(), "La dificultad debe promediar solo la primera materia");
+                assertEquals(6.0, resultados.get(0).cargaPromedio(), "La carga debe promediar solo la primera materia");
+                assertEquals(6.0, resultados.get(0).conocimientoPrevioPromedio(), "El conocimiento previo debe promediar solo la primera materia");
+                assertEquals("Teorico", resultados.get(0).predominio(), "Debe elegir el predominio más frecuente de la primera materia");
+                assertEquals(2L, resultados.get(1).idMateria(), "El segundo resumen debe identificar la segunda materia");
+                assertEquals(6.0, resultados.get(1).dificultadPromedio(), "La dificultad debe promediar solo la segunda materia");
+                assertEquals(7.0, resultados.get(1).cargaPromedio(), "La carga debe promediar solo la segunda materia");
+                assertEquals(8.0, resultados.get(1).conocimientoPrevioPromedio(), "El conocimiento previo debe promediar solo la segunda materia");
+                assertEquals("Practico", resultados.get(1).predominio(), "Debe elegir el predominio más frecuente de la segunda materia");
+                verify(calificacionRepository).findAll();
+                mostrarResultado("Obtener promedios por materia y su predominio más frecuente");
+        }
+
+        @Test
+        void deberiaDevolverListaVaciaCuandoNoHayCalificacionesDeMaterias() {
+                when(calificacionRepository.findAll()).thenReturn(List.of());
+
+                List<CalificacionMateriaPromedioMateriaResponse> resultados = calificacionService.obtenerPromediosMaterias();
+
+                assertTrue(resultados.isEmpty(), "Debe devolver una lista vacía cuando no existen calificaciones");
+                verify(calificacionRepository).findAll();
+                mostrarResultado("Devolver lista vacía cuando no hay calificaciones de materias");
+        }
 
     @Test
     void deberiaObtenerUnaCalificacionPorEstudiante() {
@@ -242,6 +286,18 @@ class CalificacionMateriaServiceTest {
             int conocimientoPrevio,
             String gestion
     ) {
+        return crearCalificacion(materia, idEstudiante, dificultad, carga, conocimientoPrevio, gestion, "Practico");
+    }
+
+    private CalificacionMateria crearCalificacion(
+            Materia materia,
+            Long idEstudiante,
+            int dificultad,
+            int carga,
+            int conocimientoPrevio,
+            String gestion,
+            String predominio
+    ) {
         return new CalificacionMateria(
                 materia,
                 idEstudiante,
@@ -249,7 +305,7 @@ class CalificacionMateriaServiceTest {
                 carga,
                 conocimientoPrevio,
                 "Matematicas",
-                "Practico",
+                predominio,
                 gestion
         );
     }

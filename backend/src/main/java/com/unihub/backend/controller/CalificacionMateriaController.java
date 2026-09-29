@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.calificacion.CalificacionMateriaRequest;
+import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioMateriaResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.service.CalificacionMateriaService;
@@ -44,6 +45,11 @@ public class CalificacionMateriaController {
 		return calificacionService.obtenerPromediosPorMateria(idMateria)
 				.map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	@GetMapping("/promedios/materias")
+	public ResponseEntity<List<CalificacionMateriaPromedioMateriaResponse>> obtenerPromediosMaterias() {
+		return ResponseEntity.ok(calificacionService.obtenerPromediosMaterias());
 	}
 
 	@GetMapping("/estudiante/{idEstudiante}/materia/{idMateria}")
