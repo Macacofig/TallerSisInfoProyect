@@ -33,3 +33,11 @@ export interface CalificacionMateriaPromedioResponse {
   cargaPromedio: number;
   conocimientoPrevioPromedio: number;
 }
+
+export interface CalificacionMateriaPromedioMateriaResponse {
+  idMateria: number;
+  dificultadPromedio: number;
+  cargaPromedio: number;
+  conocimientoPrevioPromedio: number;
+  predominio: PredominioMateria;
+}

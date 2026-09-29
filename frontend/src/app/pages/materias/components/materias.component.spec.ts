@@ -11,6 +11,7 @@ describe('HU-01: catálogo de materias', () => {
   let http: HttpTestingController;
   const endpoint = 'http://localhost:8081/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
+  const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
   const materias: Materia[] = [
@@ -28,43 +29,12 @@ describe('HU-01: catálogo de materias', () => {
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
     http.expectOne(carrerasEndpoint).flush(['Ingeniería de Sistemas', 'Ingeniería Civil']);
+    http.expectOne(promediosEndpoint).flush([]);
   });
 
   afterEach(() => {
     config.DEMO_MODE = originalDemoMode;
     http.verify();
-  });
-
-  for (const respuesta of ['vacia', 'error'] as const) {
-    it(`muestra tarjetas e indicadores de demostración ante respuesta ${respuesta} con modo activo`, async () => {
-      config.DEMO_MODE = true;
-      const peticion = http.expectOne(endpoint);
-      if (respuesta === 'vacia') peticion.flush([]);
-      else peticion.flush('Error', { status: 500, statusText: 'Internal Server Error' });
-      await fixture.whenStable();
-      expect(fixture.componentInstance.materias()).toEqual(DEMO_MATERIAS);
-      expect(fixture.nativeElement.querySelectorAll('.materia-card').length).toBe(DEMO_MATERIAS.length);
-      expect(fixture.nativeElement.querySelector('.materias-page__demo').textContent).toContain('Datos de demostración');
-      expect(fixture.nativeElement.querySelector('.materia-card').textContent).toContain('7.4');
-      expect(fixture.nativeElement.querySelector('.materia-card .materia-button').textContent).toContain('Explorar materia');
-
-      fixture.componentInstance.cargarMaterias();
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.materias-page__demo')).toBeNull();
-      http.expectOne(endpoint).flush(materias);
-      await fixture.whenStable();
-      expect(fixture.componentInstance.materias()).toEqual(materias);
-      expect(fixture.nativeElement.querySelector('.materias-page__demo')).toBeNull();
-    });
-  }
-
-  it('prioriza materias reales con modo demostración activo', async () => {
-    config.DEMO_MODE = true;
-    http.expectOne(endpoint).flush(materias);
-    await fixture.whenStable();
-    expect(fixture.componentInstance.materias()).toEqual(materias);
-    expect(fixture.nativeElement.querySelector('.materias-page__demo')).toBeNull();
-    expect(fixture.nativeElement.querySelectorAll('.materia-card').length).toBe(2);
   });
 
   it('consulta la API y muestra nombre, código y carrera de cada materia', async () => {

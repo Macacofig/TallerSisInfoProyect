@@ -11,6 +11,7 @@ describe('HU-03: filtrar materias por carrera', () => {
   let http: HttpTestingController;
   const endpoint = 'http://localhost:8081/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
+  const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
   const sistemas = 'Ingeniería de Sistemas';
   const config = APP_CONFIG as { DEMO_MODE: boolean };
   const originalDemoMode = config.DEMO_MODE;
@@ -33,6 +34,7 @@ describe('HU-03: filtrar materias por carrera', () => {
     http.expectOne(carrerasEndpoint).flush([
       ' Ingeniería de Sistemas ', 'Ingeniería Civil', '', 'ingenieria de sistemas'
     ]);
+    http.expectOne(promediosEndpoint).flush([]);
     http.expectOne(endpoint).flush(materias);
     fixture.detectChanges();
   });
