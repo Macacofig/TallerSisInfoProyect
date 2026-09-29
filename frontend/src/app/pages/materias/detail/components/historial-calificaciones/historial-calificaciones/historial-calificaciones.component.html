@@ -235,7 +235,6 @@
         <thead>
           <tr>
             <th scope="col">{{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}</th>
-            <th scope="col">{{ mensajes.CALIFICATION_HISTORY_EVALUATIONS_LABEL }}</th>
             <th scope="col">{{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}</th>
             <th scope="col">{{ mensajes.CALIFICATION_WORKLOAD_LABEL }}</th>
             <th scope="col">{{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}</th>
@@ -245,18 +244,9 @@
           @for (dato of datos; track dato.gestion) {
             <tr>
               <th scope="row">{{ dato.gestion }}</th>
-              <td>
-                {{ dato.cantidadEvaluaciones ?? mensajes.CALIFICATION_HISTORY_UNAVAILABLE_VALUE }}
-              </td>
-              @if (dato.informacionSuficiente === false) {
-                <td colspan="3" class="insuficiente">
-                  {{ mensajes.CALIFICATION_INSUFFICIENT_INFORMATION }}
-                </td>
-              } @else {
-                <td>{{ obtenerPromedioFormateado(dato.dificultad) }}</td>
-                <td>{{ obtenerPromedioFormateado(dato.carga) }}</td>
-                <td>{{ obtenerPromedioFormateado(dato.conocimiento) }}</td>
-              }
+              <td>{{ obtenerPromedioFormateado(dato.dificultad) }}</td>
+              <td>{{ obtenerPromedioFormateado(dato.carga) }}</td>
+              <td>{{ obtenerPromedioFormateado(dato.conocimiento) }}</td>
             </tr>
           }
         </tbody>

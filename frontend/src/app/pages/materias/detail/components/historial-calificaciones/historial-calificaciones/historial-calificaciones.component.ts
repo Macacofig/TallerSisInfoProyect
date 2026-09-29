@@ -33,8 +33,6 @@ interface HistorialGestion {
   dificultad: number | null;
   carga: number | null;
   conocimiento: number | null;
-  cantidadEvaluaciones: number | null;
-  informacionSuficiente?: boolean | null;
 }
 
 @Component({
@@ -109,9 +107,18 @@ export class HistorialCalificacionesComponent
 
     return this.datos.filter(
       (dato) =>
-        this.esMetricaDisponible(dato, 'dificultad') ||
-        this.esMetricaDisponible(dato, 'carga') ||
-        this.esMetricaDisponible(dato, 'conocimiento')
+        this.esMetricaDisponible(
+          dato,
+          'dificultad'
+        ) ||
+        this.esMetricaDisponible(
+          dato,
+          'carga'
+        ) ||
+        this.esMetricaDisponible(
+          dato,
+          'conocimiento'
+        )
     ).length > 1;
   }
 
@@ -126,15 +133,19 @@ export class HistorialCalificacionesComponent
       (dato, indice) => {
 
         const valor =
-          this.obtenerValor(dato, metrica);
+          this.obtenerValor(
+            dato,
+            metrica
+          );
 
-        if (
-          dato.informacionSuficiente === false ||
-          valor === null
-        ) {
+        if (valor === null) {
 
-          if (segmentoActual.length > 1) {
-            segmentos.push(segmentoActual);
+          if (
+            segmentoActual.length > 1
+          ) {
+            segmentos.push(
+              segmentoActual
+            );
           }
 
           segmentoActual = [];
@@ -147,12 +158,17 @@ export class HistorialCalificacionesComponent
       }
     );
 
-    if (segmentoActual.length > 1) {
-      segmentos.push(segmentoActual);
+    if (
+      segmentoActual.length > 1
+    ) {
+      segmentos.push(
+        segmentoActual
+      );
     }
 
     return segmentos.map(
-      (segmento) => segmento.join(' ')
+      (segmento) =>
+        segmento.join(' ')
     );
   }
 
@@ -161,10 +177,10 @@ export class HistorialCalificacionesComponent
     metrica: MetricaHistorial
   ): boolean {
 
-    return (
-      dato.informacionSuficiente !== false &&
-      this.obtenerValor(dato, metrica) !== null
-    );
+    return this.obtenerValor(
+      dato,
+      metrica
+    ) !== null;
   }
 
   obtenerPuntos(
@@ -173,13 +189,24 @@ export class HistorialCalificacionesComponent
 
     return this.datos
       .map(
-        (dato, indice) =>
-          `${this.obtenerX(indice)},${this.obtenerY(
+        (dato, indice) => {
+
+          const valor =
             this.obtenerValor(
               dato,
               metrica
-            )
-          )}`
+            );
+
+          if (valor === null) {
+            return '';
+          }
+
+          return `${this.obtenerX(indice)},${this.obtenerY(valor)}`;
+        }
+      )
+      .filter(
+        (punto) =>
+          punto !== ''
       )
       .join(' ');
   }
@@ -214,7 +241,9 @@ export class HistorialCalificacionesComponent
     valor: number | null
   ): number {
 
-    if (valor === null) {
+    if (
+      valor === null
+    ) {
       return Number.NaN;
     }
 
@@ -262,21 +291,17 @@ export class HistorialCalificacionesComponent
 
   private cargarHistorial(): void {
 
-    this.cargando =
-      true;
+    this.cargando = true;
 
-    this.error =
-      '';
+    this.error = '';
 
-    this.datos =
-      [];
+    this.datos = [];
 
     const consultas =
       this.gestiones.map(
         (gestion) =>
           this.calificacionesMateriaService
-            .obtenerPromediosPorMateriaYGestion(
-              this.idMateria,
+            .obtenerPromediosPorGestion(
               gestion
             )
             .pipe(
@@ -307,7 +332,9 @@ export class HistorialCalificacionesComponent
     )
       .subscribe({
 
-        next: (resultados) => {
+        next: (
+          resultados
+        ) => {
 
           this.datos =
             resultados
@@ -322,7 +349,9 @@ export class HistorialCalificacionesComponent
                   resultado.promedios !== null
               )
               .map(
-                (resultado) => ({
+                (
+                  resultado
+                ) => ({
 
                   gestion:
                     resultado.gestion,
@@ -337,15 +366,7 @@ export class HistorialCalificacionesComponent
 
                   conocimiento:
                     resultado.promedios
-                      .conocimientoPrevioPromedio,
-
-                  cantidadEvaluaciones:
-                    resultado.promedios
-                      .cantidadEvaluaciones ?? null,
-
-                  informacionSuficiente:
-                    resultado.promedios
-                      .informacionSuficiente
+                      .conocimientoPrevioPromedio
 
                 })
               );

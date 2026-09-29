@@ -107,19 +107,6 @@ export class CalificacionesMateriaService {
     );
   }
 
-  obtenerPromediosPorMateriaYGestion(
-    idMateria: number,
-    gestion: string
-  ): Observable<CalificacionMateriaPromedioResponse> {
-
-    const url =
-      `${this.apiUrl}/materia/${idMateria}/periodo/${encodeURIComponent(gestion)}`;
-
-    return this.http.get<CalificacionMateriaPromedioResponse>(
-      url
-    );
-  }
-
   obtenerPromediosPorRango(
     gestionDesde: string,
     gestionHasta: string

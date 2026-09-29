@@ -32,6 +32,4 @@ export interface CalificacionMateriaPromedioResponse {
   dificultadPromedio: number | null;
   cargaPromedio: number | null;
   conocimientoPrevioPromedio: number | null;
-  cantidadEvaluaciones?: number | null;
-  informacionSuficiente?: boolean | null;
 }
