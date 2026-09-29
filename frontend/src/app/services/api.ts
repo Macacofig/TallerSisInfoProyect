@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Materia } from '../models/materia';
+import { CalificacionMateriaPromedioMateriaResponse } from '../models/calificacion-materia.model';
 import { APP_CONFIG } from '../config/app-config';
+
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +24,12 @@ export class ApiService {
 
   obtenerCarreras(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.CARRERAS}`);
+  }
+
+  obtenerPromediosMaterias(): Observable<CalificacionMateriaPromedioMateriaResponse[]> {
+    return this.http.get<CalificacionMateriaPromedioMateriaResponse[]>(
+      `${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`
+    );
   }
 
   test() {

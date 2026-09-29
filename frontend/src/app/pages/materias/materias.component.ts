@@ -8,6 +8,7 @@ import { APP_CONFIG } from '../../config/app-config';
 import { MESSAGES } from '../../strings/materias/materias.messages';
 import { NombreMateriaPipe } from '../../pipes/nombre-materia.pipe';
 import { contieneTexto, normalizarTexto } from '../../utils/text.utils';
+import { CalificacionMateriaPromedioMateriaResponse } from '../../models/calificacion-materia.model';
 
 @Component({
   selector: 'app-materias',
@@ -27,6 +28,7 @@ export class MateriasComponent implements OnInit {
   private botonInformacion?: HTMLButtonElement;
 
   readonly materias = signal<Materia[]>([]);
+  readonly promediosMaterias = signal<CalificacionMateriaPromedioMateriaResponse[]>([]);
   readonly busqueda = signal('');
   readonly carreraSeleccionada = signal('');
   readonly carreras = signal<string[]>([]);
@@ -67,6 +69,7 @@ export class MateriasComponent implements OnInit {
   ngOnInit(): void {
     this.cargarCarreras();
     this.cargarMaterias();
+    this.cargarPromediosMaterias();
   }
 
   actualizarBusqueda(valor: string): void {
@@ -154,6 +157,30 @@ export class MateriasComponent implements OnInit {
       });
   }
 
+  cargarPromediosMaterias(): void {
+    this.apiService.obtenerPromediosMaterias()
+      .pipe(
+        timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: promedios => {
+          this.promediosMaterias.set(promedios);
+        },
+        error: () => {
+          this.promediosMaterias.set([]);
+        }
+      });
+  }
+
+  getPromedioMateria(
+    idMateria: number
+  ): CalificacionMateriaPromedioMateriaResponse | undefined {
+    return this.promediosMaterias().find(
+      promedio => promedio.idMateria === idMateria
+    );
+  }
+
   cambiarPagina(pagina: number): void {
     if (
       pagina < 1 ||
@@ -210,6 +237,8 @@ export class MateriasComponent implements OnInit {
       (!semestre || materia.semestre === Number(semestre))
     );
   }
+
+
 
   private prepararSemestres(materias: Materia[]): void {
     const disponibles = [...new Set(

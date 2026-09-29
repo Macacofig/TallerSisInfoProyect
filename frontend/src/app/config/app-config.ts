@@ -16,6 +16,7 @@ export const APP_CONFIG = {
       MATERIAS: '/materias',
       CARRERAS: '/materias/carreras',
       CALIFICACION_MATERIA: '/calificacion-materia',
+      CALIFICACION_MATERIA_PROMEDIOS: '/calificacion-materia/promedios/materias',
       DOCENTES: '/docentes',
       CALIFICACION_DOCENTE: '/calificacion-docente',
       TEST: '/test',
