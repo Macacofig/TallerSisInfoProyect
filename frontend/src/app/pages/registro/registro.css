@@ -54,20 +54,20 @@
 }
 
 .registro__logo {
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  box-sizing: border-box;
-  border: 0.0625rem solid rgba(201, 162, 39, 0.55);
-  border-radius: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.08);
-  color: var(--dorado);
 }
 
-.registro__logo svg { width: 1.5rem; height: 1.5rem; }
+.registro__logo-mark {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  background-color: white;
+  border-radius: 50%;
+  padding: 6px;
+  box-sizing: border-box;
+}
 
 .registro__brand-text { display: flex; flex-direction: column; min-width: 0; }
 
