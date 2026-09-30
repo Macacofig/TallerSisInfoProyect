@@ -225,6 +225,177 @@ button:disabled {
   font-weight: 700;
 }
 
+.docentes__filtros,
+.docentes__historial-grafico {
+  border: 1px solid #d9e2ef;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.docentes__historial-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px;
+  border-bottom: 1px solid #e3e8ef;
+}
+
+.docentes__historial-encabezado h3,
+.docentes__consulta-personalizada h4,
+.docentes__historial-grafico h3 {
+  margin: 0 0 6px;
+  color: #10213f;
+}
+
+.docentes__historial-encabezado p,
+.docentes__consulta-personalizada p,
+.docentes__historial-grafico header p {
+  margin: 0;
+  color: #667085;
+}
+
+.docentes__gestiones-rapidas,
+.docentes__filtro-modos,
+.docentes__acciones-filtro {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.docentes__gestion-rapida,
+.docentes__filtro-modos button {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid #cfd7e4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #344054;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.docentes__gestion-rapida.activa,
+.docentes__filtro-modos button.activo {
+  border-color: #165dab;
+  background: #165dab;
+  color: #ffffff;
+}
+
+.docentes__gestion-rapida.activa span {
+  color: #ffffff;
+}
+
+.docentes__consulta-personalizada {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.docentes__campo-filtro {
+  display: grid;
+  width: min(100%, 320px);
+  gap: 7px;
+  color: #344054;
+  font-weight: 700;
+}
+
+.docentes__campo-filtro select {
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid #cdd6e3;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #344054;
+  font: inherit;
+}
+
+.docentes__campos-rango {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.docentes__contexto-filtro {
+  color: #165dab;
+  font-weight: 700;
+}
+
+.docentes__historial-grafico {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+}
+
+.docentes__grafico-contenedor {
+  overflow-x: auto;
+}
+
+.docentes__grafico-contenedor svg {
+  display: block;
+  width: 100%;
+  min-width: 680px;
+  height: auto;
+}
+
+.docentes__grafico-rejilla {
+  stroke: #e3e8ef;
+  stroke-width: 1;
+}
+
+.docentes__grafico-etiqueta-x,
+.docentes__grafico-etiqueta-y {
+  fill: #667085;
+  font-size: 13px;
+}
+
+.docentes__grafico-linea {
+  fill: none;
+  stroke-width: 3;
+}
+
+.docentes__grafico-punto {
+  fill: #ffffff;
+  stroke-width: 3;
+}
+
+.docentes__grafico-linea--claridad,
+.docentes__grafico-punto--claridad { stroke: #d97706; }
+.docentes__grafico-linea--metodologia,
+.docentes__grafico-punto--metodologia { stroke: #165dab; }
+.docentes__grafico-linea--relacion,
+.docentes__grafico-punto--relacion { stroke: #0f8f7a; }
+
+.docentes__leyenda {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  color: #475569;
+}
+
+.docentes__leyenda span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.docentes__leyenda-muestra {
+  width: 26px;
+  border-top: 3px solid;
+}
+
+.docentes__leyenda-muestra--claridad { border-top-color: #d97706; }
+.docentes__leyenda-muestra--metodologia { border-top-color: #165dab; }
+.docentes__leyenda-muestra--relacion { border-top-color: #0f8f7a; }
+
+.docentes__nota-historial {
+  margin: 0;
+  color: #667085;
+}
+
 .docentes__error button,
 .docentes__promedios-error button {
   border: 0;
@@ -363,6 +534,19 @@ button:disabled {
 }
 
 @media (max-width: 768px) {
+  .docentes__historial-encabezado {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .docentes__campos-rango {
+    grid-template-columns: 1fr;
+  }
+
+  .docentes__leyenda {
+    justify-content: flex-start;
+  }
+
   .docente-card {
     gap: 18px;
   }

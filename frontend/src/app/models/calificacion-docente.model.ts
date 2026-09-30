@@ -1,6 +1,4 @@
-export type GestionDocente =
-  'año-I' |
-  'año-II';
+export type GestionDocente = string;
 
 export interface RegistrarCalificacionDocenteRequest {
   idDocente: number;
