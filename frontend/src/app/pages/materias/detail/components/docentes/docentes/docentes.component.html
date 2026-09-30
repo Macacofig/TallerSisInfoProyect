@@ -100,6 +100,139 @@
       </div>
     }
 
+    @if (cargandoGestiones) {
+      <p class="docentes__estado" role="status">
+        {{ mensajes.MANAGEMENTS_LOADING }}
+      </p>
+    } @else if (errorGestiones) {
+      <p class="docentes__promedios-error" role="alert">
+        {{ errorGestiones }}
+      </p>
+    } @else if (gestiones.length > 0) {
+      <section class="docentes__filtros" aria-labelledby="docentes-historial-titulo">
+        <header class="docentes__historial-encabezado">
+          <div>
+            <h3 id="docentes-historial-titulo">{{ mensajes.HISTORY_TITLE }}</h3>
+            <p>{{ mensajes.HISTORY_DESCRIPTION }}</p>
+          </div>
+
+          <div class="docentes__gestiones-rapidas">
+            @for (gestion of gestionesRapidas; track gestion; let indice = $index) {
+              <button
+                type="button"
+                class="docentes__gestion-rapida"
+                [class.activa]="esGestionActiva(gestion)"
+                [attr.aria-pressed]="esGestionActiva(gestion)"
+                [disabled]="cargandoFiltro"
+                (click)="seleccionarGestionRapida(gestion)"
+              >
+                {{ formatearGestionDocente(gestion) }}
+                @if (indice === 0) {
+                  <span>· {{ mensajes.RECENT }}</span>
+                }
+              </button>
+            }
+          </div>
+        </header>
+
+        <div class="docentes__consulta-personalizada">
+          <div>
+            <h4>{{ mensajes.CUSTOM_FILTER_TITLE }}</h4>
+            <p>{{ mensajes.CUSTOM_FILTER_DESCRIPTION }}</p>
+          </div>
+
+          <div class="docentes__filtro-modos" role="group" [attr.aria-label]="mensajes.CUSTOM_FILTER_TITLE">
+            <button
+              type="button"
+              [class.activo]="modoFiltro === 'gestion'"
+              [attr.aria-pressed]="modoFiltro === 'gestion'"
+              (click)="cambiarModoFiltro('gestion')"
+            >{{ mensajes.SINGLE_MODE }}</button>
+            <button
+              type="button"
+              [class.activo]="modoFiltro === 'rango'"
+              [attr.aria-pressed]="modoFiltro === 'rango'"
+              (click)="cambiarModoFiltro('rango')"
+            >{{ mensajes.RANGE_MODE }}</button>
+          </div>
+
+          @if (modoFiltro === 'gestion') {
+            <label class="docentes__campo-filtro">
+              <span>{{ mensajes.MANAGEMENT_LABEL }}</span>
+              <select
+                [value]="gestionSeleccionada"
+                [disabled]="cargandoFiltro"
+                (change)="actualizarGestionSeleccionada($event)"
+              >
+                @for (gestion of gestiones; track gestion) {
+                  <option [value]="gestion">{{ formatearGestionDocente(gestion) }}</option>
+                }
+              </select>
+            </label>
+          } @else {
+            <div class="docentes__campos-rango">
+              <label class="docentes__campo-filtro">
+                <span>{{ mensajes.FROM_LABEL }}</span>
+                <select
+                  [value]="gestionDesde"
+                  [disabled]="cargandoFiltro"
+                  (change)="actualizarGestionDesde($event)"
+                >
+                  @for (gestion of gestiones; track gestion) {
+                    <option [value]="gestion">{{ formatearGestionDocente(gestion) }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="docentes__campo-filtro">
+                <span>{{ mensajes.TO_LABEL }}</span>
+                <select
+                  [value]="gestionHasta"
+                  [disabled]="cargandoFiltro"
+                  (change)="actualizarGestionHasta($event)"
+                >
+                  @for (gestion of gestiones; track gestion) {
+                    <option [value]="gestion">{{ formatearGestionDocente(gestion) }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+          }
+
+          <div class="docentes__acciones-filtro">
+            <button
+              type="button"
+              class="boton-primario"
+              [disabled]="cargandoFiltro"
+              (click)="aplicarConsultaPersonalizada()"
+            >{{ mensajes.APPLY_FILTER }}</button>
+            <button
+              type="button"
+              class="boton-secundario"
+              [disabled]="cargandoFiltro || cargandoPromedios"
+              (click)="reintentarPromedios()"
+            >{{ mensajes.RESET_FILTER }}</button>
+          </div>
+
+          @if (cargandoFiltro) {
+            <p class="docentes__estado-filtro" role="status">{{ mensajes.FILTER_LOADING }}</p>
+          }
+          @if (errorFiltro) {
+            <div class="docentes__promedios-error" role="alert">
+              <p>{{ errorFiltro }}</p>
+              <button type="button" (click)="reintentarFiltro()">{{ mensajes.RETRY }}</button>
+            </div>
+          }
+          @if (filtroSinResultados && !cargandoFiltro) {
+            <p class="docentes__estado" role="status">{{ mensajes.FILTER_EMPTY }}</p>
+          }
+          @if (descripcionFiltro && !cargandoFiltro && !filtroSinResultados) {
+            <p class="docentes__estado docentes__contexto-filtro" role="status">{{ descripcionFiltro }}</p>
+          }
+        </div>
+      </section>
+    }
+
     <div class="docentes__lista">
 
       @for (
@@ -261,6 +394,73 @@
       }
 
     </div>
+
+    @if (gestiones.length > 1) {
+      <section class="docentes__historial-grafico" aria-labelledby="docentes-grafico-titulo">
+        <header>
+          <h3 id="docentes-grafico-titulo">{{ mensajes.HISTORY_TITLE }}</h3>
+          <p>{{ mensajes.HISTORY_DESCRIPTION }}</p>
+        </header>
+
+        @if (cargandoHistorial) {
+          <p class="docentes__estado" role="status">{{ mensajes.HISTORY_LOADING }}</p>
+        } @else if (errorHistorial) {
+          <p class="docentes__error" role="alert">{{ errorHistorial }}</p>
+        } @else if (historialDocente.length > 1) {
+          <div class="docentes__grafico-contenedor">
+            <svg
+              [attr.viewBox]="'0 0 ' + anchoGrafico + ' ' + altoGrafico"
+              role="img"
+              [attr.aria-label]="mensajes.HISTORY_ARIA"
+            >
+              @for (nivel of nivelesGrafico; track nivel) {
+                <line
+                  class="docentes__grafico-rejilla"
+                  [attr.x1]="margenIzquierdo"
+                  [attr.x2]="anchoGrafico - margenDerecho"
+                  [attr.y1]="obtenerYHistorial(nivel)"
+                  [attr.y2]="obtenerYHistorial(nivel)"
+                />
+                <text
+                  class="docentes__grafico-etiqueta-y"
+                  [attr.x]="margenIzquierdo - 12"
+                  [attr.y]="obtenerYHistorial(nivel) + 4"
+                  text-anchor="end"
+                >{{ nivel }}</text>
+              }
+
+              <polyline class="docentes__grafico-linea docentes__grafico-linea--claridad" [attr.points]="obtenerPuntosHistorial('claridad')" />
+              <polyline class="docentes__grafico-linea docentes__grafico-linea--metodologia" [attr.points]="obtenerPuntosHistorial('metodologia')" />
+              <polyline class="docentes__grafico-linea docentes__grafico-linea--relacion" [attr.points]="obtenerPuntosHistorial('relacion')" />
+
+              @for (dato of historialDocente; track dato.gestion; let indice = $index) {
+                <circle class="docentes__grafico-punto docentes__grafico-punto--claridad" [attr.cx]="obtenerXHistorial(indice)" [attr.cy]="obtenerYHistorial(dato.claridad)" r="5">
+                  <title>{{ formatearGestionDocente(dato.gestion) }} · {{ mensajes.CLARITY_LABEL }}: {{ obtenerPromedioFormateado(dato.claridad) }}/10</title>
+                </circle>
+                <circle class="docentes__grafico-punto docentes__grafico-punto--metodologia" [attr.cx]="obtenerXHistorial(indice)" [attr.cy]="obtenerYHistorial(dato.metodologia)" r="5">
+                  <title>{{ formatearGestionDocente(dato.gestion) }} · {{ mensajes.METHODOLOGY_LABEL }}: {{ obtenerPromedioFormateado(dato.metodologia) }}/10</title>
+                </circle>
+                <circle class="docentes__grafico-punto docentes__grafico-punto--relacion" [attr.cx]="obtenerXHistorial(indice)" [attr.cy]="obtenerYHistorial(dato.relacion)" r="5">
+                  <title>{{ formatearGestionDocente(dato.gestion) }} · {{ mensajes.RELATION_LABEL }}: {{ obtenerPromedioFormateado(dato.relacion) }}/10</title>
+                </circle>
+                <text class="docentes__grafico-etiqueta-x" [attr.x]="obtenerXHistorial(indice)" [attr.y]="altoGrafico - 18" text-anchor="middle">
+                  {{ formatearGestionDocente(dato.gestion) }}
+                </text>
+              }
+            </svg>
+          </div>
+
+          <div class="docentes__leyenda">
+            <span><i class="docentes__leyenda-muestra docentes__leyenda-muestra--claridad"></i>{{ mensajes.CLARITY_LABEL }}</span>
+            <span><i class="docentes__leyenda-muestra docentes__leyenda-muestra--metodologia"></i>{{ mensajes.METHODOLOGY_LABEL }}</span>
+            <span><i class="docentes__leyenda-muestra docentes__leyenda-muestra--relacion"></i>{{ mensajes.RELATION_LABEL }}</span>
+          </div>
+          <p class="docentes__nota-historial">{{ mensajes.HISTORY_NOTE }}</p>
+        } @else {
+          <p class="docentes__estado" role="status">{{ mensajes.HISTORY_EMPTY }}</p>
+        }
+      </section>
+    }
   }
 </section>
 

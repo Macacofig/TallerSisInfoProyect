@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -7,6 +7,7 @@ import { APP_CONFIG } from '../config/app-config';
 import {
   CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse,
+  GestionDocente,
   RegistrarCalificacionDocenteRequest
 } from '../models/calificacion-docente.model';
 
@@ -31,6 +32,41 @@ export class CalificacionesDocenteService {
 
     return this.http.get<CalificacionDocentePromedioResponse[]>(
       url
+    );
+  }
+
+  obtenerGestionesPorMateria(
+    idMateria: number
+  ): Observable<GestionDocente[]> {
+
+    return this.http.get<GestionDocente[]>(
+      `${this.apiUrl}/materia/${idMateria}/gestiones`
+    );
+  }
+
+  obtenerPromediosPorGestion(
+    idMateria: number,
+    gestion: GestionDocente
+  ): Observable<CalificacionDocentePromedioResponse[]> {
+
+    return this.http.get<CalificacionDocentePromedioResponse[]>(
+      `${this.apiUrl}/materia/${idMateria}/periodo/${encodeURIComponent(gestion)}`
+    );
+  }
+
+  obtenerPromediosPorRango(
+    idMateria: number,
+    desde: GestionDocente,
+    hasta: GestionDocente
+  ): Observable<CalificacionDocentePromedioResponse[]> {
+
+    const params = new HttpParams()
+      .set('desde', desde)
+      .set('hasta', hasta);
+
+    return this.http.get<CalificacionDocentePromedioResponse[]>(
+      `${this.apiUrl}/materia/${idMateria}/periodo/rango`,
+      { params }
     );
   }
 

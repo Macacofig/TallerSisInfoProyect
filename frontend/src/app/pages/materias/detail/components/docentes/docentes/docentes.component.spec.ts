@@ -60,7 +60,7 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     claridadExplicaciones: 8,
     metodologia: 7,
     relacionClasesEvaluaciones: 9,
-    gestion: 'año-II'
+    gestion: '2026-II'
   };
 
   const docentesServiceMock = {
@@ -68,7 +68,10 @@ describe('HU-06.1: promedios de docentes por materia', () => {
   };
 
   const calificacionesServiceMock = {
+    obtenerGestionesPorMateria: vi.fn(() => of(['2026-I', '2026-II'])),
     obtenerPromediosPorMateria: vi.fn(() => of(promedios)),
+    obtenerPromediosPorGestion: vi.fn(() => of(promedios)),
+    obtenerPromediosPorRango: vi.fn(() => of(promedios)),
     obtenerPorEstudiante: vi.fn(() => of(null)),
     registrarCalificacion: vi.fn(() => of(calificacion)),
     actualizarCalificacion: vi.fn(() => of({
@@ -81,7 +84,10 @@ describe('HU-06.1: promedios de docentes por materia', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     docentesServiceMock.obtenerPorMateria.mockReturnValue(of(docentes));
+    calificacionesServiceMock.obtenerGestionesPorMateria.mockReturnValue(of(['2026-I', '2026-II']));
     calificacionesServiceMock.obtenerPromediosPorMateria.mockReturnValue(of(promedios));
+    calificacionesServiceMock.obtenerPromediosPorGestion.mockReturnValue(of(promedios));
+    calificacionesServiceMock.obtenerPromediosPorRango.mockReturnValue(of(promedios));
     calificacionesServiceMock.obtenerPorEstudiante.mockReturnValue(of(null));
     calificacionesServiceMock.registrarCalificacion.mockReturnValue(of(calificacion));
     calificacionesServiceMock.actualizarCalificacion.mockReturnValue(of({
@@ -110,6 +116,62 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       .toHaveBeenCalledExactlyOnceWith(materia.id);
     expect(calificacionesServiceMock.obtenerPromediosPorMateria)
       .toHaveBeenCalledExactlyOnceWith(materia.id);
+    expect(calificacionesServiceMock.obtenerGestionesPorMateria)
+      .toHaveBeenCalledExactlyOnceWith(materia.id);
+  });
+
+  it('muestra el historial agregado por gestión usando las tres métricas docentes', () => {
+    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
+      .toHaveBeenCalledWith(materia.id, '2026-I');
+    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
+      .toHaveBeenCalledWith(materia.id, '2026-II');
+    expect(component.historialDocente).toHaveLength(2);
+    expect(component.historialDocente[0].claridad).toBeCloseTo(7.75);
+    expect(component.historialDocente[0].metodologia).toBeCloseTo(7.8);
+    expect(component.historialDocente[0].relacion).toBeCloseTo(7.6);
+    expect(fixture.nativeElement.querySelector('.docentes__historial-grafico svg'))
+      .toBeTruthy();
+  });
+
+  it('filtra las tarjetas al elegir una gestión rápida del historial', () => {
+    const boton = fixture.nativeElement.querySelector(
+      '.docentes__gestion-rapida'
+    ) as HTMLButtonElement;
+
+    expect(boton.textContent).toContain('2026-II');
+    boton.click();
+    fixture.detectChanges();
+
+    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
+      .toHaveBeenCalledWith(materia.id, '2026-II');
+    expect(component.gestionAplicada).toBe('2026-II');
+    expect(fixture.nativeElement.querySelector('.docentes__contexto-filtro')?.textContent)
+      .toContain('2026-II');
+  });
+
+  it('aplica la consulta personalizada al rango de gestiones seleccionado', () => {
+    const botonesModo = fixture.nativeElement.querySelectorAll(
+      '.docentes__filtro-modos button'
+    ) as NodeListOf<HTMLButtonElement>;
+    botonesModo[1].click();
+    fixture.detectChanges();
+
+    const selects = fixture.nativeElement.querySelectorAll(
+      '.docentes__campos-rango select'
+    ) as NodeListOf<HTMLSelectElement>;
+    selects[0].value = '2026-I';
+    selects[0].dispatchEvent(new Event('change', { bubbles: true }));
+    selects[1].value = '2026-II';
+    selects[1].dispatchEvent(new Event('change', { bubbles: true }));
+
+    (fixture.nativeElement.querySelector(
+      '.docentes__acciones-filtro .boton-primario'
+    ) as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(calificacionesServiceMock.obtenerPromediosPorRango)
+      .toHaveBeenCalledExactlyOnceWith(materia.id, '2026-I', '2026-II');
+    expect(component.descripcionFiltro).toContain('2026-I y 2026-II');
   });
 
   it('conserva la consulta de la evaluación del estudiante para cada docente', () => {
