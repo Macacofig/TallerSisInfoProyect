@@ -4,12 +4,12 @@ import { Subject, of, throwError } from 'rxjs';
 import {
   CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse
-} from '../../../../../../models/calificacion-docente.model';
-import { Docente } from '../../../../../../models/docente.model';
-import { Materia } from '../../../../../../models/materia';
-import { CalificacionesDocenteService } from '../../../../../../services/calificaciones-docente.service';
-import { DocentesService } from '../../../../../../services/docentes.service';
-import { DOCENTES_MESSAGES } from '../../../../../../strings/materias/docentes.messages';
+} from '../../../../../models/calificacion-docente.model';
+import { Docente } from '../../../../../models/docente.model';
+import { Materia } from '../../../../../models/materia';
+import { CalificacionesDocenteService } from '../../../../../services/calificaciones-docente.service';
+import { DocentesService } from '../../../../../services/docentes.service';
+import { DOCENTES_MESSAGES } from '../../../../../strings/materias/docentes.messages';
 import { DocentesComponent } from './docentes.component';
 
 describe('HU-06.1: promedios de docentes por materia', () => {

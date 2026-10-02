@@ -7,7 +7,7 @@ import {
 
 import {
   MESSAGES
-} from '../../../../../../strings/materias/materias.messages';
+} from '../../../../../strings/materias/materias.messages';
 
 export type SeccionDetalleMateria =
   | 'resumen'

@@ -4,7 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { Materia } from '../../../models/materia';
 import { ApiService } from '../../../services/api';
 import { APP_CONFIG } from '../../../config/app-config';
-import { MateriasComponent } from '../materias.component';
+import { MateriasComponent } from './materias.component';
 
 describe('catálogo: normalización, presentación y paginación', () => {
   let fixture: ComponentFixture<MateriasComponent>;

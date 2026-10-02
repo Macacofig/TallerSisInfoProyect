@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Materia } from '../../../models/materia';
 import { APP_CONFIG } from '../../../config/app-config';
-import { MateriasComponent } from '../materias.component';
+import { MateriasComponent } from './materias.component';
 
 describe('HU-02: buscar materia por nombre mediante el backend', () => {
   let fixture: ComponentFixture<MateriasComponent>;

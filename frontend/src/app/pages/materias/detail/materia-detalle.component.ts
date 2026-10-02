@@ -47,25 +47,25 @@ import {
 
 import {
   CalificacionGraficosComponent
-} from './components/calificacion-graficos/calificacion-graficos/calificacion-graficos.component';
+} from './components/calificacion-graficos/calificacion-graficos.component';
 
 import {
   FiltroGestionesComponent,
   FiltroGestionesResultado
-} from './components/filtro-gestiones/filtro-gestiones/filtro-gestiones.component';
+} from './components/filtro-gestiones/filtro-gestiones.component';
 
 import {
   HistorialCalificacionesComponent
-} from './components/historial-calificaciones/historial-calificaciones/historial-calificaciones.component';
+} from './components/historial-calificaciones/historial-calificaciones.component';
 
 import {
   SeccionesDetalleComponent,
   SeccionDetalleMateria
-} from './components/secciones-detalle/secciones-detalle/secciones-detalle.component';
+} from './components/secciones-detalle/secciones-detalle.component';
 
 import {
   DocentesComponent
-} from './components/docentes/docentes/docentes.component';
+} from './components/docentes/docentes.component';
 @Component({
   selector: 'app-materia-detalle',
   standalone: true,

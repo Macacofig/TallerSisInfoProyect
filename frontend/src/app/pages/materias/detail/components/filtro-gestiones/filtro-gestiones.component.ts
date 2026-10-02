@@ -13,14 +13,14 @@ import {
 
 import {
   CalificacionMateriaPromedioResponse
-} from '../../../../../../models/calificacion-materia.model';
+} from '../../../../../models/calificacion-materia.model';
 
 import {
   CalificacionesMateriaService
-} from '../../../../../../services/calificaciones-materia.service';
+} from '../../../../../services/calificaciones-materia.service';
 
-import { MESSAGES } from '../../../../../../strings/materias/materias.messages';
-import { formatearGestion } from '../../../../../../utils/gestion.utils';
+import { MESSAGES } from '../../../../../strings/materias/materias.messages';
+import { formatearGestion } from '../../../../../utils/gestion.utils';
 
 export type ModoFiltroGestiones =
   'gestion' |
