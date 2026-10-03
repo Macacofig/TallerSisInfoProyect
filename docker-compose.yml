@@ -1,18 +1,5 @@
 services:
 
-  db:
-    image: postgres:17
-    container_name: unihub-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "${POSTGRES_PORT}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   backend:
     build:
       context: ./backend
@@ -21,7 +8,7 @@ services:
     ports:
       - "${BACKEND_PORT}:8081"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=require
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
@@ -29,8 +16,6 @@ services:
       HIBERNATE_SQL_LOG_LEVEL: ${HIBERNATE_SQL_LOG_LEVEL:-OFF}
     volumes:
       - ./backend/logs:/app/logs
-    depends_on:
-      - db
 
   frontend:
     build:
@@ -45,5 +30,3 @@ services:
     depends_on:
       - backend
 
-volumes:
-  postgres_data:
