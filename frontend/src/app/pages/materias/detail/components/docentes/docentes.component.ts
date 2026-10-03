@@ -35,34 +35,34 @@ import {
 
 import {
   Materia
-} from '../../../../../../models/materia';
+} from '../../../../../models/materia';
 
 import {
   Docente
-} from '../../../../../../models/docente.model';
+} from '../../../../../models/docente.model';
 
 import {
   CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse,
   GestionDocente,
   RegistrarCalificacionDocenteRequest
-} from '../../../../../../models/calificacion-docente.model';
+} from '../../../../../models/calificacion-docente.model';
 
 import {
   DocentesService
-} from '../../../../../../services/docentes.service';
+} from '../../../../../services/docentes.service';
 
 import {
   CalificacionesDocenteService
-} from '../../../../../../services/calificaciones-docente.service';
+} from '../../../../../services/calificaciones-docente.service';
 
 import {
   APP_CONFIG
-} from '../../../../../../config/app-config';
+} from '../../../../../config/app-config';
 
 import {
   DOCENTES_MESSAGES
-} from '../../../../../../strings/materias/docentes.messages';
+} from '../../../../../strings/materias/docentes.messages';
 
 interface DocenteConCalificacion {
   docente: Docente;

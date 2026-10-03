@@ -2,15 +2,15 @@ import { ChangeDetectorRef, Component, DestroyRef, ElementRef, OnInit, ViewChild
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { of, Subscription, switchMap, timeout, timer } from 'rxjs';
-import { Materia } from '../../models/materia';
-import { ApiService } from '../../services/api';
-import { APP_CONFIG } from '../../config/app-config';
-import { MESSAGES } from '../../strings/materias/materias.messages';
-import { NombreMateriaPipe } from '../../pipes/nombre-materia.pipe';
-import { contieneTexto, normalizarTexto } from '../../utils/text.utils';
-import { CalificacionMateriaPromedioMateriaResponse } from '../../models/calificacion-materia.model';
+import { Materia } from '../../../models/materia';
+import { ApiService } from '../../../services/api';
+import { APP_CONFIG } from '../../../config/app-config';
+import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { NombreMateriaPipe } from '../../../pipes/nombre-materia.pipe';
+import { contieneTexto, normalizarTexto } from '../../../utils/text.utils';
+import { CalificacionMateriaPromedioMateriaResponse } from '../../../models/calificacion-materia.model';
 import { DecimalPipe } from '@angular/common';
-import { DEMO_MATERIAS } from '../../data/demo-materias';
+import { DEMO_MATERIAS } from '../../../data/demo-materias';
 
 @Component({
   selector: 'app-materias',
