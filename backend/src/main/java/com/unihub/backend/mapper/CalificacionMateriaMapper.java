@@ -3,6 +3,7 @@ package com.unihub.backend.mapper;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaRequest;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.entity.CalificacionMateria;
+import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import org.springframework.stereotype.Component;
 
@@ -11,14 +12,14 @@ import java.util.stream.Collectors;
 @Component
 public class CalificacionMateriaMapper {
 
-    public CalificacionMateria toEntity(CalificacionMateriaRequest request, Materia materia) {
+        public CalificacionMateria toEntity(CalificacionMateriaRequest request, Materia materia, Estudiante estudiante) {
         String prerequisitos = request.prerequisitos().stream()
                 .map(String::trim)
                 .collect(Collectors.joining(","));
 
         return new CalificacionMateria(
                 materia,
-                request.idEstudiante(),
+                estudiante,
                 request.dificultad(),
                 request.carga(),
                 request.conocimientoPrevio(),

@@ -6,11 +6,13 @@ import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.entity.CalificacionDocente;
 import com.unihub.backend.entity.Docente;
+import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.mapper.CalificacionDocenteMapper;
 import com.unihub.backend.repository.CalificacionDocenteRepository;
 import com.unihub.backend.repository.DocenteRepository;
 import com.unihub.backend.repository.DocenteMateriaRepository;
+import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.repository.MateriaRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,19 +31,22 @@ public class CalificacionDocenteService {
 	private final CalificacionDocenteMapper calificacionMapper;
 	private final DocenteMateriaRepository docenteMateriaRepository;
 	private final MateriaRepository materiaRepository;
+	private final EstudianteRepository estudianteRepository;
 
 	public CalificacionDocenteService(
 			CalificacionDocenteRepository calificacionRepository,
 			DocenteRepository docenteRepository,
 			CalificacionDocenteMapper calificacionMapper,
 			DocenteMateriaRepository docenteMateriaRepository,
-			MateriaRepository materiaRepository
+			MateriaRepository materiaRepository,
+			EstudianteRepository estudianteRepository
 	) {
 		this.calificacionRepository = calificacionRepository;
 		this.docenteRepository = docenteRepository;
 		this.calificacionMapper = calificacionMapper;
 		this.docenteMateriaRepository = docenteMateriaRepository;
 		this.materiaRepository = materiaRepository;
+		this.estudianteRepository = estudianteRepository;
 	}
 
 	public CalificacionDocenteResponse crear(CalificacionDocenteRequest request) {
@@ -52,15 +57,19 @@ public class CalificacionDocenteService {
 		if (!docenteMateriaRepository.existsByDocenteIdAndMateriaId(request.idDocente(), request.idMateria())) {
 			throw new IllegalArgumentException("El docente no pertenece a la materia");
 		}
+		Estudiante estudiante = request.idEstudiante() == null
+				? null
+				: estudianteRepository.findById(request.idEstudiante())
+						.orElseThrow(() -> new IllegalArgumentException("El estudiante no existe"));
 
 		Optional<CalificacionDocente> existente = calificacionRepository
-				.findFirstByIdEstudianteAndDocenteIdAndMateriaId(
+				.findFirstByEstudiante_IdAndDocenteIdAndMateriaId(
 						request.idEstudiante(), request.idDocente(), request.idMateria());
 		if (existente.isPresent()) {
 			throw new IllegalArgumentException("El estudiante ya calificó a este docente");
 		}
 
-		CalificacionDocente calificacion = calificacionMapper.toEntity(request, docente, materia);
+		CalificacionDocente calificacion = calificacionMapper.toEntity(request, docente, materia, estudiante);
 		CalificacionDocenteResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
 		LogHelper.info(CalificacionDocenteService.class, "Calificación docente creada correctamente");
 		return response;
@@ -72,7 +81,7 @@ public class CalificacionDocenteService {
 	}
 
 	public Optional<CalificacionDocenteResponse> obtenerPorEstudiante(Long idEstudiante, Long idDocente, Long idMateria) {
-		return calificacionRepository.findFirstByIdEstudianteAndDocenteIdAndMateriaId(idEstudiante, idDocente, idMateria)
+		return calificacionRepository.findFirstByEstudiante_IdAndDocenteIdAndMateriaId(idEstudiante, idDocente, idMateria)
 				.map(calificacionMapper::toResponse);
 	}
 
@@ -82,7 +91,7 @@ public class CalificacionDocenteService {
 			Long idMateria,
 			CalificacionDocenteRequest request
 	) {
-		return calificacionRepository.findFirstByIdEstudianteAndDocenteIdAndMateriaId(
+		return calificacionRepository.findFirstByEstudiante_IdAndDocenteIdAndMateriaId(
 				idEstudiante, idDocente, idMateria)
 				.map(calificacion -> {
 					calificacionMapper.actualizar(calificacion, request);
@@ -93,7 +102,7 @@ public class CalificacionDocenteService {
 	}
 
 	public boolean eliminar(Long idEstudiante, Long idDocente, Long idMateria) {
-		return calificacionRepository.findFirstByIdEstudianteAndDocenteIdAndMateriaId(
+		return calificacionRepository.findFirstByEstudiante_IdAndDocenteIdAndMateriaId(
 				idEstudiante, idDocente, idMateria)
 				.map(calificacion -> {
 					calificacionRepository.delete(calificacion);

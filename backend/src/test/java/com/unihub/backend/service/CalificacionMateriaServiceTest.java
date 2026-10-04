@@ -6,13 +6,16 @@ import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.entity.CalificacionMateria;
 import com.unihub.backend.entity.Materia;
+import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.mapper.CalificacionMateriaMapper;
 import com.unihub.backend.repository.CalificacionMateriaRepository;
 import com.unihub.backend.repository.MateriaRepository;
+import com.unihub.backend.repository.EstudianteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +36,9 @@ class CalificacionMateriaServiceTest {
     @Mock
     private MateriaRepository materiaRepository;
 
+        @Mock
+        private EstudianteRepository estudianteRepository;
+
     private CalificacionMateriaService calificacionService;
 
     @BeforeEach
@@ -41,7 +47,8 @@ class CalificacionMateriaServiceTest {
         calificacionService = new CalificacionMateriaService(
                 calificacionRepository,
                 materiaRepository,
-                new CalificacionMateriaMapper()
+                new CalificacionMateriaMapper(),
+                estudianteRepository
         );
     }
 
@@ -165,7 +172,7 @@ class CalificacionMateriaServiceTest {
     void deberiaObtenerUnaCalificacionPorEstudiante() {
         Materia materia = crearMateria();
         CalificacionMateria calificacion = crearCalificacion(materia, 25L, 8, 6, 5, "I-Año");
-        when(calificacionRepository.findFirstByIdEstudianteAndMateriaId(25L, 1L))
+        when(calificacionRepository.findFirstByEstudiante_IdAndMateriaId(25L, 1L))
                 .thenReturn(Optional.of(calificacion));
 
         CalificacionMateriaResponse resultado = calificacionService
@@ -179,7 +186,7 @@ class CalificacionMateriaServiceTest {
 
         @Test
         void deberiaDevolverVacioCuandoElEstudianteNoTieneCalificacionEnLaMateria() {
-                when(calificacionRepository.findFirstByIdEstudianteAndMateriaId(25L, 2L))
+                when(calificacionRepository.findFirstByEstudiante_IdAndMateriaId(25L, 2L))
                                 .thenReturn(Optional.empty());
 
                 assertTrue(calificacionService.obtenerPorEstudiante(25L, 2L).isEmpty());
@@ -193,7 +200,7 @@ class CalificacionMateriaServiceTest {
         CalificacionMateriaRequest request = new CalificacionMateriaRequest(
                 1L, 25L, 10, 7, 9, List.of("Algebra", "Logica"), "Teorico", "II-Año"
         );
-        when(calificacionRepository.findFirstByIdEstudianteAndMateriaId(25L, 1L))
+        when(calificacionRepository.findFirstByEstudiante_IdAndMateriaId(25L, 1L))
                 .thenReturn(Optional.of(calificacion));
         when(calificacionRepository.save(calificacion)).thenReturn(calificacion);
 
@@ -213,7 +220,7 @@ class CalificacionMateriaServiceTest {
     void deberiaEliminarLaCalificacionDeUnEstudiante() {
         Materia materia = crearMateria();
         CalificacionMateria calificacion = crearCalificacion(materia, 25L, 8, 6, 5, "I-Año");
-        when(calificacionRepository.findFirstByIdEstudianteAndMateriaId(25L, 1L))
+        when(calificacionRepository.findFirstByEstudiante_IdAndMateriaId(25L, 1L))
                 .thenReturn(Optional.of(calificacion));
 
         assertTrue(calificacionService.eliminar(25L, 1L));
@@ -298,9 +305,15 @@ class CalificacionMateriaServiceTest {
             String gestion,
             String predominio
     ) {
+        Estudiante estudiante = idEstudiante == null ? null
+                : new Estudiante("Estudiante", "pass", "123", "e@example.com", "Sistemas");
+        if (estudiante != null) {
+            ReflectionTestUtils.setField(estudiante, "id", idEstudiante);
+        }
+
         return new CalificacionMateria(
                 materia,
-                idEstudiante,
+                estudiante,
                 dificultad,
                 carga,
                 conocimientoPrevio,

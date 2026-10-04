@@ -6,9 +6,11 @@ import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioMateriaRes
 import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.entity.CalificacionMateria;
+import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.mapper.CalificacionMateriaMapper;
 import com.unihub.backend.repository.CalificacionMateriaRepository;
+import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.repository.MateriaRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,22 +26,29 @@ public class CalificacionMateriaService {
     private final CalificacionMateriaRepository calificacionRepository;
     private final MateriaRepository materiaRepository;
     private final CalificacionMateriaMapper calificacionMapper;
+	private final EstudianteRepository estudianteRepository;
 
     public CalificacionMateriaService(
 	    CalificacionMateriaRepository calificacionRepository,
 	    MateriaRepository materiaRepository,
-	    CalificacionMateriaMapper calificacionMapper
+	    CalificacionMateriaMapper calificacionMapper,
+	    EstudianteRepository estudianteRepository
     ) {
 	this.calificacionRepository = calificacionRepository;
 	this.materiaRepository = materiaRepository;
 	this.calificacionMapper = calificacionMapper;
+	this.estudianteRepository = estudianteRepository;
     }
 
     public CalificacionMateriaResponse crear(CalificacionMateriaRequest request) {
 	Materia materia = materiaRepository.findById(request.idMateria())
 		.orElseThrow(() -> new IllegalArgumentException("La materia no existe"));
+	       Estudiante estudiante = request.idEstudiante() == null
+		       ? null
+		       : estudianteRepository.findById(request.idEstudiante())
+			       .orElseThrow(() -> new IllegalArgumentException("El estudiante no existe"));
 
-	CalificacionMateria calificacion = calificacionMapper.toEntity(request, materia);
+	CalificacionMateria calificacion = calificacionMapper.toEntity(request, materia, estudiante);
 
 		CalificacionMateriaResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
 		LogHelper.info(CalificacionMateriaService.class, "Calificación de materia creada correctamente");
@@ -63,7 +72,7 @@ public class CalificacionMateriaService {
     }
 
 	public Optional<CalificacionMateriaResponse> obtenerPorEstudiante(Long idEstudiante, Long idMateria) {
-	return calificacionRepository.findFirstByIdEstudianteAndMateriaId(idEstudiante, idMateria)
+	return calificacionRepository.findFirstByEstudiante_IdAndMateriaId(idEstudiante, idMateria)
 		.map(calificacionMapper::toResponse);
     }
 
@@ -72,7 +81,7 @@ public class CalificacionMateriaService {
 		Long idMateria,
 		CalificacionMateriaRequest request
 	) {
-	return calificacionRepository.findFirstByIdEstudianteAndMateriaId(idEstudiante, idMateria)
+	return calificacionRepository.findFirstByEstudiante_IdAndMateriaId(idEstudiante, idMateria)
 		.map(calificacion -> {
 		    calificacionMapper.actualizar(calificacion, request);
 		    CalificacionMateriaResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
@@ -82,7 +91,7 @@ public class CalificacionMateriaService {
     }
 
     public boolean eliminar(Long idEstudiante, Long idMateria) {
-	return calificacionRepository.findFirstByIdEstudianteAndMateriaId(idEstudiante, idMateria)
+	return calificacionRepository.findFirstByEstudiante_IdAndMateriaId(idEstudiante, idMateria)
 		.map(calificacion -> {
 		    calificacionRepository.delete(calificacion);
 		    LogHelper.info(CalificacionMateriaService.class, "Calificación de materia eliminada correctamente");

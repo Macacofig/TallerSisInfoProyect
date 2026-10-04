@@ -10,7 +10,7 @@ public interface CalificacionMateriaRepository extends JpaRepository<Calificacio
 
 	List<CalificacionMateria> findByMateriaId(Long idMateria);
 
-	Optional<CalificacionMateria> findFirstByIdEstudianteAndMateriaId(Long idEstudiante, Long idMateria);
+	Optional<CalificacionMateria> findFirstByEstudiante_IdAndMateriaId(Long idEstudiante, Long idMateria);
 
 	List<CalificacionMateria> findByGestion(String gestion);
 

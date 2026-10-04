@@ -4,17 +4,19 @@ import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.entity.CalificacionDocente;
 import com.unihub.backend.entity.Docente;
+import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CalificacionDocenteMapper {
 
-    public CalificacionDocente toEntity(CalificacionDocenteRequest request, Docente docente, Materia materia) {
+        public CalificacionDocente toEntity(CalificacionDocenteRequest request, Docente docente, Materia materia,
+            Estudiante estudiante) {
         return new CalificacionDocente(
                 docente,
                 materia,
-                request.idEstudiante(),
+                estudiante,
                 request.claridadExplicaciones(),
                 request.metodologia(),
                 request.relacionClasesEvaluaciones(),
@@ -35,8 +37,8 @@ public class CalificacionDocenteMapper {
         );
     }
 
-    public CalificacionDocente toEntity(CalificacionDocenteRequest request, Docente docente) {
-        return toEntity(request, docente, docente.getMateria());
+    public CalificacionDocente toEntity(CalificacionDocenteRequest request, Docente docente, Estudiante estudiante) {
+        return toEntity(request, docente, docente.getMateria(), estudiante);
     }
 
     public void actualizar(CalificacionDocente calificacion, CalificacionDocenteRequest request) {

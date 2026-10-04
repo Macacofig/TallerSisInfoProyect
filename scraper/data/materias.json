@@ -1,0 +1,837 @@
+{
+  "fechaExtraccion": "2026-10-03T15:09:54.237Z",
+  "filtros": {
+    "programa": "PREGRADO",
+    "periodo": "[2-2026-FEES] SEMESTRE SEGUNDO DEL 2026 FEES",
+    "carrera": "[ENF]"
+  },
+  "total": 35,
+  "materias": [
+    {
+      "numero": "1",
+      "sigla": "ANA-110",
+      "paralelo": "1",
+      "asignatura": "ANATOMIA Y FISIOLOGIA I (EXAMEN DE SUFICIENCIA)",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "2",
+      "inscritos": "2",
+      "reservas": "0",
+      "inscritosReservas": "2",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ACHA OLIVERA GUILLERMO",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "2",
+      "sigla": "ANA-122",
+      "paralelo": "1",
+      "asignatura": "ANATOMIA Y FISIOLOGIA II",
+      "cargaAcademica": "6",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "49",
+      "reservas": "0",
+      "inscritosReservas": "49",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ACHA OLIVERA GUILLERMO",
+          "dia": "Lunes",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-A"
+        },
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ACHA OLIVERA GUILLERMO",
+          "dia": "Martes",
+          "horas": "08:00 - 10:15",
+          "aula": "ENF-A"
+        }
+      ]
+    },
+    {
+      "numero": "3",
+      "sigla": "FHC-386",
+      "paralelo": "1",
+      "asignatura": "BIOETICA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "47",
+      "reservas": "0",
+      "inscritosReservas": "47",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "SORIA CADIMA GUADALUPE FANNY",
+          "dia": "Sábado",
+          "horas": "08:00 - 10:15",
+          "aula": "ENF-5"
+        }
+      ]
+    },
+    {
+      "numero": "4",
+      "sigla": "BQM-111",
+      "paralelo": "1",
+      "asignatura": "BIOQUIMICA (EXAMEN DE SUFICIENCIA)",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "1",
+      "inscritos": "1",
+      "reservas": "0",
+      "inscritosReservas": "1",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "LOMA MERCADO KAREM KATHERINE",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "5",
+      "sigla": "FHC-122",
+      "paralelo": "1",
+      "asignatura": "EL SER HUMANO",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "50",
+      "reservas": "0",
+      "inscritosReservas": "50",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "MENA MUÑOZ FEDERICO",
+          "dia": "Miércoles",
+          "horas": "14:00 - 16:15",
+          "aula": "ENF-A"
+        }
+      ]
+    },
+    {
+      "numero": "6",
+      "sigla": "EUE-245",
+      "paralelo": "1",
+      "asignatura": "ENFERMERIA EN URGENCIAS Y EMERGENCIAS",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "51",
+      "reservas": "0",
+      "inscritosReservas": "51",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "CORRALES ARIAS MARIA LINDA",
+          "dia": "Sábado",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-B"
+        }
+      ]
+    },
+    {
+      "numero": "7",
+      "sigla": "EGE-246",
+      "paralelo": "1",
+      "asignatura": "ENFERMERIA GERIATRICA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "52",
+      "reservas": "0",
+      "inscritosReservas": "52",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "MENECES MERIDA GUMERCINDA",
+          "dia": "Jueves",
+          "horas": "15:00 - 17:15",
+          "aula": "ENF-B"
+        }
+      ]
+    },
+    {
+      "numero": "8",
+      "sigla": "MOB-362",
+      "paralelo": "1",
+      "asignatura": "ENFERMERIA MATERNO INFANTIL OBSTETRICIA II",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "46",
+      "reservas": "0",
+      "inscritosReservas": "46",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "COSSIO OQUENDO JHASMIN VERONICA",
+          "dia": "Lunes",
+          "horas": "16:30 - 18:45",
+          "aula": "ENF-2"
+        }
+      ]
+    },
+    {
+      "numero": "9",
+      "sigla": "MPE-363",
+      "paralelo": "1",
+      "asignatura": "ENFERMERIA MATERNO INFANTIL PEDIATRIA II",
+      "cargaAcademica": "6",
+      "uve": "",
+      "cupo": "55",
+      "inscritos": "54",
+      "reservas": "0",
+      "inscritosReservas": "54",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ACHA TORRES MARCELA BEATRIZ",
+          "dia": "Lunes",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-5"
+        },
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ACHA TORRES MARCELA BEATRIZ",
+          "dia": "Martes",
+          "horas": "08:00 - 10:15",
+          "aula": "ENF-5"
+        }
+      ]
+    },
+    {
+      "numero": "10",
+      "sigla": "EMQ-244",
+      "paralelo": "1",
+      "asignatura": "ENFERMERIA MEDICO QUIRURGICA II",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "53",
+      "reservas": "0",
+      "inscritosReservas": "53",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "CHOQUE ORTEGA ROCIO DEL CARMEN",
+          "dia": "Jueves",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-B"
+        }
+      ]
+    },
+    {
+      "numero": "11",
+      "sigla": "FAR-233",
+      "paralelo": "1",
+      "asignatura": "FARMACOLOGIA I (EXAMEN DE SUFICIENCIA)",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "1",
+      "inscritos": "1",
+      "reservas": "0",
+      "inscritosReservas": "1",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "VILLARROEL CANEDO MARIA LUISA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "12",
+      "sigla": "FAR-248",
+      "paralelo": "1",
+      "asignatura": "FARMACOLOGIA II Y MEDICINA NATURAL",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "48",
+      "reservas": "0",
+      "inscritosReservas": "48",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "VILLARROEL CANEDO MARIA LUISA",
+          "dia": "Viernes",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-B"
+        }
+      ]
+    },
+    {
+      "numero": "13",
+      "sigla": "ENF-122",
+      "paralelo": "1",
+      "asignatura": "FUNDAMENTOS DE ENFERMERIA II",
+      "cargaAcademica": "15",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "48",
+      "reservas": "0",
+      "inscritosReservas": "48",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "VILLARROEL CANEDO MARIA LUISA",
+          "dia": "Lunes",
+          "horas": "08:00 - 10:15",
+          "aula": "ENF-A"
+        },
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "VILLARROEL CANEDO MARIA LUISA",
+          "dia": "Miércoles",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-A"
+        }
+      ]
+    },
+    {
+      "numero": "14",
+      "sigla": "GBI-387",
+      "paralelo": "1",
+      "asignatura": "GESTION EN BIOSEGURIDAD",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "47",
+      "reservas": "0",
+      "inscritosReservas": "47",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "GONZALES APAZA SOFIA",
+          "dia": "Lunes",
+          "horas": "15:00 - 17:15",
+          "aula": "ENF-B"
+        }
+      ]
+    },
+    {
+      "numero": "15",
+      "sigla": "MIN-244",
+      "paralelo": "1",
+      "asignatura": "METODOLOGIA DE LA INVESTIGACION",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "22",
+      "reservas": "0",
+      "inscritosReservas": "22",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "LOMA MERCADO KAREM KATHERINE",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "16",
+      "sigla": "MIP-123",
+      "paralelo": "1",
+      "asignatura": "MICROBIOLOGIA Y PARASITOLOGIA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "52",
+      "reservas": "0",
+      "inscritosReservas": "52",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "LOMA MERCADO KAREM KATHERINE",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "17",
+      "sigla": "NUT-123",
+      "paralelo": "1",
+      "asignatura": "NUTRICION Y DIETOTERAPIA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "48",
+      "reservas": "0",
+      "inscritosReservas": "48",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ACHA TORRES MARCELA BEATRIZ",
+          "dia": "Martes",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-A"
+        }
+      ]
+    },
+    {
+      "numero": "18",
+      "sigla": "FHC-362",
+      "paralelo": "1",
+      "asignatura": "PASTORAL DE ENFERMOS",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "43",
+      "reservas": "0",
+      "inscritosReservas": "43",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "MENA MUÑOZ FEDERICO",
+          "dia": "Lunes",
+          "horas": "14:00 - 16:15",
+          "aula": "ENF-5"
+        }
+      ]
+    },
+    {
+      "numero": "19",
+      "sigla": "EUE-P245",
+      "paralelo": "1",
+      "asignatura": "PRACTICA ENFERMERIA EN URGENCIAS Y EMERGENCIAS",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "51",
+      "reservas": "0",
+      "inscritosReservas": "51",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ROJAS MARIA ESCARLEN",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "20",
+      "sigla": "EGE-P246",
+      "paralelo": "1",
+      "asignatura": "PRACTICA ENFERMERIA GERIATRICA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "52",
+      "reservas": "0",
+      "inscritosReservas": "52",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "MENECES MERIDA GUMERCINDA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "21",
+      "sigla": "MOB-P362",
+      "paralelo": "1",
+      "asignatura": "PRACTICA ENFERMERIA MATERNO INFANTIL OBSTETRICIA II",
+      "cargaAcademica": "6",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "46",
+      "reservas": "0",
+      "inscritosReservas": "46",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "COSSIO OQUENDO JHASMIN VERONICA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "22",
+      "sigla": "MPE-P363",
+      "paralelo": "1",
+      "asignatura": "PRACTICA ENFERMERIA MATERNO INFANTIL PEDIATRIA II",
+      "cargaAcademica": "6",
+      "uve": "",
+      "cupo": "55",
+      "inscritos": "54",
+      "reservas": "0",
+      "inscritosReservas": "54",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ACHA TORRES MARCELA BEATRIZ",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "23",
+      "sigla": "EMQ-P244",
+      "paralelo": "1",
+      "asignatura": "PRACTICA ENFERMERIA MEDICO QUIRURGICA II",
+      "cargaAcademica": "6",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "53",
+      "reservas": "0",
+      "inscritosReservas": "53",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "CHOQUE ORTEGA ROCIO DEL CARMEN",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "24",
+      "sigla": "ENF-P122",
+      "paralelo": "1",
+      "asignatura": "PRACTICA FUNDAMENTOS DE ENFERMERIA II",
+      "cargaAcademica": "9",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "48",
+      "reservas": "0",
+      "inscritosReservas": "48",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "CHUQUIMIA MENDEZ INGRID VIRGINIA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "25",
+      "sigla": "GBI-P387",
+      "paralelo": "1",
+      "asignatura": "PRACTICA GESTION EN BIOSEGURIDAD",
+      "cargaAcademica": "6",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "47",
+      "reservas": "0",
+      "inscritosReservas": "47",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "TONCONI POMA RAQUEL MIREYA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "26",
+      "sigla": "SMP-P247",
+      "paralelo": "1",
+      "asignatura": "PRACTICA SALUD MENTAL Y PSIQUIATRIA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "52",
+      "reservas": "0",
+      "inscritosReservas": "52",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "CHOQUE ORTEGA ROCIO DEL CARMEN",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "27",
+      "sigla": "SPL-P122",
+      "paralelo": "1",
+      "asignatura": "PRACTICA SALUD PUBLICA II - SANEAMIENTO AMBIENTAL",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "48",
+      "reservas": "0",
+      "inscritosReservas": "48",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "TONCONI POMA RAQUEL MIREYA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "28",
+      "sigla": "SPL-P244",
+      "paralelo": "1",
+      "asignatura": "PRACTICA SALUD PUBLICA IV - SALUD OCUPACIONAL, ADULTO MAYOR Y ATENCION A DESASTRES NATURALES",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "52",
+      "reservas": "0",
+      "inscritosReservas": "52",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "COLQUE ARIAS DEYANIRA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "29",
+      "sigla": "SPL-P362",
+      "paralelo": "1",
+      "asignatura": "PRACTICA SALUD PUBLICA VI - ATENCION INTEGRAL MATERNO INFANTIL",
+      "cargaAcademica": "6",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "45",
+      "reservas": "0",
+      "inscritosReservas": "45",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "COLQUE ARIAS DEYANIRA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "30",
+      "sigla": "SPL-P386",
+      "paralelo": "1",
+      "asignatura": "PRACTICA SALUD PUBLICA VII - GERENCIA Y ADMINISTRACION SANITARIA",
+      "cargaAcademica": "18",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "47",
+      "reservas": "0",
+      "inscritosReservas": "47",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "TONCONI POMA RAQUEL MIREYA",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "31",
+      "sigla": "SMP-247",
+      "paralelo": "1",
+      "asignatura": "SALUD MENTAL Y PSIQUIATRIA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "52",
+      "reservas": "0",
+      "inscritosReservas": "52",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "RODRIGUEZ ANTEZANA MARIELA",
+          "dia": "Jueves",
+          "horas": "07:15 - 09:30",
+          "aula": "ENF-B"
+        }
+      ]
+    },
+    {
+      "numero": "32",
+      "sigla": "SPL-122",
+      "paralelo": "1",
+      "asignatura": "SALUD PUBLICA II - SANEAMIENTO AMBIENTAL",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "48",
+      "reservas": "0",
+      "inscritosReservas": "48",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "TONCONI POMA RAQUEL MIREYA",
+          "dia": "Lunes",
+          "horas": "14:00 - 16:15",
+          "aula": "ENF-A"
+        }
+      ]
+    },
+    {
+      "numero": "33",
+      "sigla": "SPL-244",
+      "paralelo": "1",
+      "asignatura": "SALUD PUBLICA IV - SALUD OCUPACIONAL, ADULTO MAYOR Y ATENCION A DESASTRES NATURALES",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "60",
+      "inscritos": "52",
+      "reservas": "0",
+      "inscritosReservas": "52",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "LLAVETA VILCHEZ MARIA DEL CARMEN",
+          "dia": "Sábado",
+          "horas": "08:00 - 10:15",
+          "aula": "ENF-B"
+        }
+      ]
+    },
+    {
+      "numero": "34",
+      "sigla": "SPL-362",
+      "paralelo": "1",
+      "asignatura": "SALUD PUBLICA VI - ATENCION INTEGRAL MATERNO INFANTIL",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "45",
+      "reservas": "0",
+      "inscritosReservas": "45",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "ROMERO LAZO ELISA MAVEL",
+          "dia": "_______",
+          "horas": "______",
+          "aula": "_______"
+        }
+      ]
+    },
+    {
+      "numero": "35",
+      "sigla": "SPL-386",
+      "paralelo": "1",
+      "asignatura": "SALUD PUBLICA VII - GERENCIA Y ADMINISTRACION SANITARIA",
+      "cargaAcademica": "3",
+      "uve": "",
+      "cupo": "50",
+      "inscritos": "47",
+      "reservas": "0",
+      "inscritosReservas": "47",
+      "tipo": "Teórico",
+      "carrerasAsignadas": "TODAS",
+      "horarios": [
+        {
+          "tipoDocente": "DOCENTE TITULAR",
+          "docente": "TONCONI POMA RAQUEL MIREYA",
+          "dia": "Lunes",
+          "horas": "10:45 - 13:00",
+          "aula": "ENF-B"
+        }
+      ]
+    }
+  ]
+}
