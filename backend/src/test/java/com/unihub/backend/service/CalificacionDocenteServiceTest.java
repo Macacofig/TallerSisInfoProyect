@@ -2,12 +2,14 @@ package com.unihub.backend.service;
 
 import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.entity.Docente;
+import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.mapper.CalificacionDocenteMapper;
 import com.unihub.backend.repository.CalificacionDocenteRepository;
 import com.unihub.backend.repository.DocenteMateriaRepository;
 import com.unihub.backend.repository.DocenteRepository;
 import com.unihub.backend.repository.MateriaRepository;
+import com.unihub.backend.repository.EstudianteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,13 +32,14 @@ class CalificacionDocenteServiceTest {
     @Mock private DocenteRepository docenteRepository;
     @Mock private DocenteMateriaRepository docenteMateriaRepository;
     @Mock private MateriaRepository materiaRepository;
+    @Mock private EstudianteRepository estudianteRepository;
 
     private CalificacionDocenteService calificacionService;
 
     @BeforeEach
     void setUp() {
         calificacionService = new CalificacionDocenteService(calificacionRepository, docenteRepository,
-                new CalificacionDocenteMapper(), docenteMateriaRepository, materiaRepository);
+            new CalificacionDocenteMapper(), docenteMateriaRepository, materiaRepository, estudianteRepository);
     }
 
     @Test
@@ -49,7 +52,8 @@ class CalificacionDocenteServiceTest {
         when(docenteRepository.findById(1L)).thenReturn(Optional.of(docente));
         when(materiaRepository.findById(10L)).thenReturn(Optional.of(materia));
         when(docenteMateriaRepository.existsByDocenteIdAndMateriaId(1L, 10L)).thenReturn(true);
-        when(calificacionRepository.findFirstByIdEstudianteAndDocenteIdAndMateriaId(25L, 1L, 10L))
+        when(estudianteRepository.findById(25L)).thenReturn(Optional.of(new Estudiante("Estudiante", "pass", "123", "e@example.com", "Sistemas")));
+        when(calificacionRepository.findFirstByEstudiante_IdAndDocenteIdAndMateriaId(25L, 1L, 10L))
                 .thenReturn(Optional.empty());
         when(calificacionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 

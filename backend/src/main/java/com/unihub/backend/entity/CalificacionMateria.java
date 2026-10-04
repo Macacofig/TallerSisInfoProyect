@@ -22,9 +22,9 @@ public class CalificacionMateria {
 	@JoinColumn(name = "id_materia", nullable = false)
 	private Materia materia;
 
-	// Cuando exista Estudiante, reemplazar este campo por @ManyToOne y @JoinColumn(name = "id_estudiante").
-	@Column(name = "id_estudiante")
-	private Long idEstudiante;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_estudiante")
+	private Estudiante estudiante;
 
 	@Column(nullable = false)
 	private Integer dificultad;
@@ -49,7 +49,7 @@ public class CalificacionMateria {
 
 	public CalificacionMateria(
 			Materia materia,
-			Long idEstudiante,
+			Estudiante estudiante,
 			Integer dificultad,
 			Integer carga,
 			Integer conocimientoPrevio,
@@ -58,7 +58,7 @@ public class CalificacionMateria {
 			String gestion
 	) {
 		this.materia = materia;
-		this.idEstudiante = idEstudiante;
+		this.estudiante = estudiante;
 		this.dificultad = dificultad;
 		this.carga = carga;
 		this.conocimientoPrevio = conocimientoPrevio;
@@ -75,8 +75,12 @@ public class CalificacionMateria {
 		return materia;
 	}
 
+	public Estudiante getEstudiante() {
+		return estudiante;
+	}
+
 	public Long getIdEstudiante() {
-		return idEstudiante;
+		return estudiante == null ? null : estudiante.getId();
 	}
 
 	public Integer getDificultad() {

@@ -30,8 +30,9 @@ public class CalificacionDocente {
 	@JoinColumn(name = "id_materia", nullable = false)
 	private Materia materia;
 
-	@Column(name = "id_estudiante")
-	private Long idEstudiante;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_estudiante")
+	private Estudiante estudiante;
 
 	@Column(nullable = false)
 	private Integer claridadExplicaciones;
@@ -51,7 +52,7 @@ public class CalificacionDocente {
 	public CalificacionDocente(
 			Docente docente,
 			Materia materia,
-			Long idEstudiante,
+			Estudiante estudiante,
 			Integer claridadExplicaciones,
 			Integer metodologia,
 			Integer relacionClasesEvaluaciones,
@@ -59,7 +60,7 @@ public class CalificacionDocente {
 	) {
 		this.docente = docente;
 		this.materia = materia;
-		this.idEstudiante = idEstudiante;
+		this.estudiante = estudiante;
 		this.claridadExplicaciones = claridadExplicaciones;
 		this.metodologia = metodologia;
 		this.relacionClasesEvaluaciones = relacionClasesEvaluaciones;
@@ -68,20 +69,21 @@ public class CalificacionDocente {
 
 	public CalificacionDocente(
 			Docente docente,
-			Long idEstudiante,
+			Estudiante estudiante,
 			Integer claridadExplicaciones,
 			Integer metodologia,
 			Integer relacionClasesEvaluaciones,
 			String gestion
 	) {
-		this(docente, docente.getMateria(), idEstudiante, claridadExplicaciones, metodologia,
+		this(docente, docente.getMateria(), estudiante, claridadExplicaciones, metodologia,
 				relacionClasesEvaluaciones, gestion);
 	}
 
 	public Long getId() { return id; }
 	public Docente getDocente() { return docente; }
 	public Materia getMateria() { return materia; }
-	public Long getIdEstudiante() { return idEstudiante; }
+	public Estudiante getEstudiante() { return estudiante; }
+	public Long getIdEstudiante() { return estudiante == null ? null : estudiante.getId(); }
 	public Integer getClaridadExplicaciones() { return claridadExplicaciones; }
 	public Integer getMetodologia() { return metodologia; }
 	public Integer getRelacionClasesEvaluaciones() { return relacionClasesEvaluaciones; }
