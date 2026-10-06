@@ -299,31 +299,23 @@ export class Registro {
         break;
 
       case 'VALIDACION':
-        this.errorGeneral.set(
-          this.aplicarErroresDelServidor(error.campos)
-            ? null
-            : M.ERROR_VALIDATION_SERVER
-        );
+        this.aplicarErroresDelServidor(error.campos);
+        this.errorGeneral.set(null);
         break;
 
       case 'SIN_CONEXION':
-        this.errorGeneral.set(M.ERROR_CONNECTION);
-        break;
-
       case 'TIEMPO_AGOTADO':
-        this.errorGeneral.set(M.ERROR_TIMEOUT);
-        break;
-
+      case 'SERVIDOR':
       default:
-        this.errorGeneral.set(M.ERROR_SERVER);
+        this.errorGeneral.set(M.ERROR_EMAIL_TAKEN);
     }
   }
 
   private aplicarErroresDelServidor(
     campos?: Record<string, string>
-  ): boolean {
+  ): void {
 
-    if (!campos) return false;
+    if (!campos) return;
 
     const equivalencias: Record<string, CampoRegistro> = {
       nombre: 'nombre',
@@ -333,8 +325,6 @@ export class Registro {
       telefono: 'telefono',
       contrasena: 'contrasena'
     };
-
-    let aplicado = false;
 
     for (const [campoServidor, mensaje] of Object.entries(campos)) {
 
@@ -349,11 +339,7 @@ export class Registro {
       });
 
       control.markAsTouched();
-
-      aplicado = true;
     }
-
-    return aplicado;
   }
 
   private enfocarPrimerCampoInvalido(): void {

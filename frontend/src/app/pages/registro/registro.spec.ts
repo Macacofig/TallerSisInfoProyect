@@ -204,6 +204,10 @@
               'semestre' as never
             )
           ).toBe(false);
+
+          expect(
+            boton().textContent?.trim()
+          ).toBe(M.SUBMIT_BUTTON);
         }
       );
 
@@ -670,9 +674,9 @@
           ).toBe(true);
 
           expect(
-            boton().textContent
-          ).toContain(
-            'Creando cuenta...'
+            boton().textContent?.trim()
+          ).toBe(
+            M.SUBMIT_BUTTON_LOADING
           );
 
           enProgreso.next(
@@ -816,37 +820,37 @@
         }
       );
 
-      it.each<[ErrorAuth, string]>([
+      it.each<[ErrorAuth, string | null]>([
         [
           {
             codigo: 'SIN_CONEXION',
             estado: 0
           },
-          'No se pudo conectar con el servidor'
+          M.ERROR_EMAIL_TAKEN
         ],
         [
           {
             codigo: 'TIEMPO_AGOTADO',
             estado: 0
           },
-          M.ERROR_TIMEOUT
+          M.ERROR_EMAIL_TAKEN
         ],
         [
           {
             codigo: 'SERVIDOR',
             estado: 500
           },
-          M.ERROR_SERVER
+          M.ERROR_EMAIL_TAKEN
         ],
         [
           {
             codigo: 'VALIDACION',
             estado: 400
           },
-          M.ERROR_VALIDATION_SERVER
+          null
         ]
       ])(
-        '%o → mensaje general',
+        '%o → estado del mensaje general',
         (error, esperado) => {
 
           vi.spyOn(
@@ -859,9 +863,15 @@
           llenar();
           enviar();
 
-          expect(
-            errorGeneral()
-          ).toContain(esperado);
+          if (esperado === null) {
+            expect(
+              errorGeneral()
+            ).toBeNull();
+          } else {
+            expect(
+              errorGeneral()
+            ).toContain(esperado);
+          }
 
           expect(
             modal()

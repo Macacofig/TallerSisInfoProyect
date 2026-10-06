@@ -63,10 +63,6 @@ export const REGISTRO_MESSAGES = {
 
   // Errores generales (encima del botón)
   ERROR_EMAIL_TAKEN: 'This email is already registered.',
-  ERROR_VALIDATION_SERVER: 'Check the entered information and try again.',
-  ERROR_CONNECTION: 'Could not connect to the server. Check your connection and try again.',
-  ERROR_TIMEOUT: 'The server took too long to respond. Please try again.',
-  ERROR_SERVER: 'A server error occurred. Please try again later.',
 
   // Modal de confirmación
   MODAL_TITLE: 'Account created!',
