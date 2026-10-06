@@ -13,9 +13,17 @@
 - `DocenteMateriaService`: INFO al crear una relación docente-materia.
 - `CalificacionMateriaService`: INFO al crear, actualizar o eliminar una calificación.
 - `CalificacionDocenteService`: INFO al crear, actualizar o eliminar una calificación.
-- `GlobalExceptionHandler`: WARN para solicitudes inválidas, recursos no encontrados, docente inexistente y calificación duplicada; también mantiene sus respuestas HTTP 400, 404 y 409.
+- `GlobalExceptionHandler`: ERROR cuando se rechaza un inicio de sesión por credenciales inválidas (HTTP 401), sin registrar correo ni contraseña. WARN para solicitudes inválidas, recursos no encontrados, docente inexistente y calificación duplicada; también mantiene sus respuestas HTTP 400, 404 y 409.
 
 Las consultas de lectura no generan logs de éxito para evitar volumen innecesario. Los servicios lanzan las excepciones de negocio y el advice global las registra y traduce a HTTP, evitando duplicar el registro en cada controlador. Las excepciones no contempladas por estos manejadores mantienen el procesamiento predeterminado de Spring MVC; no se agregó un manejador general que cambie las respuestas HTTP.
+
+## Acciones desde el frontend
+
+- INFO: una operación exitosa de registro mediante `AuthService.registerUser()` o una actualización mediante `AuthService.actualizarUsuario()`.
+- ERROR: enviar credenciales incorrectas desde el formulario de login; el formulario llama a `AuthService.loginUser()`, y el backend registra un mensaje genérico y responde HTTP 401.
+- WARN: intentar registrar un estudiante usando un correo ya registrado mediante `AuthService.registerUser()`. El backend rechaza la operación con HTTP 400 y registra `Solicitud inválida rechazada`. También se registra WARN al duplicar una calificación docente mediante `CalificacionesDocenteService.registrarCalificacion()`; ese caso responde HTTP 409.
+
+No se debe invocar `LogHelper` desde Angular: el frontend dispara la operación y el backend registra el evento donde conoce el resultado. Para provocar el WARN de registro, intenta registrar un correo existente en un entorno de desarrollo; no uses datos personales reales.
 
 ## Uso en nuevas implementaciones
 

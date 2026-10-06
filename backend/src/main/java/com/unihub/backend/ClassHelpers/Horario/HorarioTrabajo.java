@@ -8,7 +8,6 @@ public record HorarioTrabajo(
         int dia,
         LocalTime horaInicio,
         LocalTime horaFin,
-        int paralelo,
-        int puntuacion
+        int paralelo
 ) {
 }

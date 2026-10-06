@@ -15,6 +15,12 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(exception.getMessage());
 	}
 
+	@ExceptionHandler(CredencialesInvalidasException.class)
+	public ResponseEntity<String> manejarCredencialesInvalidas(CredencialesInvalidasException exception) {
+		LogHelper.error(GlobalExceptionHandler.class, "Inicio de sesión rechazado por credenciales inválidas", null);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+	}
+
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<String> manejarRecursoNoEncontrado(ResourceNotFoundException exception) {
 		LogHelper.warn(GlobalExceptionHandler.class, "Recurso solicitado no encontrado");

@@ -5,6 +5,7 @@ import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,8 +89,8 @@ class EstudianteServiceTest {
         );
         when(estudianteRepository.existsByCorreoElectronicoIgnoreCase("ana@ucb.edu.bo")).thenReturn(true);
 
-        IllegalArgumentException excepcion = assertThrows(
-                IllegalArgumentException.class,
+        BadRequestException excepcion = assertThrows(
+                BadRequestException.class,
                 () -> estudianteService.registrar(request)
         );
 

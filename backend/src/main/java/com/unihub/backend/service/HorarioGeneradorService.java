@@ -34,6 +34,22 @@ public class HorarioGeneradorService {
                 && a.horaFin().isAfter(b.horaInicio());
     }
 
+    public boolean tieneConflictoInterno(Oferta oferta) {
+        if (oferta == null || oferta.horarios() == null || oferta.horarios().isEmpty()) {
+            return false;
+        }
+
+        for (int i = 0; i < oferta.horarios().size(); i++) {
+            for (int j = i + 1; j < oferta.horarios().size(); j++) {
+                if (hayConflicto(oferta.horarios().get(i), oferta.horarios().get(j))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public List<SolucionHorario> generar(
             Map<Long, List<Oferta>> ofertasPorMateria,
             HorarioFiltroRequest filtros,
@@ -50,6 +66,7 @@ public class HorarioGeneradorService {
 
             List<Oferta> validas = entry.getValue().stream()
                     .filter(oferta -> cumpleRestriccionDocente(oferta, filtroFinal.docentes()))
+                    .filter(oferta -> cumpleDisponibilidad(oferta, filtroFinal.horariosNoDisponibles()))
                     .toList();
 
             if (!validas.isEmpty()) {
@@ -126,6 +143,9 @@ public class HorarioGeneradorService {
             if (hayConflictoConSeleccionados(oferta.horarios(), seleccionados)) {
                 continue;
             }
+            if (tieneConflictoInterno(oferta)) {
+                continue;
+            }
 
             List<HorarioTrabajo> nuevosSeleccionados = new ArrayList<>(seleccionados);
             nuevosSeleccionados.addAll(oferta.horarios());
@@ -199,10 +219,6 @@ public class HorarioGeneradorService {
                 score += 10;
             }
 
-            if (ofertaEvitaHorariosNoDisponibles(ofertaHorarios, filtros.horariosNoDisponibles())) {
-                score += 5;
-            }
-
             if (Boolean.TRUE.equals(filtros.evitarHuecos()) && !tieneHueco(ofertaHorarios)) {
                 score += 5;
             }
@@ -231,26 +247,6 @@ public class HorarioGeneradorService {
         }
 
         return false;
-    }
-
-    private boolean ofertaEvitaHorariosNoDisponibles(
-            List<HorarioTrabajo> horarios,
-            List<HorarioBloqueFiltroRequest> horariosNoDisponibles
-    ) {
-        if (horariosNoDisponibles == null || horariosNoDisponibles.isEmpty()) {
-            return true;
-        }
-
-        for (HorarioTrabajo horario : horarios) {
-            for (HorarioBloqueFiltroRequest noDisponible : horariosNoDisponibles) {
-                if (horario.dia() == noDisponible.dia()
-                        && horario.horaInicio().isBefore(LocalTime.parse(noDisponible.horaFin()))
-                        && horario.horaFin().isAfter(LocalTime.parse(noDisponible.horaInicio()))) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     private boolean tieneHueco(List<HorarioTrabajo> horarios) {
@@ -293,18 +289,41 @@ public class HorarioGeneradorService {
             return true;
         }
 
-        boolean hayRestriccionParaMateria = false;
         for (Map.Entry<Long, List<Long>> entry : docentes.entrySet()) {
             Long docenteId = entry.getKey();
             List<Long> materiasPermitidas = entry.getValue();
             if (materiasPermitidas.contains(oferta.materiaId())) {
-                hayRestriccionParaMateria = true;
                 if (!docenteId.equals(oferta.docenteId())) {
                     return false;
                 }
             }
         }
 
+        return true;
+    }
+
+    private boolean cumpleDisponibilidad(Oferta oferta, List<HorarioBloqueFiltroRequest> noDisponibles) {
+        if (noDisponibles == null || noDisponibles.isEmpty()) {
+            return true;
+        }
+
+        for (HorarioTrabajo horario : oferta.horarios()) {
+            for (HorarioBloqueFiltroRequest bloque : noDisponibles) {
+                if (bloque == null || horario.dia() != bloque.dia()) {
+                    continue;
+                }
+                try {
+                    LocalTime inicio = LocalTime.parse(bloque.horaInicio());
+                    LocalTime fin = LocalTime.parse(bloque.horaFin());
+                    if (!inicio.isBefore(fin)
+                            || horario.horaInicio().isBefore(fin) && horario.horaFin().isAfter(inicio)) {
+                        return false;
+                    }
+                } catch (RuntimeException ignored) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 }

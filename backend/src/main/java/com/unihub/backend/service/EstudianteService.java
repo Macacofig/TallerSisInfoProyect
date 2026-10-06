@@ -7,6 +7,7 @@ import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.CredencialesInvalidasException;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
@@ -28,7 +29,7 @@ public class EstudianteService {
 
     public EstudianteResponse registrar(EstudianteRequest request) {
         if (estudianteRepository.existsByCorreoElectronicoIgnoreCase(request.correoElectronico())) {
-            throw new IllegalArgumentException("El correo electrónico ya está registrado");
+            throw new BadRequestException("El correo electrónico ya está registrado");
         }
 
         Estudiante estudiante = new Estudiante(
@@ -62,10 +63,10 @@ public class EstudianteService {
         String contrasena = request.contrasena();
 
         Estudiante estudiante = estudianteRepository.findByCorreoElectronicoIgnoreCase(correoElectronico)
-                .orElseThrow(() -> new IllegalArgumentException("Correo electrónico o contraseña incorrectos"));
+                .orElseThrow(CredencialesInvalidasException::new);
 
         if (!estudiante.getContrasena().equals(contrasena)) {
-            throw new IllegalArgumentException("Correo electrónico o contraseña incorrectos");
+            throw new CredencialesInvalidasException();
         }
 
         LogHelper.debug(EstudianteService.class, "Inicio de sesión completado correctamente");

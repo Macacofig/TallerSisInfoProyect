@@ -1,6 +1,8 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
+import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.CredencialesInvalidasException;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.service.EstudianteService;
 import org.junit.jupiter.api.Test;
@@ -68,6 +70,33 @@ class EstudianteControllerTest {
 
         verify(estudianteService, never()).registrar(any());
     }
+
+    @Test
+    void deberiaResponder400CuandoElCorreoYaEstaRegistrado() throws Exception {
+        doThrow(new BadRequestException("El correo electrónico ya está registrado"))
+                .when(estudianteService).registrar(any());
+
+        mockMvc.perform(post("/api/estudiantes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo("ClaveSegura1!")))
+                .andExpect(status().isBadRequest());
+    }
+
+        @Test
+        void deberiaResponder401CuandoLasCredencialesSonInvalidas() throws Exception {
+                doThrow(new CredencialesInvalidasException())
+                                .when(estudianteService).iniciarSesion(any());
+
+                mockMvc.perform(post("/api/estudiantes/login")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content("""
+                                                                {
+                                                                    "correoElectronico": "ana@ucb.edu.bo",
+                                                                    "contrasena": "incorrecta"
+                                                                }
+                                                                """))
+                                .andExpect(status().isUnauthorized());
+        }
 
     @Test
     void deberiaRechazarTelefonoInvalido() throws Exception {
