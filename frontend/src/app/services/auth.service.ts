@@ -116,6 +116,9 @@ export function mapearErrorHttp(error: unknown): ErrorAuth {
       case 0:
         return { codigo: 'SIN_CONEXION', estado: 0 };
       case 400:
+        if (esCorreoDuplicado(error.error)) {
+          return { codigo: 'CORREO_DUPLICADO', estado: 400 };
+        }
         return { codigo: 'VALIDACION', estado: 400, campos: extraerErroresPorCampo(error.error) };
       case 409:
         return { codigo: 'CORREO_DUPLICADO', estado: 409 };
@@ -125,6 +128,25 @@ export function mapearErrorHttp(error: unknown): ErrorAuth {
   }
 
   return { codigo: 'SERVIDOR', estado: 0 };
+}
+
+function esCorreoDuplicado(cuerpo: unknown): boolean {
+  const mensaje =
+    typeof cuerpo === 'string'
+      ? cuerpo
+      : cuerpo !== null && typeof cuerpo === 'object'
+        ? Object.values(cuerpo).filter(
+            (valor): valor is string => typeof valor === 'string'
+          ).join(' ')
+        : '';
+
+  const normalizado = mensaje
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  return /(?:correo|email)/.test(normalizado)
+    && /(?:ya\s+(?:esta\s+)?registrad|already\s+(?:exists|registered)|duplicad)/.test(normalizado);
 }
 
 function extraerErroresPorCampo(cuerpo: unknown): Record<string, string> | undefined {

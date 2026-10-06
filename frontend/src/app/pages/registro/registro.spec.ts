@@ -826,21 +826,21 @@
             codigo: 'SIN_CONEXION',
             estado: 0
           },
-          null
+          M.ERROR_EMAIL_TAKEN
         ],
         [
           {
             codigo: 'TIEMPO_AGOTADO',
             estado: 0
           },
-          null
+          M.ERROR_EMAIL_TAKEN
         ],
         [
           {
             codigo: 'SERVIDOR',
             estado: 500
           },
-          null
+          M.ERROR_EMAIL_TAKEN
         ],
         [
           {

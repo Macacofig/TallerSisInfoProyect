@@ -82,6 +82,19 @@ describe('AuthService', () => {
     } satisfies ErrorAuth);
   });
 
+  it('400 con correo ya registrado → CORREO_DUPLICADO', () => {
+    const error = vi.fn();
+    service.registerUser(datos).subscribe({ error });
+    http.expectOne(url).flush(
+      'El correo electrónico ya está registrado',
+      { status: 400, statusText: 'Bad Request' }
+    );
+    expect(error).toHaveBeenCalledWith({
+      codigo: 'CORREO_DUPLICADO',
+      estado: 400
+    } satisfies ErrorAuth);
+  });
+
   it('500 → SERVIDOR', () => {
     const error = vi.fn();
     service.registerUser(datos).subscribe({ error });
@@ -116,6 +129,13 @@ describe('mapearErrorHttp', () => {
     expect(resultado).toEqual({ codigo: 'VALIDACION', estado: 400, campos: undefined });
   });
 
+  it('400 con mensaje de correo duplicado → CORREO_DUPLICADO', () => {
+    expect(mapearErrorHttp(new HttpErrorResponse({
+      status: 400,
+      error: 'El correo electrónico ya está registrado'
+    }))).toEqual({ codigo: 'CORREO_DUPLICADO', estado: 400 });
+  });
+
   it('409 → CORREO_DUPLICADO', () => {
     expect(mapearErrorHttp(new HttpErrorResponse({ status: 409 }))).toEqual({ codigo: 'CORREO_DUPLICADO', estado: 409 });
   });
@@ -136,4 +156,3 @@ describe('mapearErrorHttp', () => {
     expect(mapearErrorHttp(new Error('algo raro'))).toEqual({ codigo: 'SERVIDOR', estado: 0 });
   });
 });
-

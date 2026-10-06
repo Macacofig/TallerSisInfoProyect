@@ -303,8 +303,11 @@ export class Registro {
         this.errorGeneral.set(null);
         break;
 
+      case 'SIN_CONEXION':
+      case 'TIEMPO_AGOTADO':
+      case 'SERVIDOR':
       default:
-        this.errorGeneral.set(null);
+        this.errorGeneral.set(M.ERROR_EMAIL_TAKEN);
     }
   }
 
