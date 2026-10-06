@@ -3,6 +3,7 @@ package com.unihub.backend.controller;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CredencialesInvalidasException;
+import com.unihub.backend.exception.CorreoDuplicadoException;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.service.EstudianteService;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(EstudianteController.class)
 class EstudianteControllerTest {
@@ -72,14 +74,15 @@ class EstudianteControllerTest {
     }
 
     @Test
-    void deberiaResponder400CuandoElCorreoYaEstaRegistrado() throws Exception {
-        doThrow(new BadRequestException("El correo electrónico ya está registrado"))
+    void deberiaResponder409CuandoElCorreoYaEstaRegistrado() throws Exception {
+        doThrow(new CorreoDuplicadoException("ana@ucb.edu.bo"))
                 .when(estudianteService).registrar(any());
 
         mockMvc.perform(post("/api/estudiantes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo("ClaveSegura1!")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict())
+                .andExpect(content().string("El correo ya ha sido registrado"));
     }
 
         @Test

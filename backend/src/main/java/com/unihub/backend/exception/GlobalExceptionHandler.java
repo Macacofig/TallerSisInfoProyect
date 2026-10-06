@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	@ExceptionHandler(CorreoDuplicadoException.class)
+	public ResponseEntity<String> manejarCorreoDuplicado(CorreoDuplicadoException exception) {
+		LogHelper.warn(GlobalExceptionHandler.class, "Correo ya registrado: " + exception.correoElectronico());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+	}
+
 	@ExceptionHandler(BadRequestException.class)
 	public ResponseEntity<String> manejarSolicitudInvalida(BadRequestException exception) {
 		LogHelper.warn(GlobalExceptionHandler.class, "Solicitud inválida rechazada");

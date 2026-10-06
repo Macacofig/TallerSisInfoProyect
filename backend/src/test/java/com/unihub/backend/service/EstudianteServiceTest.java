@@ -6,6 +6,7 @@ import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.CorreoDuplicadoException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,12 +90,13 @@ class EstudianteServiceTest {
         );
         when(estudianteRepository.existsByCorreoElectronicoIgnoreCase("ana@ucb.edu.bo")).thenReturn(true);
 
-        BadRequestException excepcion = assertThrows(
-                BadRequestException.class,
+        CorreoDuplicadoException excepcion = assertThrows(
+                CorreoDuplicadoException.class,
                 () -> estudianteService.registrar(request)
         );
 
-        assertEquals("El correo electrónico ya está registrado", excepcion.getMessage());
+        assertEquals("El correo ya ha sido registrado", excepcion.getMessage());
+        assertEquals("ana@ucb.edu.bo", excepcion.correoElectronico());
         verify(estudianteRepository, never()).save(any(Estudiante.class));
         mostrarResultado("Rechazar registro cuando el correo ya está registrado");
     }

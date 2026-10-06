@@ -7,6 +7,7 @@ import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.CorreoDuplicadoException;
 import com.unihub.backend.exception.CredencialesInvalidasException;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.EstudianteMapper;
@@ -29,7 +30,7 @@ public class EstudianteService {
 
     public EstudianteResponse registrar(EstudianteRequest request) {
         if (estudianteRepository.existsByCorreoElectronicoIgnoreCase(request.correoElectronico())) {
-            throw new BadRequestException("El correo electrónico ya está registrado");
+            throw new CorreoDuplicadoException(request.correoElectronico());
         }
 
         Estudiante estudiante = new Estudiante(

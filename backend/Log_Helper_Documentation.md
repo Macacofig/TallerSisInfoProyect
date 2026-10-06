@@ -21,7 +21,7 @@ Las consultas de lectura no generan logs de éxito para evitar volumen innecesar
 
 - INFO: una operación exitosa de registro mediante `AuthService.registerUser()` o una actualización mediante `AuthService.actualizarUsuario()`.
 - ERROR: enviar credenciales incorrectas desde el formulario de login; el formulario llama a `AuthService.loginUser()`, y el backend registra un mensaje genérico y responde HTTP 401.
-- WARN: intentar registrar un estudiante usando un correo ya registrado mediante `AuthService.registerUser()`. El backend rechaza la operación con HTTP 400 y registra `Solicitud inválida rechazada`. También se registra WARN al duplicar una calificación docente mediante `CalificacionesDocenteService.registrarCalificacion()`; ese caso responde HTTP 409.
+- WARN: intentar registrar un estudiante usando un correo ya registrado mediante `AuthService.registerUser()`. El backend registra el correo en el WARN, responde HTTP 409 y la UI muestra `El correo ya ha sido registrado`. También se registra WARN al duplicar una calificación docente mediante `CalificacionesDocenteService.registrarCalificacion()`; ese caso responde HTTP 409.
 
 No se debe invocar `LogHelper` desde Angular: el frontend dispara la operación y el backend registra el evento donde conoce el resultado. Para provocar el WARN de registro, intenta registrar un correo existente en un entorno de desarrollo; no uses datos personales reales.
 
