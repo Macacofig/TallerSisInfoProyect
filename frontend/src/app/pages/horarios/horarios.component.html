@@ -1,0 +1,74 @@
+<section class="horarios-page">
+
+  <header class="page-header">
+    <p class="eyebrow">Planificación</p>
+
+    <h1 class="title">Generador de horarios</h1>
+
+    <p class="subtitle">
+      Elige tus materias y sus opciones horarias. Descartamos automáticamente
+      las combinaciones con cruces.
+    </p>
+
+    <hr class="divider">
+  </header>
+
+
+  <section class="materias-panel">
+
+    <h2 class="panel-title">Materias del semestre</h2>
+
+    <div class="panel-list">
+
+      @for (materia of materias; track materia.codigo) {
+
+        <article class="materia-horario">
+
+          <div class="materia-horario__header">
+
+            <input
+              type="checkbox"
+              [checked]="materia.seleccionada"
+              [attr.aria-label]="'Seleccionar ' + materia.nombre"
+            >
+
+            <div class="materia-horario__info">
+
+              <h3>{{ materia.nombre }}</h3>
+
+              <p>{{ materia.codigo }}</p>
+
+            </div>
+
+          </div>
+
+
+          <div class="materia-horario__opciones">
+
+            @for (opcion of materia.opciones; track opcion.etiqueta) {
+
+              <p class="opcion">
+
+                <span class="opcion__etiqueta">
+                  {{ opcion.etiqueta }}
+                </span>
+
+                <span class="opcion__horario">
+                  {{ opcion.horario }}
+                </span>
+
+              </p>
+
+            }
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+
+  </section>
+
+</section>

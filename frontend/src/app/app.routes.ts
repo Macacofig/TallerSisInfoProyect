@@ -8,6 +8,7 @@ import { MateriaDetalleComponent } from './pages/materias/detail/materia-detalle
 import { Registro } from './pages/registro/registro';
 import { Login } from './pages/login/login';
 import { Perfil } from './pages/perfil/perfil';
+import { HorariosComponent } from './pages/horarios/horarios.component';
 
 export const routes: Routes = [
 
@@ -37,6 +38,11 @@ export const routes: Routes = [
   },
 
   {
+    path: 'horarios',
+    component: HorariosComponent
+  },
+
+  {
     path: 'materias/:materiaId',
     component: MateriaDetalleComponent
   },
@@ -44,6 +50,5 @@ export const routes: Routes = [
   {
     path: 'perfil',
     component: Perfil
-  },
-
+  }
 ];
