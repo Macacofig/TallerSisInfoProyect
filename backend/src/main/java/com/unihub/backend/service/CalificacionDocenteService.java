@@ -7,6 +7,7 @@ import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.entity.CalificacionDocente;
 import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.exception.CalificacionDocenteDuplicadaException;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.mapper.CalificacionDocenteMapper;
 import com.unihub.backend.repository.CalificacionDocenteRepository;
@@ -66,7 +67,7 @@ public class CalificacionDocenteService {
 				.findFirstByEstudiante_IdAndDocenteIdAndMateriaId(
 						request.idEstudiante(), request.idDocente(), request.idMateria());
 		if (existente.isPresent()) {
-			throw new IllegalArgumentException("El estudiante ya calificó a este docente");
+			throw new CalificacionDocenteDuplicadaException();
 		}
 
 		CalificacionDocente calificacion = calificacionMapper.toEntity(request, docente, materia, estudiante);
