@@ -1,6 +1,9 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
+import com.unihub.backend.exception.BadRequestException;
+import com.unihub.backend.exception.CredencialesInvalidasException;
+import com.unihub.backend.exception.CorreoDuplicadoException;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.service.EstudianteService;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(EstudianteController.class)
 class EstudianteControllerTest {
@@ -68,6 +72,34 @@ class EstudianteControllerTest {
 
         verify(estudianteService, never()).registrar(any());
     }
+
+    @Test
+    void deberiaResponder409CuandoElCorreoYaEstaRegistrado() throws Exception {
+        doThrow(new CorreoDuplicadoException("ana@ucb.edu.bo"))
+                .when(estudianteService).registrar(any());
+
+        mockMvc.perform(post("/api/estudiantes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo("ClaveSegura1!")))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("El correo ya ha sido registrado"));
+    }
+
+        @Test
+        void deberiaResponder401CuandoLasCredencialesSonInvalidas() throws Exception {
+                doThrow(new CredencialesInvalidasException())
+                                .when(estudianteService).iniciarSesion(any());
+
+                mockMvc.perform(post("/api/estudiantes/login")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content("""
+                                                                {
+                                                                    "correoElectronico": "ana@ucb.edu.bo",
+                                                                    "contrasena": "incorrecta"
+                                                                }
+                                                                """))
+                                .andExpect(status().isUnauthorized());
+        }
 
     @Test
     void deberiaRechazarTelefonoInvalido() throws Exception {

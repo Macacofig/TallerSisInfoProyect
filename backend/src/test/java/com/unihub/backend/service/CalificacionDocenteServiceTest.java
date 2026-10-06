@@ -4,6 +4,7 @@ import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
+import com.unihub.backend.exception.CalificacionDocenteDuplicadaException;
 import com.unihub.backend.mapper.CalificacionDocenteMapper;
 import com.unihub.backend.repository.CalificacionDocenteRepository;
 import com.unihub.backend.repository.DocenteMateriaRepository;
@@ -71,6 +72,22 @@ class CalificacionDocenteServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> calificacionService.crear(request));
         mostrarResultado("Rechazar una calificacion cuando el docente no imparte la materia");
+    }
+
+    @Test
+    @DisplayName("Rechazar una calificacion duplicada con la excepcion manejada como WARN")
+    void deberiaLanzarExcepcionDeCalificacionDuplicada() {
+        CalificacionDocenteRequest request = new CalificacionDocenteRequest(1L, 10L, 25L, 8, 7, 9, "año-I");
+        when(docenteRepository.findById(1L)).thenReturn(Optional.of(new Docente("Ana Docente")));
+        when(materiaRepository.findById(10L)).thenReturn(Optional.of(new Materia()));
+        when(docenteMateriaRepository.existsByDocenteIdAndMateriaId(1L, 10L)).thenReturn(true);
+        when(estudianteRepository.findById(25L)).thenReturn(Optional.of(
+                new Estudiante("Estudiante", "pass", "123", "e@example.com", "Sistemas")));
+        when(calificacionRepository.findFirstByEstudiante_IdAndDocenteIdAndMateriaId(25L, 1L, 10L))
+                .thenReturn(Optional.of(mock(com.unihub.backend.entity.CalificacionDocente.class)));
+
+        assertThrows(CalificacionDocenteDuplicadaException.class, () -> calificacionService.crear(request));
+        mostrarResultado("Rechazar la calificacion duplicada con la excepcion manejada como WARN");
     }
 
     private void mostrarResultado(String mensaje) {

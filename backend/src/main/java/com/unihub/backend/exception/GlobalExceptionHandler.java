@@ -9,10 +9,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	@ExceptionHandler(CorreoDuplicadoException.class)
+	public ResponseEntity<String> manejarCorreoDuplicado(CorreoDuplicadoException exception) {
+		LogHelper.warn(GlobalExceptionHandler.class, "Correo ya registrado: " + exception.correoElectronico());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+	}
+
 	@ExceptionHandler(BadRequestException.class)
 	public ResponseEntity<String> manejarSolicitudInvalida(BadRequestException exception) {
 		LogHelper.warn(GlobalExceptionHandler.class, "Solicitud inválida rechazada");
 		return ResponseEntity.badRequest().body(exception.getMessage());
+	}
+
+	@ExceptionHandler(CredencialesInvalidasException.class)
+	public ResponseEntity<String> manejarCredencialesInvalidas(CredencialesInvalidasException exception) {
+		LogHelper.error(GlobalExceptionHandler.class, "Inicio de sesión rechazado por credenciales inválidas", null);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
 	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
