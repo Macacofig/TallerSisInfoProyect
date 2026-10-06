@@ -263,13 +263,9 @@
               aria-hidden="true"
             ></span>
 
-            {{ MESSAGES.SUBMIT_BUTTON_LOADING }}
-
-          } @else {
-
-            {{ MESSAGES.SUBMIT_BUTTON }}
-
           }
+
+          {{ enviando() ? MESSAGES.SUBMIT_BUTTON_LOADING : MESSAGES.SUBMIT_BUTTON }}
 
         </button>
 
