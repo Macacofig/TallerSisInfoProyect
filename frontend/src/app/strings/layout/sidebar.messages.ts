@@ -7,5 +7,6 @@ export const SIDEBAR_MESSAGES = {
   NAVIGATION_LABEL: 'Navegación principal',
   MENU_HOME: 'Home',
   MENU_MATERIAS: 'Materias',
+  MENU_HORARIOS: 'Horarios',
   DEMO_NOTICE: 'Datos de demostración. La información mostrada es ficticia.',
 } as const;

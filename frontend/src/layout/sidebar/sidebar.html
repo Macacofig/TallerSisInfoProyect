@@ -100,6 +100,53 @@
 
     </a>
 
+    <a
+      routerLink="/horarios"
+      routerLinkActive="sidebar__item--active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="sidebar__item"
+    >
+
+      <span
+        class="sidebar__icon"
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            x="4"
+            y="5"
+            width="16"
+            height="15"
+            rx="2"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+
+          <path
+            d="M8 3V7M16 3V7M4 10H20"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+
+          <path
+            d="M8 14H8.01M12 14H12.01M16 14H16.01M8 17H8.01M12 17H12.01M16 17H16.01"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+
+      <span class="sidebar__label">
+        {{ SIDEBAR_MESSAGES.MENU_HORARIOS }}
+      </span>
+
+    </a>
   </nav>
 
 
