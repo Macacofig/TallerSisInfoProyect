@@ -3,6 +3,7 @@ package com.unihub.backend.service;
 import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
+import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
@@ -19,13 +20,16 @@ public class EstudianteService {
 
     private final EstudianteRepository estudianteRepository;
     private final EstudianteMapper estudianteMapper;
+    private final JwtService jwtService;
 
     public EstudianteService(
             EstudianteRepository estudianteRepository,
-            EstudianteMapper estudianteMapper
+            EstudianteMapper estudianteMapper,
+            JwtService jwtService
     ) {
         this.estudianteRepository = estudianteRepository;
         this.estudianteMapper = estudianteMapper;
+        this.jwtService = jwtService;
     }
 
     public EstudianteResponse registrar(EstudianteRequest request) {
@@ -59,7 +63,7 @@ public class EstudianteService {
         return response;
     }
 
-    public EstudianteResponse iniciarSesion(EstudianteLoginRequest request) {
+    public EstudianteLoginResponse iniciarSesion(EstudianteLoginRequest request) {
         String correoElectronico = request.correoElectronico();
         String contrasena = request.contrasena();
 
@@ -71,6 +75,10 @@ public class EstudianteService {
         }
 
         LogHelper.debug(EstudianteService.class, "Inicio de sesión completado correctamente");
-        return estudianteMapper.toResponse(estudiante);
+        return new EstudianteLoginResponse(
+            jwtService.generarToken(estudiante),
+            jwtService.obtenerDuracionSegundos(),
+            estudianteMapper.toResponse(estudiante)
+        );
     }
 }
