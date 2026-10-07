@@ -1,6 +1,9 @@
 <section class="horarios-page">
 
+  <!-- ENCABEZADO -->
+
   <header class="page-header">
+
     <p class="eyebrow">Planificación</p>
 
     <h1 class="title">Generador de horarios</h1>
@@ -11,64 +14,182 @@
     </p>
 
     <hr class="divider">
+
   </header>
 
 
-  <section class="materias-panel">
+  <!-- CONTENIDO PRINCIPAL -->
 
-    <h2 class="panel-title">Materias del semestre</h2>
+  <div class="horarios-layout">
 
-    <div class="panel-list">
+    <!-- MATERIAS -->
 
-      @for (materia of materias; track materia.codigo) {
+    <section class="materias-panel">
 
-        <article class="materia-horario">
+      <h2 class="panel-title">Materias del semestre</h2>
 
-          <div class="materia-horario__header">
+      <div class="panel-list">
 
-            <input
-              type="checkbox"
-              [checked]="materia.seleccionada"
-              [attr.aria-label]="'Seleccionar ' + materia.nombre"
-            >
+        @for (materia of materias; track materia.codigo) {
 
-            <div class="materia-horario__info">
+          <article class="materia-horario">
 
-              <h3>{{ materia.nombre }}</h3>
+            <div class="materia-horario__header">
 
-              <p>{{ materia.codigo }}</p>
+              <input
+                type="checkbox"
+                [checked]="materia.seleccionada"
+                [attr.aria-label]="'Seleccionar ' + materia.nombre"
+              >
+
+              <div class="materia-horario__info">
+
+                <h3>{{ materia.nombre }}</h3>
+
+                <p>{{ materia.codigo }}</p>
+
+              </div>
 
             </div>
 
+
+            <div class="materia-horario__opciones">
+
+              @for (opcion of materia.opciones; track opcion.etiqueta) {
+
+                <p class="opcion">
+
+                  <span class="opcion__etiqueta">
+                    {{ opcion.etiqueta }}
+                  </span>
+
+                  <span class="opcion__horario">
+                    {{ opcion.horario }}
+                  </span>
+
+                </p>
+
+              }
+
+            </div>
+
+          </article>
+
+        }
+
+      </div>
+
+    </section>
+
+
+    <!-- RESULTADOS -->
+
+    <section class="resultados">
+
+      @if (hayHorarios) {
+
+        <div class="resultados__barra">
+
+          <div class="resultados__info">
+
+            <svg
+              class="resultados__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 12.5L9.5 17L19 7"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span>
+              Horarios posibles encontrados: {{ totalHorarios }}
+            </span>
+
           </div>
 
 
-          <div class="materia-horario__opciones">
+          <div class="resultados__paginacion">
 
-            @for (opcion of materia.opciones; track opcion.etiqueta) {
+            <button
+              type="button"
+              [disabled]="paginaActual === 1"
+              (click)="anterior()"
+            >
+              Anterior
+            </button>
 
-              <p class="opcion">
+            <span>
+              {{ paginaActual }} / {{ totalHorarios }}
+            </span>
 
-                <span class="opcion__etiqueta">
-                  {{ opcion.etiqueta }}
-                </span>
-
-                <span class="opcion__horario">
-                  {{ opcion.horario }}
-                </span>
-
-              </p>
-
-            }
+            <button
+              type="button"
+              [disabled]="esUltimaPagina"
+              (click)="siguiente()"
+            >
+              Siguiente
+            </button>
 
           </div>
 
-        </article>
+        </div>
+
+      } @else {
+
+        <div class="resultados__barra resultados__barra--vacia">
+
+          <div class="resultados__info resultados__info--warning">
+
+            <svg
+              class="resultados__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+
+              <path
+                d="M12 4L21 20H3L12 4Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+              />
+
+              <path
+                d="M12 9V14"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+
+              <circle
+                cx="12"
+                cy="17"
+                r="1"
+                fill="currentColor"
+              />
+
+            </svg>
+
+            <span>
+              No hay combinaciones sin cruces
+            </span>
+
+          </div>
+
+        </div>
 
       }
 
-    </div>
+    </section>
 
-  </section>
+  </div>
 
 </section>
