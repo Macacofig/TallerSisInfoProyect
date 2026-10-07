@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
+import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
@@ -42,7 +43,11 @@ class EstudianteServiceTest {
 
     @BeforeEach
     void setUp() {
-        estudianteService = new EstudianteService(estudianteRepository, new EstudianteMapper());
+        estudianteService = new EstudianteService(
+                estudianteRepository,
+                new EstudianteMapper(),
+                new JwtService("test-secret-key-with-at-least-32-bytes", 3600)
+        );
         numeroPrueba++;
     }
 
@@ -143,11 +148,14 @@ class EstudianteServiceTest {
         );
         when(estudianteRepository.findByCorreoElectronicoIgnoreCase("ana@ucb.edu.bo")).thenReturn(Optional.of(estudiante));
 
-        EstudianteResponse resultado = estudianteService.iniciarSesion(request);
+        EstudianteLoginResponse resultado = estudianteService.iniciarSesion(request);
 
         assertEquals("Ana Pérez", resultado.nombre());
         assertEquals("ana@ucb.edu.bo", resultado.correoElectronico());
         assertEquals("Ingeniería de Sistemas", resultado.carrera());
+        assertEquals("Bearer", resultado.tokenType());
+        assertEquals(3600, resultado.expiresIn());
+        org.junit.jupiter.api.Assertions.assertFalse(resultado.accessToken().isBlank());
         mostrarResultado("Iniciar sesión con correo y contraseña válidos");
     }
 
