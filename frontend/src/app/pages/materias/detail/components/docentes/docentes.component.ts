@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
@@ -98,7 +98,7 @@ interface HistorialDocenteGestion {
     ReactiveFormsModule
   ],
   templateUrl: './docentes.component.html',
-  styleUrl: './docentes.component.scss'
+  styleUrl: './docentes.component.css'
 })
 export class DocentesComponent implements OnChanges {
 

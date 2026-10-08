@@ -184,7 +184,6 @@ p {
 ========================= */
 
 @keyframes logoIntro {
-
   0% {
     opacity: 0;
     transform: scale(0.85);
@@ -204,11 +203,9 @@ p {
     opacity: 0;
     transform: scale(1.05);
   }
-
 }
 
 @keyframes nodeAppear {
-
   0% {
     opacity: 0;
     transform: scale(0);
@@ -223,11 +220,9 @@ p {
     opacity: 0.6;
     transform: scale(1);
   }
-
 }
 
 @keyframes lineAppear {
-
   0% {
     opacity: 0;
     transform: scaleX(0);
@@ -237,11 +232,9 @@ p {
     opacity: 1;
     transform: scaleX(1);
   }
-
 }
 
 @keyframes splashOut {
-
   0% {
     opacity: 1;
   }
@@ -251,7 +244,6 @@ p {
     visibility: hidden;
     pointer-events: none;
   }
-
 }
 
 /* =========================
@@ -259,7 +251,6 @@ p {
 ========================= */
 
 @media (max-width: 600px) {
-
   h1 {
     font-size: 42px;
   }
@@ -274,5 +265,4 @@ p {
   .line {
     width: 100px;
   }
-
 }

@@ -5,6 +5,7 @@ import {
 } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
+import { PERFIL_MESSAGES } from '../../strings/perfil/perfil.messages';
 
 @Component({
   selector: 'app-perfil',
@@ -13,6 +14,8 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './perfil.css',
 })
 export class Perfil {
+
+  readonly MESSAGES = PERFIL_MESSAGES;
 
   readonly modalVisible = signal(false);
   readonly modalExito = signal(false);
@@ -35,80 +38,76 @@ export class Perfil {
     carrera: [
       this.usuario?.carrera ?? ''
     ]
-
   });
 
-guardarCambios(): void {
-  if (!this.usuario) {
-    return;
-  }
+  guardarCambios(): void {
+    if (!this.usuario) {
+      return;
+    }
 
-  const valores = this.formulario.getRawValue();
+    const valores = this.formulario.getRawValue();
 
-  const datos = {
-    nombre: valores.nombre.trim(),
-    telefono: valores.telefono.trim(),
-    carrera: valores.carrera.trim()
-  };
+    const datos = {
+      nombre: valores.nombre.trim(),
+      telefono: valores.telefono.trim(),
+      carrera: valores.carrera.trim()
+    };
 
-  if (!datos.nombre) {
-    this.mostrarError('El nombre es obligatorio.');
-    return;
-  }
+    if (!datos.nombre) {
+      this.mostrarError(this.MESSAGES.ERROR_NAME_REQUIRED);
+      return;
+    }
 
-  if (!/^[67]\d{7}$/.test(datos.telefono)) {
-    this.mostrarError(
-      'El teléfono debe empezar con 6 o 7 y tener 8 dígitos.'
-    );
-    return;
-  }
+    if (!/^[67]\d{7}$/.test(datos.telefono)) {
+      this.mostrarError(this.MESSAGES.ERROR_PHONE_INVALID);
+      return;
+    }
 
-  if (!datos.carrera) {
-    this.mostrarError('La carrera es obligatoria.');
-    return;
-  }
+    if (!datos.carrera) {
+      this.mostrarError(this.MESSAGES.ERROR_CAREER_REQUIRED);
+      return;
+    }
 
-  this.authService
-    .actualizarUsuario(this.usuario.id, datos)
-    .subscribe({
-      next: (usuarioActualizado) => {
+    this.authService
+      .actualizarUsuario(this.usuario.id, datos)
+      .subscribe({
+        next: (usuarioActualizado) => {
+          this.authService.guardarUsuario(usuarioActualizado);
 
-        this.authService.guardarUsuario(usuarioActualizado);
+          this.modalExito.set(true);
 
-        this.modalExito.set(true);
-        this.modalMensaje.set(
-          'Tus datos fueron actualizados correctamente.'
-        );
-        this.modalVisible.set(true);
-      },
-
-      error: (error) => {
-
-        this.modalExito.set(false);
-
-        if (error?.codigo === 'SIN_CONEXION') {
           this.modalMensaje.set(
-            'No se pudo conectar con el servidor. Intenta nuevamente.'
+            this.MESSAGES.SUCCESS_MESSAGE
           );
-        } else {
-          this.modalMensaje.set(
-            'No se pudieron guardar los cambios. Revisa los datos ingresados.'
-          );
+
+          this.modalVisible.set(true);
+        },
+
+        error: (error) => {
+          this.modalExito.set(false);
+
+          if (error?.codigo === 'SIN_CONEXION') {
+            this.modalMensaje.set(
+              this.MESSAGES.ERROR_CONNECTION
+            );
+          } else {
+            this.modalMensaje.set(
+              this.MESSAGES.ERROR_SAVE
+            );
+          }
+
+          this.modalVisible.set(true);
         }
+      });
+  }
 
-        this.modalVisible.set(true);
-      }
-    });
-}
+  private mostrarError(mensaje: string): void {
+    this.modalExito.set(false);
+    this.modalMensaje.set(mensaje);
+    this.modalVisible.set(true);
+  }
 
-private mostrarError(mensaje: string): void {
-  this.modalExito.set(false);
-  this.modalMensaje.set(mensaje);
-  this.modalVisible.set(true);
-}
-
-cerrarModal(): void {
-  this.modalVisible.set(false);
-}
-
+  cerrarModal(): void {
+    this.modalVisible.set(false);
+  }
 }

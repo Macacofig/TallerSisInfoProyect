@@ -1,0 +1,877 @@
+<section class="materia-detalle">
+
+  @if (cargando) {
+
+    <p>
+      {{ mensajes.MATERIA_DETAIL_LOADING }}
+    </p>
+
+  }
+
+  @if (error) {
+
+    <p class="mensaje-error">
+      {{ error }}
+    </p>
+
+  }
+
+  @if (materia) {
+
+    <header class="materia-detalle__encabezado">
+
+      <div>
+
+        <p class="materia-detalle__carrera">
+          {{ materia.carrera }}
+        </p>
+
+        <h1>
+          {{ materia.nombre | nombreMateria }}
+        </h1>
+
+      </div>
+
+      <div class="materia-detalle__datos">
+
+        <span>
+          {{ mensajes.MATERIA_DETAIL_CODE_LABEL }}:
+          {{ materia.codigo }}
+        </span>
+
+        <span>
+          {{ mensajes.MATERIA_DETAIL_SEMESTER_LABEL }}:
+          {{ materia.semestre }}
+        </span>
+
+      </div>
+
+    </header>
+
+    <div class="materia-detalle__acciones">
+
+      @if (
+        seccionActiva === 'resumen' &&
+        !verificandoCalificacion &&
+        !errorEstadoCalificacion
+      ) {
+
+        <button
+          type="button"
+          class="boton-calificar"
+          (click)="abrirFormularioCalificacion()"
+        >
+
+          @if (yaCalifico) {
+
+            {{ mensajes.CALIFICATION_BUTTON_VIEW }}
+
+          } @else {
+
+            {{ mensajes.CALIFICATION_BUTTON_CREATE }}
+
+          }
+
+        </button>
+
+      }
+
+    </div>
+
+    @if (seccionActiva === 'resumen' && verificandoCalificacion) {
+
+      <p class="estado-carga">
+        {{ mensajes.CALIFICATION_VERIFYING }}
+      </p>
+
+    }
+
+    @if (seccionActiva === 'resumen' && errorEstadoCalificacion) {
+
+      <p class="mensaje-error">
+        {{ errorEstadoCalificacion }}
+      </p>
+
+    }
+    <app-materia-detalle-secciones
+      [seccionActiva]="seccionActiva"
+      (seccionSeleccionada)="seleccionarSeccion($event)"
+    />
+ @if (seccionActiva === 'resumen') {
+
+    <section class="resumen-calificaciones">
+
+      <div class="resumen-calificaciones__encabezado">
+
+        <div>
+
+          <h2>
+            {{ mensajes.CALIFICATION_SUMMARY_TITLE }}
+          </h2>
+
+          <p>
+            {{ mensajes.CALIFICATION_SUMMARY_DESCRIPTION }}
+          </p>
+
+        </div>
+
+      </div>
+
+      @if (cargandoGestiones) {
+
+        <p class="estado-carga">
+          {{ mensajes.CALIFICATION_MANAGEMENTS_LOADING }}
+        </p>
+
+      } @else if (errorGestiones) {
+
+        <p class="mensaje-error">
+          {{ errorGestiones }}
+        </p>
+
+      } @else if (gestiones.length > 0) {
+
+        <app-filtro-gestiones
+          [gestiones]="gestiones"
+          (filtroAplicado)="aplicarFiltroGestiones($event)"
+        />
+
+      }
+
+      @if (cargandoPromedios) {
+
+        <p class="estado-carga">
+          {{ mensajes.CALIFICATION_DATA_LOADING }}
+        </p>
+
+      } @else if (errorPromedios) {
+
+        <p class="mensaje-error">
+          {{ errorPromedios }}
+        </p>
+
+      } @else if (promediosMostrados) {
+
+        <div class="metricas-resumen">
+
+          <article class="metrica-resumen">
+
+            <span class="metrica-resumen__nombre">
+              {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}
+            </span>
+
+            <strong>
+              {{
+                obtenerPromedioFormateado(
+                  promediosMostrados.dificultadPromedio
+                )
+              }}
+            </strong>
+
+            <span>
+              /10
+            </span>
+
+          </article>
+
+          <article class="metrica-resumen">
+
+            <span class="metrica-resumen__nombre">
+              {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}
+            </span>
+
+            <strong>
+              {{
+                obtenerPromedioFormateado(
+                  promediosMostrados.cargaPromedio
+                )
+              }}
+            </strong>
+
+            <span>
+              /10
+            </span>
+
+          </article>
+
+          <article class="metrica-resumen">
+
+            <span class="metrica-resumen__nombre">
+              {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
+            </span>
+
+            <strong>
+              {{
+                obtenerPromedioFormateado(
+                  promediosMostrados.conocimientoPrevioPromedio
+                )
+              }}
+            </strong>
+
+            <span>
+              /10
+            </span>
+
+          </article>
+
+        </div>
+
+        <app-calificacion-graficos
+          [promedios]="promediosMostrados"
+          [contexto]="contextoPromedios"
+        />
+
+      } @else {
+
+        <p class="estado-carga">
+          {{ mensajes.CALIFICATION_SUMMARY_EMPTY }}
+        </p>
+
+      }
+
+      @if (
+        !cargandoGestiones &&
+        !errorGestiones &&
+        gestiones.length > 1
+      ) {
+
+        <app-historial-calificaciones
+          [gestiones]="gestiones"
+        />
+
+      }
+
+    </section>
+    } @else if (seccionActiva === 'docentes') {
+
+      <app-docentes
+        [materia]="materia"
+      />
+
+    } @else {
+
+      <section class="resumen-calificaciones">
+
+        <p>
+          {{ mensajes.MATERIA_DETAIL_SECTION_PENDING }}
+        </p>
+
+      </section>
+
+    }
+
+    @if (mostrarFormularioCalificacion) {
+
+      <div
+        class="modal-calificacion"
+        (click)="cerrarFormularioCalificacion()"
+      >
+
+        <section
+          class="modal-calificacion__contenido"
+          (click)="$event.stopPropagation()"
+        >
+
+          @if (
+            yaCalifico &&
+            calificacionExistente &&
+            !modoEdicion
+          ) {
+
+            <div class="calificacion-materia__encabezado">
+
+              <div>
+
+                <h2>
+                  {{ mensajes.CALIFICATION_REGISTERED_TITLE }}
+                </h2>
+
+                <p>
+                  {{ mensajes.CALIFICATION_REGISTERED_DESCRIPTION }}
+                </p>
+
+              </div>
+
+              <div class="calificacion-materia__acciones">
+
+                <button
+                  type="button"
+                  class="boton-secundario"
+                  [disabled]="enviandoCalificacion || eliminandoCalificacion"
+                  (click)="abrirEdicionCalificacion()"
+                >
+                  {{ mensajes.CALIFICATION_EDIT_BUTTON }}
+                </button>
+
+                <button
+                  type="button"
+                  class="boton-secundario"
+                  [disabled]="enviandoCalificacion || eliminandoCalificacion"
+                  (click)="abrirConfirmacionEliminacion()"
+                >
+                  {{ mensajes.CALIFICATION_DELETE_BUTTON }}
+                </button>
+
+                <button
+                  type="button"
+                  class="boton-cerrar"
+                  [disabled]="enviandoCalificacion || eliminandoCalificacion"
+                  (click)="cerrarFormularioCalificacion()"
+                >
+                  {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
+                </button>
+
+              </div>
+
+            </div>
+
+            <div class="confirmacion-calificacion__resumen">
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
+                </strong>
+
+                {{ materia.nombre | nombreMateria }}
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.dificultad }}/10
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.carga }}/10
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.conocimientoPrevio }}/10
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}:
+                </strong>
+
+                {{ calificacionExistente.prerequisitosText }}
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}:
+                </strong>
+
+                {{
+                  obtenerPredominioParaMostrar(
+                    calificacionExistente.predominio
+                  )
+                }}
+              </p>
+
+              <p>
+                <strong>
+                  {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
+                </strong>
+
+                {{ formatearGestion(calificacionExistente.gestion) }}
+              </p>
+
+            </div>
+
+            <p class="modal-calificacion__nota">
+              {{ mensajes.CALIFICATION_SINGLE_NOTICE }}
+            </p>
+
+            @if (mostrarConfirmacionEliminacion) {
+
+              <div class="confirmacion-calificacion">
+
+                <h3>
+                  {{ mensajes.CALIFICATION_DELETE_CONFIRM_TITLE }}
+                </h3>
+
+                <p>
+                  {{ mensajes.CALIFICATION_DELETE_CONFIRM_DESCRIPTION }}
+                </p>
+
+                <div class="confirmacion-calificacion__acciones">
+
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    [disabled]="eliminandoCalificacion"
+                    (click)="cancelarConfirmacionEliminacion()"
+                  >
+                    {{ mensajes.CALIFICATION_CANCEL_BUTTON }}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    [disabled]="eliminandoCalificacion"
+                    (click)="confirmarEliminacionCalificacion()"
+                  >
+
+                    @if (eliminandoCalificacion) {
+
+                      {{ mensajes.CALIFICATION_DELETING }}
+
+                    } @else {
+
+                      {{ mensajes.CALIFICATION_DELETE_CONFIRM_BUTTON }}
+
+                    }
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            }
+
+            @if (errorCalificacion) {
+
+              <p class="mensaje-error">
+                {{ errorCalificacion }}
+              </p>
+
+            }
+
+          } @else {
+
+            <div class="calificacion-materia__encabezado">
+
+              <div>
+
+                <h2>
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_EDIT_TITLE }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_FORM_TITLE }}
+
+                  }
+
+                </h2>
+
+                <p>
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_EDIT_DESCRIPTION }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_FORM_DESCRIPTION }}
+
+                  }
+
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                class="boton-cerrar"
+                [disabled]="enviandoCalificacion"
+                (click)="cerrarFormularioCalificacion()"
+              >
+                {{ mensajes.CALIFICATION_CLOSE_BUTTON }}
+              </button>
+
+            </div>
+
+            <form [formGroup]="formularioCalificacion">
+
+              <div class="criterio-calificacion">
+
+                <div class="criterio-calificacion__encabezado">
+
+                  <label for="dificultad">
+                    {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}
+                  </label>
+
+                  <span>
+                    {{ formularioCalificacion.value.dificultad }}/10
+                  </span>
+
+                </div>
+
+                <input
+                  id="dificultad"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  formControlName="dificultad"
+                />
+
+              </div>
+
+              <div class="criterio-calificacion">
+
+                <div class="criterio-calificacion__encabezado">
+
+                  <label for="carga">
+                    {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}
+                  </label>
+
+                  <span>
+                    {{ formularioCalificacion.value.carga }}/10
+                  </span>
+
+                </div>
+
+                <input
+                  id="carga"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  formControlName="carga"
+                />
+
+              </div>
+
+              <div class="criterio-calificacion">
+
+                <div class="criterio-calificacion__encabezado">
+
+                  <label for="conocimientoPrevio">
+                    {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}
+                  </label>
+
+                  <span>
+                    {{
+                      formularioCalificacion.value.conocimientoPrevio
+                    }}/10
+                  </span>
+
+                </div>
+
+                <input
+                  id="conocimientoPrevio"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  formControlName="conocimientoPrevio"
+                />
+
+              </div>
+
+              <div class="campo-formulario">
+
+                <label for="prerequisitos">
+                  {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}
+                </label>
+
+                <input
+                  id="prerequisitos"
+                  type="text"
+                  formControlName="prerequisitos"
+                  [placeholder]="mensajes.CALIFICATION_PREREQUISITES_PLACEHOLDER"
+                  autocomplete="off"
+                />
+
+                @if (
+                  formularioCalificacion.get('prerequisitos')?.invalid &&
+                  formularioCalificacion.get('prerequisitos')?.touched
+                ) {
+
+                  <small>
+                    {{ mensajes.CALIFICATION_PREREQUISITES_REQUIRED }}
+                  </small>
+
+                }
+
+              </div>
+
+              <div class="campo-predominio">
+
+                <span class="campo-predominio__titulo">
+                  {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}
+                </span>
+
+                <div class="campo-predominio__opciones">
+
+                  <label class="opcion-predominio">
+
+                    <input
+                      type="radio"
+                      value="Practico"
+                      formControlName="predominio"
+                    />
+
+                    <span>
+                      {{ mensajes.CALIFICATION_PRACTICAL_LABEL }}
+                    </span>
+
+                  </label>
+
+                  <label class="opcion-predominio">
+
+                    <input
+                      type="radio"
+                      value="Teorico"
+                      formControlName="predominio"
+                    />
+
+                    <span>
+                      {{ mensajes.CALIFICATION_THEORETICAL_LABEL }}
+                    </span>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+              <div class="campo-formulario">
+
+                <label for="gestion">
+                  {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}
+                </label>
+
+                <input
+                  id="gestion"
+                  type="text"
+                  [value]="
+                    formatearGestion(
+                      formularioCalificacion.get('gestion')?.value ||
+                      gestionActual
+                    )
+                  "
+                  readonly
+                  aria-readonly="true"
+                />
+
+                @if (
+                  formularioCalificacion.get('gestion')?.invalid &&
+                  formularioCalificacion.get('gestion')?.touched
+                ) {
+
+                  <small>
+                    {{ mensajes.CALIFICATION_MANAGEMENT_INVALID }}
+                  </small>
+
+                }
+
+              </div>
+
+              <div class="calificacion-materia__acciones">
+
+                <button
+                  type="button"
+                  class="boton-secundario"
+                  [disabled]="enviandoCalificacion"
+                  (click)="modoEdicion ? cancelarEdicionCalificacion() : cerrarFormularioCalificacion()"
+                >
+                  {{ mensajes.CALIFICATION_CANCEL_BUTTON }}
+                </button>
+
+                <button
+                  type="button"
+                  class="boton-principal"
+                  [disabled]="formularioCalificacion.invalid || enviandoCalificacion"
+                  (click)="abrirConfirmacion()"
+                >
+                  {{ mensajes.CALIFICATION_CONTINUE_BUTTON }}
+                </button>
+
+              </div>
+
+            </form>
+
+            @if (mostrarConfirmacion) {
+
+              <div class="confirmacion-calificacion">
+
+                <h3>
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_UPDATE_CONFIRM_TITLE }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_CONFIRM_TITLE }}
+
+                  }
+
+                </h3>
+
+                <p>
+
+                  @if (modoEdicion) {
+
+                    {{ mensajes.CALIFICATION_UPDATE_CONFIRM_DESCRIPTION }}
+
+                  } @else {
+
+                    {{ mensajes.CALIFICATION_CONFIRM_DESCRIPTION }}
+
+                  }
+
+                </p>
+
+                <div class="confirmacion-calificacion__resumen">
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_SUBJECT_LABEL }}:
+                    </strong>
+
+                    {{ materia.nombre | nombreMateria }}
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_DIFFICULTY_LABEL }}:
+                    </strong>
+
+                    {{ formularioCalificacion.value.dificultad }}/10
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_WORKLOAD_LABEL }}:
+                    </strong>
+
+                    {{ formularioCalificacion.value.carga }}/10
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_PREVIOUS_KNOWLEDGE_LABEL }}:
+                    </strong>
+
+                    {{
+                      formularioCalificacion.value.conocimientoPrevio
+                    }}/10
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_PREREQUISITES_LABEL }}:
+                    </strong>
+
+                    {{ obtenerPrerequisitosParaMostrar() }}
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_DOMINANCE_LABEL }}:
+                    </strong>
+
+                    {{
+                      obtenerPredominioParaMostrar(
+                        formularioCalificacion.value.predominio
+                      )
+                    }}
+                  </p>
+
+                  <p>
+                    <strong>
+                      {{ mensajes.CALIFICATION_MANAGEMENT_LABEL }}:
+                    </strong>
+
+                    {{ formatearGestion(formularioCalificacion.value.gestion || gestionActual) }}
+                  </p>
+
+                </div>
+
+                @if (!modoEdicion) {
+
+                  <p>
+                    {{ mensajes.CALIFICATION_CONFIRM_NOTICE }}
+                  </p>
+
+                }
+
+                <div class="confirmacion-calificacion__acciones">
+
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    [disabled]="enviandoCalificacion"
+                    (click)="cancelarConfirmacion()"
+                  >
+                    {{ mensajes.CALIFICATION_BACK_BUTTON }}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="boton-principal"
+                    [disabled]="enviandoCalificacion"
+                    (click)="confirmarCalificacion()"
+                  >
+
+                    @if (enviandoCalificacion) {
+
+                      @if (modoEdicion) {
+
+                        {{ mensajes.CALIFICATION_UPDATING }}
+
+                      } @else {
+
+                        {{ mensajes.CALIFICATION_REGISTERING }}
+
+                      }
+
+                    } @else {
+
+                      @if (modoEdicion) {
+
+                        {{ mensajes.CALIFICATION_UPDATE_BUTTON }}
+
+                      } @else {
+
+                        {{ mensajes.CALIFICATION_CONFIRM_BUTTON }}
+
+                      }
+
+                    }
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            }
+
+            @if (errorCalificacion) {
+
+              <p class="mensaje-error">
+                {{ errorCalificacion }}
+              </p>
+
+            }
+
+          }
+
+        </section>
+
+      </div>
+
+    }
+
+  }
+
+</section>

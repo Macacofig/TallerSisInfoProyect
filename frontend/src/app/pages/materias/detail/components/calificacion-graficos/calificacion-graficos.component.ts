@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   Input
 } from '@angular/core';
@@ -7,14 +7,16 @@ import {
   CalificacionMateriaPromedioResponse
 } from '../../../../../models/calificacion-materia.model';
 
-import { MESSAGES } from '../../../../../strings/materias/materias.messages';
+import {
+  MESSAGES
+} from '../../../../../strings/calificacion-graficos/calificacion-graficos.messages';
 
 @Component({
   selector: 'app-calificacion-graficos',
   standalone: true,
   imports: [],
   templateUrl: './calificacion-graficos.component.html',
-  styleUrl: './calificacion-graficos.component.scss'
+  styleUrl: './calificacion-graficos.component.css'
 })
 export class CalificacionGraficosComponent {
 

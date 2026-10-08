@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HorariosComponent } from './horarios.component';
+import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
 
 describe('HorariosComponent', () => {
   let component: HorariosComponent;
@@ -50,7 +51,9 @@ describe('HorariosComponent', () => {
   it('should display the semester subjects title', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(compiled.textContent).toContain('Materias del semestre');
+    expect(compiled.textContent).toContain(
+      HORARIOS_MESSAGES.SEMESTER_SUBJECTS
+    );
   });
 
   it('should display all subjects in the page', () => {

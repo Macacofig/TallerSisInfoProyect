@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, ElementRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, DestroyRef, ElementRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { of, Subscription, switchMap, timeout, timer } from 'rxjs';
@@ -17,7 +17,7 @@ import { DEMO_MATERIAS } from '../../../data/demo-materias';
   standalone: true,
   imports: [NombreMateriaPipe , DecimalPipe],
   templateUrl: './materias.component.html',
-  styleUrl: './materias.component.scss'
+  styleUrl: './materias.component.css'
 })
 export class MateriasComponent implements OnInit {
   @ViewChild('detalle') private detalle!: ElementRef<HTMLDialogElement>;

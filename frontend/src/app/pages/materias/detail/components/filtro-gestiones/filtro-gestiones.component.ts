@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   EventEmitter,
   Input,
@@ -38,7 +38,7 @@ export interface FiltroGestionesResultado {
     FormsModule
   ],
   templateUrl: './filtro-gestiones.component.html',
-  styleUrl: './filtro-gestiones.component.scss'
+  styleUrl: './filtro-gestiones.component.css'
 })
 export class FiltroGestionesComponent implements OnChanges {
 
