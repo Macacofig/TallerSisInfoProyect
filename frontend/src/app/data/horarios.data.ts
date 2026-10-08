@@ -33,7 +33,7 @@ export const MATERIAS_HORARIOS: MateriaHorario[] = [
     opciones: [
       {
         etiqueta: 'Opción A:',
-        horario: 'Lunes 10:00-12:00 · Miércoles 10:00-12:00'
+        horario: 'Martes 09:30-10:45 · Miércoles 10:00-12:00'
       },
       {
         etiqueta: 'Opción B:',

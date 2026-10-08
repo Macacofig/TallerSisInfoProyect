@@ -13,6 +13,7 @@ describe('HorariosComponent', () => {
 
     fixture = TestBed.createComponent(HorariosComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
   });
 
@@ -32,6 +33,7 @@ describe('HorariosComponent', () => {
     expect(programacion).toBeTruthy();
     expect(programacion?.seleccionada).toBe(true);
   });
+
   it('should have the correct number of schedule options', () => {
     const programacion = component.materias.find(
       materia => materia.codigo === 'INF-101'
@@ -58,5 +60,77 @@ describe('HorariosComponent', () => {
     expect(compiled.textContent).toContain('Estructuras de Datos');
     expect(compiled.textContent).toContain('Bases de Datos');
     expect(compiled.textContent).toContain('Ingeniería de Software');
+  });
+
+  it('should add a subject when it is selected', () => {
+    const estructuras = component.materias.find(
+      materia => materia.codigo === 'INF-202'
+    );
+
+    expect(estructuras).toBeTruthy();
+
+    component.seleccionarMateria(estructuras!);
+
+    expect(estructuras?.seleccionada).toBe(true);
+    expect(
+      component.materiasSeleccionadas.some(
+        materia => materia.codigo === 'INF-202'
+      )
+    ).toBe(true);
+  });
+
+  it('should remove a subject when it is unselected', () => {
+    const programacion = component.materias.find(
+      materia => materia.codigo === 'INF-101'
+    );
+
+    expect(programacion).toBeTruthy();
+
+    component.seleccionarMateria(programacion!);
+
+    expect(programacion?.seleccionada).toBe(false);
+    expect(
+      component.materiasSeleccionadas.some(
+        materia => materia.codigo === 'INF-101'
+      )
+    ).toBe(false);
+  });
+
+  it('should detect a subject in its correct schedule', () => {
+    const estructuras = component.materias.find(
+      materia => materia.codigo === 'INF-202'
+    );
+
+    expect(estructuras).toBeTruthy();
+
+    const estaEnMartes = component.estaMateriaEnHorario(
+      estructuras!,
+      'Martes',
+      '09:30'
+    );
+
+    expect(estaEnMartes).toBe(true);
+  });
+
+  it('should not detect a subject outside its schedule', () => {
+    const estructuras = component.materias.find(
+      materia => materia.codigo === 'INF-202'
+    );
+
+    expect(estructuras).toBeTruthy();
+
+    const estaEnLunes = component.estaMateriaEnHorario(
+      estructuras!,
+      'Lunes',
+      '09:30'
+    );
+
+    expect(estaEnLunes).toBe(false);
+  });
+
+  it('should return a color for a subject', () => {
+    const color = component.obtenerColorMateria('INF-202');
+
+    expect(color).toBe('#2e7d5b');
   });
 });
