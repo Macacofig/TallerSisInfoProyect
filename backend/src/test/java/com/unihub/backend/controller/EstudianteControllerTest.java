@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
+import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CredencialesInvalidasException;
 import com.unihub.backend.exception.CorreoDuplicadoException;
@@ -99,6 +100,30 @@ class EstudianteControllerTest {
                                                                 }
                                                                 """))
                                 .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void deberiaDevolverTokenYPerfilAlIniciarSesion() throws Exception {
+                when(estudianteService.iniciarSesion(any())).thenReturn(new EstudianteLoginResponse(
+                                "jwt-de-prueba",
+                                3600,
+                                new EstudianteResponse(1L, "Ana Pérez", "71234567", "ana@ucb.edu.bo", "Ingeniería")
+                ));
+
+                mockMvc.perform(post("/api/estudiantes/login")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content("""
+                                                                {
+                                                                    "correoElectronico": "ana@ucb.edu.bo",
+                                                                    "contrasena": "ClaveSegura1!"
+                                                                }
+                                                                """))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.accessToken").value("jwt-de-prueba"))
+                                .andExpect(jsonPath("$.tokenType").value("Bearer"))
+                                .andExpect(jsonPath("$.expiresIn").value(3600))
+                                .andExpect(jsonPath("$.id").value(1))
+                                .andExpect(jsonPath("$.correoElectronico").value("ana@ucb.edu.bo"));
         }
 
     @Test

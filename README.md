@@ -104,6 +104,8 @@ Para levantar el proyecto:
 docker compose up -d --build
 ```
 
+El backend requiere `JWT_SECRET` en el archivo `.env` de la raíz. Usa una clave aleatoria de al menos 32 bytes y no la subas al repositorio. La duración predeterminada del token es de 3600 segundos y se puede cambiar con `JWT_EXPIRATION_SECONDS`.
+
 Abre el frontend en `http://localhost:4200/materias`. Usa `localhost`, ya que es el origen permitido por el backend en la configuración local.
 
 Docker sincroniza `frontend/src` con el contenedor y Angular detecta los cambios automáticamente. Si cambias dependencias o configuración del frontend, actualiza solo ese servicio con `docker compose up -d --no-deps --build frontend`. Evita ejecutar a la vez `npm start` en el puerto 4200 mientras el frontend de Docker está activo.
