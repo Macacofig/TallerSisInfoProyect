@@ -1,9 +1,10 @@
 <section class="horarios-page">
 
-  <!-- ENCABEZADO -->
+  <!-- =========================
+       ENCABEZADO
+       ========================= -->
 
   <header class="page-header">
-
     <p class="eyebrow">Planificación</p>
 
     <h1 class="title">Generador de horarios</h1>
@@ -15,18 +16,23 @@
 
     <hr class="divider">
 
-  </header>
+      </header>
 
+      <!-- =========================
+          CONTENIDO PRINCIPAL
+          ========================= -->
 
-  <!-- CONTENIDO PRINCIPAL -->
+      <div class="horarios-layout">
 
-  <div class="horarios-layout">
-
-    <!-- MATERIAS -->
+    <!-- =========================
+        MATERIAS DEL SEMESTRE
+        ========================= -->
 
     <section class="materias-panel">
 
-      <h2 class="panel-title">Materias del semestre</h2>
+      <h2 class="panel-title">
+        Materias del semestre
+      </h2>
 
       <div class="panel-list">
 
@@ -40,13 +46,18 @@
                 type="checkbox"
                 [checked]="materia.seleccionada"
                 [attr.aria-label]="'Seleccionar ' + materia.nombre"
+                (change)="seleccionarMateria(materia)"
               >
 
               <div class="materia-horario__info">
 
-                <h3>{{ materia.nombre }}</h3>
+                <h3>
+                  {{ materia.nombre }}
+                </h3>
 
-                <p>{{ materia.codigo }}</p>
+                <p>
+                  {{ materia.codigo }}
+                </p>
 
               </div>
 
@@ -82,9 +93,16 @@
     </section>
 
 
-    <!-- RESULTADOS -->
+    <!-- =========================
+        ZONA DERECHA
+        ========================= -->
 
     <section class="resultados">
+
+
+      <!-- =========================
+          BARRA DE RESULTADOS
+          ========================= -->
 
       @if (hayHorarios) {
 
@@ -99,6 +117,7 @@
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
+
               <path
                 d="M5 12.5L9.5 17L19 7"
                 stroke="currentColor"
@@ -106,6 +125,7 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
+
             </svg>
 
             <span>
@@ -187,6 +207,147 @@
         </div>
 
       }
+
+
+      <!-- =========================
+          CALENDARIO
+          ========================= -->
+
+      <section class="horario-grid">
+
+        <div class="horario-grid__contenido">
+
+          <div class="calendario__scroll">
+
+            <div class="calendario">
+
+              <!-- =========================
+                  ENCABEZADO DE LOS DÍAS
+                  ========================= -->
+
+              <div class="calendario__encabezado">
+
+                <div class="calendario__espacio-hora">
+                  Hora
+                </div>
+
+
+                @for (dia of dias; track dia) {
+
+                  <div class="calendario__dia">
+                    {{ dia }}
+                  </div>
+
+                }
+
+              </div>
+
+
+              <!-- =========================
+                  CUERPO DEL CALENDARIO
+                  ========================= -->
+
+              <div class="calendario__cuerpo">
+
+
+                <!-- =========================
+                    COLUMNA DE HORAS
+                    ========================= -->
+
+                <div class="calendario__horas">
+
+                  @for (hora of horas; track hora) {
+
+                    <div class="calendario__hora">
+                      {{ hora }}
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <!-- =========================
+                    DÍAS
+                    ========================= -->
+
+                <div class="calendario__dias">
+
+                  @for (dia of dias; track dia) {
+
+                    <div class="calendario__columna">
+
+                      @for (hora of horas; track hora) {
+
+                        <div class="calendario__celda"></div>
+
+                      }
+
+                      <!-- =========================
+                          MATERIAS
+                          ========================= -->
+
+                      @for (
+                        materia of materiasSeleccionadas;
+                        track materia.codigo
+                      ) {
+
+                        @if (
+                          obtenerBloquesMateria(materia, dia).length > 0
+                        ) {
+
+                          @for (
+                            bloque of obtenerBloquesMateria(materia, dia);
+                            track bloque.inicio
+                          ) {
+
+                            <div
+                              class="materia-calendario"
+                              [style.--color-materia]="
+                                obtenerColorMateria(materia.codigo)
+                              "
+                              [style.top.px]="
+                                obtenerPosicionMateria(bloque.inicio)
+                              "
+                              [style.height.px]="
+                                obtenerAlturaMateria(
+                                  bloque.inicio,
+                                  bloque.fin
+                                )
+                              "
+                            >
+
+                              <strong>
+                                {{ materia.nombre }}
+                              </strong>
+
+                              <span>
+                                {{ materia.codigo }}
+                              </span>
+
+                            </div>
+
+                          }
+
+                        }
+
+                      }
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
 
     </section>
 
