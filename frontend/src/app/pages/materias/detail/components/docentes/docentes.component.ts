@@ -442,7 +442,7 @@ export class DocentesComponent implements OnChanges {
   }
 
   formatearGestionDocente(gestion: GestionDocente): string {
-    return gestion.replace('aÃ±o-', 'AÃ±o ');
+    return gestion.replace('año-', 'Año ');
   }
 
   esGestionActiva(gestion: GestionDocente): boolean {

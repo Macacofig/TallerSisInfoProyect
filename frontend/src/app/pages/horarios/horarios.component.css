@@ -146,7 +146,7 @@
 /* Palomita */
 
 .materia-horario__header input:checked::after {
-  content: 'âœ“';
+  content: '✓';
 
   position: absolute;
   top: 50%;
@@ -161,7 +161,7 @@
 
 
 /* =========================
-   NOMBRE Y CÃ“DIGO
+   NOMBRE Y CÓDIGO
    ========================= */
 
 .materia-horario__info {
@@ -256,7 +256,7 @@
 }
 
 
-/* InformaciÃ³n izquierda */
+/* Información izquierda */
 
 .resultados__info {
   display: flex;
@@ -276,7 +276,7 @@
 }
 
 
-/* Ãcono de Ã©xito */
+/* Ícono de éxito */
 
 .resultados__icon {
   flex: 0 0 18px;
@@ -288,7 +288,7 @@
 
 
 /* =========================
-   PAGINACIÃ“N
+   PAGINACIÓN
    ========================= */
 
 .resultados__paginacion {

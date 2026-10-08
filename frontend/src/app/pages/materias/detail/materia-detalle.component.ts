@@ -847,8 +847,8 @@ export class MateriaDetalleComponent implements OnInit {
             false;
 
           /*
-           * Ante un error de verificaciÃ³n no se permite
-           * registrar una nueva calificaciÃ³n para evitar
+           * Ante un error de verificación no se permite
+           * registrar una nueva calificación para evitar
            * posibles duplicados.
            */
           this.yaCalifico =
