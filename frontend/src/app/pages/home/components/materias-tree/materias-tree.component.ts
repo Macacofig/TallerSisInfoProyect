@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { MateriaTree, MATERIAS_TREE } from '../../../../data/materias-tree.data';
-
+import { MATERIAS_TREE_MESSAGES } from '../../../../strings/materias-tree/materias-tree.messages';
 interface PositionedMateria extends MateriaTree {
   nivel: number;
   x: number;
@@ -30,9 +30,11 @@ interface TreeLayout {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './materias-tree.component.html',
-  styleUrl: './materias-tree.component.scss',
+  styleUrl: './materias-tree.component.css',
 })
 export class MateriasTreeComponent {
+  readonly mensajes = MATERIAS_TREE_MESSAGES;
+
   private readonly cardWidth = 192;
   private readonly cardHeight = 104;
   private readonly columnGap = 28;
@@ -117,6 +119,7 @@ export class MateriasTreeComponent {
     };
 
     const nodesByLevel = new Map<number, MateriaTree[]>();
+
     this.materias.forEach((materia) => {
       const level = getLevel(materia.sigla);
       const levelNodes = nodesByLevel.get(level) ?? [];
@@ -125,15 +128,26 @@ export class MateriasTreeComponent {
     });
 
     const levels = Math.max(...nodesByLevel.keys()) + 1;
-    const maxNodesInLevel = Math.max(...Array.from(nodesByLevel.values(), (nodes) => nodes.length));
-    const width = Math.max(980, maxNodesInLevel * (this.cardWidth + this.columnGap) + 96);
+    const maxNodesInLevel = Math.max(
+      ...Array.from(nodesByLevel.values(), (nodes) => nodes.length)
+    );
+
+    const width = Math.max(
+      980,
+      maxNodesInLevel * (this.cardWidth + this.columnGap) + 96
+    );
+
     const height = levels * (this.cardHeight + this.rowGap) + 36;
     const positionedNodes: PositionedMateria[] = [];
     const nodesBySigla = new Map<string, PositionedMateria>();
 
     nodesByLevel.forEach((levelNodes, level) => {
-      const levelWidth = levelNodes.length * this.cardWidth + (levelNodes.length - 1) * this.columnGap;
+      const levelWidth =
+        levelNodes.length * this.cardWidth +
+        (levelNodes.length - 1) * this.columnGap;
+
       const startX = (width - levelWidth) / 2;
+
       levelNodes.forEach((materia, index) => {
         const node: PositionedMateria = {
           ...materia,
@@ -141,15 +155,18 @@ export class MateriasTreeComponent {
           x: startX + index * (this.cardWidth + this.columnGap),
           y: 18 + level * (this.cardHeight + this.rowGap),
         };
+
         positionedNodes.push(node);
         nodesBySigla.set(node.sigla, node);
       });
     });
 
     const connections: TreeConnection[] = [];
+
     positionedNodes.forEach((node) => {
       node.prerrequisitos.forEach((prerequisite) => {
         const prerequisiteNode = nodesBySigla.get(prerequisite);
+
         if (!prerequisiteNode) {
           return;
         }
@@ -165,6 +182,12 @@ export class MateriasTreeComponent {
       });
     });
 
-    return { height, levels, width, nodes: positionedNodes, connections };
+    return {
+      height,
+      levels,
+      width,
+      nodes: positionedNodes,
+      connections,
+    };
   }
 }

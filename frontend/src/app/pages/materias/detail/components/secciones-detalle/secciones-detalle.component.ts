@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   EventEmitter,
   Input,
@@ -20,7 +20,7 @@ export type SeccionDetalleMateria =
   selector: 'app-materia-detalle-secciones',
   standalone: true,
   templateUrl: './secciones-detalle.component.html',
-  styleUrl: './secciones-detalle.component.scss'
+  styleUrl: './secciones-detalle.component.css'
 })
 export class SeccionesDetalleComponent {
 

@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectorRef,
   Component,
   OnInit
@@ -79,7 +79,7 @@ import {
     DocentesComponent
   ],
   templateUrl: './materia-detalle.component.html',
-  styleUrl: './materia-detalle.component.scss'
+  styleUrl: './materia-detalle.component.css'
 })
 export class MateriaDetalleComponent implements OnInit {
 
@@ -1010,3 +1010,4 @@ export class MateriaDetalleComponent implements OnInit {
         : null;
   }
 }
+

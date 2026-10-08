@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectorRef,
   Component,
   Input,
@@ -41,7 +41,7 @@ interface HistorialGestion {
   standalone: true,
   imports: [],
   templateUrl: './historial-calificaciones.component.html',
-  styleUrl: './historial-calificaciones.component.scss'
+  styleUrl: './historial-calificaciones.component.css'
 })
 export class HistorialCalificacionesComponent
   implements OnChanges {

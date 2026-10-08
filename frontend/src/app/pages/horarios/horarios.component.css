@@ -1,4 +1,4 @@
-:host {
+﻿:host {
   display: block;
 }
 
@@ -221,7 +221,7 @@
 /* =========================
    LAYOUT DE HORARIOS
    ========================= */
-   
+
 .horarios-layout {
   display: grid;
   grid-template-columns: 352px minmax(0, 1fr);
@@ -269,7 +269,7 @@
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 18px;
   font-weight: 500;
-} 
+}
 
 .resultados__info span {
   overflow-wrap: anywhere;
