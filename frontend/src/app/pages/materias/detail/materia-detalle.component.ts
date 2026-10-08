@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectorRef,
   Component,
   OnInit
@@ -79,7 +79,7 @@ import {
     DocentesComponent
   ],
   templateUrl: './materia-detalle.component.html',
-  styleUrl: './materia-detalle.component.scss'
+  styleUrl: './materia-detalle.component.css'
 })
 export class MateriaDetalleComponent implements OnInit {
 
@@ -847,8 +847,8 @@ export class MateriaDetalleComponent implements OnInit {
             false;
 
           /*
-           * Ante un error de verificación no se permite
-           * registrar una nueva calificación para evitar
+           * Ante un error de verificaciÃ³n no se permite
+           * registrar una nueva calificaciÃ³n para evitar
            * posibles duplicados.
            */
           this.yaCalifico =
@@ -1010,3 +1010,4 @@ export class MateriaDetalleComponent implements OnInit {
         : null;
   }
 }
+

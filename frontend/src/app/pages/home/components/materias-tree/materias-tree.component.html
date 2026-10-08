@@ -1,16 +1,22 @@
-<section class="tree-panel" aria-label="Malla curricular de materias">
+<section
+  class="tree-panel"
+  [attr.aria-label]="mensajes.ARIA_LABEL"
+>
   <div class="tree-toolbar">
     <div class="tree-toolbar__hint" *ngIf="selectedSigla()">
       <span class="tree-toolbar__dot" aria-hidden="true"></span>
       {{ selectedSigla() }}
     </div>
 
-    <div class="tree-controls" aria-label="Controles del árbol">
+    <div
+      class="tree-controls"
+      [attr.aria-label]="mensajes.CONTROLS_ARIA_LABEL"
+    >
       <button
         type="button"
         class="tree-control"
-        aria-label="Alejar árbol"
-        title="Alejar"
+        [attr.aria-label]="mensajes.ZOOM_OUT_ARIA_LABEL"
+        [attr.title]="mensajes.ZOOM_OUT_TITLE"
         (click)="zoomOut()"
       >
         <span aria-hidden="true">−</span>
@@ -19,8 +25,8 @@
       <button
         type="button"
         class="tree-zoom-value"
-        aria-label="Restablecer zoom"
-        title="Restablecer zoom"
+        [attr.aria-label]="mensajes.RESET_ZOOM_ARIA_LABEL"
+        [attr.title]="mensajes.RESET_ZOOM_TITLE"
         (click)="resetZoom()"
       >
         {{ zoom() * 100 | number: '1.0-0' }}%
@@ -29,8 +35,8 @@
       <button
         type="button"
         class="tree-control"
-        aria-label="Acercar árbol"
-        title="Acercar"
+        [attr.aria-label]="mensajes.ZOOM_IN_ARIA_LABEL"
+        [attr.title]="mensajes.ZOOM_IN_TITLE"
         (click)="zoomIn()"
       >
         <span aria-hidden="true">+</span>
@@ -94,6 +100,6 @@
     class="tree-clear-selection"
     (click)="clearSelection()"
   >
-    Limpiar selección
+    {{ mensajes.CLEAR_SELECTION }}
   </button>
 </section>

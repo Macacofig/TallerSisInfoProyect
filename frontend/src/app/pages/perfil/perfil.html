@@ -3,43 +3,60 @@
   <div class="perfil__container">
 
     <div class="perfil__header">
+
       <div class="perfil__avatar">
         {{ usuario?.nombre?.charAt(0)?.toUpperCase() }}
       </div>
 
       <div>
-        <h1>Mi perfil</h1>
-        <p>Administra tu información personal</p>
+        <h1>{{ MESSAGES.PAGE_TITLE }}</h1>
+        <p>{{ MESSAGES.PAGE_SUBTITLE }}</p>
       </div>
+
     </div>
 
     <form class="perfil__card" [formGroup]="formulario">
 
       <div class="perfil__field">
-        <label for="nombre">Nombre completo</label>
+
+        <label for="nombre">
+          {{ MESSAGES.NAME_LABEL }}
+        </label>
+
         <input
           id="nombre"
           type="text"
           formControlName="nombre"
         />
+
       </div>
 
       <div class="perfil__field">
-        <label for="telefono">Teléfono</label>
+
+        <label for="telefono">
+          {{ MESSAGES.PHONE_LABEL }}
+        </label>
+
         <input
           id="telefono"
           type="tel"
           formControlName="telefono"
         />
+
       </div>
 
       <div class="perfil__field">
-        <label for="carrera">Carrera</label>
+
+        <label for="carrera">
+          {{ MESSAGES.CAREER_LABEL }}
+        </label>
+
         <input
           id="carrera"
           type="text"
           formControlName="carrera"
         />
+
       </div>
 
       <div class="perfil__actions">
@@ -49,7 +66,7 @@
           class="perfil__save-button"
           (click)="guardarCambios()"
         >
-          Guardar cambios
+          {{ MESSAGES.SAVE_BUTTON }}
         </button>
 
       </div>
@@ -61,6 +78,7 @@
 </section>
 
 @if (modalVisible()) {
+
   <div class="perfil-modal__overlay">
 
     <div class="perfil-modal">
@@ -73,7 +91,11 @@
       </div>
 
       <h2>
-        {{ modalExito() ? 'Cambios guardados' : 'No se pudieron guardar' }}
+        {{
+          modalExito()
+            ? MESSAGES.SUCCESS_TITLE
+            : MESSAGES.ERROR_TITLE
+        }}
       </h2>
 
       <p>
@@ -85,10 +107,11 @@
         class="perfil-modal__button"
         (click)="cerrarModal()"
       >
-        Aceptar
+        {{ MESSAGES.ACCEPT_BUTTON }}
       </button>
 
     </div>
 
   </div>
+
 }

@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
@@ -98,7 +98,7 @@ interface HistorialDocenteGestion {
     ReactiveFormsModule
   ],
   templateUrl: './docentes.component.html',
-  styleUrl: './docentes.component.scss'
+  styleUrl: './docentes.component.css'
 })
 export class DocentesComponent implements OnChanges {
 
@@ -442,7 +442,7 @@ export class DocentesComponent implements OnChanges {
   }
 
   formatearGestionDocente(gestion: GestionDocente): string {
-    return gestion.replace('año-', 'Año ');
+    return gestion.replace('aÃ±o-', 'AÃ±o ');
   }
 
   esGestionActiva(gestion: GestionDocente): boolean {
