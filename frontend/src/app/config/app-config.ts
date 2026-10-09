@@ -10,7 +10,7 @@ export const APP_CONFIG = {
   },
 
   API: {
-    BASE_URL: 'http://localhost:8081/api',
+    BASE_URL: 'https://tallersisinfoproyect.onrender.com/api',
 
     ENDPOINTS: {
       MATERIAS: '/materias',
