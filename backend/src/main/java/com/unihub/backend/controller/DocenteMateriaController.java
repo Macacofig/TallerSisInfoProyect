@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.unihub.backend.common.Constants.DocenteMateria.CREAR_URL;
+
 @RestController
-@RequestMapping("/api/docente-materia")
+@RequestMapping
 public class DocenteMateriaController {
 
     private final DocenteMateriaService docenteMateriaService;
@@ -21,7 +23,7 @@ public class DocenteMateriaController {
         this.docenteMateriaService = docenteMateriaService;
     }
 
-    @PostMapping
+    @PostMapping(CREAR_URL)
     public ResponseEntity<DocenteMateriaResponse> crear(
             @Valid @RequestBody DocenteMateriaRequest request
     ) {

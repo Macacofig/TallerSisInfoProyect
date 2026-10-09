@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.unihub.backend.common.Constants.Docente.AGREGAR_URL;
+import static com.unihub.backend.common.Constants.Docente.POR_MATERIA_URL;
+
 @RestController
-@RequestMapping("/api/docentes")
+@RequestMapping
 public class DocenteController {
 
 	private final DocenteService docenteService;
@@ -25,12 +28,12 @@ public class DocenteController {
 		this.docenteService = docenteService;
 	}
 
-	@PostMapping
+	@PostMapping(AGREGAR_URL)
 	public ResponseEntity<DocenteResponse> agregar(@Valid @RequestBody DocenteRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(docenteService.agregar(request));
 	}
 
-	@GetMapping("/materia/{idMateria}")
+	@GetMapping(POR_MATERIA_URL)
 	public ResponseEntity<List<DocenteResponse>> obtenerPorMateria(@PathVariable Long idMateria) {
 		return ResponseEntity.ok(docenteService.obtenerPorMateria(idMateria));
 	}
