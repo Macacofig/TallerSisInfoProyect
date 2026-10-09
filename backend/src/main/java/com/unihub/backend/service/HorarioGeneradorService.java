@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -50,6 +52,8 @@ public class HorarioGeneradorService {
         return false;
     }
 
+    private static final int LIMITE_OPCIONES = 12;
+
     public List<SolucionHorario> generar(
             Map<Long, List<Oferta>> ofertasPorMateria,
             HorarioFiltroRequest filtros,
@@ -74,69 +78,83 @@ public class HorarioGeneradorService {
             }
         }
 
-        List<Long> materias = new ArrayList<>(ofertasDisponibles.keySet());
+        int min = filtroFinal.cantidadMaterias().min() == null ? 1 : filtroFinal.cantidadMaterias().min();
+        if (ofertasDisponibles.size() < min) {
+            return List.of();
+        }
+
         Set<Long> obligatorias = new HashSet<>(filtroFinal.materiasObligatorias());
+        List<Long> materias = new ArrayList<>(ofertasDisponibles.keySet());
         materias.sort(Comparator
                 .comparingInt((Long materiaId) -> obligatorias.contains(materiaId) ? 0 : 1)
                 .thenComparingInt(materiaId -> ofertasDisponibles.getOrDefault(materiaId, List.of()).size()));
 
-        List<SolucionHorario> soluciones = new ArrayList<>();
+        int[] sufMax = calcularAportesMaximos(materias, ofertasDisponibles, obligatorias, filtroFinal);
+        PriorityQueue<SolucionHorario> mejores = new PriorityQueue<>(comparadorPeorPrimero());
+
         backtracking(
+                0,
                 materias,
                 ofertasDisponibles,
                 new ArrayList<>(),
-                new HashSet<>(),
                 obligatorias,
                 filtroFinal,
-                soluciones
+                0,
+                sufMax,
+                mejores
         );
 
-        return soluciones.stream()
-                .sorted((a, b) -> {
-                    int porPuntuacion = Integer.compare(b.puntuacion(), a.puntuacion());
-                    if (porPuntuacion != 0) {
-                        return porPuntuacion;
-                    }
-                    return Integer.compare(b.cantidadMaterias(), a.cantidadMaterias());
-                })
-                .limit(20)
-                .toList();
+        List<SolucionHorario> soluciones = new ArrayList<>(mejores.size());
+        while (!mejores.isEmpty()) {
+            soluciones.add(mejores.poll());
+        }
+        soluciones.sort(comparadorMejorPrimero());
+        return soluciones;
     }
 
     private void backtracking(
+            int indice,
             List<Long> materias,
             Map<Long, List<Oferta>> ofertasPorMateria,
             List<HorarioTrabajo> seleccionados,
-            Set<Long> materiasSeleccionadas,
             Set<Long> obligatorias,
             HorarioFiltroRequest filtros,
-            List<SolucionHorario> soluciones
+            int puntuacionActual,
+            int[] sufMax,
+            PriorityQueue<SolucionHorario> mejores
     ) {
-        if (materias.isEmpty()) {
-            registrarSolucion(seleccionados, obligatorias, filtros, soluciones);
+        if (indice == materias.size()) {
+            registrarSolucion(seleccionados, obligatorias, filtros, mejores);
             return;
         }
 
-        Long materiaId = materias.getFirst();
-        List<Long> siguientes = new ArrayList<>(materias.subList(1, materias.size()));
+        if (mejores.size() >= LIMITE_OPCIONES) {
+            int peorPuntuacion = mejores.peek().puntuacion();
+            int maxPosible = puntuacionActual + sufMax[indice]
+                    + (Boolean.TRUE.equals(filtros.evitarHuecos()) ? 5 : 0);
+            if (maxPosible < peorPuntuacion) {
+                return;
+            }
+        }
+
+        Long materiaId = materias.get(indice);
 
         if (!obligatorias.contains(materiaId)) {
             backtracking(
-                    siguientes,
+                    indice + 1,
+                    materias,
                     ofertasPorMateria,
-                    new ArrayList<>(seleccionados),
-                    new HashSet<>(materiasSeleccionadas),
+                    seleccionados,
                     obligatorias,
                     filtros,
-                    soluciones
+                    puntuacionActual,
+                    sufMax,
+                    mejores
             );
         }
 
         List<Oferta> ofertas = ofertasPorMateria.getOrDefault(materiaId, List.of());
         for (Oferta oferta : ofertas) {
-            if (materiasSeleccionadas.contains(materiaId)) {
-                continue;
-            }
             if (!cumpleRestriccionDocente(oferta, filtros.docentes())) {
                 continue;
             }
@@ -150,26 +168,74 @@ public class HorarioGeneradorService {
             List<HorarioTrabajo> nuevosSeleccionados = new ArrayList<>(seleccionados);
             nuevosSeleccionados.addAll(oferta.horarios());
 
-            Set<Long> nuevasMaterias = new HashSet<>(materiasSeleccionadas);
-            nuevasMaterias.add(materiaId);
-
             backtracking(
-                    siguientes,
+                    indice + 1,
+                    materias,
                     ofertasPorMateria,
                     nuevosSeleccionados,
-                    nuevasMaterias,
                     obligatorias,
                     filtros,
-                    soluciones
+                    puntuacionActual + aporteOferta(oferta, obligatorias, filtros),
+                    sufMax,
+                    mejores
             );
         }
+    }
+
+    private int[] calcularAportesMaximos(
+            List<Long> materias,
+            Map<Long, List<Oferta>> ofertasDisponibles,
+            Set<Long> obligatorias,
+            HorarioFiltroRequest filtros
+    ) {
+        int n = materias.size();
+        int[] sufMax = new int[n + 1];
+        for (int i = n - 1; i >= 0; i--) {
+            Long materiaId = materias.get(i);
+            int aporteMax = ofertasDisponibles.getOrDefault(materiaId, List.of()).stream()
+                    .mapToInt(oferta -> aporteOferta(oferta, obligatorias, filtros))
+                    .max().orElse(0);
+            sufMax[i] = sufMax[i + 1] + aporteMax;
+        }
+        return sufMax;
+    }
+
+    private int aporteOferta(Oferta oferta, Set<Long> obligatorias, HorarioFiltroRequest filtros) {
+        int aporte = 1;
+        if (obligatorias.contains(oferta.materiaId())) {
+            aporte += 10;
+        }
+        if (docenteEsObligatorioParaMateria(filtros.docentes(), oferta.materiaId(), oferta.docenteId())) {
+            aporte += 10;
+        }
+        return aporte;
+    }
+
+    private Comparator<SolucionHorario> comparadorPeorPrimero() {
+        return (a, b) -> {
+            int porPuntuacion = Integer.compare(a.puntuacion(), b.puntuacion());
+            if (porPuntuacion != 0) {
+                return porPuntuacion;
+            }
+            return Integer.compare(a.cantidadMaterias(), b.cantidadMaterias());
+        };
+    }
+
+    private Comparator<SolucionHorario> comparadorMejorPrimero() {
+        return (a, b) -> {
+            int porPuntuacion = Integer.compare(b.puntuacion(), a.puntuacion());
+            if (porPuntuacion != 0) {
+                return porPuntuacion;
+            }
+            return Integer.compare(b.cantidadMaterias(), a.cantidadMaterias());
+        };
     }
 
     private void registrarSolucion(
             List<HorarioTrabajo> horarios,
             Set<Long> obligatorias,
             HorarioFiltroRequest filtros,
-            List<SolucionHorario> soluciones
+            PriorityQueue<SolucionHorario> mejores
     ) {
         if (horarios == null || horarios.isEmpty()) {
             return;
@@ -177,7 +243,7 @@ public class HorarioGeneradorService {
 
         Set<Long> materiasEnSolucion = horarios.stream()
                 .map(HorarioTrabajo::materiaId)
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
 
         int min = filtros.cantidadMaterias().min() == null ? 1 : filtros.cantidadMaterias().min();
         int max = filtros.cantidadMaterias().max() == null ? 6 : filtros.cantidadMaterias().max();
@@ -190,8 +256,17 @@ public class HorarioGeneradorService {
             return;
         }
 
-        int puntuacion = calcularPuntuacion(horarios, obligatorias, filtros);
-        soluciones.add(new SolucionHorario(materiasEnSolucion.size(), puntuacion, horarios));
+        SolucionHorario solucion = new SolucionHorario(
+                materiasEnSolucion.size(),
+                calcularPuntuacion(horarios, obligatorias, filtros),
+                horarios);
+
+        if (mejores.size() < LIMITE_OPCIONES) {
+            mejores.add(solucion);
+        } else if (comparadorPeorPrimero().compare(solucion, mejores.peek()) > 0) {
+            mejores.poll();
+            mejores.add(solucion);
+        }
     }
 
     private int calcularPuntuacion(
@@ -199,31 +274,29 @@ public class HorarioGeneradorService {
             Set<Long> obligatorias,
             HorarioFiltroRequest filtros
     ) {
-        Map<String, List<HorarioTrabajo>> ofertasAgrupadas = new HashMap<>();
-        for (HorarioTrabajo horario : horarios) {
-            String clave = horario.materiaId() + ":" + horario.docenteId() + ":" + horario.paralelo();
-            ofertasAgrupadas.computeIfAbsent(clave, ignored -> new ArrayList<>()).add(horario);
+        Set<Long> materiasEnSolucion = horarios.stream()
+                .map(HorarioTrabajo::materiaId)
+                .collect(Collectors.toSet());
+
+        int puntuacionTotal = materiasEnSolucion.size();
+
+        for (Long materiaId : materiasEnSolucion) {
+            if (obligatorias.contains(materiaId)) {
+                puntuacionTotal += 10;
+            }
+
+            Long docenteId = horarios.stream()
+                    .filter(horario -> horario.materiaId().equals(materiaId))
+                    .findFirst()
+                    .map(HorarioTrabajo::docenteId)
+                    .orElse(null);
+            if (docenteId != null && docenteEsObligatorioParaMateria(filtros.docentes(), materiaId, docenteId)) {
+                puntuacionTotal += 10;
+            }
         }
 
-        int puntuacionTotal = 0;
-        for (List<HorarioTrabajo> ofertaHorarios : ofertasAgrupadas.values()) {
-            int score = 1;
-            Long materiaId = ofertaHorarios.getFirst().materiaId();
-            Long docenteId = ofertaHorarios.getFirst().docenteId();
-
-            if (obligatorias.contains(materiaId)) {
-                score += 10;
-            }
-
-            if (docenteEsObligatorioParaMateria(filtros.docentes(), materiaId, docenteId)) {
-                score += 10;
-            }
-
-            if (Boolean.TRUE.equals(filtros.evitarHuecos()) && !tieneHueco(ofertaHorarios)) {
-                score += 5;
-            }
-
-            puntuacionTotal += score;
+        if (Boolean.TRUE.equals(filtros.evitarHuecos()) && !tieneHueco(horarios)) {
+            puntuacionTotal += 5;
         }
 
         return puntuacionTotal;

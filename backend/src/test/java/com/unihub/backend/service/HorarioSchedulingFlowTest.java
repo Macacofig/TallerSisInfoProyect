@@ -70,7 +70,7 @@ class HorarioSchedulingFlowTest {
             assertEquals("Matemática I", solucion.horarios().getFirst().materia());
             assertEquals("Juan Pérez", solucion.horarios().getFirst().docente());
             assertTrue(solucion.horarios().getFirst().horarios().stream()
-                    .allMatch(bloque -> bloque.dia() != 1));
+                    .allMatch(bloque -> !"Lunes".equals(bloque.dia())));
         }
         assertTrue(horarioService.generarDesdeSession(
                 new HorarioGeneracionRequest(normalizado.sessionId(), filtros)).isEmpty());

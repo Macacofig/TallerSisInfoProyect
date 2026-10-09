@@ -6,7 +6,6 @@ public record Oferta(
         Long materiaId,
         Long docenteId,
         int paralelo,
-        List<HorarioTrabajo> horarios,
-        int puntuacion
+        List<HorarioTrabajo> horarios
 ) {
 }
