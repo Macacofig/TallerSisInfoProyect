@@ -83,15 +83,11 @@ LAYOUT
 ========================= */
 
 .horarios-layout {
-display: grid;
-
-grid-template-columns: 352px minmax(0, 1fr);
-
-gap: 24px;
-
-align-items: start;
-
-margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin-top: 20px;
 }
 
 /* =========================
@@ -101,7 +97,7 @@ PANEL DE MATERIAS
 .materias-panel {
 width: 100%;
 
-padding: 1.625rem 1.5rem;
+padding: 1.625rem 1.1rem; 
 
 background: #f8fbff;
 
