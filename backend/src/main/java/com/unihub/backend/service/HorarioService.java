@@ -20,7 +20,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class HorarioService {
 
-    private final Map<String, List<HorarioMateriaRequest>> sesiones = new ConcurrentHashMap<>();
+    private record SesionHorario(Map<Long, List<Oferta>> ofertasPorMateria, MapeoGeneracion mapeo) {
+    }
+
+    private final Map<String, SesionHorario> sesiones = new ConcurrentHashMap<>();
     private final HorarioMapper horarioMapper;
     private final HorarioGeneradorService horarioGeneradorService;
 
@@ -37,8 +40,10 @@ public class HorarioService {
         List<HorarioMateriaRequest> materias = materiasCrudas == null ? List.of() : List.copyOf(materiasCrudas);
         MapeoGeneracion mapeo = horarioMapper.crearMapeo(materias);
         List<HorarioResponse1> salida = horarioMapper.toResponse1(materias, mapeo);
+        List<HorarioTrabajo> trabajos = horarioMapper.toHorarioTrabajo(materias, mapeo);
+        Map<Long, List<Oferta>> ofertasPorMateria = horarioMapper.agruparPorMateria(trabajos);
         String sessionId = UUID.randomUUID().toString();
-        sesiones.put(sessionId, materias);
+        sesiones.put(sessionId, new SesionHorario(ofertasPorMateria, mapeo));
         return new HorarioNormalizacionResponse(sessionId, salida);
     }
 
@@ -47,18 +52,15 @@ public class HorarioService {
             return List.of();
         }
 
-        List<HorarioMateriaRequest> materias = sesiones.remove(request.sessionId());
-        if (materias == null || materias.isEmpty()) {
+        SesionHorario sesion = sesiones.remove(request.sessionId());
+        if (sesion == null) {
             return List.of();
         }
 
-        MapeoGeneracion mapeo = horarioMapper.crearMapeo(materias);
-        List<HorarioTrabajo> trabajos = horarioMapper.toHorarioTrabajo(materias, mapeo);
-        Map<Long, List<Oferta>> ofertasPorMateria = horarioMapper.agruparPorMateria(trabajos);
         HorarioFiltroRequest filtros = request.filtros() == null
                 ? new HorarioFiltroRequest(null, null, null, null, null, false)
                 : request.filtros();
-        List<SolucionHorario> soluciones = horarioGeneradorService.generar(ofertasPorMateria, filtros, mapeo);
-        return horarioMapper.toResponse2(soluciones, mapeo);
+        List<SolucionHorario> soluciones = horarioGeneradorService.generar(sesion.ofertasPorMateria(), filtros, sesion.mapeo());
+        return horarioMapper.toResponse2(soluciones, sesion.mapeo());
     }
 }

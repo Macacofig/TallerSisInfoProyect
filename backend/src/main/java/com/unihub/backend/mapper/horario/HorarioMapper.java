@@ -3,6 +3,7 @@ package com.unihub.backend.mapper.horario;
 import com.unihub.backend.ClassHelpers.Horario.HorarioTrabajo;
 import com.unihub.backend.ClassHelpers.Horario.Oferta;
 import com.unihub.backend.ClassHelpers.Horario.SolucionHorario;
+import com.unihub.backend.common.DiaSemana;
 import com.unihub.backend.dto.horario.HorarioBloqueRequest;
 import com.unihub.backend.dto.horario.HorarioBloqueGeneradoResponse;
 import com.unihub.backend.dto.horario.HorarioBloqueResponse;
@@ -120,12 +121,12 @@ public class HorarioMapper {
             if (ofertaActual == null) {
                 List<HorarioTrabajo> bloques = new ArrayList<>();
                 if (agregarBloqueUnico(bloques, horario)) {
-                    ofertasPorClave.put(clave, new Oferta(horario.materiaId(), horario.docenteId(), horario.paralelo(), bloques, 1));
+                    ofertasPorClave.put(clave, new Oferta(horario.materiaId(), horario.docenteId(), horario.paralelo(), bloques));
                 }
             } else {
                 List<HorarioTrabajo> bloques = new ArrayList<>(ofertaActual.horarios());
                 if (agregarBloqueUnico(bloques, horario)) {
-                    ofertasPorClave.put(clave, new Oferta(horario.materiaId(), horario.docenteId(), horario.paralelo(), bloques, 1));
+                    ofertasPorClave.put(clave, new Oferta(horario.materiaId(), horario.docenteId(), horario.paralelo(), bloques));
                 }
             }
         }
@@ -150,7 +151,7 @@ public class HorarioMapper {
                     mapeo.getNombresDocente().getOrDefault(oferta.docenteId(), "Docente desconocido"),
                     oferta.paralelo(),
                     oferta.horarios().stream().map(horario -> new HorarioBloqueResponse(
-                            horario.dia(), horario.horaInicio() + " - " + horario.horaFin()
+                            DiaSemana.nombre(horario.dia()), horario.horaInicio() + " - " + horario.horaFin()
                     )).toList()
             )).toList();
             respuestas.add(new HorarioResponse1(materiaId,
@@ -173,7 +174,8 @@ public class HorarioMapper {
                 HorarioTrabajo primero = bloques.getFirst();
                 List<HorarioBloqueGeneradoResponse> bloquesResponse = bloques.stream()
                         .sorted(Comparator.comparingInt(HorarioTrabajo::dia).thenComparing(HorarioTrabajo::horaInicio))
-                        .map(horario -> new HorarioBloqueGeneradoResponse(horario.dia(),
+                        .map(horario -> new HorarioBloqueGeneradoResponse(
+                                DiaSemana.nombre(horario.dia()),
                                 horario.horaInicio().toString(), horario.horaFin().toString()))
                         .toList();
                 return new HorarioBloqueResultadoResponse(
