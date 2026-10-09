@@ -20,8 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.unihub.backend.common.Constants.CalificacionMateria.ACTUALIZAR_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.CREAR_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.ELIMINAR_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.GESTIONES_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.OBTENER_POR_ESTUDIANTE_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.PROMEDIOS_MATERIAS_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.PROMEDIOS_POR_GESTION_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.PROMEDIOS_POR_MATERIA_URL;
+import static com.unihub.backend.common.Constants.CalificacionMateria.PROMEDIOS_POR_RANGO_URL;
+
 @RestController
-@RequestMapping("/api/calificacion-materia")
+@RequestMapping
 public class CalificacionMateriaController {
 
 	private final CalificacionMateriaService calificacionService;
@@ -30,7 +40,7 @@ public class CalificacionMateriaController {
 		this.calificacionService = calificacionService;
 	}
 
-	@PostMapping
+	@PostMapping(CREAR_URL)
 	public ResponseEntity<CalificacionMateriaResponse> crear(
 			@Valid @RequestBody CalificacionMateriaRequest request
 	) {
@@ -38,7 +48,7 @@ public class CalificacionMateriaController {
 				.body(calificacionService.crear(request));
 	}
 
-	@GetMapping("/materia/{idMateria}")
+	@GetMapping(PROMEDIOS_POR_MATERIA_URL)
 	public ResponseEntity<CalificacionMateriaPromedioResponse> obtenerPromediosPorMateria(
 			@PathVariable Long idMateria
 	) {
@@ -47,12 +57,12 @@ public class CalificacionMateriaController {
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@GetMapping("/promedios/materias")
+	@GetMapping(PROMEDIOS_MATERIAS_URL)
 	public ResponseEntity<List<CalificacionMateriaPromedioMateriaResponse>> obtenerPromediosMaterias() {
 		return ResponseEntity.ok(calificacionService.obtenerPromediosMaterias());
 	}
 
-	@GetMapping("/estudiante/{idEstudiante}/materia/{idMateria}")
+	@GetMapping(OBTENER_POR_ESTUDIANTE_URL)
 	public ResponseEntity<CalificacionMateriaResponse> obtenerPorEstudiante(
 			@PathVariable Long idEstudiante,
 			@PathVariable Long idMateria
@@ -60,7 +70,7 @@ public class CalificacionMateriaController {
 		return ResponseEntity.ok(calificacionService.obtenerPorEstudiante(idEstudiante, idMateria).orElse(null));
 	}
 
-	@PutMapping("/estudiante/{idEstudiante}/materia/{idMateria}")
+	@PutMapping(ACTUALIZAR_URL)
 	public ResponseEntity<CalificacionMateriaResponse> actualizar(
 			@PathVariable Long idEstudiante,
 			@PathVariable Long idMateria,
@@ -71,7 +81,7 @@ public class CalificacionMateriaController {
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@DeleteMapping("/estudiante/{idEstudiante}/materia/{idMateria}")
+	@DeleteMapping(ELIMINAR_URL)
 	public ResponseEntity<Void> eliminar(
 			@PathVariable Long idEstudiante,
 			@PathVariable Long idMateria
@@ -81,7 +91,7 @@ public class CalificacionMateriaController {
 				: ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/periodo/{gestion}")
+	@GetMapping(PROMEDIOS_POR_GESTION_URL)
 	public ResponseEntity<CalificacionMateriaPromedioResponse> obtenerPromediosPorGestion(
 			@PathVariable String gestion
 	) {
@@ -90,12 +100,12 @@ public class CalificacionMateriaController {
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@GetMapping("/gestiones")
+	@GetMapping(GESTIONES_URL)
 	public ResponseEntity<List<String>> obtenerGestiones() {
 		return ResponseEntity.ok(calificacionService.obtenerGestiones());
 	}
 
-	@GetMapping("/periodo/rango")
+	@GetMapping(PROMEDIOS_POR_RANGO_URL)
 	public ResponseEntity<CalificacionMateriaPromedioResponse> obtenerPromediosPorRango(
 			@RequestParam String desde,
 			@RequestParam String hasta

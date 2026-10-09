@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+import static com.unihub.backend.common.Constants.Materia.CARRERAS_URL;
+import static com.unihub.backend.common.Constants.Materia.OBTENER_URL;
+
 @RestController
-@RequestMapping("/api/materias")
+@RequestMapping
 public class MateriaController {
 
     private final MateriaService materiaService;
@@ -20,12 +23,12 @@ public class MateriaController {
         this.materiaService = materiaService;
     }
 
-    @GetMapping("/carreras")
+    @GetMapping(CARRERAS_URL)
     public ResponseEntity<List<String>> obtenerCarreras() {
         return ResponseEntity.ok(materiaService.obtenerCarreras());
     }
 
-    @GetMapping
+    @GetMapping(OBTENER_URL)
     public ResponseEntity<List<MateriaResponse>> obtenerMaterias(
 
         @RequestParam(required = false) String nombre,
