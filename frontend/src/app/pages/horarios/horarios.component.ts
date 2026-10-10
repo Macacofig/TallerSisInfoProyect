@@ -5,6 +5,7 @@ import {
   MateriaHorario
 } from '../../data/horarios.data';
 
+import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
 
 @Component({
   selector: 'app-horarios',
@@ -15,20 +16,13 @@ import {
 })
 export class HorariosComponent {
 
+  readonly textos = HORARIOS_MESSAGES;
+
   readonly materias: MateriaHorario[] = MATERIAS_HORARIOS;
 
   materiasSeleccionadas: MateriaHorario[] = [];
 
-
-  dias = [
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes',
-    'Sábado'
-  ];
-
+  readonly dias = HORARIOS_MESSAGES.DAYS;
 
   horas = [
     '07:15',
@@ -52,159 +46,114 @@ export class HorariosComponent {
     '20:45'
   ];
 
-
-  horarios = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 }
-  ];
-
-
   paginaActual = 1;
 
-
-  /*
-   * Cada fila del calendario mide 72px.
-   * Lo dejamos centralizado para que las
-   * tarjetas y las líneas usen exactamente
-   * la misma medida.
-   */
   readonly alturaFila = 72;
 
-
   constructor() {
+    this.materiasSeleccionadas = this.materias.filter(
+      materia => materia.seleccionada
+    );
 
-    this.materiasSeleccionadas =
-      this.materias.filter(
-        materia => materia.seleccionada
-      );
-
+    this.render();
   }
 
-
   /* =========================
-     PAGINACIÓN
+     PAGINACIÓN DINÁMICA
      ========================= */
 
   get totalHorarios(): number {
-    return this.horarios.length;
-  }
+    if (this.materiasSeleccionadas.length === 0) {
+      return 0;
+    }
 
+    return Math.max(
+      0,
+      ...this.materiasSeleccionadas.map(
+        materia => materia.opciones?.length ?? 0
+      )
+    );
+  }
 
   get hayHorarios(): boolean {
     return this.totalHorarios > 0;
   }
 
-
   get esUltimaPagina(): boolean {
-    return this.paginaActual === this.totalHorarios;
+    return this.paginaActual >= this.totalHorarios;
   }
 
-
   anterior(): void {
-
     if (this.paginaActual > 1) {
       this.paginaActual--;
     }
-
   }
 
-
   siguiente(): void {
-
     if (this.paginaActual < this.totalHorarios) {
       this.paginaActual++;
     }
-
   }
 
-
   render(): void {
-
     if (this.totalHorarios === 0) {
-
       this.paginaActual = 1;
-
       return;
     }
 
-
-    if (
-      this.paginaActual >
-      this.totalHorarios
-    ) {
-
-      this.paginaActual =
-        this.totalHorarios;
-
+    if (this.paginaActual > this.totalHorarios) {
+      this.paginaActual = this.totalHorarios;
     }
 
+    if (this.paginaActual < 1) {
+      this.paginaActual = 1;
+    }
   }
-
 
   /* =========================
      SELECCIÓN DE MATERIAS
      ========================= */
 
-  seleccionarMateria(
-    materia: MateriaHorario
-  ): void {
-
-    materia.seleccionada =
-      !materia.seleccionada;
-
+  seleccionarMateria(materia: MateriaHorario): void {
+    materia.seleccionada = !materia.seleccionada;
 
     if (materia.seleccionada) {
-
-      const yaExiste =
-        this.materiasSeleccionadas.some(
-          m => m.codigo === materia.codigo
-        );
-
+      const yaExiste = this.materiasSeleccionadas.some(
+        m => m.codigo === materia.codigo
+      );
 
       if (!yaExiste) {
-
-        this.materiasSeleccionadas.push(
-          materia
-        );
-
+        this.materiasSeleccionadas.push(materia);
       }
-
     } else {
-
       this.materiasSeleccionadas =
         this.materiasSeleccionadas.filter(
           m => m.codigo !== materia.codigo
         );
-
     }
 
+    this.render();
   }
 
-
   /* =========================
-     HORARIO PRINCIPAL
+     OPCIÓN SEGÚN LA PÁGINA
      ========================= */
 
   private obtenerHorarioPrincipal(
     materia: MateriaHorario
   ): string {
+    const indiceOpcion = this.paginaActual - 1;
 
     if (
       !materia.opciones ||
-      materia.opciones.length === 0
+      indiceOpcion < 0 ||
+      indiceOpcion >= materia.opciones.length
     ) {
       return '';
     }
 
-    /*
-     * Por ahora usamos siempre
-     * la primera opción horaria.
-     */
-    return materia.opciones[0].horario;
-
+    return materia.opciones[indiceOpcion].horario;
   }
-
 
   /* =========================
      BLOQUES DE MATERIA
@@ -217,126 +166,61 @@ export class HorariosComponent {
     inicio: string;
     fin: string;
   }[] {
-
-    const horario =
-      this.obtenerHorarioPrincipal(
-        materia
-      );
-
+    const horario = this.obtenerHorarioPrincipal(materia);
 
     if (!horario) {
       return [];
     }
 
-
-    const bloques =
-      horario.split('·');
-
+    const bloques = horario.split('·');
 
     const resultado: {
       inicio: string;
       fin: string;
     }[] = [];
 
+    for (const bloque of bloques) {
+      const bloqueNormalizado = bloque.trim();
 
-    for (
-      const bloque of bloques
-    ) {
-
-      const bloqueNormalizado =
-        bloque.trim();
-
-
-      /*
-       * Ejemplo:
-       *
-       * Lunes 08:00-10:00
-       */
       const regex =
         /^(.+?)\s+(\d{2}:\d{2})-(\d{2}:\d{2})$/;
 
-
-      const coincidencia =
-        bloqueNormalizado.match(regex);
-
+      const coincidencia = bloqueNormalizado.match(regex);
 
       if (!coincidencia) {
         continue;
       }
 
+      const diaBloque = coincidencia[1].trim().toLowerCase();
 
-      const diaBloque =
-        coincidencia[1]
-          .trim()
-          .toLowerCase();
-
-
-      if (
-        diaBloque !==
-        dia.toLowerCase()
-      ) {
+      if (diaBloque !== dia.toLowerCase()) {
         continue;
       }
 
-
       resultado.push({
-        inicio:
-          coincidencia[2],
-
-        fin:
-          coincidencia[3]
+        inicio: coincidencia[2],
+        fin: coincidencia[3]
       });
-
     }
 
-
     return resultado;
-
   }
-
 
   /* =========================
      POSICIÓN DE LA TARJETA
      ========================= */
 
-  obtenerPosicionMateria(
-    horaInicio: string
-  ): number {
+  obtenerPosicionMateria(horaInicio: string): number {
+    const minutosInicio = this.convertirMinutos(horaInicio);
 
-    const minutosInicio =
-      this.convertirMinutos(
-        horaInicio
-      );
+    const minutosPrimeraHora = this.convertirMinutos(
+      this.horas[0]
+    );
 
+    const diferencia = minutosInicio - minutosPrimeraHora;
 
-    const minutosPrimeraHora =
-      this.convertirMinutos(
-        this.horas[0]
-      );
-
-
-    /*
-     * Diferencia desde las 07:15.
-     */
-    const diferencia =
-      minutosInicio -
-      minutosPrimeraHora;
-
-
-    /*
-     * Cada 45 minutos =
-     * una fila de 72px.
-     *
-     * Esto también permite manejar
-     * horarios que empiecen entre
-     * dos filas.
-     */
-    return (
-      diferencia / 45
-    ) * this.alturaFila;
-
+    return (diferencia / 45) * this.alturaFila;
   }
-
 
   /* =========================
      ALTURA DE LA TARJETA
@@ -346,47 +230,18 @@ export class HorariosComponent {
     horaInicio: string,
     horaFin: string
   ): number {
+    const inicio = this.convertirMinutos(horaInicio);
+    const fin = this.convertirMinutos(horaFin);
 
-    const inicio =
-      this.convertirMinutos(
-        horaInicio
-      );
-
-
-    const fin =
-      this.convertirMinutos(
-        horaFin
-      );
-
-
-    const duracion =
-      fin - inicio;
-
-
-    /*
-     * Cada 45 minutos representa
-     * una fila de 72px.
-     */
-    const cantidadFilas =
-      duracion / 45;
-
-
-    /*
-     * Dejamos unos pequeños espacios
-     * para que la tarjeta no quede pegada
-     * a las líneas del calendario.
-     */
+    const duracion = fin - inicio;
+    const cantidadFilas = duracion / 45;
     const espacioVertical = 8;
 
-
     return Math.max(
-      this.alturaFila * cantidadFilas -
-      espacioVertical,
+      this.alturaFila * cantidadFilas - espacioVertical,
       30
     );
-
   }
-
 
   /* =========================
      COMPROBAR HORARIO
@@ -397,45 +252,16 @@ export class HorariosComponent {
     dia: string,
     hora: string
   ): boolean {
+    const bloques = this.obtenerBloquesMateria(materia, dia);
+    const horaActual = this.convertirMinutos(hora);
 
-    const bloques =
-      this.obtenerBloquesMateria(
-        materia,
-        dia
-      );
+    return bloques.some(bloque => {
+      const inicio = this.convertirMinutos(bloque.inicio);
+      const fin = this.convertirMinutos(bloque.fin);
 
-
-    const horaActual =
-      this.convertirMinutos(
-        hora
-      );
-
-
-    return bloques.some(
-      bloque => {
-
-        const inicio =
-          this.convertirMinutos(
-            bloque.inicio
-          );
-
-
-        const fin =
-          this.convertirMinutos(
-            bloque.fin
-          );
-
-
-        return (
-          horaActual >= inicio &&
-          horaActual < fin
-        );
-
-      }
-    );
-
+      return horaActual >= inicio && horaActual < fin;
+    });
   }
-
 
   /* =========================
      MOSTRAR TARJETA
@@ -446,96 +272,38 @@ export class HorariosComponent {
     dia: string,
     hora: string
   ): boolean {
+    const bloques = this.obtenerBloquesMateria(materia, dia);
+    const horaActual = this.convertirMinutos(hora);
 
-    const bloques =
-      this.obtenerBloquesMateria(
-        materia,
-        dia
-      );
+    return bloques.some(bloque => {
+      const inicio = this.convertirMinutos(bloque.inicio);
 
-
-    const horaActual =
-      this.convertirMinutos(
-        hora
-      );
-
-
-    /*
-     * Solo mostramos la tarjeta
-     * cuando estamos exactamente
-     * en el inicio del bloque.
-     */
-    return bloques.some(
-      bloque => {
-
-        const inicio =
-          this.convertirMinutos(
-            bloque.inicio
-          );
-
-
-        return (
-          horaActual === inicio
-        );
-
-      }
-    );
-
+      return horaActual === inicio;
+    });
   }
-
 
   /* =========================
      CONVERSIÓN DE HORAS
      ========================= */
 
-  private convertirMinutos(
-    hora: string
-  ): number {
+  private convertirMinutos(hora: string): number {
+    const [horas, minutos] = hora.split(':').map(Number);
 
-    const [
-      horas,
-      minutos
-    ] =
-      hora
-        .split(':')
-        .map(Number);
-
-
-    return (
-      horas * 60 +
-      minutos
-    );
-
+    return horas * 60 + minutos;
   }
-
 
   /* =========================
      COLORES
      ========================= */
 
-  obtenerColorMateria(
-    codigo: string
-  ): string {
-
-    const colores:
-      Record<string, string> = {
-
+  obtenerColorMateria(codigo: string): string {
+    const colores: Record<string, string> = {
       'INF-101': '#0b3c8c',
-
       'INF-202': '#2e7d5b',
-
       'INF-305': '#e3a82b',
-
       'INF-410': '#7957a8'
-
     };
 
-
-    return (
-      colores[codigo]
-      ?? '#4f5d73'
-    );
-
+    return colores[codigo] ?? '#4f5d73';
   }
-
 }
