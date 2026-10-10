@@ -56,7 +56,7 @@ describe('DocentesService', () => {
 
     const request =
       httpTestingController.expectOne(
-        'http://localhost:8081/api/docentes/materia/1'
+        'https://tallersisinfoproyect.onrender.com/api/docentes/materia/1'
       );
 
     expect(request.request.method)
@@ -76,7 +76,7 @@ describe('DocentesService', () => {
 
     const request =
       httpTestingController.expectOne(
-        'http://localhost:8081/api/docentes/materia/2'
+        'https://tallersisinfoproyect.onrender.com/api/docentes/materia/2'
       );
 
     expect(request.request.method)

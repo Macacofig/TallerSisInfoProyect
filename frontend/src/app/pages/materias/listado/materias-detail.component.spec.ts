@@ -12,7 +12,7 @@ describe('HU-04: visualizar información de una materia', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
   let dialogo: HTMLDialogElement;
-  const endpoint = 'http://localhost:8081/api/materias';
+  const endpoint = 'https://tallersisinfoproyect.onrender.com/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
   const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
   const config = APP_CONFIG as { DEMO_MODE: boolean };
