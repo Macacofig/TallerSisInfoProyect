@@ -7,19 +7,20 @@
 }
 
 .graficos-calificacion {
-  margin-top: 28px;
-  padding: 24px;
+  margin-top: 1.75rem;
+  padding: 1.5rem;
   background: #f8fafc;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #e3e8ef;
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 
 .graficos-calificacion__encabezado {
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 
 .graficos-calificacion__encabezado h3 {
-  margin: 0 0 7px;
+  margin: 0 0 0.4375rem;
   color: #10213f;
 }
 
@@ -30,14 +31,14 @@
 
 .graficos-calificacion__contenido {
   display: grid;
-  gap: 22px;
+  gap: 1.375rem;
 }
 
 .grafico-metrica__encabezado {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 9px;
+  gap: 1rem;
+  margin-bottom: 0.5625rem;
   color: #344054;
   font-weight: 700;
 }
@@ -55,10 +56,10 @@
 }
 
 .grafico-metrica__barra {
-  height: 14px;
+  height: 0.875rem;
   overflow: hidden;
   background: #e5eaf1;
-  border-radius: 999px;
+  border-radius: 62.4375rem;
 }
 
 .grafico-metrica__progreso {
@@ -82,19 +83,19 @@
 .grafico-escala {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 0.625rem;
   color: #8490a2;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
 
   .graficos-calificacion {
-    padding: 18px;
+    padding: 1.125rem;
   }
 
   .grafico-metrica__encabezado {
-    gap: 10px;
+    gap: 0.625rem;
   }
 
 }

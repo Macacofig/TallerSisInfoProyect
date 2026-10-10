@@ -13,11 +13,11 @@ padding: 2.5rem clamp(1.25rem, 2.5vw, 2.5rem);
 background-color: #f7faff;
 
 background-image: radial-gradient(
-#dbe4f2 0.65px,
-transparent 0.65px
+#dbe4f2 0.040625rem,
+transparent 0.040625rem
 );
 
-background-size: 18px 18px;
+background-size: 1.125rem 1.125rem;
 }
 
 /* =========================
@@ -55,7 +55,7 @@ color: #0b2447;
 }
 
 .subtitle {
-max-width: 640px;
+max-width: 40rem;
 
 margin: 0;
 
@@ -69,6 +69,7 @@ line-height: 1.5;
 }
 
 .divider {
+/* Excepcion HU-39: separador de un pixel para conservar nitidez visual. */
 height: 1px;
 
 margin: 0;
@@ -85,9 +86,9 @@ LAYOUT
 .horarios-layout {
 display: grid;
 
-grid-template-columns: 352px minmax(0, 1fr);
+grid-template-columns: 22rem minmax(0, 1fr);
 
-gap: 24px;
+gap: 1.5rem;
 
 align-items: start;
 
@@ -105,12 +106,13 @@ padding: 1.625rem 1.5rem;
 
 background: #f8fbff;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border: 1px solid #d5e0f0;
 
-border-radius: 18px;
+border-radius: 1.125rem;
 
 box-shadow:
-0 1px 2px rgba(11, 36, 71, 0.04);
+0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
 }
 
 .panel-title {
@@ -142,9 +144,10 @@ padding: 1rem;
 
 background: #f8fbff;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border: 1px solid #d5e0f0;
 
-border-radius: 10px;
+border-radius: 0.625rem;
 
 overflow-wrap: anywhere;
 }
@@ -162,19 +165,20 @@ CHECKBOX
 ========================= */
 
 .materia-horario__header input {
-flex: 0 0 18px;
+flex: 0 0 1.125rem;
 
-width: 18px;
-height: 18px;
+width: 1.125rem;
+height: 1.125rem;
 
-margin: 2px 0 0;
+margin: 0.125rem 0 0;
 
 appearance: none;
 -webkit-appearance: none;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border: 1px solid #0b3c8c;
 
-border-radius: 4px;
+border-radius: 0.25rem;
 
 background: #fff;
 
@@ -199,7 +203,7 @@ transform: translate(-50%, -54%);
 
 color: #fff;
 
-font-size: 13px;
+font-size: 0.8125rem;
 
 font-weight: 700;
 }
@@ -243,7 +247,7 @@ OPCIONES
 .materia-horario__opciones {
 margin-top: 0.875rem;
 
-margin-left: calc(18px + 0.75rem);
+margin-left: calc(1.125rem + 0.75rem);
 }
 
 .opcion {
@@ -287,18 +291,19 @@ align-items: center;
 
 justify-content: space-between;
 
-gap: 24px;
+gap: 1.5rem;
 
-padding: 16px 24px;
+padding: 1rem 1.5rem;
 
 background: #f8fbff;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border: 1px solid #d5e0f0;
 
-border-radius: 14px;
+border-radius: 0.875rem;
 
 box-shadow:
-0 1px 2px rgba(11, 36, 71, 0.04);
+0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
 }
 
 .resultados__info {
@@ -306,7 +311,7 @@ display: flex;
 
 align-items: center;
 
-gap: 10px;
+gap: 0.625rem;
 
 min-width: 0;
 
@@ -314,20 +319,21 @@ color: #0b2447;
 
 font-family: Georgia, 'Times New Roman', serif;
 
-font-size: 18px;
+font-size: 1.125rem;
 
 font-weight: 500;
 }
 
 .resultados__info span {
-overflow-wrap: anywhere;
+min-width: 0;
+overflow-wrap: break-word;
 }
 
 .resultados__icon {
-flex: 0 0 18px;
+flex: 0 0 1.125rem;
 
-width: 18px;
-height: 18px;
+width: 1.125rem;
+height: 1.125rem;
 
 color: #2e7d5b;
 }
@@ -341,7 +347,7 @@ display: flex;
 
 align-items: center;
 
-gap: 12px;
+gap: 0.75rem;
 
 flex-shrink: 0;
 
@@ -349,23 +355,24 @@ color: #4f5d73;
 
 font-family: "Source Sans 3", Arial, sans-serif;
 
-font-size: 13px;
+font-size: 0.8125rem;
 }
 
 .resultados__paginacion button {
-padding: 8px 16px;
+padding: 0.5rem 1rem;
 
 background: #fff;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border: 1px solid #d5e0f0;
 
-border-radius: 8px;
+border-radius: 0.5rem;
 
 color: #0b2447;
 
 font-family: "Source Sans 3", Arial, sans-serif;
 
-font-size: 13px;
+font-size: 0.8125rem;
 
 cursor: pointer;
 
@@ -415,12 +422,13 @@ width: 100%;
 
 background: #f8fbff;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border: 1px solid #d5e0f0;
 
-border-radius: 18px;
+border-radius: 1.125rem;
 
 box-shadow:
-0 1px 2px rgba(11, 36, 71, 0.04);
+0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
 
 overflow: hidden;
 }
@@ -436,7 +444,7 @@ overflow-x: auto;
 
 overflow-y: auto;
 
-max-height: 720px;
+max-height: 45rem;
 
 overscroll-behavior: contain;
 }
@@ -446,7 +454,7 @@ ESTRUCTURA
 ========================= */
 
 .calendario {
-min-width: 975px;
+min-width: 60.9375rem;
 
 position: relative;
 }
@@ -459,13 +467,14 @@ ENCABEZADO
 display: grid;
 
 grid-template-columns:
-75px
-repeat(6, minmax(150px, 1fr));
+4.6875rem
+repeat(6, minmax(9.375rem, 1fr));
 
-min-width: 975px;
+min-width: 60.9375rem;
 
 background: #f8fbff;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border-bottom: 1px solid #d5e0f0;
 }
 
@@ -476,16 +485,17 @@ align-items: center;
 
 justify-content: center;
 
-min-height: 52px;
+min-height: 3.25rem;
 
 color: #4f5d73;
 
 font-family: "Source Sans 3", Arial, sans-serif;
 
-font-size: 12px;
+font-size: 0.75rem;
 
 font-weight: 500;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border-right: 1px solid #d5e0f0;
 }
 
@@ -496,16 +506,17 @@ align-items: center;
 
 justify-content: center;
 
-min-height: 52px;
+min-height: 3.25rem;
 
 color: #0b2447;
 
 font-family: Georgia, 'Times New Roman', serif;
 
-font-size: 15px;
+font-size: 0.9375rem;
 
 font-weight: 500;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border-right: 1px solid #d5e0f0;
 }
 
@@ -520,9 +531,9 @@ CUERPO
 .calendario__cuerpo {
 display: grid;
 
-grid-template-columns: 75px 1fr;
+grid-template-columns: 4.6875rem 1fr;
 
-min-width: 975px;
+min-width: 60.9375rem;
 
 position: relative;
 }
@@ -538,13 +549,14 @@ flex-direction: column;
 
 background: #f8fbff;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border-right: 1px solid #d5e0f0;
 }
 
 .calendario__hora {
-height: 72px;
+height: 4.5rem;
 
-flex: 0 0 72px;
+flex: 0 0 4.5rem;
 
 display: flex;
 
@@ -552,16 +564,17 @@ align-items: flex-start;
 
 justify-content: center;
 
-padding-top: 9px;
+padding-top: 0.5625rem;
 
 color: #4f5d73;
 
 font-family: "Source Sans 3", Arial, sans-serif;
 
-font-size: 11px;
+font-size: 0.6875rem;
 
 line-height: 1.2;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border-bottom: 1px solid #e6edf6;
 }
 
@@ -573,9 +586,9 @@ DÍAS
 display: grid;
 
 grid-template-columns:
-repeat(6, minmax(150px, 1fr));
+repeat(6, minmax(9.375rem, 1fr));
 
-min-width: 900px;
+min-width: 56.25rem;
 
 position: relative;
 }
@@ -585,10 +598,11 @@ COLUMNA DE CADA DÍA
 ========================= */
 
 .calendario__columna {
-min-width: 150px;
+min-width: 9.375rem;
 
 position: relative;
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border-right: 1px solid #d5e0f0;
 }
 
@@ -603,12 +617,13 @@ CELDAS / LÍNEAS HORARIAS
 .calendario__celda {
 width: 100%;
 
-height: 72px;
+height: 4.5rem;
 
 padding: 0;
 
 background: rgba(255, 255, 255, 0.25);
 
+/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
 border-bottom: 1px solid #e6edf6;
 }
 
@@ -621,15 +636,15 @@ position: absolute;
 
 z-index: 5;
 
-left: 7px;
+left: 0.4375rem;
 
-right: 7px;
+right: 0.4375rem;
 
-margin-top: 5px;
+margin-top: 0.3125rem;
 
-margin-bottom: 5px;
+margin-bottom: 0.3125rem;
 
-padding: 10px 11px;
+padding: 0.625rem 0.6875rem;
 
 display: flex;
 
@@ -637,11 +652,11 @@ flex-direction: column;
 
 justify-content: center;
 
-gap: 4px;
+gap: 0.25rem;
 
-border-radius: 11px;
+border-radius: 0.6875rem;
 
-border-left: 5px solid var(--color-materia);
+border-left: 0.3125rem solid var(--color-materia);
 
 background: color-mix(
 in srgb,
@@ -650,8 +665,8 @@ var(--color-materia) 15%,
 );
 
 box-shadow:
-0 3px 8px rgba(11, 36, 71, 0.12),
-0 1px 2px rgba(11, 36, 71, 0.08);
+0 0.1875rem 0.5rem rgba(11, 36, 71, 0.12),
+0 0.0625rem 0.125rem rgba(11, 36, 71, 0.08);
 
 overflow: hidden;
 
@@ -668,11 +683,11 @@ box-shadow 0.15s ease;
 .materia-calendario:hover {
 z-index: 10;
 
-transform: translateY(-1px);
+transform: translateY(-0.0625rem);
 
 box-shadow:
-0 5px 12px rgba(11, 36, 71, 0.16),
-0 2px 4px rgba(11, 36, 71, 0.08);
+0 0.3125rem 0.75rem rgba(11, 36, 71, 0.16),
+0 0.125rem 0.25rem rgba(11, 36, 71, 0.08);
 }
 
 /* =========================
@@ -686,7 +701,7 @@ color: #0b2447;
 
 font-family: Georgia, 'Times New Roman', serif;
 
-font-size: 13px;
+font-size: 0.8125rem;
 
 font-weight: 600;
 
@@ -706,7 +721,7 @@ color: var(--color-materia);
 
 font-family: "Source Sans 3", Arial, sans-serif;
 
-font-size: 10px;
+font-size: 0.625rem;
 
 font-weight: 700;
 
@@ -739,7 +754,7 @@ background: #f5effc;
 RESPONSIVE
 ========================= */
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
 
 .horarios-layout {
 grid-template-columns: 1fr;
@@ -763,14 +778,14 @@ order: 3;
 
 }
 
-@media (max-width: 600px) {
+@media (max-width: 37.5rem) {
 
 .horarios-page {
-padding: 1.5rem 1rem;
+padding: 1.5rem 0.75rem;
 }
 
 .page-header {
-padding: 1.5rem 0.5rem 0;
+padding: 1.5rem 0.25rem 0;
 }
 
 .resultados__barra {
@@ -778,29 +793,36 @@ flex-direction: column;
 
 align-items: stretch;
 
-gap: 16px;
+gap: 1rem;
 
 }
 
 .resultados__paginacion {
 justify-content: space-between;
+gap: 0.5rem;
+flex-wrap: wrap;
+}
+
+.resultados__paginacion button {
+padding: 0.5rem 0.75rem;
+white-space: nowrap;
 }
 
 .materia-calendario {
-left: 6px;
+left: 0.375rem;
 
-right: 6px;
+right: 0.375rem;
 
-padding: 8px;
+padding: 0.5rem;
 
 }
 
 .materia-calendario strong {
-font-size: 11px;
+font-size: 0.6875rem;
 }
 
 .materia-calendario span {
-font-size: 9px;
+font-size: 0.5625rem;
 }
 
 }
