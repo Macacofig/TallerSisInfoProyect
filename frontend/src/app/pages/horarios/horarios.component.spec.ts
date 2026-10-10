@@ -48,7 +48,7 @@ describe('HorariosComponent', () => {
     expect(ingenieria?.opciones.length).toBe(1);
   });
 
-  it('should display the semester subjects title', () => {
+  it('should display the semester subjects title in English', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.textContent).toContain(
@@ -63,6 +63,53 @@ describe('HorariosComponent', () => {
     expect(compiled.textContent).toContain('Estructuras de Datos');
     expect(compiled.textContent).toContain('Bases de Datos');
     expect(compiled.textContent).toContain('Ingeniería de Software');
+  });
+
+  it('should initialize pagination based on selected subjects', () => {
+    expect(component.totalHorarios).toBe(2);
+    expect(component.paginaActual).toBe(1);
+  });
+
+  it('should move to the next page', () => {
+    component.siguiente();
+
+    expect(component.paginaActual).toBe(2);
+  });
+
+  it('should not move past the last page', () => {
+    component.paginaActual = component.totalHorarios;
+
+    component.siguiente();
+
+    expect(component.paginaActual).toBe(component.totalHorarios);
+  });
+
+  it('should move to the previous page', () => {
+    component.paginaActual = 2;
+
+    component.anterior();
+
+    expect(component.paginaActual).toBe(1);
+  });
+
+  it('should not move before the first page', () => {
+    component.paginaActual = 1;
+
+    component.anterior();
+
+    expect(component.paginaActual).toBe(1);
+  });
+
+  it('should update the number of pages when selecting a subject', () => {
+    const ingenieria = component.materias.find(
+      materia => materia.codigo === 'INF-410'
+    );
+
+    expect(ingenieria).toBeTruthy();
+
+    component.seleccionarMateria(ingenieria!);
+
+    expect(component.totalHorarios).toBe(2);
   });
 
   it('should add a subject when it is selected', () => {
@@ -97,6 +144,15 @@ describe('HorariosComponent', () => {
         materia => materia.codigo === 'INF-101'
       )
     ).toBe(false);
+  });
+
+  it('should have no schedule pages when no subjects are selected', () => {
+    component.materias
+      .filter(materia => materia.seleccionada)
+      .forEach(materia => component.seleccionarMateria(materia));
+
+    expect(component.totalHorarios).toBe(0);
+    expect(component.hayHorarios).toBe(false);
   });
 
   it('should detect a subject in its correct schedule', () => {
