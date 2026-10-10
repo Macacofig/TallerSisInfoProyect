@@ -8,7 +8,7 @@ import { MateriasComponent } from './materias.component';
 describe('HU-02: buscar materia por nombre mediante el backend', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
-  const endpoint = 'http://localhost:8081/api/materias';
+  const endpoint = 'https://tallersisinfoproyect.onrender.com/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
   const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
   const config = APP_CONFIG as { DEMO_MODE: boolean };
