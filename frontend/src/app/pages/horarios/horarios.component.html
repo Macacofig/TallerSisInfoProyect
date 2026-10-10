@@ -1,43 +1,35 @@
+
 <section class="horarios-page">
 
-  <!-- =========================
-       ENCABEZADO
-       ========================= -->
+  <!-- ENCABEZADO -->
 
   <header class="page-header">
-    <p class="eyebrow">Planificación</p>
+    <p class="eyebrow">{{ textos.PLANNING }}</p>
 
-    <h1 class="title">Generador de horarios</h1>
+    <h1 class="title">{{ textos.TITLE }}</h1>
 
     <p class="subtitle">
-      Elige tus materias y sus opciones horarias. Descartamos automáticamente
-      las combinaciones con cruces.
+      {{ textos.DESCRIPTION }}
     </p>
 
     <hr class="divider">
+  </header>
 
-      </header>
+  <!-- CONTENIDO PRINCIPAL -->
 
-      <!-- =========================
-          CONTENIDO PRINCIPAL
-          ========================= -->
+  <div class="horarios-layout">
 
-      <div class="horarios-layout">
-
-    <!-- =========================
-        MATERIAS DEL SEMESTRE
-        ========================= -->
+    <!-- MATERIAS DEL SEMESTRE -->
 
     <section class="materias-panel">
 
       <h2 class="panel-title">
-        Materias del semestre
+        {{ textos.SEMESTER_SUBJECTS }}
       </h2>
 
       <div class="panel-list">
 
         @for (materia of materias; track materia.codigo) {
-
           <article class="materia-horario">
 
             <div class="materia-horario__header">
@@ -45,29 +37,20 @@
               <input
                 type="checkbox"
                 [checked]="materia.seleccionada"
-                [attr.aria-label]="'Seleccionar ' + materia.nombre"
+                [attr.aria-label]="textos.SELECT_SUBJECT + ' ' + materia.nombre"
                 (change)="seleccionarMateria(materia)"
               >
 
               <div class="materia-horario__info">
-
-                <h3>
-                  {{ materia.nombre }}
-                </h3>
-
-                <p>
-                  {{ materia.codigo }}
-                </p>
-
+                <h3>{{ materia.nombre }}</h3>
+                <p>{{ materia.codigo }}</p>
               </div>
 
             </div>
 
-
             <div class="materia-horario__opciones">
 
               @for (opcion of materia.opciones; track opcion.etiqueta) {
-
                 <p class="opcion">
 
                   <span class="opcion__etiqueta">
@@ -79,30 +62,22 @@
                   </span>
 
                 </p>
-
               }
 
             </div>
 
           </article>
-
         }
 
       </div>
 
     </section>
 
-
-    <!-- =========================
-        ZONA DERECHA
-        ========================= -->
+    <!-- ZONA DE RESULTADOS -->
 
     <section class="resultados">
 
-
-      <!-- =========================
-          BARRA DE RESULTADOS
-          ========================= -->
+      <!-- BARRA DE PAGINACIÓN -->
 
       @if (hayHorarios) {
 
@@ -117,7 +92,6 @@
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
-
               <path
                 d="M5 12.5L9.5 17L19 7"
                 stroke="currentColor"
@@ -125,15 +99,13 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
-
             </svg>
 
             <span>
-              Horarios posibles encontrados: {{ totalHorarios }}
+              {{ textos.OPTIONS_FOUND }} {{ totalHorarios }}
             </span>
 
           </div>
-
 
           <div class="resultados__paginacion">
 
@@ -142,7 +114,7 @@
               [disabled]="paginaActual === 1"
               (click)="anterior()"
             >
-              Anterior
+              {{ textos.PREVIOUS }}
             </button>
 
             <span>
@@ -154,7 +126,7 @@
               [disabled]="esUltimaPagina"
               (click)="siguiente()"
             >
-              Siguiente
+              {{ textos.NEXT }}
             </button>
 
           </div>
@@ -174,7 +146,6 @@
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
-
               <path
                 d="M12 4L21 20H3L12 4Z"
                 stroke="currentColor"
@@ -195,11 +166,10 @@
                 r="1"
                 fill="currentColor"
               />
-
             </svg>
 
             <span>
-              No hay combinaciones sin cruces
+              {{ textos.EMPTY_STATE }}
             </span>
 
           </div>
@@ -208,10 +178,7 @@
 
       }
 
-
-      <!-- =========================
-          CALENDARIO
-          ========================= -->
+      <!-- CALENDARIO -->
 
       <section class="horario-grid">
 
@@ -221,55 +188,39 @@
 
             <div class="calendario">
 
-              <!-- =========================
-                  ENCABEZADO DE LOS DÍAS
-                  ========================= -->
+              <!-- ENCABEZADO DE LOS DÍAS -->
 
               <div class="calendario__encabezado">
 
                 <div class="calendario__espacio-hora">
-                  Hora
+                  {{ textos.HOUR }}
                 </div>
 
-
                 @for (dia of dias; track dia) {
-
                   <div class="calendario__dia">
                     {{ dia }}
                   </div>
-
                 }
 
               </div>
 
-
-              <!-- =========================
-                  CUERPO DEL CALENDARIO
-                  ========================= -->
+              <!-- CUERPO DEL CALENDARIO -->
 
               <div class="calendario__cuerpo">
 
-
-                <!-- =========================
-                    COLUMNA DE HORAS
-                    ========================= -->
+                <!-- COLUMNA DE HORAS -->
 
                 <div class="calendario__horas">
 
                   @for (hora of horas; track hora) {
-
                     <div class="calendario__hora">
                       {{ hora }}
                     </div>
-
                   }
 
                 </div>
 
-
-                <!-- =========================
-                    DÍAS
-                    ========================= -->
+                <!-- COLUMNAS DE LOS DÍAS -->
 
                 <div class="calendario__dias">
 
@@ -278,56 +229,37 @@
                     <div class="calendario__columna">
 
                       @for (hora of horas; track hora) {
-
                         <div class="calendario__celda"></div>
-
                       }
 
-                      <!-- =========================
-                          MATERIAS
-                          ========================= -->
+                      <!-- MATERIAS DE LA OPCIÓN ACTUAL -->
 
                       @for (
                         materia of materiasSeleccionadas;
                         track materia.codigo
                       ) {
 
-                        @if (
-                          obtenerBloquesMateria(materia, dia).length > 0
+                        @for (
+                          bloque of obtenerBloquesMateria(materia, dia);
+                          track bloque.inicio
                         ) {
 
-                          @for (
-                            bloque of obtenerBloquesMateria(materia, dia);
-                            track bloque.inicio
-                          ) {
+                          <div
+                            class="materia-calendario"
+                            [style.--color-materia]="obtenerColorMateria(materia.codigo)"
+                            [style.top.px]="obtenerPosicionMateria(bloque.inicio)"
+                            [style.height.px]="obtenerAlturaMateria(bloque.inicio, bloque.fin)"
+                          >
 
-                            <div
-                              class="materia-calendario"
-                              [style.--color-materia]="
-                                obtenerColorMateria(materia.codigo)
-                              "
-                              [style.top.px]="
-                                obtenerPosicionMateria(bloque.inicio)
-                              "
-                              [style.height.px]="
-                                obtenerAlturaMateria(
-                                  bloque.inicio,
-                                  bloque.fin
-                                )
-                              "
-                            >
+                            <strong>
+                              {{ materia.nombre }}
+                            </strong>
 
-                              <strong>
-                                {{ materia.nombre }}
-                              </strong>
+                            <span>
+                              {{ materia.codigo }}
+                            </span>
 
-                              <span>
-                                {{ materia.codigo }}
-                              </span>
-
-                            </div>
-
-                          }
+                          </div>
 
                         }
 

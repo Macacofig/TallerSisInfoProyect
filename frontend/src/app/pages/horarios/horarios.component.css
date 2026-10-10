@@ -1,4 +1,4 @@
-:host {
+﻿:host {
 display: block;
 }
 
@@ -84,6 +84,7 @@ LAYOUT
 ========================= */
 
 .horarios-layout {
+
 display: grid;
 
 grid-template-columns: 22rem minmax(0, 1fr);
@@ -93,16 +94,14 @@ gap: 1.5rem;
 align-items: start;
 
 margin-top: 2rem;
+
 }
 
-/* =========================
-PANEL DE MATERIAS
-========================= */
 
 .materias-panel {
 width: 100%;
 
-padding: 1.625rem 1.5rem;
+padding: 1.625rem 1.1rem;
 
 background: #f8fbff;
 

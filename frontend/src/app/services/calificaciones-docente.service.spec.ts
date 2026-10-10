@@ -77,7 +77,7 @@ it('debería obtener los promedios de docentes con el id real de la materia', ()
 
   const request =
     httpTestingController.expectOne(
-      'http://localhost:8081/api/calificacion-docente/materia/25/docentes'
+      'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/materia/25/docentes'
     );
 
   expect(request.request.method)
@@ -92,7 +92,7 @@ it('debería obtener las gestiones con calificaciones de la materia', () => {
   );
 
   const request = httpTestingController.expectOne(
-    'http://localhost:8081/api/calificacion-docente/materia/25/gestiones'
+    'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/materia/25/gestiones'
   );
   expect(request.request.method).toBe('GET');
   request.flush(['2026-I', '2026-II']);
@@ -102,7 +102,7 @@ it('debería consultar promedios docentes por gestión', () => {
   service.obtenerPromediosPorGestion(25, '2026-I').subscribe();
 
   const request = httpTestingController.expectOne(
-    'http://localhost:8081/api/calificacion-docente/materia/25/periodo/2026-I'
+    'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/materia/25/periodo/2026-I'
   );
   expect(request.request.method).toBe('GET');
   request.flush([]);
@@ -113,7 +113,7 @@ it('debería consultar promedios docentes por rango de gestiones', () => {
 
   const request = httpTestingController.expectOne(request =>
     request.method === 'GET' &&
-    request.url === 'http://localhost:8081/api/calificacion-docente/materia/25/periodo/rango' &&
+    request.url === 'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/materia/25/periodo/rango' &&
     request.params.get('desde') === '2026-I' &&
     request.params.get('hasta') === '2026-II'
   );
@@ -136,7 +136,7 @@ it('debería obtener la evaluación de un estudiante para un docente', () => {
 
   const request =
     httpTestingController.expectOne(
-      'http://localhost:8081/api/calificacion-docente/estudiante/2/docente/1/materia/10'
+      'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/estudiante/2/docente/1/materia/10'
     );
 
   expect(request.request.method)
@@ -155,7 +155,7 @@ it('debería aceptar respuesta vacía cuando aún no existe evaluación', () => 
 
   const request =
     httpTestingController.expectOne(
-      'http://localhost:8081/api/calificacion-docente/estudiante/2/docente/2/materia/10'
+      'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/estudiante/2/docente/2/materia/10'
     );
 
   request.flush(null);
@@ -170,7 +170,7 @@ it('debería registrar una evaluación', () => {
 
   const request =
     httpTestingController.expectOne(
-      'http://localhost:8081/api/calificacion-docente'
+      'https://tallersisinfoproyect.onrender.com/api/calificacion-docente'
     );
 
   expect(request.request.method)
@@ -197,7 +197,7 @@ it('debería actualizar una evaluación', () => {
 
   const request =
     httpTestingController.expectOne(
-      'http://localhost:8081/api/calificacion-docente/estudiante/2/docente/1/materia/10'
+      'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/estudiante/2/docente/1/materia/10'
     );
 
   expect(request.request.method)
@@ -223,7 +223,7 @@ it('debería eliminar una evaluación', () => {
 
   const request =
     httpTestingController.expectOne(
-      'http://localhost:8081/api/calificacion-docente/estudiante/2/docente/1/materia/10'
+      'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/estudiante/2/docente/1/materia/10'
     );
 
   expect(request.request.method)
