@@ -1,7 +1,8 @@
 ﻿import {
   ChangeDetectorRef,
   Component,
-  OnInit
+  OnInit,
+  inject
 } from '@angular/core';
 
 import {
@@ -35,7 +36,9 @@ import {
 } from '../../../services/calificaciones-materia.service';
 
 import { APP_CONFIG } from '../../../config/app-config';
+import { LanguageService } from '../../../services/language.service';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
 import { NombreMateriaPipe } from '../../../pipes/nombre-materia.pipe';
 
 import {
@@ -66,6 +69,9 @@ import {
 import {
   DocentesComponent
 } from './components/docentes/docentes.component';
+
+type MateriaDetailMessageKey = keyof typeof MESSAGES;
+
 @Component({
   selector: 'app-materia-detalle',
   standalone: true,
@@ -83,7 +89,12 @@ import {
 })
 export class MateriaDetalleComponent implements OnInit {
 
-  readonly mensajes = MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get mensajes() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
+
   readonly formatearGestion = formatearGestion;
   seccionActiva: SeccionDetalleMateria = 'resumen';
 
@@ -103,8 +114,20 @@ export class MateriaDetalleComponent implements OnInit {
   gestionActual = obtenerGestionActual();
   gestionAnterior: string | null = null;
 
-  contextoPromedios: string =
-    MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+  private contextoFiltro:
+    FiltroGestionesResultado['contexto'] | null = null;
+
+  get contextoPromedios(): string {
+    if (!this.contextoFiltro) {
+      return this.mensajes.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+    }
+
+    if (this.contextoFiltro.tipo === 'gestion') {
+      return `${this.mensajes.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${formatearGestion(this.contextoFiltro.gestion)}`;
+    }
+
+    return `${this.mensajes.CALIFICATION_FILTER_RANGE_CONTEXT} ${formatearGestion(this.contextoFiltro.desde)} ${this.mensajes.CALIFICATION_FILTER_RANGE_SEPARATOR} ${formatearGestion(this.contextoFiltro.hasta)}`;
+  }
 
   filtroGestionesActivo =
     false;
@@ -117,11 +140,11 @@ export class MateriaDetalleComponent implements OnInit {
 
   yaCalifico = false;
 
-  error = '';
-  errorCalificacion = '';
-  errorEstadoCalificacion = '';
-  errorPromedios = '';
-  errorGestiones = '';
+  error: MateriaDetailMessageKey | '' = '';
+  errorCalificacion: MateriaDetailMessageKey | '' = '';
+  errorEstadoCalificacion: MateriaDetailMessageKey | '' = '';
+  errorPromedios: MateriaDetailMessageKey | '' = '';
+  errorGestiones: MateriaDetailMessageKey | '' = '';
 
   mostrarFormularioCalificacion = false;
   mostrarConfirmacion = false;
@@ -206,8 +229,7 @@ export class MateriaDetalleComponent implements OnInit {
 
     if (!materiaId) {
 
-      this.error =
-        MESSAGES.CALIFICATION_INVALID_SUBJECT_ID;
+      this.error = 'CALIFICATION_INVALID_SUBJECT_ID';
 
       this.cargando =
         false;
@@ -227,8 +249,7 @@ export class MateriaDetalleComponent implements OnInit {
     this.promediosMostrados =
       resultado.promedios;
 
-    this.contextoPromedios =
-      resultado.descripcion;
+    this.contextoFiltro = resultado.contexto;
 
     this.filtroGestionesActivo =
       true;
@@ -457,7 +478,7 @@ export class MateriaDetalleComponent implements OnInit {
     ) {
 
       this.errorCalificacion =
-        MESSAGES.CALIFICATION_PREREQUISITES_REQUIRED;
+        'CALIFICATION_PREREQUISITES_REQUIRED';
 
       return;
     }
@@ -546,8 +567,7 @@ export class MateriaDetalleComponent implements OnInit {
           this.filtroGestionesActivo =
             false;
 
-          this.contextoPromedios =
-            MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+          this.contextoFiltro = null;
 
           this.cargarPromediosMateria(
             materiaId
@@ -569,21 +589,21 @@ export class MateriaDetalleComponent implements OnInit {
           ) {
 
             this.errorCalificacion =
-              MESSAGES.CALIFICATION_INVALID_DATA;
+              'CALIFICATION_INVALID_DATA';
 
           } else if (
             error.status === 404
           ) {
 
             this.errorCalificacion =
-              MESSAGES.CALIFICATION_SUBJECT_UNAVAILABLE;
+              'CALIFICATION_SUBJECT_UNAVAILABLE';
 
           } else {
 
             this.errorCalificacion =
               esEdicion
-                ? MESSAGES.CALIFICATION_UPDATE_ERROR
-                : MESSAGES.CALIFICATION_REGISTER_ERROR;
+                ? 'CALIFICATION_UPDATE_ERROR'
+                : 'CALIFICATION_REGISTER_ERROR';
           }
 
           this.changeDetectorRef
@@ -646,8 +666,7 @@ export class MateriaDetalleComponent implements OnInit {
           this.filtroGestionesActivo =
             false;
 
-          this.contextoPromedios =
-            MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+          this.contextoFiltro = null;
 
           this.cargarPromediosMateria(
             materiaId
@@ -669,12 +688,12 @@ export class MateriaDetalleComponent implements OnInit {
           ) {
 
             this.errorCalificacion =
-              MESSAGES.CALIFICATION_DELETE_NOT_FOUND;
+              'CALIFICATION_DELETE_NOT_FOUND';
 
           } else {
 
             this.errorCalificacion =
-              MESSAGES.CALIFICATION_DELETE_ERROR;
+              'CALIFICATION_DELETE_ERROR';
           }
 
           this.changeDetectorRef
@@ -701,8 +720,8 @@ export class MateriaDetalleComponent implements OnInit {
   ): string {
 
     return predominio === 'Practico'
-      ? MESSAGES.CALIFICATION_PRACTICAL_LABEL
-      : MESSAGES.CALIFICATION_THEORETICAL_LABEL;
+      ? this.mensajes.CALIFICATION_PRACTICAL_LABEL
+      : this.mensajes.CALIFICATION_THEORETICAL_LABEL;
   }
 
   obtenerPromedioFormateado(
@@ -763,7 +782,7 @@ export class MateriaDetalleComponent implements OnInit {
           if (!materia) {
 
             this.error =
-              MESSAGES.CALIFICATION_SUBJECT_NOT_FOUND;
+              'CALIFICATION_SUBJECT_NOT_FOUND';
 
             this.cargando =
               false;
@@ -797,7 +816,7 @@ export class MateriaDetalleComponent implements OnInit {
         error: () => {
 
           this.error =
-            MESSAGES.CALIFICATION_SUBJECT_LOAD_ERROR;
+            'CALIFICATION_SUBJECT_LOAD_ERROR';
 
           this.cargando =
             false;
@@ -858,7 +877,7 @@ export class MateriaDetalleComponent implements OnInit {
             null;
 
           this.errorEstadoCalificacion =
-            MESSAGES.CALIFICATION_STATUS_ERROR;
+            'CALIFICATION_STATUS_ERROR';
 
           this.changeDetectorRef
             .markForCheck();
@@ -926,7 +945,7 @@ export class MateriaDetalleComponent implements OnInit {
           } else {
 
             this.errorPromedios =
-              MESSAGES.CALIFICATION_SUMMARY_LOAD_ERROR;
+              'CALIFICATION_SUMMARY_LOAD_ERROR';
           }
 
           this.changeDetectorRef
@@ -981,7 +1000,7 @@ export class MateriaDetalleComponent implements OnInit {
             null;
 
           this.errorGestiones =
-            MESSAGES.CALIFICATION_MANAGEMENTS_LOAD_ERROR;
+            'CALIFICATION_MANAGEMENTS_LOAD_ERROR';
 
           this.changeDetectorRef
             .markForCheck();
@@ -1010,4 +1029,3 @@ export class MateriaDetalleComponent implements OnInit {
         : null;
   }
 }
-

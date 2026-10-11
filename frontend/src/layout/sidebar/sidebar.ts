@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { LanguageService } from '../../app/services/language.service';
 import { SIDEBAR_MESSAGES } from '../../app/strings/layout/sidebar.messages';
+import { SIDEBAR_MESSAGES_EN } from '../../app/strings/layout/sidebar-ingles.messages';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,5 +11,9 @@ import { SIDEBAR_MESSAGES } from '../../app/strings/layout/sidebar.messages';
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
-  readonly SIDEBAR_MESSAGES = SIDEBAR_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get SIDEBAR_MESSAGES() {
+    return this.languageService.getMessages(SIDEBAR_MESSAGES, SIDEBAR_MESSAGES_EN);
+  }
 }

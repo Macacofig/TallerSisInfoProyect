@@ -6,8 +6,11 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../../services/auth.service';
 import { ErrorAuth } from '../../models/registrar';
 import { LoginRequest, LoginResponse } from '../../models/login';
+import { LanguageService } from '../../services/language.service';
 import { LOGIN_MESSAGES } from '../../strings/login/login.messages';
+import { LOGIN_MESSAGES_EN } from '../../strings/login/login-ingles.messages';
 
+type LoginMessageKey = keyof typeof LOGIN_MESSAGES;
 
 @Component({
   selector: 'app-login',
@@ -18,16 +21,28 @@ import { LOGIN_MESSAGES } from '../../strings/login/login.messages';
 })
 export class Login {
 
-  readonly MESSAGES = LOGIN_MESSAGES;
-
   private readonly authService = inject(AuthService);
+  private readonly languageService = inject(LanguageService);
+
+  get MESSAGES() {
+    return this.languageService.getMessages(LOGIN_MESSAGES, LOGIN_MESSAGES_EN);
+  }
+
+  get idiomaBoton(): string {
+    return this.languageService.isEnglish() ? 'ES' : 'EN';
+  }
+
+  cambiarIdioma(): void {
+    this.languageService.toggleLanguage();
+  }
+
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
   readonly enviando = signal(false);
   readonly intentoEnvio = signal(false);
-  readonly errorGeneral = signal<string | null>(null);
+  readonly errorGeneral = signal<LoginMessageKey | null>(null);
 
   readonly mostrarContrasena = signal(false);
 
@@ -146,27 +161,19 @@ export class Login {
     switch (error?.codigo) {
 
       case 'VALIDACION':
-        this.errorGeneral.set(
-          this.MESSAGES.ERROR_VALIDATION_SERVER
-        );
+        this.errorGeneral.set('ERROR_VALIDATION_SERVER');
         break;
 
       case 'SIN_CONEXION':
-        this.errorGeneral.set(
-          this.MESSAGES.ERROR_CONNECTION
-        );
+        this.errorGeneral.set('ERROR_CONNECTION');
         break;
 
       case 'TIEMPO_AGOTADO':
-        this.errorGeneral.set(
-          this.MESSAGES.ERROR_TIMEOUT
-        );
+        this.errorGeneral.set('ERROR_TIMEOUT');
         break;
 
       default:
-        this.errorGeneral.set(
-          this.MESSAGES.ERROR_INVALID_CREDENTIALS
-        );
+        this.errorGeneral.set('ERROR_INVALID_CREDENTIALS');
     }
   }
   

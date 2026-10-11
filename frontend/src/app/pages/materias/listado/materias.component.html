@@ -109,7 +109,7 @@
           <article class="materia-card" [attr.aria-labelledby]="'materia-' + materia.id">
 
             <button #informacion type="button" class="materia-icon-button materia-card__informacion"
-              [attr.aria-label]="MESSAGES.INFORMATION_BUTTON + ': ' + (materia.nombre | nombreMateria)"
+              [attr.aria-label]="MESSAGES.INFORMATION_BUTTON + ': ' + obtenerNombreVisible(materia)"
               aria-haspopup="dialog"
               (click)="abrirInformacion(materia, informacion)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -123,11 +123,11 @@
               <p class="materia-card__codigo">{{ materia.codigo }}</p>
 
               <h2 [id]="'materia-' + materia.id">
-                {{ materia.nombre | nombreMateria }}
+                {{ obtenerNombreVisible(materia) }}
               </h2>
 
               <p class="materia-card__meta">
-                {{ materia.carrera }} · {{ MESSAGES.SEMESTER_LABEL }} {{ materia.semestre }}
+                {{ obtenerCarreraVisible(materia) }} · {{ MESSAGES.SEMESTER_LABEL }} {{ materia.semestre }}
 
                 @if (materia.semestre === 1) {
                   · {{ MESSAGES.LEVEL_BASIC }}
@@ -223,7 +223,7 @@
                 <div class="materia-card__indicador">
                   <div class="materia-card__etiqueta">
                     <span>{{ MESSAGES.DIFFICULTY_LABEL }}</span>
-                    <span class="materia-card__sin-datos">Sin datos</span>
+                    <span class="materia-card__sin-datos">{{ MESSAGES.NO_DATA }}</span>
                   </div>
 
                   <div class="materia-card__barra-contenedor">
@@ -234,7 +234,7 @@
                 <div class="materia-card__indicador">
                   <div class="materia-card__etiqueta">
                     <span>{{ MESSAGES.WORKLOAD_LABEL }}</span>
-                    <span class="materia-card__sin-datos">Sin datos</span>
+                    <span class="materia-card__sin-datos">{{ MESSAGES.NO_DATA }}</span>
                   </div>
 
                   <div class="materia-card__barra-contenedor">
@@ -245,7 +245,7 @@
                 <div class="materia-card__indicador">
                   <div class="materia-card__etiqueta">
                     <span>{{ MESSAGES.PREREQUISITES_LABEL }}</span>
-                    <span class="materia-card__sin-datos">Sin datos</span>
+                    <span class="materia-card__sin-datos">{{ MESSAGES.NO_DATA }}</span>
                   </div>
 
                   <div class="materia-card__barra-contenedor">
@@ -267,7 +267,7 @@
                   <path d="M3 21v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v3"></path>
                 </svg>
 
-                Predominio {{ promedio.predominio }}
+                {{ MESSAGES.DOMINANCE_LABEL }} {{ obtenerPredominioVisible(promedio.predominio) }}
               </p>
             } @else {
               <p class="materia-card__evaluaciones">{{ MESSAGES.EVALUATIONS_UNAVAILABLE }}</p>
@@ -275,7 +275,7 @@
 
 
             <button type="button" class="materia-button"
-              [attr.aria-label]="MESSAGES.EXPLORE_BUTTON + ': ' + (materia.nombre | nombreMateria)"
+              [attr.aria-label]="MESSAGES.EXPLORE_BUTTON + ': ' + obtenerNombreVisible(materia)"
               (click)="explorarMateria(materia)">
               {{ MESSAGES.EXPLORE_BUTTON }}
             </button>
@@ -324,10 +324,10 @@
       @if (mostrarDatosDemo()) {
         <p class="materias-page__demo">{{ MESSAGES.DEMO_NOTICE }}</p>
       }
-      <h2 id="titulo-detalle" tabindex="-1" autofocus>{{ materia.nombre | nombreMateria }}</h2>
+      <h2 id="titulo-detalle" tabindex="-1" autofocus>{{ obtenerNombreVisible(materia) }}</h2>
       <dl>
         <div><dt>{{ MESSAGES.MODAL_CODE_LABEL }}</dt><dd>{{ materia.codigo }}</dd></div>
-        <div><dt>{{ MESSAGES.MODAL_CAREER_LABEL }}</dt><dd>{{ materia.carrera }}</dd></div>
+        <div><dt>{{ MESSAGES.MODAL_CAREER_LABEL }}</dt><dd>{{ obtenerCarreraVisible(materia) }}</dd></div>
         <div><dt>{{ MESSAGES.MODAL_SEMESTER_LABEL }}</dt><dd>{{ materia.semestre }}</dd></div>
       </dl>
       <section class="materia-detalle__seccion" aria-labelledby="prerrequisitos-detalle">
@@ -337,11 +337,11 @@
       </section>
       <section class="materia-detalle__seccion" aria-labelledby="conocimientos-detalle">
         <h3 id="conocimientos-detalle">{{ MESSAGES.MODAL_RECOMMENDED_PREREQUISITES_LABEL }}</h3>
-        <p>{{ materia.conocimientosPreviosRecomendados?.trim() || MESSAGES.MODAL_INFORMATION_UNAVAILABLE }}</p>
+        <p>{{ obtenerConocimientosRecomendadosVisible(materia) }}</p>
       </section>
       <dl>
         @if (materia.predominio) {
-          <div><dt>{{ MESSAGES.MODAL_DOMINANCE_LABEL }}</dt><dd>{{ materia.predominio }}</dd></div>
+          <div><dt>{{ MESSAGES.MODAL_DOMINANCE_LABEL }}</dt><dd>{{ obtenerPredominioVisible(materia.predominio) }}</dd></div>
         }
         @if (materia.dificultad) {
           <div><dt>{{ MESSAGES.MODAL_DIFFICULTY_LABEL }}</dt><dd>{{ materia.dificultad.valor }}/{{ APP_CONFIG.SCALE.RATING_TOTAL }}</dd></div>

@@ -37,12 +37,12 @@
               <input
                 type="checkbox"
                 [checked]="materia.seleccionada"
-                [attr.aria-label]="textos.SELECT_SUBJECT + ' ' + materia.nombre"
+                [attr.aria-label]="textos.SELECT_SUBJECT + ' ' + nombreMateriaVisible(materia)"
                 (change)="seleccionarMateria(materia)"
               >
 
               <div class="materia-horario__info">
-                <h3>{{ materia.nombre }}</h3>
+                <h3>{{ nombreMateriaVisible(materia) }}</h3>
                 <p>{{ materia.codigo }}</p>
               </div>
 
@@ -54,11 +54,11 @@
                 <p class="opcion">
 
                   <span class="opcion__etiqueta">
-                    {{ opcion.etiqueta }}
+                    {{ obtenerEtiquetaOpcion(opcion.etiqueta) }}
                   </span>
 
                   <span class="opcion__horario">
-                    {{ opcion.horario }}
+                    {{ obtenerHorarioVisible(opcion.horario) }}
                   </span>
 
                 </p>
@@ -252,7 +252,7 @@
                           >
 
                             <strong>
-                              {{ materia.nombre }}
+                              {{ nombreMateriaVisible(materia) }}
                             </strong>
 
                             <span>

@@ -20,6 +20,7 @@ export const DOCENTES_MESSAGES_EN = {
   SINGLE_MODE: 'Single period',
   RANGE_MODE: 'Period range',
   MANAGEMENT_LABEL: 'Period',
+  ACADEMIC_YEAR_PREFIX: 'Year ',
   FROM_LABEL: 'From',
   TO_LABEL: 'To',
   APPLY_FILTER: 'Apply filter',

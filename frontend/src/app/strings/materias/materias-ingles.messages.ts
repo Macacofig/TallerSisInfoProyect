@@ -14,6 +14,38 @@ export const MESSAGES_EN = {
   MATERIA_PLURAL: 'subjects available',
   DEMO_NOTICE:
     'Demonstration data: these subjects and their indicators are fictitious.',
+  DEMO_SUBJECTS: [
+    {
+      nombre: 'Programming I',
+      carrera: 'Systems Engineering',
+      descripcion: 'Introduction to programming and solving problems with algorithms. Covers variables, control structures, functions, and simple programs.',
+      conocimientosPreviosRecomendados: 'Basic logic, elementary math, and basic computer skills. No previous programming experience is required.'
+    },
+    {
+      nombre: 'Data Structures',
+      carrera: 'Systems Engineering',
+      descripcion: 'Study of structures for organizing and processing information: lists, stacks, queues, trees, and graphs. Includes implementation and algorithm efficiency analysis.',
+      conocimientosPreviosRecomendados: 'Programming with functions, arrays, and recursion. Fundamentals of object-oriented programming and mathematical logic.'
+    },
+    {
+      nombre: 'Databases',
+      carrera: 'Systems Engineering',
+      descripcion: 'Design and management of relational databases. Covers information modeling, normalization, and SQL queries for storing and retrieving data.',
+      conocimientosPreviosRecomendados: 'Programming fundamentals, data structures, and basic set and relation concepts.'
+    },
+    {
+      nombre: 'Software Engineering',
+      carrera: 'Systems Engineering',
+      descripcion: 'Application of methods for developing and maintaining software. Covers requirements analysis, design, testing, and collaborative project work.',
+      conocimientosPreviosRecomendados: 'Object-oriented programming, databases, version control, and experience with programming projects.'
+    },
+    {
+      nombre: 'Web Interface Workshop',
+      carrera: 'Systems Engineering',
+      descripcion: 'Design and development of responsive web interfaces. Applies usability and accessibility principles through practical exercises.',
+      conocimientosPreviosRecomendados: 'HTML, CSS, JavaScript, and programming fundamentals. Basic knowledge of browser development tools.'
+    }
+  ],
 
   // Subject search (HU-02)
   SEARCH_LABEL: 'Search',

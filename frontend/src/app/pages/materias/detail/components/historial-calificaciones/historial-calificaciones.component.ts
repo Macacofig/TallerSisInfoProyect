@@ -3,7 +3,8 @@
   Component,
   Input,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  inject
 } from '@angular/core';
 
 import {
@@ -21,7 +22,9 @@ import {
   CalificacionesMateriaService
 } from '../../../../../services/calificaciones-materia.service';
 
+import { LanguageService } from '../../../../../services/language.service';
 import { MESSAGES } from '../../../../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../../../../strings/materias/materias-ingles.messages';
 import { formatearGestion } from '../../../../../utils/gestion.utils';
 
 type MetricaHistorial =
@@ -36,6 +39,8 @@ interface HistorialGestion {
   conocimiento: number;
 }
 
+type HistorialMessageKey = keyof typeof MESSAGES;
+
 @Component({
   selector: 'app-historial-calificaciones',
   standalone: true,
@@ -46,7 +51,12 @@ interface HistorialGestion {
 export class HistorialCalificacionesComponent
   implements OnChanges {
 
-  readonly mensajes = MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get mensajes() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
+
   readonly formatearGestion = formatearGestion;
 
   @Input()
@@ -72,7 +82,7 @@ export class HistorialCalificacionesComponent
   datos: HistorialGestion[] = [];
 
   cargando = false;
-  error = '';
+  error: HistorialMessageKey | '' = '';
 
   constructor(
     private readonly calificacionesMateriaService:
@@ -274,8 +284,7 @@ export class HistorialCalificacionesComponent
           this.cargando =
             false;
 
-          this.error =
-            MESSAGES.CALIFICATION_HISTORY_LOAD_ERROR;
+          this.error = 'CALIFICATION_HISTORY_LOAD_ERROR';
 
           this.changeDetectorRef
             .markForCheck();

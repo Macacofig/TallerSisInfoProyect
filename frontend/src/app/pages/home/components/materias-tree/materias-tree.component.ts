@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MateriaTree, MATERIAS_TREE } from '../../../../data/materias-tree.data';
+import { LanguageService } from '../../../../services/language.service';
 import { MATERIAS_TREE_MESSAGES } from '../../../../strings/materias-tree/materias-tree.messages';
+import { MATERIAS_TREE_MESSAGES as MATERIAS_TREE_MESSAGES_EN } from '../../../../strings/materias-tree/materias-tree-ingles.messages';
 interface PositionedMateria extends MateriaTree {
   nivel: number;
   x: number;
@@ -33,7 +35,15 @@ interface TreeLayout {
   styleUrl: './materias-tree.component.css',
 })
 export class MateriasTreeComponent {
-  readonly mensajes = MATERIAS_TREE_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get mensajes() {
+    return this.languageService.getMessages(MATERIAS_TREE_MESSAGES, MATERIAS_TREE_MESSAGES_EN);
+  }
+
+  nombreVisible(sigla: string, nombre: string): string {
+    return this.mensajes.SUBJECT_NAMES[sigla as keyof typeof this.mensajes.SUBJECT_NAMES] ?? nombre;
+  }
 
   private readonly cardWidth = 192;
   private readonly cardHeight = 104;

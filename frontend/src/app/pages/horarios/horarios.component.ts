@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-
+import { Component, inject } from '@angular/core';
 import {
   MATERIAS_HORARIOS,
   MateriaHorario
 } from '../../data/horarios.data';
-
+import { LanguageService } from '../../services/language.service';
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
+import { HORARIOS_MESSAGES as HORARIOS_MESSAGES_EN } from '../../strings/horarios/horarios-ingles.messages';
 
 @Component({
   selector: 'app-horarios',
@@ -16,13 +16,38 @@ import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
 })
 export class HorariosComponent {
 
-  readonly textos = HORARIOS_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get textos() {
+    return this.languageService.getMessages(HORARIOS_MESSAGES, HORARIOS_MESSAGES_EN);
+  }
+
+  get dias(): readonly string[] {
+    return this.textos.DAYS;
+  }
+
+  obtenerEtiquetaOpcion(etiqueta: string): string {
+    return etiqueta.replace(
+      HORARIOS_MESSAGES.OPTION_LABEL,
+      this.textos.OPTION_LABEL
+    );
+  }
+
+  obtenerHorarioVisible(horario: string): string {
+    return HORARIOS_MESSAGES.DAYS.reduce(
+      (horarioTraducido, dia, indice) =>
+        horarioTraducido.replaceAll(dia, this.dias[indice]),
+      horario
+    );
+  }
+
+  nombreMateriaVisible(materia: MateriaHorario): string {
+    return this.textos.SUBJECT_NAMES[materia.codigo as keyof typeof this.textos.SUBJECT_NAMES]
+      ?? materia.nombre;
+  }
 
   readonly materias: MateriaHorario[] = MATERIAS_HORARIOS;
-
   materiasSeleccionadas: MateriaHorario[] = [];
-
-  readonly dias = HORARIOS_MESSAGES.DAYS;
 
   horas = [
     '07:15',
@@ -192,8 +217,12 @@ export class HorariosComponent {
       }
 
       const diaBloque = coincidencia[1].trim().toLowerCase();
+      const indiceDia = this.dias.indexOf(dia);
+      const diaCanonico = this.languageService.isEnglish()
+        ? HORARIOS_MESSAGES.DAYS[indiceDia]?.toLowerCase()
+        : dia.toLowerCase();
 
-      if (diaBloque !== dia.toLowerCase()) {
+      if (diaBloque !== diaCanonico) {
         continue;
       }
 

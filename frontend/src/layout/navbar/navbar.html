@@ -2,6 +2,15 @@
   <div class="navbar__actions">
     <button
       type="button"
+      class="navbar__language-toggle"
+      (click)="cambiarIdioma()"
+      [attr.aria-label]="NAVBAR_MESSAGES.TOGGLE_LANGUAGE_LABEL"
+    >
+      {{ idiomaBoton }}
+    </button>
+
+    <button
+      type="button"
       class="navbar__notification"
       [attr.aria-label]="NAVBAR_MESSAGES.NOTIFICATIONS_ARIA_LABEL"
     >
@@ -54,7 +63,7 @@
             class="navbar__user-menu-item"
             (click)="irAPerfil()"
           >
-            Perfil
+            {{ NAVBAR_MESSAGES.PROFILE_MENU }}
           </button>
 
           <button
@@ -62,7 +71,7 @@
             class="navbar__user-menu-item"
             (click)="cerrarSesion()"
           >
-            Cerrar sesión
+            {{ NAVBAR_MESSAGES.LOGOUT_MENU }}
           </button>
 
         </div>

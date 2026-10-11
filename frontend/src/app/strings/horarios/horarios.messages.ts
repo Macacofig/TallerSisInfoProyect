@@ -9,7 +9,14 @@ export const HORARIOS_MESSAGES = {
     'Elige tus materias y sus opciones horarias. Descartamos automáticamente las combinaciones con cruces.',
 
   SEMESTER_SUBJECTS: 'Materias del semestre',
+  OPTION_LABEL: 'Opción',
   SELECT_SUBJECT: 'Seleccionar',
+  SUBJECT_NAMES: {
+    'INF-101': 'Programación I',
+    'INF-202': 'Estructuras de Datos',
+    'INF-305': 'Bases de Datos',
+    'INF-410': 'Ingeniería de Software',
+  },
 
   HOUR: 'Hora',
   OPTIONS_FOUND: 'Opciones horarias disponibles:',

@@ -7,7 +7,9 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { APP_CONFIG } from '../../config/app-config';
 import { ErrorAuth, RegistroRequest } from '../../models/registrar';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 import { REGISTRO_MESSAGES } from '../../strings/registro/registro.messages';
+import { REGISTRO_MESSAGES as REGISTRO_MESSAGES_EN } from '../../strings/registro/registro-ingles.messages';
 
 import {
   correoValido,
@@ -33,6 +35,8 @@ interface DescripcionCampo {
   autocompletar: string;
 }
 
+type RegistroMessageKey = keyof typeof REGISTRO_MESSAGES;
+
 @Component({
   selector: 'app-registro',
   standalone: true,
@@ -42,13 +46,24 @@ interface DescripcionCampo {
 })
 export class Registro {
 
-  readonly MESSAGES = REGISTRO_MESSAGES;
-
   private readonly authService = inject(AuthService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
+
+  get MESSAGES() {
+    return this.languageService.getMessages(REGISTRO_MESSAGES, REGISTRO_MESSAGES_EN);
+  }
+
+  get idiomaBoton(): string {
+    return this.languageService.isEnglish() ? 'ES' : 'EN';
+  }
+
+  cambiarIdioma(): void {
+    this.languageService.toggleLanguage();
+  }
 
   /** Botón del modal: recibe el foco cuando se abre. */
   private readonly botonModal =
@@ -56,48 +71,50 @@ export class Registro {
 
   readonly enviando = signal(false);
   readonly intentoEnvio = signal(false);
-  readonly errorGeneral = signal<string | null>(null);
+  readonly errorGeneral = signal<RegistroMessageKey | null>(null);
   readonly registroExitoso = signal(false);
   readonly correoRegistrado = signal('');
   readonly mostrarContrasena = signal(false);
 
-  readonly campos: readonly DescripcionCampo[] = [
-    {
-      nombre: 'nombre',
-      tipo: 'text',
-      etiqueta: this.MESSAGES.FIELD_NAME_LABEL,
-      placeholder: this.MESSAGES.FIELD_NAME_PLACEHOLDER,
-      autocompletar: 'name'
-    },
-    {
-      nombre: 'carrera',
-      tipo: 'text',
-      etiqueta: this.MESSAGES.FIELD_CAREER_LABEL,
-      placeholder: this.MESSAGES.FIELD_CAREER_PLACEHOLDER,
-      autocompletar: 'off'
-    },
-    {
-      nombre: 'correo',
-      tipo: 'email',
-      etiqueta: this.MESSAGES.FIELD_EMAIL_LABEL,
-      placeholder: this.MESSAGES.FIELD_EMAIL_PLACEHOLDER,
-      autocompletar: 'email'
-    },
-    {
-      nombre: 'telefono',
-      tipo: 'text',
-      etiqueta: this.MESSAGES.FIELD_PHONE_LABEL,
-      placeholder: this.MESSAGES.FIELD_PHONE_PLACEHOLDER,
-      autocompletar: 'tel'
-    },
-    {
-      nombre: 'contrasena',
-      tipo: 'password',
-      etiqueta: this.MESSAGES.FIELD_PASSWORD_LABEL,
-      placeholder: this.MESSAGES.FIELD_PASSWORD_PLACEHOLDER,
-      autocompletar: 'new-password'
-    }
-  ];
+  get campos(): readonly DescripcionCampo[] {
+    return [
+      {
+        nombre: 'nombre',
+        tipo: 'text',
+        etiqueta: this.MESSAGES.FIELD_NAME_LABEL,
+        placeholder: this.MESSAGES.FIELD_NAME_PLACEHOLDER,
+        autocompletar: 'name'
+      },
+      {
+        nombre: 'carrera',
+        tipo: 'text',
+        etiqueta: this.MESSAGES.FIELD_CAREER_LABEL,
+        placeholder: this.MESSAGES.FIELD_CAREER_PLACEHOLDER,
+        autocompletar: 'off'
+      },
+      {
+        nombre: 'correo',
+        tipo: 'email',
+        etiqueta: this.MESSAGES.FIELD_EMAIL_LABEL,
+        placeholder: this.MESSAGES.FIELD_EMAIL_PLACEHOLDER,
+        autocompletar: 'email'
+      },
+      {
+        nombre: 'telefono',
+        tipo: 'text',
+        etiqueta: this.MESSAGES.FIELD_PHONE_LABEL,
+        placeholder: this.MESSAGES.FIELD_PHONE_PLACEHOLDER,
+        autocompletar: 'tel'
+      },
+      {
+        nombre: 'contrasena',
+        tipo: 'password',
+        etiqueta: this.MESSAGES.FIELD_PASSWORD_LABEL,
+        placeholder: this.MESSAGES.FIELD_PASSWORD_PLACEHOLDER,
+        autocompletar: 'new-password'
+      }
+    ];
+  }
 
   readonly formulario = this.formBuilder.group({
     nombre: [
@@ -180,14 +197,14 @@ export class Registro {
           return M.ERROR_NAME_MIN_LENGTH;
         }
 
-        return 'El nombre no es válido.';
+        return M.ERROR_NAME_INVALID;
 
       case 'carrera':
         if (errores['required']) {
           return M.ERROR_CAREER_REQUIRED;
         }
 
-        return 'La carrera no es válida.';
+        return M.ERROR_CAREER_INVALID;
 
       case 'correo':
         if (errores['required']) {
@@ -202,18 +219,18 @@ export class Registro {
           return M.ERROR_EMAIL_UCB;
         }
 
-        return 'El correo no es válido.';
+        return M.ERROR_EMAIL_INVALID;
 
       case 'telefono':
         if (errores['required']) {
-          return 'El teléfono es obligatorio';
+          return M.ERROR_PHONE_REQUIRED;
         }
 
         if (errores['telefono']) {
           return M.ERROR_PHONE_INVALID;
         }
 
-        return 'El teléfono no es válido.';
+        return M.ERROR_PHONE_INVALID_FORMAT;
 
       case 'contrasena':
         if (errores['required']) {
@@ -236,7 +253,7 @@ export class Registro {
           return M.ERROR_PASSWORD_SPECIAL;
         }
 
-        return 'La contraseña no es válida.';
+        return M.ERROR_PASSWORD_INVALID;
     }
   }
 
@@ -290,12 +307,10 @@ export class Registro {
   }
 
   private manejarError(error: ErrorAuth): void {
-    const M = this.MESSAGES;
-
     switch (error?.codigo) {
 
       case 'CORREO_DUPLICADO':
-        this.errorGeneral.set(M.ERROR_EMAIL_TAKEN);
+        this.errorGeneral.set('ERROR_EMAIL_TAKEN');
         break;
 
       case 'VALIDACION':
@@ -307,7 +322,7 @@ export class Registro {
       case 'TIEMPO_AGOTADO':
       case 'SERVIDOR':
       default:
-        this.errorGeneral.set(M.ERROR_EMAIL_TAKEN);
+        this.errorGeneral.set('ERROR_EMAIL_TAKEN');
     }
   }
 

@@ -4,6 +4,18 @@ import {
 } from '@angular/core/testing';
 
 import {
+  LanguageService
+} from '../../../../../services/language.service';
+
+import {
+  MESSAGES
+} from '../../../../../strings/materias/materias.messages';
+
+import {
+  MESSAGES_EN
+} from '../../../../../strings/materias/materias-ingles.messages';
+
+import {
   SeccionesDetalleComponent
 } from './secciones-detalle.component';
 
@@ -20,6 +32,7 @@ describe('SeccionesDetalleComponent', () => {
       ]
     }).compileComponents();
 
+    TestBed.inject(LanguageService).setLanguage('es');
     fixture =
       TestBed.createComponent(
         SeccionesDetalleComponent
@@ -114,5 +127,26 @@ describe('SeccionesDetalleComponent', () => {
     expect(
       cantidadEmisiones
     ).toBe(0);
+  });
+
+  it('updates section names and accessibility text in both languages', () => {
+    const languageService = TestBed.inject(LanguageService);
+    const ariaLabel = () =>
+      fixture.nativeElement.querySelector('nav')
+        .getAttribute('aria-label');
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(ariaLabel()).toBe(MESSAGES_EN.MATERIA_DETAIL_SECTIONS_ARIA);
+    expect(fixture.nativeElement.textContent)
+      .toContain(MESSAGES_EN.MATERIA_DETAIL_SECTION_TEACHERS);
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+
+    expect(ariaLabel()).toBe(MESSAGES.MATERIA_DETAIL_SECTIONS_ARIA);
+    expect(fixture.nativeElement.textContent)
+      .toContain(MESSAGES.MATERIA_DETAIL_SECTION_TEACHERS);
   });
 });

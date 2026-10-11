@@ -11,7 +11,9 @@
   } from '../../models/registrar';
 
   import { AuthService } from '../../services/auth.service';
+  import { LanguageService } from '../../services/language.service';
   import { REGISTRO_MESSAGES as M } from '../../strings/registro/registro.messages';
+  import { REGISTRO_MESSAGES as M_EN } from '../../strings/registro/registro-ingles.messages';
   import { Registro } from './registro';
 
   describe('Pantalla de registro', () => {
@@ -109,6 +111,7 @@
         ]
       }).compileComponents();
 
+      TestBed.inject(LanguageService).setLanguage('es');
       fixture = TestBed.createComponent(Registro);
       componente = fixture.componentInstance;
       servicio = TestBed.inject(AuthService);
@@ -118,6 +121,22 @@
     });
 
     describe('renderizado', () => {
+
+      it('shows and switches the language selector in both directions', () => {
+        const selector = raiz.querySelector<HTMLButtonElement>('.registro__language-toggle');
+        expect(selector?.textContent?.trim()).toBe('EN');
+        expect(selector?.getAttribute('aria-label')).toBe(M.TOGGLE_LANGUAGE_LABEL);
+
+        selector?.click();
+        fixture.detectChanges();
+        expect(selector?.textContent?.trim()).toBe('ES');
+        expect(raiz.textContent).toContain(M_EN.BRAND_SUBTITLE);
+
+        selector?.click();
+        fixture.detectChanges();
+        expect(selector?.textContent?.trim()).toBe('EN');
+        expect(raiz.textContent).toContain(M.BRAND_SUBTITLE);
+      });
 
       it(
         'muestra Nombre completo, Carrera, Correo, Teléfono y Contraseña en ese orden',
@@ -292,7 +311,7 @@
 
           expect(
             errorDe('telefono')
-          ).toBe('El teléfono es obligatorio');
+          ).toBe(M.ERROR_PHONE_REQUIRED);
 
           expect(
             errorDe('contrasena')
@@ -399,9 +418,7 @@
 
           expect(
             errorDe('telefono')
-          ).not.toBe(
-            'El teléfono es obligatorio'
-          );
+          ).not.toBe(M.ERROR_PHONE_REQUIRED);
         }
       );
 

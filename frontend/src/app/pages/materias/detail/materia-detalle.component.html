@@ -11,7 +11,7 @@
   @if (error) {
 
     <p class="mensaje-error">
-      {{ error }}
+      {{ mensajes[error] }}
     </p>
 
   }
@@ -89,7 +89,7 @@
     @if (seccionActiva === 'resumen' && errorEstadoCalificacion) {
 
       <p class="mensaje-error">
-        {{ errorEstadoCalificacion }}
+        {{ mensajes[errorEstadoCalificacion] }}
       </p>
 
     }
@@ -126,7 +126,7 @@
       } @else if (errorGestiones) {
 
         <p class="mensaje-error">
-          {{ errorGestiones }}
+          {{ mensajes[errorGestiones] }}
         </p>
 
       } @else if (gestiones.length > 0) {
@@ -147,7 +147,7 @@
       } @else if (errorPromedios) {
 
         <p class="mensaje-error">
-          {{ errorPromedios }}
+          {{ mensajes[errorPromedios] }}
         </p>
 
       } @else if (promediosMostrados) {
@@ -444,7 +444,7 @@
             @if (errorCalificacion) {
 
               <p class="mensaje-error">
-                {{ errorCalificacion }}
+                {{ mensajes[errorCalificacion] }}
               </p>
 
             }
@@ -859,7 +859,7 @@
             @if (errorCalificacion) {
 
               <p class="mensaje-error">
-                {{ errorCalificacion }}
+                {{ mensajes[errorCalificacion] }}
               </p>
 
             }

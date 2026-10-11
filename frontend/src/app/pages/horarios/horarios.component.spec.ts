@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HorariosComponent } from './horarios.component';
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
+import { HORARIOS_MESSAGES as HORARIOS_MESSAGES_EN } from '../../strings/horarios/horarios-ingles.messages';
+import { LanguageService } from '../../services/language.service';
 
 describe('HorariosComponent', () => {
   let component: HorariosComponent;
@@ -12,6 +14,7 @@ describe('HorariosComponent', () => {
       imports: [HorariosComponent],
     }).compileComponents();
 
+    TestBed.inject(LanguageService).setLanguage('es');
     fixture = TestBed.createComponent(HorariosComponent);
     component = fixture.componentInstance;
 
@@ -63,6 +66,38 @@ describe('HorariosComponent', () => {
     expect(compiled.textContent).toContain('Estructuras de Datos');
     expect(compiled.textContent).toContain('Bases de Datos');
     expect(compiled.textContent).toContain('Ingeniería de Software');
+  });
+
+  it('switches schedule labels and weekdays in both directions', () => {
+    const languageService = TestBed.inject(LanguageService);
+    const materia = component.materias[0];
+    const horario = materia.opciones[0].horario;
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent)
+      .toContain(HORARIOS_MESSAGES_EN.SEMESTER_SUBJECTS);
+    expect(fixture.nativeElement.textContent).toContain('Programming I');
+    expect(fixture.nativeElement.textContent).toContain('Data Structures');
+    expect(fixture.nativeElement.textContent)
+      .toContain(HORARIOS_MESSAGES_EN.OPTION_LABEL);
+    expect(component.dias[0]).toBe('Monday');
+    expect(component.obtenerHorarioVisible(horario)).toContain('Monday');
+    expect(component.obtenerBloquesMateria(materia, 'Monday').length)
+      .toBeGreaterThan(0);
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent)
+      .toContain(HORARIOS_MESSAGES.SEMESTER_SUBJECTS);
+    expect(fixture.nativeElement.textContent).toContain('Programación I');
+    expect(fixture.nativeElement.textContent).toContain('Estructuras de Datos');
+    expect(component.dias[0]).toBe('Lunes');
+    expect(component.obtenerHorarioVisible(horario)).toContain('Lunes');
+    expect(component.obtenerBloquesMateria(materia, 'Lunes').length)
+      .toBeGreaterThan(0);
   });
 
   it('should initialize pagination based on selected subjects', () => {

@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MateriasTreeComponent } from './components/materias-tree/materias-tree.component';
+import { LanguageService } from '../../services/language.service';
 import { HOME_MESSAGES } from '../../strings/home/home.messages';
+import { HOME_MESSAGES as HOME_MESSAGES_EN } from '../../strings/home/home-ingles.messages';
 
 @Component({
   selector: 'app-home',
@@ -10,5 +12,9 @@ import { HOME_MESSAGES } from '../../strings/home/home.messages';
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
-  readonly mensajes = HOME_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get mensajes() {
+    return this.languageService.getMessages(HOME_MESSAGES, HOME_MESSAGES_EN);
+  }
 }

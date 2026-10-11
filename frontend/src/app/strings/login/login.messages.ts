@@ -24,6 +24,7 @@
 
     REGISTER_TAB: 'Registrarse',
     LOGIN_TAB: 'Iniciar sesión',
+    TOGGLE_LANGUAGE_LABEL: 'Cambiar idioma',
     SHOW_PASSWORD: 'Mostrar contraseña',
     HIDE_PASSWORD: 'Ocultar contraseña',
 

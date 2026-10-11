@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { of, Subscription, switchMap, timeout, timer } from 'rxjs';
 import { Materia } from '../../../models/materia';
 import { ApiService } from '../../../services/api';
+import { LanguageService } from '../../../services/language.service';
 import { APP_CONFIG } from '../../../config/app-config';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
-import { NombreMateriaPipe } from '../../../pipes/nombre-materia.pipe';
-import { contieneTexto, normalizarTexto } from '../../../utils/text.utils';
+import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
+import { contieneTexto, normalizarTexto, presentarNombreMateria } from '../../../utils/text.utils';
 import { CalificacionMateriaPromedioMateriaResponse } from '../../../models/calificacion-materia.model';
 import { DecimalPipe } from '@angular/common';
 import { DEMO_MATERIAS } from '../../../data/demo-materias';
@@ -15,14 +16,19 @@ import { DEMO_MATERIAS } from '../../../data/demo-materias';
 @Component({
   selector: 'app-materias',
   standalone: true,
-  imports: [NombreMateriaPipe , DecimalPipe],
+  imports: [DecimalPipe],
   templateUrl: './materias.component.html',
   styleUrl: './materias.component.css'
 })
 export class MateriasComponent implements OnInit {
   @ViewChild('detalle') private detalle!: ElementRef<HTMLDialogElement>;
 
-  readonly MESSAGES = MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get MESSAGES() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
+
   readonly APP_CONFIG = APP_CONFIG;
 
   private readonly destroyRef = inject(DestroyRef);
@@ -182,6 +188,44 @@ export class MateriasComponent implements OnInit {
           this.promediosMaterias.set([]);
         }
       });
+  }
+
+  obtenerPredominioVisible(predominio: string): string {
+    return predominio.toLocaleLowerCase().includes('pract')
+      ? this.MESSAGES.CALIFICATION_PRACTICAL_LABEL
+      : this.MESSAGES.CALIFICATION_THEORETICAL_LABEL;
+  }
+
+  obtenerNombreVisible(materia: Materia): string {
+    const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
+    return indiceDemo >= 0
+      ? this.MESSAGES.DEMO_SUBJECTS[indiceDemo].nombre
+      : presentarNombreMateria(materia.nombre);
+  }
+
+  obtenerCarreraVisible(materia: Materia): string {
+    const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
+    return indiceDemo >= 0
+      ? this.MESSAGES.DEMO_SUBJECTS[indiceDemo].carrera
+      : materia.carrera;
+  }
+
+  obtenerConocimientosRecomendadosVisible(materia: Materia): string {
+    const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
+    return indiceDemo >= 0
+      ? this.MESSAGES.DEMO_SUBJECTS[indiceDemo].conocimientosPreviosRecomendados
+      : materia.conocimientosPreviosRecomendados?.trim() ||
+          this.MESSAGES.MODAL_INFORMATION_UNAVAILABLE;
+  }
+
+  private obtenerIndiceMateriaDemo(materia: Materia): number {
+    if (!this.mostrarDatosDemo()) {
+      return -1;
+    }
+
+    return DEMO_MATERIAS.findIndex(
+      materiaDemo => materiaDemo.codigo === materia.codigo
+    );
   }
 
   getPromedioMateria(
