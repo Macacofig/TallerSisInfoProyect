@@ -1,6 +1,6 @@
 .docentes {
   display: grid;
-  gap: 20px;
+  gap: 1.25rem;
 }
 
 .docentes__encabezado h2,
@@ -11,39 +11,40 @@
 
 .docentes__encabezado p,
 .docentes__vacio p {
-  margin: 6px 0 0;
+  margin: 0.375rem 0 0;
   color: #475569;
 }
 
 .docentes__lista {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22.5rem), 1fr));
+  gap: 1.125rem;
 }
 
 .docente-card {
   display: grid;
   align-content: start;
-  gap: 20px;
-  padding: 20px;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d9e2ef;
-  border-radius: 14px;
+  border-radius: 0.875rem;
   background: #ffffff;
 }
 
 .docente-card__identidad {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 0.875rem;
   min-width: 0;
 }
 
 .docente-card__avatar {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
-  flex: 0 0 46px;
+  width: 2.875rem;
+  height: 2.875rem;
+  flex: 0 0 2.875rem;
   border-radius: 50%;
   background: #eaf2fb;
   color: #165dab;
@@ -55,7 +56,7 @@
 }
 
 .docente-card__identidad p {
-  margin: 4px 0 0;
+  margin: 0.25rem 0 0;
   color: #64748b;
   font-size: 0.9rem;
 }
@@ -64,25 +65,25 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 14px;
+  gap: 0.875rem;
   flex-wrap: wrap;
 }
 
 .docente-card__promedios {
   display: grid;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .docente-metrica {
   display: grid;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .docente-metrica__encabezado {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0.75rem;
   color: #344054;
   font-size: 0.9rem;
   font-weight: 700;
@@ -94,9 +95,9 @@
 }
 
 .docente-metrica__barra {
-  height: 12px;
+  height: 0.75rem;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: 62.4375rem;
   background: #e5eaf1;
 }
 
@@ -120,16 +121,16 @@
 
 .docente-card__sin-promedios {
   margin: 0;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 0.875rem;
+  border-radius: 0.625rem;
   background: #f8fafc;
   color: #64748b;
   font-size: 0.9rem;
 }
 
 .docente-card__estado {
-  padding: 6px 10px;
-  border-radius: 999px;
+  padding: 0.375rem 0.625rem;
+  border-radius: 62.4375rem;
   background: #f1f5f9;
   color: #475569;
   font-size: 0.84rem;
@@ -145,14 +146,15 @@
 .boton-secundario,
 .docentes__error button,
 .docentes__promedios-error button {
-  min-height: 42px;
-  padding: 10px 16px;
-  border-radius: 9px;
+  min-height: 2.625rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5625rem;
   font-weight: 700;
   cursor: pointer;
 }
 
 .boton-primario {
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #165dab;
   background: #165dab;
   color: #ffffff;
@@ -163,6 +165,7 @@
 }
 
 .boton-secundario {
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #cbd5e1;
   background: #ffffff;
   color: #334155;
@@ -178,8 +181,8 @@
 .docentes__promedios-error button:focus-visible,
 .modal-docente__cerrar:focus-visible,
 .criterio-docente input:focus-visible {
-  outline: 3px solid rgba(22, 93, 171, 0.25);
-  outline-offset: 3px;
+  outline: 0.1875rem solid rgba(22, 93, 171, 0.25);
+  outline-offset: 0.1875rem;
 }
 
 button:disabled {
@@ -192,8 +195,8 @@ button:disabled {
 .docentes__error,
 .docentes__promedios-error,
 .docentes__exito {
-  padding: 16px 18px;
-  border-radius: 10px;
+  padding: 1rem 1.125rem;
+  border-radius: 0.625rem;
 }
 
 .docentes__estado,
@@ -210,7 +213,7 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 1rem;
   background: #fff7ed;
   color: #9a3412;
 }
@@ -227,8 +230,9 @@ button:disabled {
 
 .docentes__filtros,
 .docentes__historial-grafico {
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d9e2ef;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   background: #ffffff;
 }
 
@@ -236,15 +240,16 @@ button:disabled {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
-  padding: 20px;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border-bottom: 1px solid #e3e8ef;
 }
 
 .docentes__historial-encabezado h3,
 .docentes__consulta-personalizada h4,
 .docentes__historial-grafico h3 {
-  margin: 0 0 6px;
+  margin: 0 0 0.375rem;
   color: #10213f;
 }
 
@@ -261,15 +266,16 @@ button:disabled {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .docentes__gestion-rapida,
 .docentes__filtro-modos button {
-  min-height: 40px;
-  padding: 8px 16px;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #cfd7e4;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: #ffffff;
   color: #344054;
   font-weight: 600;
@@ -289,24 +295,25 @@ button:disabled {
 
 .docentes__consulta-personalizada {
   display: grid;
-  gap: 16px;
-  padding: 20px;
+  gap: 1rem;
+  padding: 1.25rem;
   background: #f8fafc;
 }
 
 .docentes__campo-filtro {
   display: grid;
-  width: min(100%, 320px);
-  gap: 7px;
+  width: min(100%, 20rem);
+  gap: 0.4375rem;
   color: #344054;
   font-weight: 700;
 }
 
 .docentes__campo-filtro select {
-  min-height: 42px;
-  padding: 9px 10px;
+  min-height: 2.625rem;
+  padding: 0.5625rem 0.625rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #cdd6e3;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: #ffffff;
   color: #344054;
   font: inherit;
@@ -315,7 +322,7 @@ button:disabled {
 .docentes__campos-rango {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 0.875rem;
 }
 
 .docentes__contexto-filtro {
@@ -325,8 +332,8 @@ button:disabled {
 
 .docentes__historial-grafico {
   display: grid;
-  gap: 14px;
-  padding: 22px;
+  gap: 0.875rem;
+  padding: 1.375rem;
 }
 
 .docentes__grafico-contenedor {
@@ -336,7 +343,7 @@ button:disabled {
 .docentes__grafico-contenedor svg {
   display: block;
   width: 100%;
-  min-width: 680px;
+  min-width: 42.5rem;
   height: auto;
 }
 
@@ -348,7 +355,7 @@ button:disabled {
 .docentes__grafico-etiqueta-x,
 .docentes__grafico-etiqueta-y {
   fill: #667085;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .docentes__grafico-linea {
@@ -372,19 +379,19 @@ button:disabled {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 18px;
+  gap: 1.125rem;
   color: #475569;
 }
 
 .docentes__leyenda span {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 0.4375rem;
 }
 
 .docentes__leyenda-muestra {
-  width: 26px;
-  border-top: 3px solid;
+  width: 1.625rem;
+  border-top: 0.1875rem solid;
 }
 
 .docentes__leyenda-muestra--claridad { border-top-color: #d97706; }
@@ -409,16 +416,16 @@ button:disabled {
   z-index: 1000;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 1.5rem;
   background: rgba(15, 23, 42, 0.55);
 }
 
 .modal-docente__contenido {
-  width: min(100%, 620px);
-  max-height: calc(100vh - 48px);
+  width: min(100%, 38.75rem);
+  max-height: calc(100vh - 3rem);
   overflow-y: auto;
-  padding: 26px;
-  border-radius: 16px;
+  padding: 1.625rem;
+  border-radius: 1rem;
   background: #ffffff;
 }
 
@@ -426,11 +433,11 @@ button:disabled {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
+  gap: 1.25rem;
 }
 
 .modal-docente__encabezado h2 {
-  margin: 4px 0;
+  margin: 0.25rem 0;
 }
 
 .modal-docente__encabezado p {
@@ -447,8 +454,8 @@ button:disabled {
 .modal-docente__cerrar {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 2.375rem;
+  height: 2.375rem;
   border: 0;
   border-radius: 50%;
   background: #f1f5f9;
@@ -458,20 +465,20 @@ button:disabled {
 }
 
 .modal-docente__descripcion {
-  margin: 18px 0 22px;
+  margin: 1.125rem 0 1.375rem;
   color: #475569;
 }
 
 .criterio-docente {
   display: grid;
-  gap: 8px;
-  margin-bottom: 22px;
+  gap: 0.5rem;
+  margin-bottom: 1.375rem;
 }
 
 .criterio-docente__encabezado {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 1rem;
   font-weight: 700;
 }
 
@@ -495,9 +502,9 @@ button:disabled {
 .periodo-docente {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  padding: 14px 16px;
-  border-radius: 10px;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.625rem;
   background: #f8fafc;
 }
 
@@ -508,24 +515,25 @@ button:disabled {
 .modal-docente__acciones {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 .confirmacion-docente {
   display: grid;
-  gap: 2px;
-  margin-top: 22px;
+  gap: 0.125rem;
+  margin-top: 1.375rem;
   overflow: hidden;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 
 .confirmacion-docente__fila {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  padding: 14px 16px;
+  gap: 1.25rem;
+  padding: 0.875rem 1rem;
   background: #f8fafc;
 }
 
@@ -533,7 +541,7 @@ button:disabled {
   color: #165dab;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .docentes__historial-encabezado {
     align-items: stretch;
     flex-direction: column;
@@ -548,7 +556,7 @@ button:disabled {
   }
 
   .docente-card {
-    gap: 18px;
+    gap: 1.125rem;
   }
 
   .docente-card__acciones {
@@ -567,11 +575,11 @@ button:disabled {
   }
 
   .modal-docente {
-    padding: 12px;
+    padding: 0.75rem;
   }
 
   .modal-docente__contenido {
-    padding: 20px;
+    padding: 1.25rem;
   }
 
   .modal-docente__acciones {

@@ -54,18 +54,18 @@
 }
 
 .registro__logo {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   flex-shrink: 0;
 }
 
 .registro__logo-mark {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   object-fit: contain;
   background-color: white;
   border-radius: 50%;
-  padding: 6px;
+  padding: 0.375rem;
   box-sizing: border-box;
 }
 
@@ -230,7 +230,8 @@
   min-height: 2.9rem;
   box-sizing: border-box;
   padding: 0.7rem 0.9rem;
-  border: 0.0625rem solid var(--borde);
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
+  border: 1px solid var(--borde);
   border-radius: 0.5rem;
   background-color: #fff;
   box-shadow: 0 0.0625rem 0.125rem rgba(16, 33, 63, 0.06);
@@ -337,8 +338,8 @@
 /* Icono del ojo */
 
 .registro__icono-contrasena {
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
