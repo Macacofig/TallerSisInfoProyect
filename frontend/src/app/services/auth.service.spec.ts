@@ -33,6 +33,21 @@ describe('AuthService', () => {
 
   afterEach(() => http.verify());
 
+  it('accepts only a token with an unexpired JWT payload as a valid session', () => {
+    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 60 }));
+    service.guardarUsuario({
+      id: 1, nombre: 'Ana', telefono: '71234567', correoElectronico: 'ana@ucb.edu.bo',
+      carrera: 'Medicina', accessToken: `header.${payload}.signature`
+    });
+    expect(service.tieneSesionValida()).toBe(true);
+
+    service.guardarUsuario({
+      id: 1, nombre: 'Ana', telefono: '71234567', correoElectronico: 'ana@ucb.edu.bo',
+      carrera: 'Medicina', accessToken: 'token-invalido'
+    });
+    expect(service.tieneSesionValida()).toBe(false);
+  });
+
   it('sends the token on profile update and preserves it in the response', () => {
     service.guardarUsuario({
       id: 7,

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CalificacionDocenteController.class)
+@TestPropertySource(properties = "app.security.jwt-middleware.enabled=false")
 class CalificacionDocenteControllerTest {
 
     @Autowired
@@ -45,8 +47,8 @@ class CalificacionDocenteControllerTest {
 
     @BeforeEach
     void permitirTokenDePruebaEnEndpointsPropios() {
-        doNothing().when(jwtService).requerirPropietario(org.mockito.ArgumentMatchers.any(),
-                org.mockito.ArgumentMatchers.any());
+        doNothing().when(jwtService).verificarPropiedad(org.mockito.ArgumentMatchers.nullable(Long.class),
+                org.mockito.ArgumentMatchers.anyLong());
     }
 
     @Test

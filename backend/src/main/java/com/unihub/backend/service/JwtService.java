@@ -2,7 +2,6 @@ package com.unihub.backend.service;
 
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.AccesoNoAutorizadoException;
-import com.unihub.backend.exception.CredencialesInvalidasException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.Keys;
@@ -62,16 +61,8 @@ public class JwtService {
         }
     }
 
-    public Long requerirIdEstudiante(String authorization) {
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new CredencialesInvalidasException();
-        }
-        return obtenerIdEstudiante(authorization.substring(7))
-                .orElseThrow(CredencialesInvalidasException::new);
-    }
-
-    public void requerirPropietario(String authorization, Long idEstudiante) {
-        if (!requerirIdEstudiante(authorization).equals(idEstudiante)) {
+    public void verificarPropiedad(Long authenticatedStudentId, Long idEstudiante) {
+        if (authenticatedStudentId == null || !authenticatedStudentId.equals(idEstudiante)) {
             throw new AccesoNoAutorizadoException();
         }
     }

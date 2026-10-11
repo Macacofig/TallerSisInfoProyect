@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.exception.AccesoNoAutorizadoException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,15 +41,11 @@ class JwtServiceTest {
     }
 
     @Test
-    void requiereTokenValidoYPropietarioParaAccederAlRecurso() {
-        Estudiante estudiante = mock(Estudiante.class);
-        when(estudiante.getId()).thenReturn(42L);
-        when(estudiante.getCorreoElectronico()).thenReturn("ana@ucb.edu.bo");
+    void verificaPropiedadUsandoLaIdentidadYaAutenticada() {
         JwtService jwtService = new JwtService(SECRET, 3600);
-        String token = jwtService.generarToken(estudiante);
 
-        assertThrows(RuntimeException.class, () -> jwtService.requerirPropietario(null, 42L));
-        assertThrows(RuntimeException.class, () -> jwtService.requerirPropietario("Bearer " + token, 41L));
-        jwtService.requerirPropietario("Bearer " + token, 42L);
+        assertThrows(AccesoNoAutorizadoException.class, () -> jwtService.verificarPropiedad(null, 42L));
+        assertThrows(AccesoNoAutorizadoException.class, () -> jwtService.verificarPropiedad(41L, 42L));
+        jwtService.verificarPropiedad(42L, 42L);
     }
 }

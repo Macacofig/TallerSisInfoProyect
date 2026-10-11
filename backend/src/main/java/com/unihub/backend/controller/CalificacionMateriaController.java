@@ -6,6 +6,7 @@ import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
 import com.unihub.backend.service.CalificacionMateriaService;
 import com.unihub.backend.service.JwtService;
+import com.unihub.backend.config.JwtAuthenticationInterceptor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -46,10 +47,10 @@ public class CalificacionMateriaController {
 
 	@PostMapping(CREAR_URL)
 	public ResponseEntity<CalificacionMateriaResponse> crear(
-			@RequestHeader(value = "Authorization", required = false) String authorization,
+			@RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId,
 			@Valid @RequestBody CalificacionMateriaRequest request
 	) {
-		jwtService.requerirPropietario(authorization, request.idEstudiante());
+		jwtService.verificarPropiedad(authenticatedStudentId, request.idEstudiante());
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(calificacionService.crear(request));
 	}
@@ -70,22 +71,22 @@ public class CalificacionMateriaController {
 
 	@GetMapping(OBTENER_POR_ESTUDIANTE_URL)
 	public ResponseEntity<CalificacionMateriaResponse> obtenerPorEstudiante(
-			@RequestHeader(value = "Authorization", required = false) String authorization,
+			@RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId,
 			@PathVariable Long idEstudiante,
 			@PathVariable Long idMateria
 	) {
-		jwtService.requerirPropietario(authorization, idEstudiante);
+		jwtService.verificarPropiedad(authenticatedStudentId, idEstudiante);
 		return ResponseEntity.ok(calificacionService.obtenerPorEstudiante(idEstudiante, idMateria).orElse(null));
 	}
 
 	@PutMapping(ACTUALIZAR_URL)
 	public ResponseEntity<CalificacionMateriaResponse> actualizar(
-			@RequestHeader(value = "Authorization", required = false) String authorization,
+			@RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId,
 			@PathVariable Long idEstudiante,
 			@PathVariable Long idMateria,
 			@Valid @RequestBody CalificacionMateriaRequest request
 	) {
-		jwtService.requerirPropietario(authorization, idEstudiante);
+		jwtService.verificarPropiedad(authenticatedStudentId, idEstudiante);
 		return calificacionService.actualizar(idEstudiante, idMateria, request)
 				.map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
@@ -93,11 +94,11 @@ public class CalificacionMateriaController {
 
 	@DeleteMapping(ELIMINAR_URL)
 	public ResponseEntity<Void> eliminar(
-			@RequestHeader(value = "Authorization", required = false) String authorization,
+			@RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId,
 			@PathVariable Long idEstudiante,
 			@PathVariable Long idMateria
 	) {
-		jwtService.requerirPropietario(authorization, idEstudiante);
+		jwtService.verificarPropiedad(authenticatedStudentId, idEstudiante);
 		return calificacionService.eliminar(idEstudiante, idMateria)
 				? ResponseEntity.noContent().build()
 				: ResponseEntity.notFound().build();

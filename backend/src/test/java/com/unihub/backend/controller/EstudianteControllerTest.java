@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(EstudianteController.class)
+@TestPropertySource(properties = "app.security.jwt-middleware.enabled=false")
 class EstudianteControllerTest {
 
     @Autowired
@@ -154,13 +156,13 @@ class EstudianteControllerTest {
 
         @Test
         void deberiaActualizarTodosLosCampos() throws Exception {
-        doNothing().when(jwtService).requerirPropietario("Bearer jwt-valido", 1L);
         when(estudianteService.actualizar(eq(1L), any()))
             .thenReturn(new EstudianteResponse(
                 1L, "Ana María Pérez", "71234568", "ana.maria@ucb.edu.bo", "Medicina"
             ));
 
         mockMvc.perform(put("/api/estudiantes/1")
+                .requestAttr("authenticatedStudentId", 1L)
                 .header("Authorization", "Bearer jwt-valido")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -182,11 +184,11 @@ class EstudianteControllerTest {
 
         @Test
         void deberiaResponder404CuandoElEstudianteNoExiste() throws Exception {
-        doNothing().when(jwtService).requerirPropietario("Bearer jwt-valido", 99L);
         doThrow(new ResourceNotFoundException("Estudiante no encontrado"))
             .when(estudianteService).actualizar(eq(99L), any());
 
         mockMvc.perform(put("/api/estudiantes/99")
+            .requestAttr("authenticatedStudentId", 99L)
             .header("Authorization", "Bearer jwt-valido")
             .contentType(MediaType.APPLICATION_JSON)
             .content(cuerpoActualizacion("Ana Pérez", "71234567", "Ingeniería de Sistemas")))
@@ -195,8 +197,8 @@ class EstudianteControllerTest {
 
         @Test
         void deberiaRechazarActualizacionConNombreVacio() throws Exception {
-        doNothing().when(jwtService).requerirPropietario("Bearer jwt-valido", 1L);
         mockMvc.perform(put("/api/estudiantes/1")
+                .requestAttr("authenticatedStudentId", 1L)
                 .header("Authorization", "Bearer jwt-valido")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(cuerpoActualizacion("", "71234567", "Ingeniería")))
@@ -207,8 +209,8 @@ class EstudianteControllerTest {
 
         @Test
         void deberiaRechazarActualizacionConTelefonoInvalido() throws Exception {
-        doNothing().when(jwtService).requerirPropietario("Bearer jwt-valido", 1L);
         mockMvc.perform(put("/api/estudiantes/1")
+                .requestAttr("authenticatedStudentId", 1L)
                 .header("Authorization", "Bearer jwt-valido")
                 .contentType(MediaType.APPLICATION_JSON)
             .content(cuerpoActualizacion("Ana Pérez", "51234567", "Ingeniería")))
@@ -224,8 +226,9 @@ class EstudianteControllerTest {
     @Test
     void deberiaRechazarActualizacionSinTokenValido() throws Exception {
         org.mockito.Mockito.doThrow(new CredencialesInvalidasException())
-                .when(jwtService).requerirPropietario(null, 1L);
+                .when(jwtService).verificarPropiedad(1L, 1L);
         mockMvc.perform(put("/api/estudiantes/1")
+                .requestAttr("authenticatedStudentId", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(cuerpoActualizacion("Ana Pérez", "71234567", "Ingeniería")))
             .andExpect(status().isUnauthorized());
@@ -236,9 +239,10 @@ class EstudianteControllerTest {
     @Test
     void deberiaImpedirActualizarElPerfilDeOtroEstudiante() throws Exception {
         org.mockito.Mockito.doThrow(new com.unihub.backend.exception.AccesoNoAutorizadoException())
-                .when(jwtService).requerirPropietario("Bearer jwt-ajeno", 1L);
+                .when(jwtService).verificarPropiedad(2L, 1L);
 
         mockMvc.perform(put("/api/estudiantes/1")
+                .requestAttr("authenticatedStudentId", 2L)
                 .header("Authorization", "Bearer jwt-ajeno")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(cuerpoActualizacion("Ana Pérez", "71234567", "Ingeniería")))

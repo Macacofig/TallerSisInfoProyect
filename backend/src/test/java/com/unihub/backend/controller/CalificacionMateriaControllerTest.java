@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CalificacionMateriaController.class)
+@TestPropertySource(properties = "app.security.jwt-middleware.enabled=false")
 class CalificacionMateriaControllerTest {
 
     @Autowired
@@ -44,13 +46,13 @@ class CalificacionMateriaControllerTest {
 
     @BeforeEach
     void permitirTokenDePruebaEnEndpointsPropios() {
-        doNothing().when(jwtService).requerirPropietario(org.mockito.ArgumentMatchers.any(),
-                org.mockito.ArgumentMatchers.any());
+        doNothing().when(jwtService).verificarPropiedad(org.mockito.ArgumentMatchers.nullable(Long.class),
+                org.mockito.ArgumentMatchers.anyLong());
     }
 
     @Test
     void requiereTokenParaConsultarUnaCalificacionAsociadaAUnEstudiante() throws Exception {
-        doThrow(new CredencialesInvalidasException()).when(jwtService).requerirPropietario(null, 25L);
+        doThrow(new CredencialesInvalidasException()).when(jwtService).verificarPropiedad(null, 25L);
 
         mockMvc.perform(get("/api/calificacion-materia/estudiante/25/materia/1"))
                 .andExpect(status().isUnauthorized());
@@ -60,7 +62,7 @@ class CalificacionMateriaControllerTest {
 
     @Test
     void requiereTokenParaCrearUnaCalificacionAsociadaAUnEstudiante() throws Exception {
-        doThrow(new CredencialesInvalidasException()).when(jwtService).requerirPropietario(null, 25L);
+        doThrow(new CredencialesInvalidasException()).when(jwtService).verificarPropiedad(null, 25L);
 
         mockMvc.perform(post("/api/calificacion-materia")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -8,6 +8,7 @@ import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CorreoDuplicadoException;
+import com.unihub.backend.exception.CredencialesInvalidasException;
 import com.unihub.backend.exception.TooManyLoginAttemptsException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
@@ -146,7 +147,7 @@ class EstudianteServiceTest {
     void deberiaIniciarSesionConCredencialesValidas() {
         Estudiante estudiante = new Estudiante(
                 "Ana Pérez",
-                "ClaveSegura1!",
+                passwordEncoder.encode("ClaveSegura1!"),
                 "71234567",
                 "ana@ucb.edu.bo",
                 "Ingeniería de Sistemas"
@@ -168,7 +169,7 @@ class EstudianteServiceTest {
         org.junit.jupiter.api.Assertions.assertTrue(passwordEncoder.matches(
                 "ClaveSegura1!", estudiante.getContrasena()
         ));
-        verify(estudianteRepository).save(estudiante);
+        verify(estudianteRepository, never()).save(estudiante);
         mostrarResultado("Iniciar sesión con correo y contraseña válidos");
     }
 
@@ -181,8 +182,8 @@ class EstudianteServiceTest {
         );
         when(estudianteRepository.findByCorreoElectronicoIgnoreCase("noexiste@ucb.edu.bo")).thenReturn(Optional.empty());
 
-        IllegalArgumentException excepcion = assertThrows(
-                IllegalArgumentException.class,
+        CredencialesInvalidasException excepcion = assertThrows(
+                CredencialesInvalidasException.class,
                 () -> estudianteService.iniciarSesion(request)
         );
 
@@ -195,7 +196,7 @@ class EstudianteServiceTest {
     void deberiaRechazarInicioSesionCuandoLaContrasenaEsIncorrecta() {
         Estudiante estudiante = new Estudiante(
                 "Ana Pérez",
-                "ClaveSegura1!",
+                passwordEncoder.encode("ClaveSegura1!"),
                 "71234567",
                 "ana@ucb.edu.bo",
                 "Ingeniería de Sistemas"
@@ -206,13 +207,39 @@ class EstudianteServiceTest {
         );
         when(estudianteRepository.findByCorreoElectronicoIgnoreCase("ana@ucb.edu.bo")).thenReturn(Optional.of(estudiante));
 
-        IllegalArgumentException excepcion = assertThrows(
-                IllegalArgumentException.class,
+        CredencialesInvalidasException excepcion = assertThrows(
+                CredencialesInvalidasException.class,
                 () -> estudianteService.iniciarSesion(request)
         );
 
         assertEquals("Correo electrónico o contraseña incorrectos", excepcion.getMessage());
         mostrarResultado("Rechazar inicio de sesión cuando la contraseña es incorrecta");
+    }
+
+    @Test
+    void deberiaRechazarInicioSesionConContrasenaAlmacenadaEnTextoPlano() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        when(estudianteRepository.findByCorreoElectronicoIgnoreCase("ana@ucb.edu.bo"))
+                .thenReturn(Optional.of(estudiante));
+
+        assertThrows(CredencialesInvalidasException.class, () -> estudianteService.iniciarSesion(
+                new EstudianteLoginRequest("ana@ucb.edu.bo", "ClaveSegura1!")));
+        verify(estudianteRepository, never()).save(any(Estudiante.class));
+    }
+
+    @Test
+    void deberiaRechazarHashCorruptoComoCredencialesInvalidas() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "$2a$10$valor-corrupto", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        when(estudianteRepository.findByCorreoElectronicoIgnoreCase("ana@ucb.edu.bo"))
+                .thenReturn(Optional.of(estudiante));
+
+        assertThrows(CredencialesInvalidasException.class, () -> estudianteService.iniciarSesion(
+                new EstudianteLoginRequest("ana@ucb.edu.bo", "ClaveSegura1!")));
+        verify(estudianteRepository, never()).save(any(Estudiante.class));
     }
 
     @Test

@@ -82,17 +82,17 @@ public class EstudianteService {
                 });
 
         String contrasenaGuardada = estudiante.getContrasena();
-        boolean coincide = esHashBcrypt(contrasenaGuardada)
-                ? passwordEncoder.matches(contrasena, contrasenaGuardada)
-                : contrasenaGuardada.equals(contrasena);
+        boolean coincide = false;
+        if (contrasenaGuardada != null) {
+            try {
+                coincide = passwordEncoder.matches(contrasena, contrasenaGuardada);
+            } catch (IllegalArgumentException exception) {
+                // A malformed or non-BCrypt stored value is treated as invalid credentials.
+            }
+        }
         if (!coincide) {
             loginAttemptRateLimiter.registrarFallo(correoElectronico);
             throw new CredencialesInvalidasException();
-        }
-
-        if (!esHashBcrypt(contrasenaGuardada)) {
-            estudiante.actualizarContrasena(passwordEncoder.encode(contrasena));
-            estudianteRepository.save(estudiante);
         }
 
         LogHelper.debug(EstudianteService.class, "Inicio de sesión completado correctamente");
@@ -104,7 +104,4 @@ public class EstudianteService {
         );
     }
 
-    private boolean esHashBcrypt(String valor) {
-        return valor.matches("\\$2[aby]\\$\\d{2}\\$[./A-Za-z0-9]{53}");
-    }
 }

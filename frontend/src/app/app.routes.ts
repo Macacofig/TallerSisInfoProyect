@@ -9,6 +9,7 @@ import { Registro } from './pages/registro/registro';
 import { Login } from './pages/login/login';
 import { Perfil } from './pages/perfil/perfil';
 import { HorariosComponent } from './pages/horarios/horarios.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
 
@@ -49,6 +50,7 @@ export const routes: Routes = [
 
   {
     path: 'perfil',
-    component: Perfil
+    component: Perfil,
+    canActivate: [authGuard]
   }
 ];
