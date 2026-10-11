@@ -51,7 +51,7 @@ describe('HorariosComponent', () => {
     expect(ingenieria?.opciones.length).toBe(1);
   });
 
-  it('should display the semester subjects title in English', () => {
+  it('should display the semester subjects title in Spanish', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.textContent).toContain(
@@ -118,6 +118,48 @@ describe('HorariosComponent', () => {
 
     component.cerrarModalAgregar();
     fixture.detectChanges();
+  });
+
+  it('localizes schedule actions, modal content, and aria labels in both languages', () => {
+    const languageService = TestBed.inject(LanguageService);
+    const ingles = fixture.nativeElement as HTMLElement;
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(ingles.textContent).toContain('Planning');
+    expect(ingles.textContent).toContain('Add subject');
+    expect(ingles.textContent).toContain('Download schedule');
+    expect(ingles.querySelector('[aria-label="Previous page of subjects"]'))
+      .not.toBeNull();
+    expect(ingles.querySelector('[aria-label="Next page of subjects"]'))
+      .not.toBeNull();
+
+    fixture.nativeElement.querySelector('.header-actions .btn-agregar').click();
+    fixture.detectChanges();
+    expect(component.modalAgregarAbierto).toBe(true);
+    expect(ingles.textContent).toContain('Semester');
+    expect(ingles.textContent).toContain('Cancel');
+    expect(ingles.textContent).toContain('Add selected');
+    expect(ingles.querySelector('.modal-cerrar')?.getAttribute('aria-label'))
+      .toBe('Close dialog');
+
+    fixture.nativeElement.querySelector('.modal-footer .btn-cancelar').click();
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('.header-actions .btn-descargar').click();
+    fixture.detectChanges();
+    expect(ingles.textContent).toContain('Planning');
+    expect(ingles.textContent).toContain('Download schedule');
+    expect(ingles.textContent).toContain('Confirm');
+    expect(ingles.textContent).not.toContain('Planificación');
+    expect(ingles.textContent).not.toContain('Cancelar');
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+    expect(ingles.textContent).toContain('Planificación');
+    expect(ingles.textContent).toContain('Confirmar');
+    expect(ingles.querySelector('.modal-cerrar')?.getAttribute('aria-label'))
+      .toBe('Cerrar modal');
   });
 
   it('should initialize pagination based on selected subjects', () => {

@@ -3,11 +3,13 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Materia } from '../../../models/materia';
 import { APP_CONFIG } from '../../../config/app-config';
+import { LanguageService } from '../../../services/language.service';
 import { MateriasComponent } from './materias.component';
 
 describe('HU-02: buscar materia por nombre mediante el backend', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
+  let languageService: LanguageService | undefined;
   const endpoint = 'https://tallersisinfoproyect.onrender.com/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
   const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
@@ -25,6 +27,8 @@ describe('HU-02: buscar materia por nombre mediante el backend', () => {
       providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
     vi.useFakeTimers();
+    languageService = TestBed.inject(LanguageService);
+    languageService.setLanguage('es');
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
@@ -33,6 +37,7 @@ describe('HU-02: buscar materia por nombre mediante el backend', () => {
   });
 
   afterEach(() => {
+    languageService?.setLanguage('es');
     fixture.destroy();
     http.verify();
     vi.useRealTimers();
@@ -80,17 +85,49 @@ describe('HU-02: buscar materia por nombre mediante el backend', () => {
     }
   );
 
-  it('no busca códigos localmente ni sustituye la respuesta vacía por datos demo', async () => {
+  it('busca por código y no sustituye resultados vacíos por datos demo', async () => {
     config.DEMO_MODE = true;
     responderCatalogo();
     escribir('INF-101');
     await esperarBusqueda();
-    peticionNombre('INF-101').flush([]);
+    const peticion = http.expectOne(req => req.method === 'GET' && req.url === endpoint);
+    expect(peticion.request.params.keys()).toEqual([]);
+    peticion.flush(materias);
     fixture.detectChanges();
-    expect(codigosVisibles()).toEqual([]);
-    expect(fixture.nativeElement.textContent).toContain('No se encontraron coincidencias');
+    expect(codigosVisibles()).toEqual(['INF-101']);
     expect(fixture.nativeElement.querySelector('.materias-page__demo')).toBeNull();
     expect(fixture.nativeElement.querySelector('input').placeholder).toBe('Nombre de la materia');
+  });
+
+  it('encuentra el nombre original en español', async () => {
+    responderCatalogo();
+    escribir('Programación');
+    await esperarBusqueda();
+    peticionNombre('Programación').flush([materias[0]]);
+    fixture.detectChanges();
+
+    expect(codigosVisibles()).toEqual(['INF-101']);
+    expect(fixture.nativeElement.querySelectorAll('.materia-card')).toHaveLength(1);
+    expect(fixture.nativeElement.querySelector('.materia-card h2').textContent)
+      .toContain('Programación I');
+  });
+
+  it('busca por el nombre traducido en inglés sin duplicar la materia', async () => {
+    responderCatalogo();
+    TestBed.inject(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    escribir('Programming');
+    await esperarBusqueda();
+
+    const peticion = http.expectOne(req => req.method === 'GET' && req.url === endpoint);
+    expect(peticion.request.params.keys()).toEqual([]);
+    peticion.flush(materias);
+    fixture.detectChanges();
+
+    expect(codigosVisibles()).toEqual(['INF-101']);
+    expect(fixture.nativeElement.querySelectorAll('.materia-card')).toHaveLength(1);
+    expect(fixture.nativeElement.querySelector('.materia-card h2').textContent)
+      .toContain('Programming I');
   });
 
   it('consulta de nuevo el catálogo completo al limpiar y devuelve el foco al campo', async () => {

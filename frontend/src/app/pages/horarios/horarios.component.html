@@ -14,7 +14,7 @@
           type="button"
           class="btn-agregar"
           (click)="abrirModalAgregar()">
-          + Agregar materia
+          + {{ textos.ADD_SUBJECT }}
         </button>
 
         <button
@@ -22,7 +22,7 @@
           class="btn-descargar"
           (click)="abrirModalDescargar()">
           <span aria-hidden="true">↓</span>
-          Descargar horario
+          {{ textos.DOWNLOAD_SCHEDULE }}
         </button>
       </div>
     </div>
@@ -47,7 +47,7 @@
         <div class="materias-paginacion">
           <button
             type="button"
-            aria-label="Página anterior de materias"
+            [attr.aria-label]="textos.PREVIOUS_SUBJECTS_PAGE"
             [disabled]="paginaMaterias === 1"
             (click)="anteriorMaterias()">
             ‹
@@ -59,7 +59,7 @@
 
           <button
             type="button"
-            aria-label="Página siguiente de materias"
+            [attr.aria-label]="textos.NEXT_SUBJECTS_PAGE"
             [disabled]="paginaMaterias >= totalPaginasMaterias"
             (click)="siguienteMaterias()">
             ›
@@ -338,24 +338,24 @@
         <div class="modal-header">
 
           <div>
-            <p class="eyebrow">Planificación</p>
-            <h2 id="titulo-modal-agregar">Agregar materias</h2>
+            <p class="eyebrow">{{ textos.PLANNING }}</p>
+            <h2 id="titulo-modal-agregar">{{ textos.ADD_SUBJECTS_TITLE }}</h2>
             <p>
-              Selecciona el semestre y las materias que deseas añadir.
+              {{ textos.ADD_SUBJECTS_DESCRIPTION }}
             </p>
           </div>
 
           <button
             type="button"
             class="modal-cerrar"
-            aria-label="Cerrar modal"
+            [attr.aria-label]="textos.CLOSE_MODAL"
             (click)="cerrarModalAgregar()">
             ×
           </button>
 
         </div>
 
-        <label for="semestre">Semestre</label>
+        <label for="semestre">{{ textos.SEMESTER }}</label>
 
         <select
           id="semestre"
@@ -364,7 +364,7 @@
 
           @for (semestre of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track semestre) {
             <option [value]="semestre">
-              {{ semestre }}.º semestre
+              {{ semestre }}{{ textos.SEMESTER_OPTION_SUFFIX }}
             </option>
           }
 
@@ -392,7 +392,7 @@
           } @empty {
 
             <p class="modal-vacio">
-              No hay materias disponibles para agregar en este semestre.
+              {{ textos.ADD_SUBJECTS_EMPTY }}
             </p>
 
           }
@@ -405,7 +405,7 @@
             type="button"
             class="btn-cancelar"
             (click)="cerrarModalAgregar()">
-            Cancelar
+            {{ textos.CANCEL }}
           </button>
 
           <button
@@ -413,7 +413,7 @@
             class="btn-agregar"
             [disabled]="materiasParaAgregar.length === 0"
             (click)="agregarMaterias()">
-            Agregar seleccionadas
+            {{ textos.ADD_SELECTED }}
           </button>
 
         </div>
@@ -442,17 +442,17 @@
         <div class="modal-header">
 
           <div>
-            <p class="eyebrow">Planificación</p>
-            <h2 id="titulo-modal-descarga">Descargar horario</h2>
+            <p class="eyebrow">{{ textos.PLANNING }}</p>
+            <h2 id="titulo-modal-descarga">{{ textos.DOWNLOAD_SCHEDULE }}</h2>
             <p>
-              Revisa el horario seleccionado antes de continuar.
+              {{ textos.DOWNLOAD_DESCRIPTION }}
             </p>
           </div>
 
           <button
             type="button"
             class="modal-cerrar"
-            aria-label="Cerrar modal"
+            [attr.aria-label]="textos.CLOSE_MODAL"
             (click)="cerrarModalDescargar()">
             ×
           </button>
@@ -466,18 +466,19 @@
           </div>
 
           <div class="descarga-vista-previa__contenido">
-            <h3>Generador de horarios</h3>
+            <h3>{{ textos.TITLE }}</h3>
 
             <p>
-              Opción {{ paginaActual }} de {{ totalHorarios }}
+              {{ textos.OPTION_LABEL }} {{ paginaActual }}
+              {{ textos.SCHEDULE_OPTION_OF }} {{ totalHorarios }}
             </p>
 
             <p>
               {{ materiasSeleccionadas.length }}
               {{
                 materiasSeleccionadas.length === 1
-                  ? 'materia seleccionada'
-                  : 'materias seleccionadas'
+                  ? textos.SELECTED_SUBJECT
+                  : textos.SELECTED_SUBJECTS
               }}
             </p>
           </div>
@@ -486,7 +487,7 @@
 
         <div class="descarga-materias">
 
-          <h3>Materias incluidas</h3>
+          <h3>{{ textos.INCLUDED_SUBJECTS }}</h3>
 
           @for (materia of materiasSeleccionadas; track materia.codigo) {
 
@@ -507,7 +508,7 @@
           } @empty {
 
             <p class="modal-vacio">
-              No hay materias seleccionadas para mostrar.
+              {{ textos.SELECTED_SUBJECTS_EMPTY }}
             </p>
 
           }
@@ -520,7 +521,7 @@
             type="button"
             class="btn-cancelar"
             (click)="cerrarModalDescargar()">
-            Cancelar
+            {{ textos.CANCEL }}
           </button>
 
           <button
@@ -528,7 +529,7 @@
             class="btn-agregar"
             (click)="cerrarModalDescargar()">
             <span aria-hidden="true">↓</span>
-            Confirmar
+            {{ textos.CONFIRM }}
           </button>
 
         </div>

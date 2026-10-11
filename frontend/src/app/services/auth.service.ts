@@ -1,6 +1,6 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, TimeoutError, catchError, timeout, throwError } from 'rxjs';
+import { Observable, TimeoutError, catchError, map, timeout, throwError } from 'rxjs';
 
 import { APP_CONFIG } from '../config/app-config';
 import { ErrorAuth, RegistroRequest, RegistroResponse } from '../models/registrar';
@@ -44,6 +44,26 @@ export class AuthService {
 
   obtenerUsuario(): LoginResponse | null {
     return this.usuarioActual();
+  }
+
+  tieneSesionValida(): boolean {
+    const token = this.usuarioActual()?.accessToken;
+    if (!token) return false;
+
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return false;
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      return typeof payload.exp === 'number' && payload.exp > Math.floor(Date.now() / 1000);
+    } catch {
+      return false;
+    }
+  }
+
+  obtenerHeadersAutenticacion(): HttpHeaders {
+    const token = this.usuarioActual()?.accessToken;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return token ? headers.set('Authorization', `Bearer ${token}`) : headers;
   }
 
 
@@ -92,12 +112,17 @@ export class AuthService {
   ): Observable<LoginResponse> {
 
     const url = `${APP_CONFIG.API.BASE_URL}/estudiantes/${id}`;
-
     return this.http
       .put<LoginResponse>(url, datos, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: this.obtenerHeadersAutenticacion()
       })
       .pipe(
+        map((response): LoginResponse => ({
+          ...response,
+          accessToken: response.accessToken ?? this.usuarioActual()?.accessToken,
+          tokenType: response.tokenType ?? this.usuarioActual()?.tokenType,
+          expiresIn: response.expiresIn ?? this.usuarioActual()?.expiresIn
+        })),
         timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
         catchError((error: unknown) =>
           throwError(() => mapearErrorHttp(error))

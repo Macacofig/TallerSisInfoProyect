@@ -1,697 +1,429 @@
-﻿:host {
-display: block;
+﻿
+:host {
+  display: block;
 }
 
 * {
   box-sizing: border-box;
-  }
-
-.horarios-page {
-min-height: calc(100vh - 5rem);
-padding: 2.5rem clamp(1.25rem, 2.5vw, 2.5rem);
-
-background-color: #f7faff;
-
 }
 
-/* =========================
-ENCABEZADO
-========================= */
+.horarios-page {
+  min-height: calc(100vh - 5rem);
+  padding: 2.5rem clamp(1.25rem, 2.5vw, 2.5rem);
+  background-color: #f7faff;
+  background-image: radial-gradient(#dbe4f2 0.04rem, transparent 0.04rem);
+  background-size: 1.125rem 1.125rem;
+}
 
 .page-header {
-padding: 2.5rem 2rem 0;
+  padding: 2.5rem 2rem 0;
 }
 
 .eyebrow {
-margin: 0 0 0.875rem;
-
-color: #e3a82b;
-
-font-size: 0.72rem;
-font-weight: 700;
-
-letter-spacing: 0.11rem;
-text-transform: uppercase;
+  margin: 0 0 0.875rem;
+  color: #e3a82b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.11rem;
+  text-transform: uppercase;
 }
 
 .title {
-margin: 0 0 0.75rem;
-
-font-family: Georgia, 'Times New Roman', serif;
-
-font-weight: 500;
-
-font-size: clamp(2rem, 4vw, 3rem);
-
-line-height: 1.1;
-
-color: #0b2447;
+  margin: 0 0 0.75rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 500;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  color: #0b2447;
 }
 
 .subtitle {
-max-width: 40rem;
-
-margin: 0;
-
-padding-bottom: 1.75rem;
-
-color: #4f5d73;
-
-font-size: 0.95rem;
-
-line-height: 1.5;
+  max-width: 40rem;
+  margin: 0;
+  padding-bottom: 1.75rem;
+  color: #4f5d73;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .divider {
-/* Excepcion HU-39: separador de un pixel para conservar nitidez visual. */
-height: 1px;
-
-margin: 0;
-
-border: none;
-
-background: #e3a82b;
+  height: 0.0625rem;
+  margin: 0;
+  border: none;
+  background: #e3a82b;
 }
-
-/* =========================
-LAYOUT
-========================= */
 
 .horarios-layout {
-
-display: grid;
-
-grid-template-columns: 22rem minmax(0, 1fr);
-
-gap: 1.5rem;
-
-align-items: start;
-
-margin-top: 2rem;
-
+  display: grid;
+  grid-template-columns: 15.625rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  margin-top: 1.25rem;
 }
 
-
 .materias-panel {
-padding: 1.625rem 1.1rem;
-
-background: #f8fbff;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border: 1px solid #d5e0f0;
-
-border-radius: 1.125rem;
+  width: 100%;
+  padding: 1.625rem 1.1rem;
+  background: #f8fbff;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 1.125rem;
+  box-shadow: 0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
 }
 
 .panel-title {
-margin: 0 0 1.375rem;
-
-font-family: Georgia, 'Times New Roman', serif;
-
-font-size: 1.25rem;
-
-font-weight: 550;
-
-color: #0b2447;
+  margin: 0 0 1.375rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  font-weight: 550;
+  color: #0b2447;
 }
 
 .panel-list {
-display: flex;
-
-flex-direction: column;
-
-gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* =========================
-TARJETAS DE MATERIAS
-========================= */
-
 .materia-horario {
-padding: 1rem;
-
-background: #f8fbff;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border: 1px solid #d5e0f0;
-
-border-radius: 0.625rem;
-
-overflow-wrap: anywhere;
+  padding: 1rem;
+  background: #f8fbff;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.625rem;
+  overflow-wrap: anywhere;
 }
 
 .materia-horario__header {
-display: flex;
-
-align-items: flex-start;
-
-gap: 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
 }
 
-/* =========================
-CHECKBOX
-========================= */
-
 .materia-horario__header input {
-flex: 0 0 1.125rem;
-
-width: 1.125rem;
-height: 1.125rem;
-
-margin: 0.125rem 0 0;
-
-appearance: none;
--webkit-appearance: none;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border: 1px solid #0b3c8c;
-
-border-radius: 0.25rem;
-
-background: #fff;
-
-cursor: pointer;
+  flex: 0 0 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0.125rem 0 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0.0625rem solid #0b3c8c;
+  border-radius: 0.25rem;
+  background: #fff;
+  cursor: pointer;
 }
 
 .materia-horario__header input:checked {
-position: relative;
-
-background: #0b3c8c;
+  position: relative;
+  background: #0b3c8c;
 }
 
 .materia-horario__header input:checked::after {
-content: '✓';
-
-position: absolute;
-
-top: 50%;
-left: 50%;
-
-transform: translate(-50%, -54%);
-
-color: #fff;
-
-font-size: 0.8125rem;
-
-font-weight: 700;
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -54%);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
 }
 
-/* =========================
-INFORMACIÓN
-========================= */
-
 .materia-horario__info {
-min-width: 0;
+  min-width: 0;
 }
 
 .materia-horario__info h3 {
-margin: 0 0 0.25rem;
-
-font-family: Georgia, 'Times New Roman', serif;
-
-font-size: 1.125rem;
-
-font-weight: 500;
-
-line-height: 1.3;
-
-color: #0b2447;
+  margin: 0 0 0.25rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #0b2447;
 }
 
 .materia-horario__info p {
-margin: 0;
-
-color: #4f5d73;
-
-font-size: 0.75rem;
-
-line-height: 1.4;
+  margin: 0;
+  color: #4f5d73;
+  font-size: 0.75rem;
+  line-height: 1.4;
 }
 
-/* =========================
-OPCIONES
-========================= */
-
 .materia-horario__opciones {
-margin-top: 0.875rem;
-
-margin-left: calc(1.125rem + 0.75rem);
+  margin-top: 0.875rem;
+  margin-left: calc(1.125rem + 0.75rem);
 }
 
 .opcion {
-margin: 0 0 0.5rem;
-
-color: #4f5d73;
-
-font-size: 0.75rem;
-
-line-height: 1.5;
+  margin: 0 0 0.5rem;
+  color: #4f5d73;
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
 .opcion:last-child {
-margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .opcion__etiqueta {
-color: #e3a82b;
-
-font-weight: 500;
+  color: #e3a82b;
+  font-weight: 500;
 }
 
-/* =========================
-RESULTADOS
-========================= */
-
 .resultados {
-min-width: 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .resultados__barra {
-display: flex;
-
-align-items: center;
-
-justify-content: space-between;
-
-gap: 1.5rem;
-
-padding: 1rem 1.5rem;
-
-background: #f8fbff;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border: 1px solid #d5e0f0;
-
-border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: #f8fbff;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.875rem;
+  box-shadow: 0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
 }
 
 .resultados__info {
-display: flex;
-
-align-items: center;
-
-gap: 0.625rem;
-
-min-width: 0;
-
-color: #0b2447;
-
-font-family: Georgia, 'Times New Roman', serif;
-
-font-size: 1.125rem;
-
-font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  color: #0b2447;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.125rem;
+  font-weight: 500;
 }
 
 .resultados__info span {
-min-width: 0;
-overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .resultados__icon {
-flex: 0 0 1.125rem;
-
-width: 1.125rem;
-height: 1.125rem;
-
-color: #2e7d5b;
+  flex: 0 0 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #2e7d5b;
 }
 
-/* =========================
-PAGINACIÓN
-========================= */
-
 .resultados__paginacion {
-display: flex;
-
-align-items: center;
-
-gap: 0.75rem;
-
-flex-shrink: 0;
-
-color: #4f5d73;
-
-font-family: "Source Sans 3", Arial, sans-serif;
-
-font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  color: #4f5d73;
+  font-family: 'Source Sans 3', Arial, sans-serif;
+  font-size: 0.8125rem;
 }
 
 .resultados__paginacion button {
-padding: 0.5rem 1rem;
-
-background: #fff;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border: 1px solid #d5e0f0;
-
-border-radius: 0.5rem;
-
-color: #0b2447;
-
-font-family: "Source Sans 3", Arial, sans-serif;
-
-font-size: 0.8125rem;
-
-cursor: pointer;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.5rem;
+  color: #0b2447;
+  font-family: 'Source Sans 3', Arial, sans-serif;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, opacity 0.15s ease;
 }
 
 .resultados__paginacion button:hover:not(:disabled) {
-border-color: #0b3c8c;
+  border-color: #0b3c8c;
 }
 
 .resultados__paginacion button:disabled {
-opacity: 0.45;
-
-cursor: not-allowed;
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
-/* =========================
-SIN RESULTADOS
-========================= */
-
 .resultados__barra--vacia {
-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+.resultados__info--warning {
+  color: #0b2447;
 }
 
 .resultados__info--warning .resultados__icon {
-color: #e3a82b;
+  color: #e3a82b;
 }
 
-/* =========================
-CALENDARIO
-========================= */
-
 .horario-grid {
-margin-top: 1.5rem;
+  width: 100%;
+  margin-top: 1.5rem;
 }
 
 .horario-grid__contenido {
-width: 100%;
-
-background: #f8fbff;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border: 1px solid #d5e0f0;
-
-border-radius: 1.125rem;
-
-overflow: hidden;
+  width: 100%;
+  background: #f8fbff;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 1.125rem;
+  box-shadow: 0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
+  overflow: hidden;
 }
-
-/* =========================
-SCROLL
-========================= */
 
 .calendario__scroll {
-overflow: auto;
-
-max-height: 45rem;
-
-overscroll-behavior: contain;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 45rem;
+  overscroll-behavior: contain;
 }
-
-/* =========================
-ESTRUCTURA
-========================= */
 
 .calendario {
-min-width: 60.9375rem;
-
-position: relative;
+  min-width: 60.9375rem;
+  position: relative;
 }
 
-/* =========================
-ENCABEZADO
-========================= */
-
 .calendario__encabezado {
-display: grid;
+  display: grid;
+  grid-template-columns: 4.6875rem repeat(6, minmax(9.375rem, 1fr));
+  min-width: 60.9375rem;
+  background: #f8fbff;
+  border-bottom: 0.0625rem solid #d5e0f0;
+}
 
-grid-template-columns:
-4.6875rem
-repeat(6, minmax(9.375rem, 1fr));
-
-min-width: 60.9375rem;
-
-background: #f8fbff;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border-bottom: 1px solid #d5e0f0;
+.calendario__espacio-hora,
+.calendario__dia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  border-right: 0.0625rem solid #d5e0f0;
 }
 
 .calendario__espacio-hora {
-display: flex;
-
-align-items: center;
-
-justify-content: center;
-
-min-height: 3.25rem;
-
-color: #4f5d73;
-
-font-family: "Source Sans 3", Arial, sans-serif;
-
-font-size: 0.75rem;
-
-font-weight: 500;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border-right: 1px solid #d5e0f0;
+  color: #4f5d73;
+  font-family: 'Source Sans 3', Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .calendario__dia {
-display: flex;
-
-align-items: center;
-
-justify-content: center;
-
-min-height: 3.25rem;
-
-color: #0b2447;
-
-font-family: Georgia, 'Times New Roman', serif;
-
-font-size: 0.9375rem;
-
-font-weight: 500;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border-right: 1px solid #d5e0f0;
+  color: #0b2447;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 
 .calendario__dia:last-child {
-border-right: none;
+  border-right: none;
 }
-
-/* =========================
-CUERPO
-========================= */
 
 .calendario__cuerpo {
-display: grid;
-
-grid-template-columns: 4.6875rem 1fr;
-
-min-width: 60.9375rem;
-
-position: relative;
+  display: grid;
+  grid-template-columns: 4.6875rem 1fr;
+  min-width: 60.9375rem;
+  position: relative;
 }
 
-/* =========================
-COLUMNA DE HORAS
-========================= */
-
 .calendario__horas {
-display: flex;
-
-flex-direction: column;
-
-background: #f8fbff;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border-right: 1px solid #d5e0f0;
+  display: flex;
+  flex-direction: column;
+  background: #f8fbff;
+  border-right: 0.0625rem solid #d5e0f0;
 }
 
 .calendario__hora {
-flex: 0 0 4.5rem;
-
-display: flex;
-
-align-items: flex-start;
-
-justify-content: center;
-
-padding-top: 0.5625rem;
-
-color: #4f5d73;
-
-font-family: "Source Sans 3", Arial, sans-serif;
-
-font-size: 0.6875rem;
-
-line-height: 1.2;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border-bottom: 1px solid #e6edf6;
+  flex: 0 0 4.5rem;
+  height: 4.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.5625rem;
+  color: #4f5d73;
+  font-family: 'Source Sans 3', Arial, sans-serif;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  border-bottom: 0.0625rem solid #e6edf6;
 }
-
-/* =========================
-DÍAS
-========================= */
 
 .calendario__dias {
-display: grid;
-
-grid-template-columns:
-repeat(6, minmax(9.375rem, 1fr));
-
-min-width: 56.25rem;
-
-position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(9.375rem, 1fr));
+  min-width: 56.25rem;
+  position: relative;
 }
 
-/* =========================
-COLUMNA DE CADA DÍA
-========================= */
-
 .calendario__columna {
-min-width: 9.375rem;
-
-position: relative;
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border-right: 1px solid #d5e0f0;
+  min-width: 9.375rem;
+  position: relative;
+  border-right: 0.0625rem solid #d5e0f0;
 }
 
 .calendario__columna:last-child {
-border-right: none;
+  border-right: none;
 }
-
-/* =========================
-CELDAS / LÍNEAS HORARIAS
-========================= */
 
 .calendario__celda {
-height: 4.5rem;
-
-background: rgba(255, 255, 255, 0.25);
-
-/* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
-border-bottom: 1px solid #e6edf6;
+  height: 4.5rem;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.25);
+  border-bottom: 0.0625rem solid #e6edf6;
 }
-
-/* =========================
-TARJETAS DE MATERIAS
-========================= */
 
 .materia-calendario {
-position: absolute;
-
-z-index: 5;
-
-left: 0.4375rem;
-
-right: 0.4375rem;
-
-margin-top: 0.3125rem;
-
-margin-bottom: 0.3125rem;
-
-padding: 0.625rem 0.6875rem;
-
-display: flex;
-
-flex-direction: column;
-
-justify-content: center;
-
-gap: 0.25rem;
-
-border-radius: 0.6875rem;
-
-border-left: 0.3125rem solid var(--color-materia);
-
-background: color-mix(
-in srgb,
-var(--color-materia) 15%,
-#ffffff
-);
-
-overflow: hidden;
+  position: absolute;
+  z-index: 5;
+  left: 0.4375rem;
+  right: 0.4375rem;
+  margin-block: 0.3125rem;
+  padding: 0.625rem 0.6875rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  border-radius: 0.6875rem;
+  border-left: 0.3125rem solid var(--color-materia);
+  background: color-mix(in srgb, var(--color-materia) 15%, #fff);
+  box-shadow: 0 0.1875rem 0.5rem rgba(11, 36, 71, 0.12), 0 0.0625rem 0.125rem rgba(11, 36, 71, 0.08);
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-
-/*
-
-* Pequeño efecto al pasar el mouse.
-  */
 
 .materia-calendario:hover {
-z-index: 10;
+  z-index: 10;
+  transform: translateY(-0.0625rem);
+  box-shadow: 0 0.3125rem 0.75rem rgba(11, 36, 71, 0.16), 0 0.125rem 0.25rem rgba(11, 36, 71, 0.08);
 }
-
-/* =========================
-NOMBRE
-========================= */
 
 .materia-calendario strong {
-color: #0b2447;
-
-font-family: Georgia, 'Times New Roman', serif;
-
-font-size: 0.8125rem;
-
-font-weight: 600;
-
-line-height: 1.25;
-
-overflow-wrap: anywhere;
+  display: block;
+  color: #0b2447;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
-
-/* =========================
-SIGLA
-========================= */
 
 .materia-calendario span {
-color: var(--color-materia);
-
-font-family: "Source Sans 3", Arial, sans-serif;
-
-font-size: 0.625rem;
-
-font-weight: 700;
-
-line-height: 1.2;
-
-letter-spacing: 0.03em;
+  display: block;
+  color: var(--color-materia);
+  font-family: 'Source Sans 3', Arial, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
 }
 
-/* =========================
-COLORES SUAVES DE TARJETAS
-========================= */
-
 .materia-calendario[style*="#0b3c8c"] {
-background: #edf4ff;
+  background: #edf4ff;
 }
 
 .materia-calendario[style*="#2e7d5b"] {
-background: #edf8f2;
+  background: #edf8f2;
 }
 
 .materia-calendario[style*="#e3a82b"] {
-background: #fff8e8;
+  background: #fff8e8;
 }
 
 .materia-calendario[style*="#7957a8"] {
-background: #f5effc;
+  background: #f5effc;
 }
-
-
-/* ========================================
-   ACCIONES DEL ENCABEZADO
-======================================== */
 
 .page-title-row {
   display: flex;
@@ -720,22 +452,23 @@ background: #f5effc;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 10px;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.625rem;
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn-agregar {
   background-color: #0b3c8c;
-  color: #ffffff;
+  color: #fff;
 }
 
 .btn-agregar:hover:not(:disabled) {
   background-color: #082d69;
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 .btn-agregar:disabled {
@@ -744,7 +477,7 @@ background: #f5effc;
 }
 
 .btn-descargar {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #0b2447;
   border-color: #d5e0f0;
 }
@@ -755,7 +488,7 @@ background: #f5effc;
 }
 
 .btn-cancelar {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #4f5d73;
   border-color: #d5e0f0;
 }
@@ -764,10 +497,6 @@ background: #f5effc;
   background-color: #f5f9ff;
   border-color: #aabbd3;
 }
-
-/* ========================================
-   MODAL
-======================================== */
 
 .modal-overlay {
   position: fixed;
@@ -783,14 +512,14 @@ background: #f5effc;
 
 .modal {
   width: 100%;
-  max-width: 560px;
+  max-width: 35rem;
   max-height: 90vh;
   overflow-y: auto;
   padding: 1.75rem;
-  background-color: #ffffff;
-  border: 1px solid #d5e0f0;
-  border-radius: 18px;
-  box-shadow: 0 20px 60px rgba(11, 36, 71, 0.18);
+  background-color: #fff;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 1.125rem;
+  box-shadow: 0 1.25rem 3.75rem rgba(11, 36, 71, 0.18);
   color: #0b2447;
 }
 
@@ -830,14 +559,15 @@ background: #f5effc;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border: 1px solid #d5e0f0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0.0625rem solid #d5e0f0;
   border-radius: 50%;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #4f5d73;
   font-size: 1.5rem;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .modal-cerrar:hover {
@@ -855,27 +585,23 @@ background: #f5effc;
   width: 100%;
   padding: 0.75rem;
   margin-bottom: 1rem;
-  border: 1px solid #d5e0f0;
-  border-radius: 9px;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.5625rem;
   background-color: #f8fbff;
   color: #0b2447;
   font: inherit;
 }
 
 .modal > select:focus {
-  outline: 2px solid #e3a82b;
-  outline-offset: 2px;
+  outline: 0.125rem solid #e3a82b;
+  outline-offset: 0.125rem;
 }
-
-/* ========================================
-   LISTA DE MATERIAS DEL MODAL
-======================================== */
 
 .modal-materias {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  max-height: 300px;
+  max-height: 18.75rem;
   overflow-y: auto;
   padding: 0.25rem;
 }
@@ -885,10 +611,11 @@ background: #f5effc;
   align-items: center;
   gap: 0.85rem;
   padding: 0.9rem;
-  border: 1px solid #d5e0f0;
-  border-radius: 10px;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.625rem;
   background-color: #f8fbff;
   cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .modal-materia:hover {
@@ -897,8 +624,8 @@ background: #f5effc;
 }
 
 .modal-materia input[type='checkbox'] {
-  width: 17px;
-  height: 17px;
+  width: 1.0625rem;
+  height: 1.0625rem;
   flex-shrink: 0;
   accent-color: #0b3c8c;
   cursor: pointer;
@@ -924,17 +651,12 @@ background: #f5effc;
 
 .modal-vacio {
   padding: 1.5rem 1rem;
-  border: 1px dashed #d5e0f0;
-  border-radius: 10px;
+  border: 0.0625rem dashed #d5e0f0;
+  border-radius: 0.625rem;
   color: #4f5d73;
   text-align: center;
   line-height: 1.5;
 }
-
-
-/* ========================================
-   VISTA PREVIA DE DESCARGA
-======================================== */
 
 .descarga-vista-previa {
   display: flex;
@@ -942,8 +664,8 @@ background: #f5effc;
   gap: 1rem;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
-  border: 1px solid #d5e0f0;
-  border-radius: 12px;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.75rem;
   background-color: #f5f9ff;
 }
 
@@ -951,10 +673,10 @@ background: #f5effc;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 3rem;
+  height: 3rem;
   flex-shrink: 0;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   background-color: #e3a82b;
   color: #0b2447;
   font-size: 1.7rem;
@@ -989,15 +711,15 @@ background: #f5effc;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border: 1px solid #d5e0f0;
-  border-radius: 9px;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.5625rem;
 }
 
 .descarga-materia__color {
-  width: 5px;
+  width: 0.3125rem;
   align-self: stretch;
   flex-shrink: 0;
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 
 .descarga-materia > div {
@@ -1022,13 +744,8 @@ background: #f5effc;
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #d5e0f0;
+  border-top: 0.0625rem solid #d5e0f0;
 }
-
-
-/* ========================================
-   PAGINACIÓN DE MATERIAS
-======================================== */
 
 .panel-heading {
   display: flex;
@@ -1054,16 +771,17 @@ background: #f5effc;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 1.75rem;
+  height: 1.75rem;
   padding: 0;
-  border: 1px solid #d5e0f0;
-  border-radius: 7px;
-  background-color: #ffffff;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.4375rem;
+  background-color: #fff;
   color: #0b2447;
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .materias-paginacion button:hover:not(:disabled) {
@@ -1077,18 +795,14 @@ background: #f5effc;
 }
 
 .materias-paginacion span {
-  min-width: 34px;
+  min-width: 2.125rem;
   color: #4f5d73;
   font-size: 0.8rem;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
-/* ========================================
-   ADAPTACIÓN A PANTALLAS PEQUEÑAS
-======================================== */
-
-@media (max-width: 900px) {
+@media (max-width: 56.25em) {
   .page-title-row {
     align-items: flex-start;
   }
@@ -1096,9 +810,26 @@ background: #f5effc;
   .header-actions {
     width: 100%;
   }
+
+  .horarios-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .materias-panel {
+    width: 100%;
+    order: 2;
+  }
+
+  .resultados {
+    order: 1;
+  }
+
+  .horario-grid {
+    order: 3;
+  }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 37.5em) {
   .page-title-row {
     flex-direction: column;
     align-items: stretch;
@@ -1108,6 +839,45 @@ background: #f5effc;
   .header-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .btn-agregar,
+  .btn-descargar {
+    width: 100%;
+  }
+
+  .horarios-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-header {
+    padding: 1.5rem 0.5rem 0;
+  }
+
+  .resultados__barra {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .resultados__paginacion {
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .materia-calendario {
+    left: 0.375rem;
+    right: 0.375rem;
+    padding: 0.5rem;
+  }
+
+  .materia-calendario strong {
+    font-size: 0.6875rem;
+  }
+
+  .materia-calendario span {
+    font-size: 0.5625rem;
   }
 
   .modal {
@@ -1122,78 +892,7 @@ background: #f5effc;
     flex-direction: column-reverse;
   }
 
-}
-
-
-/* =========================
-RESPONSIVE
-========================= */
-
-@media (max-width: 56.25rem) {
-
-.horarios-layout {
-grid-template-columns: 1fr;
-}
-
-.resultados {
-order: 1;
-}
-
-.materias-panel {
-order: 2;
-}
-
-.horario-grid {
-order: 3;
-}
-
-}
-
-@media (max-width: 37.5rem) {
-
-.horarios-page {
-padding: 1.5rem 0.75rem;
-}
-
-.page-header {
-padding: 1.5rem 0.25rem 0;
-}
-
-.resultados__barra {
-flex-direction: column;
-
-align-items: stretch;
-
-gap: 1rem;
-
-}
-
-.resultados__paginacion {
-justify-content: space-between;
-gap: 0.5rem;
-flex-wrap: wrap;
-}
-
-.resultados__paginacion button {
-padding: 0.5rem 0.75rem;
-white-space: nowrap;
-}
-
-.materia-calendario {
-left: 0.375rem;
-
-right: 0.375rem;
-
-padding: 0.5rem;
-
-}
-
-.materia-calendario strong {
-font-size: 0.6875rem;
-}
-
-.materia-calendario span {
-font-size: 0.5625rem;
-}
-
+  .modal-footer button {
+    width: 100%;
+  }
 }

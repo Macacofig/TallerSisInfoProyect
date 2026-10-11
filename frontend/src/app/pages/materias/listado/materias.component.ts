@@ -133,6 +133,16 @@ export class MateriasComponent implements OnInit {
 
     const nombre = this.busqueda().trim();
     const carrera = this.carreraSeleccionada();
+    const coincideNombreTraducido = Object.values(MESSAGES_EN.SUBJECT_NAMES).some(
+      nombreTraducido => contieneTexto(nombreTraducido, nombre)
+    );
+    const coincideNombreOriginal = Object.values(MESSAGES.SUBJECT_NAMES).some(
+      nombreOriginal => contieneTexto(nombreOriginal, nombre)
+    );
+    const buscarCatalogoCompleto = this.languageService.isEnglish() ||
+      nombre.includes('-') ||
+      (coincideNombreTraducido && !coincideNombreOriginal);
+    const nombreParaApi = buscarCatalogoCompleto ? '' : nombre;
 
     this.estado.set(APP_CONFIG.COMPONENT_STATES.LOADING);
     this.mostrarDatosDemo.set(false);
@@ -145,7 +155,7 @@ export class MateriasComponent implements OnInit {
     )
       .pipe(
         switchMap(() =>
-          this.apiService.obtenerMaterias(nombre, carrera)
+          this.apiService.obtenerMaterias(nombreParaApi, carrera)
             .pipe(timeout(APP_CONFIG.TIMEOUTS.API_REQUEST))
         ),
         takeUntilDestroyed(this.destroyRef)
@@ -292,7 +302,10 @@ export class MateriasComponent implements OnInit {
     const semestre = this.semestreSeleccionado();
 
     return materias.filter(materia =>
-      (!nombre || contieneTexto(materia.nombre, nombre)) &&
+      (!nombre ||
+        contieneTexto(materia.nombre, nombre) ||
+        contieneTexto(this.obtenerNombreVisible(materia), nombre) ||
+        contieneTexto(materia.codigo, nombre)) &&
       (!carrera ||
         normalizarTexto(materia.carrera) === normalizarTexto(carrera)) &&
       (!semestre || materia.semestre === Number(semestre))

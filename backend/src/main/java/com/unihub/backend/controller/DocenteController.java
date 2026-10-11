@@ -3,6 +3,7 @@ package com.unihub.backend.controller;
 import com.unihub.backend.dto.docente.DocenteRequest;
 import com.unihub.backend.dto.docente.DocenteResponse;
 import com.unihub.backend.service.DocenteService;
+import com.unihub.backend.service.CatalogAdminAuthorization;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -23,13 +25,19 @@ import static com.unihub.backend.common.Constants.Docente.POR_MATERIA_URL;
 public class DocenteController {
 
 	private final DocenteService docenteService;
+	private final CatalogAdminAuthorization catalogAdminAuthorization;
 
-	public DocenteController(DocenteService docenteService) {
+	public DocenteController(DocenteService docenteService, CatalogAdminAuthorization catalogAdminAuthorization) {
 		this.docenteService = docenteService;
+		this.catalogAdminAuthorization = catalogAdminAuthorization;
 	}
 
 	@PostMapping(AGREGAR_URL)
-	public ResponseEntity<DocenteResponse> agregar(@Valid @RequestBody DocenteRequest request) {
+	public ResponseEntity<DocenteResponse> agregar(
+			@RequestHeader(value = "X-Catalog-Admin-Token", required = false) String adminToken,
+			@Valid @RequestBody DocenteRequest request
+	) {
+		catalogAdminAuthorization.requerirAdministrador(adminToken);
 		return ResponseEntity.status(HttpStatus.CREATED).body(docenteService.agregar(request));
 	}
 

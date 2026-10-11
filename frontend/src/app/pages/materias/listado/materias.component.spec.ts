@@ -12,6 +12,7 @@ import { MateriasComponent } from './materias.component';
 describe('HU-01: catálogo de materias', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
+  let languageService: LanguageService | undefined;
   const endpoint = 'https://tallersisinfoproyect.onrender.com/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
   const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
@@ -28,7 +29,8 @@ describe('HU-01: catálogo de materias', () => {
       imports: [MateriasComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
-    TestBed.inject(LanguageService).setLanguage('es');
+    languageService = TestBed.inject(LanguageService);
+    languageService.setLanguage('es');
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
@@ -37,6 +39,7 @@ describe('HU-01: catálogo de materias', () => {
   });
 
   afterEach(() => {
+    languageService?.setLanguage('es');
     config.DEMO_MODE = originalDemoMode;
     http.verify();
   });
