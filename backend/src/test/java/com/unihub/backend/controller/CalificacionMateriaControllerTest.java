@@ -3,18 +3,24 @@ package com.unihub.backend.controller;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaPromedioMateriaResponse;
 import com.unihub.backend.dto.calificacion.CalificacionMateriaResponse;
+import com.unihub.backend.exception.CredencialesInvalidasException;
 import com.unihub.backend.service.CalificacionMateriaService;
+import com.unihub.backend.service.JwtService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -26,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CalificacionMateriaController.class)
+@TestPropertySource(properties = "app.security.jwt-middleware.enabled=false")
 class CalificacionMateriaControllerTest {
 
     @Autowired
@@ -34,12 +41,60 @@ class CalificacionMateriaControllerTest {
     @MockitoBean
     private CalificacionMateriaService calificacionService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
+    @BeforeEach
+    void permitirTokenDePruebaEnEndpointsPropios() {
+        doNothing().when(jwtService).verificarPropiedad(org.mockito.ArgumentMatchers.nullable(Long.class),
+                org.mockito.ArgumentMatchers.anyLong());
+    }
+
+    @Test
+    void requiereTokenParaConsultarUnaCalificacionAsociadaAUnEstudiante() throws Exception {
+        doThrow(new CredencialesInvalidasException()).when(jwtService).verificarPropiedad(null, 25L);
+
+        mockMvc.perform(get("/api/calificacion-materia/estudiante/25/materia/1"))
+                .andExpect(status().isUnauthorized());
+
+        verify(calificacionService, never()).obtenerPorEstudiante(25L, 1L);
+    }
+
+    @Test
+    void requiereTokenParaCrearUnaCalificacionAsociadaAUnEstudiante() throws Exception {
+        doThrow(new CredencialesInvalidasException()).when(jwtService).verificarPropiedad(null, 25L);
+
+        mockMvc.perform(post("/api/calificacion-materia")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"idMateria":1,"idEstudiante":25,"dificultad":8,"carga":6,
+                                 "conocimientoPrevio":5,"prerequisitos":[],
+                                 "predominio":"Practico","gestion":"I-Año"}
+                                """))
+                .andExpect(status().isUnauthorized());
+
+        verify(calificacionService, never()).crear(any());
+    }
+
+    @Test
+    void rechazaCrearCalificacionSinIdEstudiante() throws Exception {
+        mockMvc.perform(post("/api/calificacion-materia")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"idMateria":1,"dificultad":8,"carga":6,"conocimientoPrevio":5,
+                                 "prerequisitos":[],"predominio":"Practico","gestion":"I-Año"}
+                                """))
+                .andExpect(status().isBadRequest());
+
+        verify(calificacionService, never()).crear(any());
+    }
+
     @Test
     void deberiaCrearCalificacionDeMateria() throws Exception {
         when(calificacionService.crear(any())).thenReturn(new CalificacionMateriaResponse(
                 1L,
                 1L,
-                null,
+                25L,
                 8,
                 6,
                 5,
@@ -53,7 +108,7 @@ class CalificacionMateriaControllerTest {
                         .content("""
                                 {
                                   "idMateria": 1,
-                                  "idEstudiante": null,
+                                  "idEstudiante": 25,
                                   "dificultad": 8,
                                   "carga": 6,
                                   "conocimientoPrevio": 5,
@@ -64,7 +119,7 @@ class CalificacionMateriaControllerTest {
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idMateria").value(1))
-                .andExpect(jsonPath("$.idEstudiante").doesNotExist())
+                .andExpect(jsonPath("$.idEstudiante").value(25))
                 .andExpect(jsonPath("$.prerequisitosText").value("Matematicas,Logica"))
                 .andExpect(jsonPath("$.predominio").value("Practico"))
                 .andExpect(jsonPath("$.gestion").value("I-Año"));

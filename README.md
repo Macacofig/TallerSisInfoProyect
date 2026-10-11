@@ -156,4 +156,12 @@ docker compose version
 git --version
 ```
 
+## Catalog administration
+
+Adding docentes and linking them to materias requires `X-Catalog-Admin-Token`. Set `CATALOG_ADMIN_TOKEN` in the root `.env` to a private random secret of at least 32 bytes. Leave it empty to keep these catalog write operations disabled. Do not reuse `JWT_SECRET` for this purpose.
+
+## HTTPS for a self-hosted backend
+
+The backend can terminate HTTPS directly when deployed with a PKCS12 certificate. Place the certificate at the configured host path and set `SERVER_SSL_ENABLED=true`, `SERVER_SSL_KEY_STORE_HOST_PATH`, `SERVER_SSL_KEY_STORE`, `SERVER_SSL_KEY_STORE_PASSWORD`, and `SERVER_SSL_KEY_ALIAS` in the deployment environment. The Compose file mounts the certificate read-only and publishes the configured backend port. Keep the keystore password outside version control. The default `SERVER_SSL_ENABLED=false` is for local development; the deployed frontend must use the matching HTTPS backend URL.
+
 # 🚀 Funcionalidades

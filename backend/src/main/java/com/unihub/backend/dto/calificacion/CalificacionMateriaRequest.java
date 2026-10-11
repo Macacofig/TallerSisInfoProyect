@@ -11,7 +11,7 @@ import java.util.List;
 public record CalificacionMateriaRequest(
 
 	@NotNull Long idMateria,
-	Long idEstudiante,
+	@NotNull Long idEstudiante,
 
 	@NotNull @Min(1) @Max(10) Integer dificultad,
 	@NotNull @Min(1) @Max(10) Integer carga,

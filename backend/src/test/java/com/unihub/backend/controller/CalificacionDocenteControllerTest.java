@@ -5,12 +5,15 @@ import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.exception.CalificacionDocenteDuplicadaException;
 import com.unihub.backend.exception.DocenteInexistenteException;
 import com.unihub.backend.service.CalificacionDocenteService;
+import com.unihub.backend.service.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -29,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CalificacionDocenteController.class)
+@TestPropertySource(properties = "app.security.jwt-middleware.enabled=false")
 class CalificacionDocenteControllerTest {
 
     @Autowired
@@ -36,6 +41,15 @@ class CalificacionDocenteControllerTest {
 
     @MockitoBean
     private CalificacionDocenteService calificacionService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @BeforeEach
+    void permitirTokenDePruebaEnEndpointsPropios() {
+        doNothing().when(jwtService).verificarPropiedad(org.mockito.ArgumentMatchers.nullable(Long.class),
+                org.mockito.ArgumentMatchers.anyLong());
+    }
 
     @Test
         @DisplayName("Crear una calificacion de docente asociada obligatoriamente a una materia")

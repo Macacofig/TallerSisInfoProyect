@@ -33,6 +33,50 @@ describe('AuthService', () => {
 
   afterEach(() => http.verify());
 
+  it('accepts only a token with an unexpired JWT payload as a valid session', () => {
+    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 60 }));
+    service.guardarUsuario({
+      id: 1, nombre: 'Ana', telefono: '71234567', correoElectronico: 'ana@ucb.edu.bo',
+      carrera: 'Medicina', accessToken: `header.${payload}.signature`
+    });
+    expect(service.tieneSesionValida()).toBe(true);
+
+    service.guardarUsuario({
+      id: 1, nombre: 'Ana', telefono: '71234567', correoElectronico: 'ana@ucb.edu.bo',
+      carrera: 'Medicina', accessToken: 'token-invalido'
+    });
+    expect(service.tieneSesionValida()).toBe(false);
+  });
+
+  it('sends the token on profile update and preserves it in the response', () => {
+    service.guardarUsuario({
+      id: 7,
+      nombre: 'Ana',
+      telefono: '71234567',
+      correoElectronico: 'ana@ucb.edu.bo',
+      carrera: 'Ingeniería',
+      accessToken: 'jwt-token'
+    });
+
+    let usuarioActualizado: unknown;
+    service.actualizarUsuario(7, {
+      nombre: 'Ana María',
+      telefono: '71234568',
+      carrera: 'Medicina'
+    }).subscribe(usuario => usuarioActualizado = usuario);
+
+    const peticion = http.expectOne(`${APP_CONFIG.API.BASE_URL}/estudiantes/7`);
+    expect(peticion.request.headers.get('Authorization')).toBe('Bearer jwt-token');
+    peticion.flush({
+      id: 7,
+      nombre: 'Ana María',
+      telefono: '71234568',
+      correoElectronico: 'ana@ucb.edu.bo',
+      carrera: 'Medicina'
+    });
+    expect(usuarioActualizado).toMatchObject({ accessToken: 'jwt-token', carrera: 'Medicina' });
+  });
+
   it(`envía POST ${APP_CONFIG.API.ENDPOINTS.AUTH_REGISTER} con JSON y sin semestre`, () => {
     const siguiente = vi.fn();
     service.registerUser(datos).subscribe(siguiente);
