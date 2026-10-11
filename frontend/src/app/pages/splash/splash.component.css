@@ -35,24 +35,24 @@
 }
 
 .logo-icon {
-  width: 70px;
-  height: 70px;
+  width: 4.375rem;
+  height: 4.375rem;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  border: 2px solid #f4c542;
-  border-radius: 20px;
+  border: 0.125rem solid #f4c542;
+  border-radius: 1.25rem;
 
   color: #f4c542;
 
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 800;
 
-  margin-bottom: 18px;
+  margin-bottom: 1.125rem;
 
-  box-shadow: 0 0 30px rgba(244, 197, 66, 0.15);
+  box-shadow: 0 0 1.875rem rgba(244, 197, 66, 0.15);
 }
 
 h1 {
@@ -60,22 +60,22 @@ h1 {
 
   font-family: Arial, sans-serif;
 
-  font-size: 52px;
+  font-size: 3.25rem;
   font-weight: 700;
 
-  letter-spacing: -2px;
+  letter-spacing: -0.125rem;
 }
 
 p {
-  margin-top: 12px;
+  margin-top: 0.75rem;
 
   font-family: Arial, sans-serif;
 
-  font-size: 15px;
+  font-size: 0.9375rem;
 
   color: rgba(255, 255, 255, 0.65);
 
-  letter-spacing: 1px;
+  letter-spacing: 0.0625rem;
 }
 
 /* =========================
@@ -92,8 +92,8 @@ p {
 .node {
   position: absolute;
 
-  width: 7px;
-  height: 7px;
+  width: 0.4375rem;
+  height: 0.4375rem;
 
   border-radius: 50%;
 
@@ -135,6 +135,7 @@ p {
 .line {
   position: absolute;
 
+  /* Excepcion HU-39: linea decorativa de un pixel para conservar nitidez visual. */
   height: 1px;
 
   background: rgba(80, 150, 255, 0.35);
@@ -147,7 +148,7 @@ p {
 }
 
 .line-1 {
-  width: 180px;
+  width: 11.25rem;
 
   top: 34%;
   left: 27%;
@@ -158,7 +159,7 @@ p {
 }
 
 .line-2 {
-  width: 200px;
+  width: 12.5rem;
 
   top: 40%;
   right: 26%;
@@ -169,7 +170,7 @@ p {
 }
 
 .line-3 {
-  width: 170px;
+  width: 10.625rem;
 
   bottom: 31%;
   left: 31%;
@@ -250,19 +251,19 @@ p {
    RESPONSIVE
 ========================= */
 
-@media (max-width: 600px) {
+@media (max-width: 37.5rem) {
   h1 {
-    font-size: 42px;
+    font-size: 2.625rem;
   }
 
   .logo-icon {
-    width: 60px;
-    height: 60px;
+    width: 3.75rem;
+    height: 3.75rem;
 
-    font-size: 30px;
+    font-size: 1.875rem;
   }
 
   .line {
-    width: 100px;
+    width: 6.25rem;
   }
 }

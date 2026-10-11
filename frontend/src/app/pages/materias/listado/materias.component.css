@@ -11,8 +11,8 @@
   min-height: calc(100vh - 5rem);
   padding: 2.5rem clamp(1.25rem, 2.5vw, 2.5rem);
   background-color: #f7faff;
-  background-image: radial-gradient(#dce7f5 0.65px, transparent 0.65px);
-  background-size: 18px 18px;
+  background-image: radial-gradient(#dce7f5 0.040625rem, transparent 0.040625rem);
+  background-size: 1.125rem 1.125rem;
 }
 
 .materias-page__header {
@@ -43,7 +43,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materias-page__demo {
   margin: 0 0 1.25rem;
   padding: 0.85rem 1rem;
-  border-left: 4px solid #e5ac20;
+  border-left: 0.25rem solid #e5ac20;
   border-radius: 0.35rem;
   background-color: #fff5d8;
   color: #183454;
@@ -64,10 +64,11 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
   border-radius: 0.65rem;
   background-color: #fff;
-  box-shadow: 0 2px 3px #193c6510;
+  box-shadow: 0 0.125rem 0.1875rem #193c6510;
 }
 
 .materias-search label {
@@ -92,10 +93,11 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   width: 100%;
   height: 2.25rem;
   padding: 0.5rem 0.75rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
   border-radius: 0.35rem;
   background-color: #fff;
-  box-shadow: 0 1px 3px #193c6520;
+  box-shadow: 0 0.0625rem 0.1875rem #193c6520;
   color: #183454;
   font: inherit;
   font-size: 0.8rem;
@@ -105,6 +107,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   flex-shrink: 0;
   height: 2.25rem;
   padding: 0.5rem 0.75rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
   border-radius: 0.35rem;
   background-color: #f7faff;
@@ -116,7 +119,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materias-search__clear:hover { background-color: #dfebfa; }
 .materias-search input:focus-visible,
 .materias-search select:focus-visible,
-.materias-search__clear:focus-visible { outline: 2px solid #064bad; outline-offset: 2px; }
+.materias-search__clear:focus-visible { outline: 0.125rem solid #064bad; outline-offset: 0.125rem; }
 .materias-search__help { display: block; margin-top: 0.45rem; color: #6b4e0b; line-height: 1.4; }
 
 .materia-card {
@@ -125,11 +128,12 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   flex-direction: column;
   min-width: 0;
   padding: 1.5rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
-  border-left: 5px solid #e5ac20;
+  border-left: 0.3125rem solid #e5ac20;
   border-radius: 0.65rem;
   background-color: #fff;
-  box-shadow: 0 2px 3px #193c6520;
+  box-shadow: 0 0.125rem 0.1875rem #193c6520;
   overflow-wrap: anywhere;
 }
 
@@ -164,7 +168,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 }
 
 .materia-card__barra-contenedor {
-  height: 7px;
+  height: 0.4375rem;
   border-radius: 1rem;
   background-color: #dfebfa;
   overflow: hidden;
@@ -182,6 +186,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   justify-content: space-between;
   gap: 1rem;
   padding: 0.7rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d7e4f5;
   border-radius: 0.3rem;
   background-color: #f8faff;
@@ -197,13 +202,14 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   color: #617794;
   font-size: 0.71rem;
 }
-.materia-card__evaluaciones svg { width: 16px; height: 16px; flex-shrink: 0; }
+.materia-card__evaluaciones svg { width: 1rem; height: 1rem; flex-shrink: 0; }
 
 .materia-button {
   width: 100%;
   min-height: 2.5rem;
   margin-top: auto;
   padding: 0.65rem 1rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid transparent;
   border-radius: 0.35rem;
   background-color: #064bad;
@@ -212,7 +218,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   cursor: pointer;
 }
 .materia-button:hover { background-color: #073b83; }
-.materia-button:focus-visible { outline: 3px solid #e5ac20; outline-offset: 3px; }
+.materia-button:focus-visible { outline: 0.1875rem solid #e5ac20; outline-offset: 0.1875rem; }
 
 .materia-icon-button {
   position: absolute;
@@ -223,6 +229,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   width: 2.75rem;
   height: 2.75rem;
   padding: 0.6rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid transparent;
   border-radius: 0.35rem;
   background: transparent;
@@ -231,10 +238,11 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 }
 .materia-icon-button svg { width: 100%; height: 100%; }
 .materia-icon-button:hover { background-color: #dfebfa; }
-.materia-icon-button:focus-visible { outline: 2px solid #064bad; outline-offset: 2px; }
+.materia-icon-button:focus-visible { outline: 0.125rem solid #064bad; outline-offset: 0.125rem; }
 
 .materias-page__message {
   padding: 3rem 1.5rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
   border-radius: 0.65rem;
   background-color: #fff;
@@ -247,7 +255,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   display: inline-block;
   width: 1.5rem;
   height: 1.5rem;
-  border: 3px solid #dfebfa;
+  border: 0.1875rem solid #dfebfa;
   border-top-color: #064bad;
   border-radius: 50%;
   animation: girar 0.8s linear infinite;
@@ -266,6 +274,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   min-width: 2.75rem;
   min-height: 2.75rem;
   padding: 0.55rem 0.8rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #b9cce3;
   border-radius: 0.4rem;
   background: #fff;
@@ -276,7 +285,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materias-pagination button:hover:not(:disabled),
 .materias-pagination button.is-active { background: #064bad; color: #fff; }
 .materias-pagination button:disabled { cursor: not-allowed; opacity: 0.5; }
-.materias-pagination button:focus-visible { outline: 3px solid #e5ac20; outline-offset: 2px; }
+.materias-pagination button:focus-visible { outline: 0.1875rem solid #e5ac20; outline-offset: 0.125rem; }
 .materias-pagination__status { flex-basis: 100%; color: #5d6f88; text-align: center; }
 @keyframes girar { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .materias-page__spinner { animation: none; } }
@@ -285,8 +294,9 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   width: min(32rem, calc(100% - 2rem));
   max-height: calc(100vh - 2rem);
   padding: clamp(1rem, 4vw, 2rem);
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
-  border-top: 5px solid #e5ac20;
+  border-top: 0.3125rem solid #e5ac20;
   border-radius: 0.65rem;
   color: #183454;
   overflow-wrap: anywhere;
@@ -295,16 +305,16 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materia-detalle h2 { margin: 0 0 1.5rem; padding-right: 2rem; }
 .materia-detalle > .materias-page__eyebrow { padding-right: 2rem; }
 .materia-detalle dl { margin: 0 0 1.5rem; }
-.materia-detalle dl div { padding: 0.75rem 0; border-bottom: 1px solid #e4ebf4; }
+.materia-detalle dl div { padding: 0.75rem 0; border-bottom: 0.0625rem solid #e4ebf4; }
 .materia-detalle dt { margin-bottom: 0.3rem; color: #617794; font-size: 0.8rem; }
 .materia-detalle dd { margin: 0; line-height: 1.5; }
 .materia-detalle__seccion { margin-bottom: 1.5rem; }
 .materia-detalle__seccion h3 { margin: 0 0 0.5rem; font-size: 1rem; }
 .materia-detalle__seccion p { margin: 0; color: #5d6f88; line-height: 1.6; white-space: pre-line; }
 
-@media (max-width: 1200px) { .materias-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 700px) { .materias-grid { grid-template-columns: minmax(0, 1fr); } }
-@media (max-width: 600px) {
+@media (max-width: 75rem) { .materias-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 43.75rem) { .materias-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 37.5rem) {
   .materias-search { flex-direction: column; }
   .materias-search__name,
   .materias-search__career { width: 100%; }

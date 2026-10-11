@@ -6,6 +6,7 @@
 .tree-panel {
   position: relative;
   overflow: hidden;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #dbe5ef;
   border-radius: 0.75rem;
   background: #ffffff;
@@ -20,6 +21,7 @@
   gap: 1rem;
   padding: 0.65rem 0.85rem 0.65rem 1.1rem;
   box-sizing: border-box;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border-bottom: 1px solid #e5ecf3;
   background: rgba(255, 255, 255, 0.96);
 }
@@ -51,6 +53,7 @@
 .tree-control,
 .tree-zoom-value {
   height: 2rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #dbe5ef;
   color: #244466;
   background: #ffffff;
@@ -86,8 +89,8 @@
   overflow: auto;
   overscroll-behavior: contain;
   background:
-    linear-gradient(rgba(231, 238, 245, 0.56) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(231, 238, 245, 0.56) 1px, transparent 1px),
+    linear-gradient(rgba(231, 238, 245, 0.56) 0.0625rem, transparent 0.0625rem),
+    linear-gradient(90deg, rgba(231, 238, 245, 0.56) 0.0625rem, transparent 0.0625rem),
     #f9fbfd;
   background-size: 2rem 2rem;
 }
@@ -133,6 +136,7 @@
   gap: 0.5rem;
   padding: 1.35rem 0.8rem 0.7rem;
   box-sizing: border-box;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d2dee9;
   border-top: 0.28rem solid #537696;
   border-radius: 0.65rem;
@@ -211,6 +215,7 @@
   right: 1rem;
   bottom: 1rem;
   padding: 0.45rem 0.7rem;
+  /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d8c477;
   border-radius: 0.35rem;
   background: #fffdf5;
