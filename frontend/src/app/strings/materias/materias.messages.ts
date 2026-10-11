@@ -1,7 +1,20 @@
 /**
  * Mensajes y etiquetas de la interfaz de materias
  */
+import { MATERIAS_TREE_MESSAGES } from '../materias-tree/materias-tree.messages';
+
 export const MESSAGES = {
+
+  SUBJECT_NAMES: {
+    ...MATERIAS_TREE_MESSAGES.SUBJECT_NAMES,
+    'MAT-123': 'Álgebra lineal',
+    'INF-101': 'Programación I',
+    'INF-202': 'Estructuras de Datos',
+    'INF-305': 'Bases de Datos',
+    'INF-410': 'Ingeniería de Software',
+    'INF-455': 'Taller de Interfaces Web',
+    'BDF-301': 'Bases de Datos',
+  },
 
   // Headers y títulos
   MATERIAS_PAGE_EYEBROW: 'Biblioteca académica',

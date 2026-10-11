@@ -8,7 +8,7 @@ import { LanguageService } from '../../../services/language.service';
 import { APP_CONFIG } from '../../../config/app-config';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
 import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
-import { contieneTexto, normalizarTexto, presentarNombreMateria } from '../../../utils/text.utils';
+import { contieneTexto, normalizarTexto, presentarNombreMateriaPorCodigo } from '../../../utils/text.utils';
 import { CalificacionMateriaPromedioMateriaResponse } from '../../../models/calificacion-materia.model';
 import { DecimalPipe } from '@angular/common';
 import { DEMO_MATERIAS } from '../../../data/demo-materias';
@@ -198,9 +198,15 @@ export class MateriasComponent implements OnInit {
 
   obtenerNombreVisible(materia: Materia): string {
     const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
-    return indiceDemo >= 0
-      ? this.MESSAGES.DEMO_SUBJECTS[indiceDemo].nombre
-      : presentarNombreMateria(materia.nombre);
+    if (indiceDemo >= 0) {
+      return this.MESSAGES.DEMO_SUBJECTS[indiceDemo].nombre;
+    }
+
+    return presentarNombreMateriaPorCodigo(
+      materia.codigo,
+      materia.nombre,
+      this.MESSAGES.SUBJECT_NAMES
+    );
   }
 
   obtenerCarreraVisible(materia: Materia): string {

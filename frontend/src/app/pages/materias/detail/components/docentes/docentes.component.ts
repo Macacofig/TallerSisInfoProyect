@@ -61,6 +61,18 @@ import {
 } from '../../../../../services/language.service';
 
 import {
+  MESSAGES
+} from '../../../../../strings/materias/materias.messages';
+
+import {
+  MESSAGES_EN
+} from '../../../../../strings/materias/materias-ingles.messages';
+
+import {
+  presentarNombreMateriaPorCodigo
+} from '../../../../../utils/text.utils';
+
+import {
   APP_CONFIG
 } from '../../../../../config/app-config';
 
@@ -127,6 +139,14 @@ export class DocentesComponent implements OnChanges {
     return this.languageService.getMessages(
       DOCENTES_MESSAGES,
       DOCENTES_MESSAGES_EN
+    );
+  }
+
+  nombreMateriaVisible(): string {
+    return presentarNombreMateriaPorCodigo(
+      this.materia.codigo,
+      this.materia.nombre,
+      this.languageService.getMessages(MESSAGES, MESSAGES_EN).SUBJECT_NAMES
     );
   }
 

@@ -1,8 +1,20 @@
 /**
  * English messages and interface labels for subjects.
  */
+import { MATERIAS_TREE_MESSAGES } from '../materias-tree/materias-tree-ingles.messages';
 
 export const MESSAGES_EN = {
+  SUBJECT_NAMES: {
+    ...MATERIAS_TREE_MESSAGES.SUBJECT_NAMES,
+    'MAT-123': 'Linear Algebra',
+    'INF-101': 'Programming I',
+    'INF-202': 'Data Structures',
+    'INF-305': 'Databases',
+    'INF-410': 'Software Engineering',
+    'INF-455': 'Web Interface Workshop',
+    'BDF-301': 'Databases',
+  },
+
   // Headers and titles
   MATERIAS_PAGE_EYEBROW: 'Academic library',
   MATERIAS_PAGE_TITLE: 'Subjects',

@@ -56,6 +56,23 @@ describe('HU-01: catálogo de materias', () => {
     expect(fixture.nativeElement.textContent).not.toContain('Cargando materias');
   });
 
+  it('preserves the original API name when a code has no translation', async () => {
+    const sinTraduccion: Materia = {
+      id: 50,
+      codigo: 'NEW-999',
+      nombre: 'Materia Nueva',
+      carrera: 'Ingeniería Civil',
+      semestre: 1
+    };
+    http.expectOne(endpoint).flush([sinTraduccion]);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Materia Nueva');
+    fixture.debugElement.injector.get(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Materia Nueva');
+  });
+
   it('muestra el estado vacío cuando la API devuelve una lista vacía', async () => {
     http.expectOne(endpoint).flush([]);
     await fixture.whenStable();

@@ -123,6 +123,23 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       .toHaveBeenCalledExactlyOnceWith(materia.id);
   });
 
+  it('translates the subject name shown in the teacher view by its code', () => {
+    component.materia = {
+      ...materia,
+      codigo: 'MAT-123',
+      nombre: 'Álgebra lineal'
+    };
+    expect(component.nombreMateriaVisible()).toBe('Álgebra lineal');
+
+    TestBed.inject(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    expect(component.nombreMateriaVisible()).toBe('Linear Algebra');
+
+    TestBed.inject(LanguageService).setLanguage('es');
+    fixture.detectChanges();
+    expect(component.nombreMateriaVisible()).toBe('Álgebra lineal');
+  });
+
   it('muestra el historial agregado por gestión usando las tres métricas docentes', () => {
     expect(calificacionesServiceMock.obtenerPromediosPorGestion)
       .toHaveBeenCalledWith(materia.id, '2026-I');

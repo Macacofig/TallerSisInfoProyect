@@ -42,3 +42,11 @@ export function presentarNombreMateria(nombre: string): string {
 
   return corregido.charAt(0).toLocaleUpperCase('es') + corregido.slice(1);
 }
+
+export function presentarNombreMateriaPorCodigo(
+  codigo: string,
+  nombre: string,
+  traducciones: Readonly<Record<string, string>>
+): string {
+  return traducciones[codigo] ?? presentarNombreMateria(nombre);
+}

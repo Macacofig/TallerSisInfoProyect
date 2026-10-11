@@ -6,6 +6,9 @@ import {
 import { LanguageService } from '../../services/language.service';
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
 import { HORARIOS_MESSAGES as HORARIOS_MESSAGES_EN } from '../../strings/horarios/horarios-ingles.messages';
+import { MESSAGES } from '../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../strings/materias/materias-ingles.messages';
+import { presentarNombreMateriaPorCodigo } from '../../utils/text.utils';
 
 @Component({
   selector: 'app-horarios',
@@ -42,8 +45,11 @@ export class HorariosComponent {
   }
 
   nombreMateriaVisible(materia: MateriaHorario): string {
-    return this.textos.SUBJECT_NAMES[materia.codigo as keyof typeof this.textos.SUBJECT_NAMES]
-      ?? materia.nombre;
+    return presentarNombreMateriaPorCodigo(
+      materia.codigo,
+      materia.nombre,
+      this.languageService.getMessages(MESSAGES, MESSAGES_EN).SUBJECT_NAMES
+    );
   }
 
   readonly materias: MateriaHorario[] = MATERIAS_HORARIOS;
