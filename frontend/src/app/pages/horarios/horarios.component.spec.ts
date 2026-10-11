@@ -100,6 +100,26 @@ describe('HorariosComponent', () => {
       .toBeGreaterThan(0);
   });
 
+  it('translates available-subject names in the add modal with the active language', () => {
+    const languageService = TestBed.inject(LanguageService);
+    component.abrirModalAgregar();
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.modal-materia strong')?.textContent?.trim()
+    ).toBe('Linear Algebra');
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.modal-materia strong')?.textContent?.trim()
+    ).toBe('Álgebra lineal');
+
+    component.cerrarModalAgregar();
+    fixture.detectChanges();
+  });
+
   it('should initialize pagination based on selected subjects', () => {
     expect(component.totalHorarios).toBe(2);
     expect(component.paginaActual).toBe(1);
@@ -226,5 +246,100 @@ describe('HorariosComponent', () => {
     const color = component.obtenerColorMateria('INF-202');
 
     expect(color).toBe('#2e7d5b');
+  });
+
+  it('should display a maximum of 4 subjects per page', () => {
+    expect(component.materiasPorPagina).toBe(4);
+    expect(component.materiasPaginadas.length).toBeLessThanOrEqual(4);
+  });
+
+  it('should calculate the number of subject pages', () => {
+    const materiasOriginales = component.materias.length;
+
+    component.materias.push(
+      {
+        codigo: 'TEST-001',
+        nombre: 'Materia de prueba 1',
+        seleccionada: false,
+        opciones: []
+      },
+      {
+        codigo: 'TEST-002',
+        nombre: 'Materia de prueba 2',
+        seleccionada: false,
+        opciones: []
+      }
+    );
+
+    expect(component.totalPaginasMaterias).toBe(
+      Math.ceil((materiasOriginales + 2) / 4)
+    );
+
+    component.materias.splice(materiasOriginales, 2);
+  });
+
+  it('should show the next page of subjects', () => {
+    const materiasOriginales = component.materias.length;
+
+    component.materias.push(
+      {
+        codigo: 'TEST-001',
+        nombre: 'Materia de prueba 1',
+        seleccionada: false,
+        opciones: []
+      },
+      {
+        codigo: 'TEST-002',
+        nombre: 'Materia de prueba 2',
+        seleccionada: false,
+        opciones: []
+      }
+    );
+
+    component.siguienteMaterias();
+
+    expect(component.paginaMaterias).toBe(2);
+    expect(component.materiasPaginadas.length).toBe(2);
+
+    component.materias.splice(materiasOriginales, 2);
+    component.paginaMaterias = 1;
+  });
+
+  it('should not move past the last page of subjects', () => {
+    component.paginaMaterias = component.totalPaginasMaterias;
+
+    component.siguienteMaterias();
+
+    expect(component.paginaMaterias).toBe(
+      component.totalPaginasMaterias
+    );
+  });
+
+  it('should not move before the first page of subjects', () => {
+    component.paginaMaterias = 1;
+
+    component.anteriorMaterias();
+
+    expect(component.paginaMaterias).toBe(1);
+  });
+
+  it('should open and close the add subject modal', () => {
+    component.abrirModalAgregar();
+
+    expect(component.modalAgregarAbierto).toBe(true);
+
+    component.cerrarModalAgregar();
+
+    expect(component.modalAgregarAbierto).toBe(false);
+  });
+
+  it('should open and close the download modal', () => {
+    component.abrirModalDescargar();
+
+    expect(component.modalDescargarAbierto).toBe(true);
+
+    component.cerrarModalDescargar();
+
+    expect(component.modalDescargarAbierto).toBe(false);
   });
 });
