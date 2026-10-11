@@ -6,6 +6,8 @@ import { Materia } from '../../../models/materia';
 import { APP_CONFIG } from '../../../config/app-config';
 import { DEMO_MATERIAS } from '../../../data/demo-materias';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
+import { LanguageService } from '../../../services/language.service';
 import { MateriasComponent } from './materias.component';
 
 describe('HU-04: visualizar información de una materia', () => {
@@ -31,6 +33,7 @@ describe('HU-04: visualizar información de una materia', () => {
       imports: [MateriasComponent],
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])]
     }).compileComponents();
+    TestBed.inject(LanguageService).setLanguage('es');
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
@@ -84,6 +87,34 @@ describe('HU-04: visualizar información de una materia', () => {
     expect(recomendaciones?.textContent).not.toContain('6.2');
     expect(dialogo.textContent).not.toContain('MAT-102');
     http.expectNone(() => true);
+  });
+
+  it('translates a subject by API code in the list and detail, then restores Spanish', () => {
+    const materiaApi: Materia = {
+      id: 123,
+      codigo: 'MAT-123',
+      nombre: 'Álgebra lineal',
+      carrera: 'Ingeniería Civil',
+      semestre: 1
+    };
+    responder([materiaApi]);
+    abrir();
+
+    expect(fixture.nativeElement.querySelector('.materia-card h2')?.textContent)
+      .toContain('Álgebra lineal');
+    expect(dialogo.querySelector('h2')?.textContent).toBe('Álgebra lineal');
+
+    fixture.debugElement.injector.get(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.materia-card h2')?.textContent)
+      .toContain('Linear Algebra');
+    expect(dialogo.querySelector('h2')?.textContent).toBe('Linear Algebra');
+
+    fixture.debugElement.injector.get(LanguageService).setLanguage('es');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.materia-card h2')?.textContent)
+      .toContain('Álgebra lineal');
+    expect(dialogo.querySelector('h2')?.textContent).toBe('Álgebra lineal');
   });
 
   it('Explorar materia navega con el id de la tarjeta seleccionada sin abrir el modal', () => {

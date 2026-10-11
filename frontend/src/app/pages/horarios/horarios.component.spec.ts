@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HorariosComponent } from './horarios.component';
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
+import { HORARIOS_MESSAGES as HORARIOS_MESSAGES_EN } from '../../strings/horarios/horarios-ingles.messages';
+import { LanguageService } from '../../services/language.service';
 
 describe('HorariosComponent', () => {
   let component: HorariosComponent;
@@ -12,6 +14,7 @@ describe('HorariosComponent', () => {
       imports: [HorariosComponent],
     }).compileComponents();
 
+    TestBed.inject(LanguageService).setLanguage('es');
     fixture = TestBed.createComponent(HorariosComponent);
     component = fixture.componentInstance;
 
@@ -48,7 +51,7 @@ describe('HorariosComponent', () => {
     expect(ingenieria?.opciones.length).toBe(1);
   });
 
-  it('should display the semester subjects title in English', () => {
+  it('should display the semester subjects title in Spanish', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.textContent).toContain(
@@ -63,6 +66,100 @@ describe('HorariosComponent', () => {
     expect(compiled.textContent).toContain('Estructuras de Datos');
     expect(compiled.textContent).toContain('Bases de Datos');
     expect(compiled.textContent).toContain('Ingeniería de Software');
+  });
+
+  it('switches schedule labels and weekdays in both directions', () => {
+    const languageService = TestBed.inject(LanguageService);
+    const materia = component.materias[0];
+    const horario = materia.opciones[0].horario;
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent)
+      .toContain(HORARIOS_MESSAGES_EN.SEMESTER_SUBJECTS);
+    expect(fixture.nativeElement.textContent).toContain('Programming I');
+    expect(fixture.nativeElement.textContent).toContain('Data Structures');
+    expect(fixture.nativeElement.textContent)
+      .toContain(HORARIOS_MESSAGES_EN.OPTION_LABEL);
+    expect(component.dias[0]).toBe('Monday');
+    expect(component.obtenerHorarioVisible(horario)).toContain('Monday');
+    expect(component.obtenerBloquesMateria(materia, 'Monday').length)
+      .toBeGreaterThan(0);
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent)
+      .toContain(HORARIOS_MESSAGES.SEMESTER_SUBJECTS);
+    expect(fixture.nativeElement.textContent).toContain('Programación I');
+    expect(fixture.nativeElement.textContent).toContain('Estructuras de Datos');
+    expect(component.dias[0]).toBe('Lunes');
+    expect(component.obtenerHorarioVisible(horario)).toContain('Lunes');
+    expect(component.obtenerBloquesMateria(materia, 'Lunes').length)
+      .toBeGreaterThan(0);
+  });
+
+  it('translates available-subject names in the add modal with the active language', () => {
+    const languageService = TestBed.inject(LanguageService);
+    component.abrirModalAgregar();
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.modal-materia strong')?.textContent?.trim()
+    ).toBe('Linear Algebra');
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.modal-materia strong')?.textContent?.trim()
+    ).toBe('Álgebra lineal');
+
+    component.cerrarModalAgregar();
+    fixture.detectChanges();
+  });
+
+  it('localizes schedule actions, modal content, and aria labels in both languages', () => {
+    const languageService = TestBed.inject(LanguageService);
+    const ingles = fixture.nativeElement as HTMLElement;
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(ingles.textContent).toContain('Planning');
+    expect(ingles.textContent).toContain('Add subject');
+    expect(ingles.textContent).toContain('Download schedule');
+    expect(ingles.querySelector('[aria-label="Previous page of subjects"]'))
+      .not.toBeNull();
+    expect(ingles.querySelector('[aria-label="Next page of subjects"]'))
+      .not.toBeNull();
+
+    fixture.nativeElement.querySelector('.header-actions .btn-agregar').click();
+    fixture.detectChanges();
+    expect(component.modalAgregarAbierto).toBe(true);
+    expect(ingles.textContent).toContain('Semester');
+    expect(ingles.textContent).toContain('Cancel');
+    expect(ingles.textContent).toContain('Add selected');
+    expect(ingles.querySelector('.modal-cerrar')?.getAttribute('aria-label'))
+      .toBe('Close dialog');
+
+    fixture.nativeElement.querySelector('.modal-footer .btn-cancelar').click();
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('.header-actions .btn-descargar').click();
+    fixture.detectChanges();
+    expect(ingles.textContent).toContain('Planning');
+    expect(ingles.textContent).toContain('Download schedule');
+    expect(ingles.textContent).toContain('Confirm');
+    expect(ingles.textContent).not.toContain('Planificación');
+    expect(ingles.textContent).not.toContain('Cancelar');
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+    expect(ingles.textContent).toContain('Planificación');
+    expect(ingles.textContent).toContain('Confirmar');
+    expect(ingles.querySelector('.modal-cerrar')?.getAttribute('aria-label'))
+      .toBe('Cerrar modal');
   });
 
   it('should initialize pagination based on selected subjects', () => {
@@ -193,7 +290,6 @@ describe('HorariosComponent', () => {
     expect(color).toBe('#2e7d5b');
   });
 
-  
   it('should display a maximum of 4 subjects per page', () => {
     expect(component.materiasPorPagina).toBe(4);
     expect(component.materiasPaginadas.length).toBeLessThanOrEqual(4);

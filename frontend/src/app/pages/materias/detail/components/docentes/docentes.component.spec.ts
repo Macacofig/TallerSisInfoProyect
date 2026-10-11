@@ -9,7 +9,9 @@ import { Docente } from '../../../../../models/docente.model';
 import { Materia } from '../../../../../models/materia';
 import { CalificacionesDocenteService } from '../../../../../services/calificaciones-docente.service';
 import { DocentesService } from '../../../../../services/docentes.service';
+import { LanguageService } from '../../../../../services/language.service';
 import { DOCENTES_MESSAGES } from '../../../../../strings/materias/docentes.messages';
+import { DOCENTES_MESSAGES_EN } from '../../../../../strings/materias/docentes-ingles.messages';
 import { DocentesComponent } from './docentes.component';
 
 describe('HU-06.1: promedios de docentes por materia', () => {
@@ -104,6 +106,7 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       ]
     }).compileComponents();
 
+    TestBed.inject(LanguageService).setLanguage('es');
     crearComponente();
   });
 
@@ -118,6 +121,23 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       .toHaveBeenCalledExactlyOnceWith(materia.id);
     expect(calificacionesServiceMock.obtenerGestionesPorMateria)
       .toHaveBeenCalledExactlyOnceWith(materia.id);
+  });
+
+  it('translates the subject name shown in the teacher view by its code', () => {
+    component.materia = {
+      ...materia,
+      codigo: 'MAT-123',
+      nombre: 'Álgebra lineal'
+    };
+    expect(component.nombreMateriaVisible()).toBe('Álgebra lineal');
+
+    TestBed.inject(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    expect(component.nombreMateriaVisible()).toBe('Linear Algebra');
+
+    TestBed.inject(LanguageService).setLanguage('es');
+    fixture.detectChanges();
+    expect(component.nombreMateriaVisible()).toBe('Álgebra lineal');
   });
 
   it('muestra el historial agregado por gestión usando las tres métricas docentes', () => {
@@ -254,7 +274,8 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     fixture.detectChanges();
 
     expect(component.error).toBe('');
-    expect(component.errorPromedios).toBe(DOCENTES_MESSAGES.AVERAGES_ERROR);
+    expect(component.errorPromedios).toBe('AVERAGES_ERROR');
+    expect(fixture.nativeElement.textContent).toContain(DOCENTES_MESSAGES.AVERAGES_ERROR);
     expect(obtenerTarjetas()).toHaveLength(2);
 
     calificacionesServiceMock.obtenerPromediosPorMateria.mockReturnValue(of([promedios[1]]));
@@ -330,6 +351,27 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     expect(respuesta.observed).toBe(false);
   });
 
+  it('updates the teacher title and an existing error in both languages', () => {
+    const languageService = TestBed.inject(LanguageService);
+    component.error = 'LOAD_ERROR';
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('h2')?.textContent)
+      .toContain(DOCENTES_MESSAGES_EN.TITLE);
+    expect(fixture.nativeElement.textContent)
+      .toContain(DOCENTES_MESSAGES_EN.LOAD_ERROR);
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('h2')?.textContent)
+      .toContain(DOCENTES_MESSAGES.TITLE);
+    expect(fixture.nativeElement.textContent)
+      .toContain(DOCENTES_MESSAGES.LOAD_ERROR);
+  });
+
   it('conserva docentes si falla la consulta del estado individual de evaluación', () => {
     calificacionesServiceMock.obtenerPorEstudiante.mockReturnValue(
       throwError(() => new Error('sin estado'))
@@ -338,7 +380,8 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     component.cargarDocentes();
     fixture.detectChanges();
 
-    expect(component.advertenciaEstado).toBe(DOCENTES_MESSAGES.STATUS_ERROR);
+    expect(component.advertenciaEstado).toBe('STATUS_ERROR');
+    expect(fixture.nativeElement.textContent).toContain(DOCENTES_MESSAGES.STATUS_ERROR);
     expect(obtenerTarjetas()).toHaveLength(2);
     expect(fixture.nativeElement.textContent).toContain(DOCENTES_MESSAGES.UNAVAILABLE_STATUS);
   });

@@ -1,4 +1,4 @@
-
+﻿
 :host {
   display: block;
 }
@@ -862,6 +862,8 @@
 
   .resultados__paginacion {
     justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .materia-calendario {

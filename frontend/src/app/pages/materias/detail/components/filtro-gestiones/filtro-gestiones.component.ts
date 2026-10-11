@@ -4,7 +4,8 @@
   Input,
   OnChanges,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  inject
 } from '@angular/core';
 
 import {
@@ -19,7 +20,9 @@ import {
   CalificacionesMateriaService
 } from '../../../../../services/calificaciones-materia.service';
 
+import { LanguageService } from '../../../../../services/language.service';
 import { MESSAGES } from '../../../../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../../../../strings/materias/materias-ingles.messages';
 import { formatearGestion } from '../../../../../utils/gestion.utils';
 
 export type ModoFiltroGestiones =
@@ -29,7 +32,12 @@ export type ModoFiltroGestiones =
 export interface FiltroGestionesResultado {
   promedios: CalificacionMateriaPromedioResponse;
   descripcion: string;
+  contexto:
+    | { tipo: 'gestion'; gestion: string }
+    | { tipo: 'rango'; desde: string; hasta: string };
 }
+
+type FiltroMensajeKey = keyof typeof MESSAGES;
 
 @Component({
   selector: 'app-filtro-gestiones',
@@ -42,7 +50,12 @@ export interface FiltroGestionesResultado {
 })
 export class FiltroGestionesComponent implements OnChanges {
 
-  readonly mensajes = MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get mensajes() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
+
   readonly formatearGestion = formatearGestion;
 
   @Input()
@@ -73,8 +86,7 @@ export class FiltroGestionesComponent implements OnChanges {
   filtroActivo =
     false;
 
-  error =
-    '';
+  error: FiltroMensajeKey | '' = '';
 
   constructor(
     private readonly calificacionesMateriaService:
@@ -173,8 +185,7 @@ export class FiltroGestionesComponent implements OnChanges {
       !this.gestionSeleccionada
     ) {
 
-      this.error =
-        MESSAGES.CALIFICATION_FILTER_MANAGEMENT_REQUIRED;
+      this.error = 'CALIFICATION_FILTER_MANAGEMENT_REQUIRED';
 
       return;
     }
@@ -204,7 +215,11 @@ export class FiltroGestionesComponent implements OnChanges {
             promedios,
 
             descripcion:
-              `${MESSAGES.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${formatearGestion(this.gestionSeleccionada)}`
+              `${this.mensajes.CALIFICATION_FILTER_MANAGEMENT_CONTEXT} ${formatearGestion(this.gestionSeleccionada)}`,
+            contexto: {
+              tipo: 'gestion',
+              gestion: this.gestionSeleccionada
+            }
           });
         },
 
@@ -215,8 +230,8 @@ export class FiltroGestionesComponent implements OnChanges {
 
           this.error =
             error.status === 404
-              ? MESSAGES.CALIFICATION_FILTER_MANAGEMENT_EMPTY
-              : MESSAGES.CALIFICATION_FILTER_MANAGEMENT_LOAD_ERROR;
+              ? 'CALIFICATION_FILTER_MANAGEMENT_EMPTY'
+              : 'CALIFICATION_FILTER_MANAGEMENT_LOAD_ERROR';
         }
 
       });
@@ -229,8 +244,7 @@ export class FiltroGestionesComponent implements OnChanges {
       !this.gestionHasta
     ) {
 
-      this.error =
-        MESSAGES.CALIFICATION_FILTER_RANGE_REQUIRED;
+      this.error = 'CALIFICATION_FILTER_RANGE_REQUIRED';
 
       return;
     }
@@ -244,8 +258,7 @@ export class FiltroGestionesComponent implements OnChanges {
       )
     ) {
 
-      this.error =
-        MESSAGES.CALIFICATION_FILTER_RANGE_INVALID;
+      this.error = 'CALIFICATION_FILTER_RANGE_INVALID';
 
       return;
     }
@@ -276,7 +289,12 @@ export class FiltroGestionesComponent implements OnChanges {
             promedios,
 
             descripcion:
-              `${MESSAGES.CALIFICATION_FILTER_RANGE_CONTEXT} ${formatearGestion(this.gestionDesde)} ${MESSAGES.CALIFICATION_FILTER_RANGE_SEPARATOR} ${formatearGestion(this.gestionHasta)}`
+              `${this.mensajes.CALIFICATION_FILTER_RANGE_CONTEXT} ${formatearGestion(this.gestionDesde)} ${this.mensajes.CALIFICATION_FILTER_RANGE_SEPARATOR} ${formatearGestion(this.gestionHasta)}`,
+            contexto: {
+              tipo: 'rango',
+              desde: this.gestionDesde,
+              hasta: this.gestionHasta
+            }
           });
         },
 
@@ -287,8 +305,8 @@ export class FiltroGestionesComponent implements OnChanges {
 
           this.error =
             error.status === 404
-              ? MESSAGES.CALIFICATION_FILTER_RANGE_EMPTY
-              : MESSAGES.CALIFICATION_FILTER_RANGE_LOAD_ERROR;
+              ? 'CALIFICATION_FILTER_RANGE_EMPTY'
+              : 'CALIFICATION_FILTER_RANGE_LOAD_ERROR';
         }
 
       });

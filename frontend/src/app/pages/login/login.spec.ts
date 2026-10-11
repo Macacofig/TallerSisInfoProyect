@@ -6,9 +6,11 @@ import { Subject, of, throwError } from 'rxjs';
 
 import { Login } from './login';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 import { ErrorAuth } from '../../models/registrar';
 import { LoginRequest } from '../../models/login';
 import { LOGIN_MESSAGES as M } from '../../strings/login/login.messages';
+import { LOGIN_MESSAGES_EN as M_EN } from '../../strings/login/login-ingles.messages';
 
 describe('Pantalla de login', () => {
 
@@ -98,6 +100,7 @@ describe('Pantalla de login', () => {
       ]
     }).compileComponents();
 
+    TestBed.inject(LanguageService).setLanguage('es');
     fixture = TestBed.createComponent(Login);
     componente = fixture.componentInstance;
     servicio = TestBed.inject(AuthService);
@@ -109,6 +112,22 @@ describe('Pantalla de login', () => {
 
 
   describe('renderizado', () => {
+
+    it('shows and switches the language selector in both directions', () => {
+      const selector = raiz.querySelector<HTMLButtonElement>('.login__language-toggle');
+      expect(selector?.textContent?.trim()).toBe('EN');
+      expect(selector?.getAttribute('aria-label')).toBe(M.TOGGLE_LANGUAGE_LABEL);
+
+      selector?.click();
+      fixture.detectChanges();
+      expect(selector?.textContent?.trim()).toBe('ES');
+      expect(raiz.textContent).toContain(M_EN.BRAND_SUBTITLE);
+
+      selector?.click();
+      fixture.detectChanges();
+      expect(selector?.textContent?.trim()).toBe('EN');
+      expect(raiz.textContent).toContain(M.BRAND_SUBTITLE);
+    });
 
     it(
       'muestra los campos de correo y contraseña',
@@ -552,4 +571,3 @@ describe('Pantalla de login', () => {
   });
 
 });
-

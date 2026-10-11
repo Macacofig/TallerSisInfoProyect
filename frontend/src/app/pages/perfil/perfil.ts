@@ -5,7 +5,11 @@ import {
 } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 import { PERFIL_MESSAGES } from '../../strings/perfil/perfil.messages';
+import { PERFIL_MESSAGES_EN } from '../../strings/perfil/perfil-ingles.messages';
+
+type PerfilMessageKey = keyof typeof PERFIL_MESSAGES;
 
 @Component({
   selector: 'app-perfil',
@@ -15,11 +19,15 @@ import { PERFIL_MESSAGES } from '../../strings/perfil/perfil.messages';
 })
 export class Perfil {
 
-  readonly MESSAGES = PERFIL_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get MESSAGES() {
+    return this.languageService.getMessages(PERFIL_MESSAGES, PERFIL_MESSAGES_EN);
+  }
 
   readonly modalVisible = signal(false);
   readonly modalExito = signal(false);
-  readonly modalMensaje = signal('');
+  readonly modalMensaje = signal<PerfilMessageKey | ''>('');
 
   private readonly authService = inject(AuthService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
@@ -54,17 +62,17 @@ export class Perfil {
     };
 
     if (!datos.nombre) {
-      this.mostrarError(this.MESSAGES.ERROR_NAME_REQUIRED);
+      this.mostrarError('ERROR_NAME_REQUIRED');
       return;
     }
 
     if (!/^[67]\d{7}$/.test(datos.telefono)) {
-      this.mostrarError(this.MESSAGES.ERROR_PHONE_INVALID);
+      this.mostrarError('ERROR_PHONE_INVALID');
       return;
     }
 
     if (!datos.carrera) {
-      this.mostrarError(this.MESSAGES.ERROR_CAREER_REQUIRED);
+      this.mostrarError('ERROR_CAREER_REQUIRED');
       return;
     }
 
@@ -77,7 +85,7 @@ export class Perfil {
           this.modalExito.set(true);
 
           this.modalMensaje.set(
-            this.MESSAGES.SUCCESS_MESSAGE
+            'SUCCESS_MESSAGE'
           );
 
           this.modalVisible.set(true);
@@ -88,11 +96,11 @@ export class Perfil {
 
           if (error?.codigo === 'SIN_CONEXION') {
             this.modalMensaje.set(
-              this.MESSAGES.ERROR_CONNECTION
+              'ERROR_CONNECTION'
             );
           } else {
             this.modalMensaje.set(
-              this.MESSAGES.ERROR_SAVE
+              'ERROR_SAVE'
             );
           }
 
@@ -101,7 +109,7 @@ export class Perfil {
       });
   }
 
-  private mostrarError(mensaje: string): void {
+  private mostrarError(mensaje: PerfilMessageKey): void {
     this.modalExito.set(false);
     this.modalMensaje.set(mensaje);
     this.modalVisible.set(true);

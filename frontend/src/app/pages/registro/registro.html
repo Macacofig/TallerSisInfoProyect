@@ -1,4 +1,12 @@
 <div class="registro">
+  <button
+    type="button"
+    class="registro__language-toggle"
+    (click)="cambiarIdioma()"
+    [attr.aria-label]="MESSAGES.TOGGLE_LANGUAGE_LABEL"
+  >
+    {{ idiomaBoton }}
+  </button>
 
   <!-- ===== Panel izquierdo: marca ===== -->
   <aside class="registro__marca">
@@ -190,8 +198,8 @@
                   (click)="alternarContrasena()"
                   [attr.aria-label]="
                     mostrarContrasena()
-                      ? 'Ocultar contraseña'
-                      : 'Mostrar contraseña'
+                      ? MESSAGES.HIDE_PASSWORD
+                      : MESSAGES.SHOW_PASSWORD
                   "
                 >
                   @if (!mostrarContrasena()) {
@@ -244,7 +252,7 @@
             class="registro__error-general"
             role="alert"
           >
-            {{ mensaje }}
+            {{ MESSAGES[mensaje] }}
           </p>
 
         }

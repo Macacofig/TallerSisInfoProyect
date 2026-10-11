@@ -1,7 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router} from '@angular/router';
-import { NAVBAR_MESSAGES } from '../../app/strings/layout/navbar.messages';
+import { Router } from '@angular/router';
 import { AuthService } from '../../app/services/auth.service';
+import { LanguageService } from '../../app/services/language.service';
+import { NAVBAR_MESSAGES } from '../../app/strings/layout/navbar.messages';
+import { NAVBAR_MESSAGES_EN } from '../../app/strings/layout/navbar-ingles.messages';
 
 @Component({
   selector: 'app-navbar',
@@ -10,19 +12,32 @@ import { AuthService } from '../../app/services/auth.service';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  readonly NAVBAR_MESSAGES = NAVBAR_MESSAGES;
-
   private readonly authService = inject(AuthService);
-
+  private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
 
-  readonly usuario = this.authService.obtenerUsuarioSignal();
+  get NAVBAR_MESSAGES() {
+    return this.languageService.getMessages(NAVBAR_MESSAGES, NAVBAR_MESSAGES_EN);
+  }
 
+  get idiomaActual(): 'es' | 'en' {
+    return this.languageService.currentLanguage();
+  }
+
+  get idiomaBoton(): string {
+    return this.idiomaActual === 'es' ? 'EN' : 'ES';
+  }
+
+  readonly usuario = this.authService.obtenerUsuarioSignal();
   readonly menuUsuarioAbierto = signal(false);
 
   alternarMenuUsuario(): void {
     this.menuUsuarioAbierto.update(abierto => !abierto);
-  } 
+  }
+
+  cambiarIdioma(): void {
+    this.languageService.toggleLanguage();
+  }
 
   cerrarSesion(): void {
     this.menuUsuarioAbierto.set(false);

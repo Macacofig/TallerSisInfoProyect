@@ -4,11 +4,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Materia } from '../../../models/materia';
 import { APP_CONFIG } from '../../../config/app-config';
 import { DEMO_MATERIAS } from '../../../data/demo-materias';
+import { LanguageService } from '../../../services/language.service';
+import { MESSAGES } from '../../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
 import { MateriasComponent } from './materias.component';
 
 describe('HU-01: catálogo de materias', () => {
   let fixture: ComponentFixture<MateriasComponent>;
   let http: HttpTestingController;
+  let languageService: LanguageService | undefined;
   const endpoint = 'https://tallersisinfoproyect.onrender.com/api/materias';
   const carrerasEndpoint = `${endpoint}/carreras`;
   const promediosEndpoint = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA_PROMEDIOS}`;
@@ -25,6 +29,8 @@ describe('HU-01: catálogo de materias', () => {
       imports: [MateriasComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
+    languageService = TestBed.inject(LanguageService);
+    languageService.setLanguage('es');
     fixture = TestBed.createComponent(MateriasComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
@@ -33,6 +39,7 @@ describe('HU-01: catálogo de materias', () => {
   });
 
   afterEach(() => {
+    languageService?.setLanguage('es');
     config.DEMO_MODE = originalDemoMode;
     http.verify();
   });
@@ -50,6 +57,23 @@ describe('HU-01: catálogo de materias', () => {
       expect(tarjetas[i].textContent).toContain(materias[i].carrera);
     }
     expect(fixture.nativeElement.textContent).not.toContain('Cargando materias');
+  });
+
+  it('preserves the original API name when a code has no translation', async () => {
+    const sinTraduccion: Materia = {
+      id: 50,
+      codigo: 'NEW-999',
+      nombre: 'Materia Nueva',
+      carrera: 'Ingeniería Civil',
+      semestre: 1
+    };
+    http.expectOne(endpoint).flush([sinTraduccion]);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Materia Nueva');
+    fixture.debugElement.injector.get(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Materia Nueva');
   });
 
   it('muestra el estado vacío cuando la API devuelve una lista vacía', async () => {
@@ -105,6 +129,42 @@ describe('HU-01: catálogo de materias', () => {
     expect(tarjeta.textContent).toContain('Evaluaciones no disponibles');
     expect(tarjeta.textContent).not.toContain('/10');
     expect(tarjeta.textContent).not.toContain('127');
+  });
+
+  it('localizes fallback catalog data as the language changes in both directions', async () => {
+    config.DEMO_MODE = true;
+    http.expectOne(endpoint).flush([]);
+    await fixture.whenStable();
+
+    const dialogo: HTMLDialogElement = fixture.nativeElement.querySelector('dialog');
+    dialogo.showModal = vi.fn();
+    dialogo.close = vi.fn();
+
+    expect(fixture.nativeElement.textContent).toContain('Programación I');
+    expect(fixture.nativeElement.textContent).toContain('Ingeniería de Sistemas');
+
+    fixture.nativeElement.querySelector('.materia-card__informacion').click();
+    fixture.detectChanges();
+    expect(dialogo.textContent).toContain(
+      MESSAGES.DEMO_SUBJECTS[0].conocimientosPreviosRecomendados
+    );
+
+    fixture.debugElement.injector.get(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Programming I');
+    expect(fixture.nativeElement.textContent).toContain('Systems Engineering');
+    expect(dialogo.textContent).toContain(
+      MESSAGES_EN.DEMO_SUBJECTS[0].conocimientosPreviosRecomendados
+    );
+
+    fixture.debugElement.injector.get(LanguageService).setLanguage('es');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Programación I');
+    expect(dialogo.textContent).toContain(
+      MESSAGES.DEMO_SUBJECTS[0].conocimientosPreviosRecomendados
+    );
   });
 
   it('cancela la consulta pendiente al abandonar el catálogo', () => {

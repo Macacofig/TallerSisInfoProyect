@@ -83,12 +83,12 @@
           [ngClass]="'materia-node--' + node.area.toLowerCase()"
           [style.left.px]="node.x"
           [style.top.px]="node.y"
-          [attr.aria-label]="node.sigla + ': ' + node.nombre"
-          [title]="node.sigla + ' · ' + node.nombre"
+          [attr.aria-label]="node.sigla + ': ' + nombreVisible(node.sigla, node.nombre)"
+          [title]="node.sigla + ' · ' + nombreVisible(node.sigla, node.nombre)"
           (click)="selectMateria(node.sigla); $event.stopPropagation()"
         >
           <span class="materia-node__sigla">{{ node.sigla }}</span>
-          <span class="materia-node__name">{{ node.nombre }}</span>
+          <span class="materia-node__name">{{ nombreVisible(node.sigla, node.nombre) }}</span>
         </button>
       </div>
     </div>

@@ -22,6 +22,7 @@ export const REGISTRO_MESSAGES = {
 
   REGISTER_TAB: 'Sign up',
   LOGIN_TAB: 'Sign in',
+  TOGGLE_LANGUAGE_LABEL: 'Change language',
 
   // Selector de pestañas
   TABS_ARIA_LABEL: 'Choose between signing in or creating an account',
@@ -42,6 +43,8 @@ export const REGISTRO_MESSAGES = {
   FIELD_PHONE_PLACEHOLDER: 'E.g. 71234567',
   FIELD_PASSWORD_LABEL: 'Password',
   FIELD_PASSWORD_PLACEHOLDER: 'Minimum 8 characters',
+  SHOW_PASSWORD: 'Show password',
+  HIDE_PASSWORD: 'Hide password',
 
   // Botón y nota
   SUBMIT_BUTTON: 'Create my account',
@@ -50,12 +53,17 @@ export const REGISTRO_MESSAGES = {
   // Errores de validación (debajo de cada campo)
   ERROR_NAME_REQUIRED: 'Enter your full name.',
   ERROR_NAME_MIN_LENGTH: 'The name must contain at least 3 characters.',
+  ERROR_NAME_INVALID: 'The name is not valid.',
   ERROR_CAREER_REQUIRED: 'Enter your program.',
+  ERROR_CAREER_INVALID: 'The program is not valid.',
   ERROR_EMAIL_REQUIRED: 'Enter your email.',
   ERROR_EMAIL_INVALID: 'Enter a valid email, for example name@ucb.edu.bo.',
   ERROR_EMAIL_UCB: 'The email must belong to the @ucb.edu.bo domain.',
+  ERROR_PHONE_REQUIRED: 'Phone number is required.',
   ERROR_PHONE_INVALID: 'The phone number must start with 6 or 7 and contain 8 digits.',
+  ERROR_PHONE_INVALID_FORMAT: 'The phone number is not valid.',
   ERROR_PASSWORD_REQUIRED: 'Enter a password.',
+  ERROR_PASSWORD_INVALID: 'The password is not valid.',
   ERROR_PASSWORD_MIN_LENGTH: 'The password must contain at least 8 characters.',
   ERROR_PASSWORD_UPPERCASE: 'The password must contain at least one uppercase letter.',
   ERROR_PASSWORD_NUMBER: 'The password must contain at least one number.',

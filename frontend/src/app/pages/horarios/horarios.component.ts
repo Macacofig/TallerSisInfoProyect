@@ -1,16 +1,18 @@
-import { Component } from '@angular/core';
-
+import { Component, inject } from '@angular/core';
 import {
   MATERIAS_HORARIOS,
   MateriaHorario
 } from '../../data/horarios.data';
-
 import {
   MATERIAS_DISPONIBLES,
   MateriaDisponible
 } from '../../data/materias-disponibles.data';
-
+import { LanguageService } from '../../services/language.service';
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
+import { HORARIOS_MESSAGES as HORARIOS_MESSAGES_EN } from '../../strings/horarios/horarios-ingles.messages';
+import { MESSAGES } from '../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../strings/materias/materias-ingles.messages';
+import { presentarNombreMateriaPorCodigo } from '../../utils/text.utils';
 
 @Component({
   selector: 'app-horarios',
@@ -21,7 +23,38 @@ import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
 })
 export class HorariosComponent {
 
-  readonly textos = HORARIOS_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get textos() {
+    return this.languageService.getMessages(HORARIOS_MESSAGES, HORARIOS_MESSAGES_EN);
+  }
+
+  get dias(): readonly string[] {
+    return this.textos.DAYS;
+  }
+
+  obtenerEtiquetaOpcion(etiqueta: string): string {
+    return etiqueta.replace(
+      HORARIOS_MESSAGES.OPTION_LABEL,
+      this.textos.OPTION_LABEL
+    );
+  }
+
+  obtenerHorarioVisible(horario: string): string {
+    return HORARIOS_MESSAGES.DAYS.reduce(
+      (horarioTraducido, dia, indice) =>
+        horarioTraducido.replaceAll(dia, this.dias[indice]),
+      horario
+    );
+  }
+
+  nombreMateriaVisible(materia: MateriaHorario): string {
+    return presentarNombreMateriaPorCodigo(
+      materia.codigo,
+      materia.nombre,
+      this.languageService.getMessages(MESSAGES, MESSAGES_EN).SUBJECT_NAMES
+    );
+  }
 
   readonly materias: MateriaHorario[] = MATERIAS_HORARIOS;
 
@@ -32,12 +65,9 @@ export class HorariosComponent {
   modalDescargarAbierto = false;
 
   semestreSeleccionado = 1;
-
   materiasParaAgregar: string[] = [];
 
   materiasSeleccionadas: MateriaHorario[] = [];
-
-  readonly dias = HORARIOS_MESSAGES.DAYS;
 
   horas = [
     '07:15',
@@ -210,8 +240,12 @@ export class HorariosComponent {
       }
 
       const diaBloque = coincidencia[1].trim().toLowerCase();
+      const indiceDia = this.dias.indexOf(dia);
+      const diaCanonico = this.languageService.isEnglish()
+        ? HORARIOS_MESSAGES.DAYS[indiceDia]?.toLowerCase()
+        : dia.toLowerCase();
 
-      if (diaBloque !== dia.toLowerCase()) {
+      if (diaBloque !== diaCanonico) {
         continue;
       }
 
@@ -393,7 +427,6 @@ export class HorariosComponent {
     this.cerrarModalAgregar();
   }
 
-  
   // Abrir la vista previa del horario
   abrirModalDescargar(): void {
     this.modalDescargarAbierto = true;

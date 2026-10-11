@@ -1,6 +1,7 @@
 ﻿import {
   Component,
-  Input
+  Input,
+  inject
 } from '@angular/core';
 
 import {
@@ -8,8 +9,16 @@ import {
 } from '../../../../../models/calificacion-materia.model';
 
 import {
+  LanguageService
+} from '../../../../../services/language.service';
+
+import {
   MESSAGES
 } from '../../../../../strings/calificacion-graficos/calificacion-graficos.messages';
+
+import {
+  MESSAGES_EN
+} from '../../../../../strings/calificacion-graficos/calificacion-graficos-ingles.messages';
 
 @Component({
   selector: 'app-calificacion-graficos',
@@ -20,14 +29,23 @@ import {
 })
 export class CalificacionGraficosComponent {
 
-  readonly mensajes = MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get mensajes() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
 
   @Input({ required: true })
   promedios!: CalificacionMateriaPromedioResponse;
 
   @Input()
-  contexto: string =
-    MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+  @Input()
+  contexto: string | null = null;
+
+  get contextoVisible(): string {
+    return this.contexto ??
+      this.mensajes.CALIFICATION_SUMMARY_GENERAL_CONTEXT;
+  }
 
   obtenerPromedioFormateado(
     promedio: number

@@ -2,12 +2,19 @@
   Component,
   EventEmitter,
   Input,
-  Output
+  Output,
+  inject
 } from '@angular/core';
 
 import {
   MESSAGES
 } from '../../../../../strings/materias/materias.messages';
+import {
+  MESSAGES_EN
+} from '../../../../../strings/materias/materias-ingles.messages';
+import {
+  LanguageService
+} from '../../../../../services/language.service';
 
 export type SeccionDetalleMateria =
   | 'resumen'
@@ -24,6 +31,8 @@ export type SeccionDetalleMateria =
 })
 export class SeccionesDetalleComponent {
 
+  private readonly languageService = inject(LanguageService);
+
   @Input({ required: true })
   seccionActiva!: SeccionDetalleMateria;
 
@@ -31,30 +40,34 @@ export class SeccionesDetalleComponent {
   readonly seccionSeleccionada =
     new EventEmitter<SeccionDetalleMateria>();
 
-  readonly mensajes = MESSAGES;
+  get mensajes() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
 
-  readonly secciones = [
-    {
-      id: 'resumen',
-      etiqueta: MESSAGES.MATERIA_DETAIL_SECTION_SUMMARY
-    },
-    {
-      id: 'docentes',
-      etiqueta: MESSAGES.MATERIA_DETAIL_SECTION_TEACHERS
-    },
-    {
-      id: 'material',
-      etiqueta: MESSAGES.MATERIA_DETAIL_SECTION_MATERIAL
-    },
-    {
-      id: 'evaluaciones',
-      etiqueta: MESSAGES.MATERIA_DETAIL_SECTION_EVALUATIONS
-    },
-    {
-      id: 'ayudantes',
-      etiqueta: MESSAGES.MATERIA_DETAIL_SECTION_ASSISTANTS
-    }
-  ] as const;
+  get secciones() {
+    return [
+      {
+        id: 'resumen',
+        etiqueta: this.mensajes.MATERIA_DETAIL_SECTION_SUMMARY
+      },
+      {
+        id: 'docentes',
+        etiqueta: this.mensajes.MATERIA_DETAIL_SECTION_TEACHERS
+      },
+      {
+        id: 'material',
+        etiqueta: this.mensajes.MATERIA_DETAIL_SECTION_MATERIAL
+      },
+      {
+        id: 'evaluaciones',
+        etiqueta: this.mensajes.MATERIA_DETAIL_SECTION_EVALUATIONS
+      },
+      {
+        id: 'ayudantes',
+        etiqueta: this.mensajes.MATERIA_DETAIL_SECTION_ASSISTANTS
+      }
+    ] as const;
+  }
 
   seleccionar(
     seccion: SeccionDetalleMateria

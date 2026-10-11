@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { presentarNombreMateria } from '../utils/text.utils';
+import { presentarNombreMateriaPorCodigo, presentarNombreMateria } from '../utils/text.utils';
 
 @Pipe({
   name: 'nombreMateria',
@@ -7,7 +7,13 @@ import { presentarNombreMateria } from '../utils/text.utils';
   pure: true,
 })
 export class NombreMateriaPipe implements PipeTransform {
-  transform(nombre: string): string {
-    return presentarNombreMateria(nombre);
+  transform(
+    nombre: string,
+    codigo?: string,
+    traducciones?: Readonly<Record<string, string>>
+  ): string {
+    return codigo && traducciones
+      ? presentarNombreMateriaPorCodigo(codigo, nombre, traducciones)
+      : presentarNombreMateria(nombre);
   }
 }

@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { of, Subscription, switchMap, timeout, timer } from 'rxjs';
 import { Materia } from '../../../models/materia';
 import { ApiService } from '../../../services/api';
+import { LanguageService } from '../../../services/language.service';
 import { APP_CONFIG } from '../../../config/app-config';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
-import { NombreMateriaPipe } from '../../../pipes/nombre-materia.pipe';
-import { contieneTexto, normalizarTexto } from '../../../utils/text.utils';
+import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
+import { contieneTexto, normalizarTexto, presentarNombreMateriaPorCodigo } from '../../../utils/text.utils';
 import { CalificacionMateriaPromedioMateriaResponse } from '../../../models/calificacion-materia.model';
 import { DecimalPipe } from '@angular/common';
 import { DEMO_MATERIAS } from '../../../data/demo-materias';
@@ -15,14 +16,19 @@ import { DEMO_MATERIAS } from '../../../data/demo-materias';
 @Component({
   selector: 'app-materias',
   standalone: true,
-  imports: [NombreMateriaPipe , DecimalPipe],
+  imports: [DecimalPipe],
   templateUrl: './materias.component.html',
   styleUrl: './materias.component.css'
 })
 export class MateriasComponent implements OnInit {
   @ViewChild('detalle') private detalle!: ElementRef<HTMLDialogElement>;
 
-  readonly MESSAGES = MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get MESSAGES() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
+
   readonly APP_CONFIG = APP_CONFIG;
 
   private readonly destroyRef = inject(DestroyRef);
@@ -127,6 +133,16 @@ export class MateriasComponent implements OnInit {
 
     const nombre = this.busqueda().trim();
     const carrera = this.carreraSeleccionada();
+    const coincideNombreTraducido = Object.values(MESSAGES_EN.SUBJECT_NAMES).some(
+      nombreTraducido => contieneTexto(nombreTraducido, nombre)
+    );
+    const coincideNombreOriginal = Object.values(MESSAGES.SUBJECT_NAMES).some(
+      nombreOriginal => contieneTexto(nombreOriginal, nombre)
+    );
+    const buscarCatalogoCompleto = this.languageService.isEnglish() ||
+      nombre.includes('-') ||
+      (coincideNombreTraducido && !coincideNombreOriginal);
+    const nombreParaApi = buscarCatalogoCompleto ? '' : nombre;
 
     this.estado.set(APP_CONFIG.COMPONENT_STATES.LOADING);
     this.mostrarDatosDemo.set(false);
@@ -139,7 +155,7 @@ export class MateriasComponent implements OnInit {
     )
       .pipe(
         switchMap(() =>
-          this.apiService.obtenerMaterias(nombre, carrera)
+          this.apiService.obtenerMaterias(nombreParaApi, carrera)
             .pipe(timeout(APP_CONFIG.TIMEOUTS.API_REQUEST))
         ),
         takeUntilDestroyed(this.destroyRef)
@@ -182,6 +198,50 @@ export class MateriasComponent implements OnInit {
           this.promediosMaterias.set([]);
         }
       });
+  }
+
+  obtenerPredominioVisible(predominio: string): string {
+    return predominio.toLocaleLowerCase().includes('pract')
+      ? this.MESSAGES.CALIFICATION_PRACTICAL_LABEL
+      : this.MESSAGES.CALIFICATION_THEORETICAL_LABEL;
+  }
+
+  obtenerNombreVisible(materia: Materia): string {
+    const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
+    if (indiceDemo >= 0) {
+      return this.MESSAGES.DEMO_SUBJECTS[indiceDemo].nombre;
+    }
+
+    return presentarNombreMateriaPorCodigo(
+      materia.codigo,
+      materia.nombre,
+      this.MESSAGES.SUBJECT_NAMES
+    );
+  }
+
+  obtenerCarreraVisible(materia: Materia): string {
+    const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
+    return indiceDemo >= 0
+      ? this.MESSAGES.DEMO_SUBJECTS[indiceDemo].carrera
+      : materia.carrera;
+  }
+
+  obtenerConocimientosRecomendadosVisible(materia: Materia): string {
+    const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
+    return indiceDemo >= 0
+      ? this.MESSAGES.DEMO_SUBJECTS[indiceDemo].conocimientosPreviosRecomendados
+      : materia.conocimientosPreviosRecomendados?.trim() ||
+          this.MESSAGES.MODAL_INFORMATION_UNAVAILABLE;
+  }
+
+  private obtenerIndiceMateriaDemo(materia: Materia): number {
+    if (!this.mostrarDatosDemo()) {
+      return -1;
+    }
+
+    return DEMO_MATERIAS.findIndex(
+      materiaDemo => materiaDemo.codigo === materia.codigo
+    );
   }
 
   getPromedioMateria(
@@ -242,7 +302,10 @@ export class MateriasComponent implements OnInit {
     const semestre = this.semestreSeleccionado();
 
     return materias.filter(materia =>
-      (!nombre || contieneTexto(materia.nombre, nombre)) &&
+      (!nombre ||
+        contieneTexto(materia.nombre, nombre) ||
+        contieneTexto(this.obtenerNombreVisible(materia), nombre) ||
+        contieneTexto(materia.codigo, nombre)) &&
       (!carrera ||
         normalizarTexto(materia.carrera) === normalizarTexto(carrera)) &&
       (!semestre || materia.semestre === Number(semestre))

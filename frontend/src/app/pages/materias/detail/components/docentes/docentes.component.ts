@@ -57,12 +57,34 @@ import {
 } from '../../../../../services/calificaciones-docente.service';
 
 import {
+  LanguageService
+} from '../../../../../services/language.service';
+
+import {
+  MESSAGES
+} from '../../../../../strings/materias/materias.messages';
+
+import {
+  MESSAGES_EN
+} from '../../../../../strings/materias/materias-ingles.messages';
+
+import {
+  presentarNombreMateriaPorCodigo
+} from '../../../../../utils/text.utils';
+
+import {
   APP_CONFIG
 } from '../../../../../config/app-config';
 
 import {
   DOCENTES_MESSAGES
 } from '../../../../../strings/materias/docentes.messages';
+
+import {
+  DOCENTES_MESSAGES_EN
+} from '../../../../../strings/materias/docentes-ingles.messages';
+
+type DocenteMessageKey = keyof typeof DOCENTES_MESSAGES;
 
 interface DocenteConCalificacion {
   docente: Docente;
@@ -91,6 +113,10 @@ interface HistorialDocenteGestion {
   relacion: number;
 }
 
+type ContextoFiltroDocentes =
+  | { tipo: 'gestion'; gestion: GestionDocente }
+  | { tipo: 'rango'; desde: GestionDocente; hasta: GestionDocente };
+
 @Component({
   selector: 'app-docentes',
   standalone: true,
@@ -107,8 +133,22 @@ export class DocentesComponent implements OnChanges {
   })
   materia!: Materia;
 
-  readonly mensajes =
-    DOCENTES_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+
+  get mensajes() {
+    return this.languageService.getMessages(
+      DOCENTES_MESSAGES,
+      DOCENTES_MESSAGES_EN
+    );
+  }
+
+  nombreMateriaVisible(): string {
+    return presentarNombreMateriaPorCodigo(
+      this.materia.codigo,
+      this.materia.nombre,
+      this.languageService.getMessages(MESSAGES, MESSAGES_EN).SUBJECT_NAMES
+    );
+  }
 
   readonly escalaMaxima =
     APP_CONFIG.SCALE.RATING_TOTAL;
@@ -121,20 +161,22 @@ export class DocentesComponent implements OnChanges {
   readonly margenInferior = 45;
   readonly nivelesGrafico = [0, 2, 4, 6, 8, 10];
 
-  readonly criteriosCalificacion = [
-    {
-      control: 'claridadExplicaciones',
-      label: DOCENTES_MESSAGES.CLARITY_LABEL
-    },
-    {
-      control: 'metodologia',
-      label: DOCENTES_MESSAGES.METHODOLOGY_LABEL
-    },
-    {
-      control: 'relacionClasesEvaluaciones',
-      label: DOCENTES_MESSAGES.RELATION_LABEL
-    }
-  ] as const;
+  get criteriosCalificacion() {
+    return [
+      {
+        control: 'claridadExplicaciones',
+        label: this.mensajes.CLARITY_LABEL
+      },
+      {
+        control: 'metodologia',
+        label: this.mensajes.METHODOLOGY_LABEL
+      },
+      {
+        control: 'relacionClasesEvaluaciones',
+        label: this.mensajes.RELATION_LABEL
+      }
+    ] as const;
+  }
 
   docentes: DocenteConCalificacion[] = [];
 
@@ -148,14 +190,14 @@ export class DocentesComponent implements OnChanges {
   enviandoCalificacion = false;
   eliminandoCalificacion = false;
 
-  error = '';
-  advertenciaEstado = '';
-  errorPromedios = '';
-  errorGestiones = '';
-  errorFiltro = '';
-  errorHistorial = '';
-  errorEnvio = '';
-  mensajeExito = '';
+  error: DocenteMessageKey | '' = '';
+  advertenciaEstado: DocenteMessageKey | '' = '';
+  errorPromedios: DocenteMessageKey | '' = '';
+  errorGestiones: DocenteMessageKey | '' = '';
+  errorFiltro: DocenteMessageKey | '' = '';
+  errorHistorial: DocenteMessageKey | '' = '';
+  errorEnvio: DocenteMessageKey | '' = '';
+  mensajeExito: DocenteMessageKey | '' = '';
   gestiones: GestionDocente[] = [];
   cargandoGestiones = false;
   cargandoFiltro = false;
@@ -164,10 +206,22 @@ export class DocentesComponent implements OnChanges {
   gestionDesde: GestionDocente | '' = '';
   gestionHasta: GestionDocente | '' = '';
   gestionAplicada: GestionDocente | null = null;
-  descripcionFiltro = '';
+  private contextoFiltro: ContextoFiltroDocentes | null = null;
   filtroSinResultados = false;
   historialDocente: HistorialDocenteGestion[] = [];
   cargandoHistorial = false;
+
+  get descripcionFiltro(): string {
+    if (!this.contextoFiltro) {
+      return '';
+    }
+
+    if (this.contextoFiltro.tipo === 'gestion') {
+      return `${this.mensajes.FILTER_GESTION_CONTEXT} ${this.formatearGestionDocente(this.contextoFiltro.gestion)}`;
+    }
+
+    return `${this.mensajes.FILTER_RANGE_CONTEXT} ${this.formatearGestionDocente(this.contextoFiltro.desde)} ${this.mensajes.FILTER_RANGE_SEPARATOR} ${this.formatearGestionDocente(this.contextoFiltro.hasta)}`;
+  }
 
   mostrarFormulario = false;
   mostrarConfirmacion = false;
@@ -276,7 +330,7 @@ export class DocentesComponent implements OnChanges {
     this.errorHistorial = '';
     this.gestiones = [];
     this.gestionAplicada = null;
-    this.descripcionFiltro = '';
+    this.contextoFiltro = null;
     this.filtroSinResultados = false;
     this.historialDocente = [];
     this.docentes = [];
@@ -295,7 +349,7 @@ export class DocentesComponent implements OnChanges {
           this.changeDetectorRef.detectChanges();
         },
         error: () => {
-          this.errorGestiones = this.mensajes.GESTIONS_ERROR;
+          this.errorGestiones = 'GESTIONS_ERROR';
           this.cargandoGestiones = false;
         }
       });
@@ -320,12 +374,12 @@ export class DocentesComponent implements OnChanges {
 
           this.advertenciaEstado =
             resultado.estadoCalificacionesIncompleto
-              ? this.mensajes.STATUS_ERROR
+              ? 'STATUS_ERROR'
               : '';
 
           this.errorPromedios =
             resultado.errorPromedios
-              ? this.mensajes.AVERAGES_ERROR
+              ? 'AVERAGES_ERROR'
               : '';
 
           this.cargando = false;
@@ -334,8 +388,7 @@ export class DocentesComponent implements OnChanges {
 
         error: () => {
 
-          this.error =
-            this.mensajes.LOAD_ERROR;
+          this.error = 'LOAD_ERROR';
 
           this.cargando = false;
           this.changeDetectorRef.detectChanges();
@@ -349,7 +402,7 @@ export class DocentesComponent implements OnChanges {
     this.cargandoPromedios = true;
     this.errorPromedios = '';
     this.gestionAplicada = null;
-    this.descripcionFiltro = '';
+    this.contextoFiltro = null;
     this.filtroSinResultados = false;
     this.errorFiltro = '';
     this.cargaPromedios = this.calificacionesDocenteService
@@ -373,8 +426,7 @@ export class DocentesComponent implements OnChanges {
 
         error: () => {
 
-          this.errorPromedios =
-            this.mensajes.AVERAGES_ERROR;
+          this.errorPromedios = 'AVERAGES_ERROR';
 
           this.cargandoPromedios = false;
           this.changeDetectorRef.detectChanges();
@@ -412,7 +464,7 @@ export class DocentesComponent implements OnChanges {
   aplicarConsultaPersonalizada(): void {
     if (this.modoFiltro === 'gestion') {
       if (!this.gestionSeleccionada) {
-        this.errorFiltro = this.mensajes.FILTER_GESTION_REQUIRED;
+        this.errorFiltro = 'FILTER_GESTION_REQUIRED';
         return;
       }
 
@@ -421,12 +473,12 @@ export class DocentesComponent implements OnChanges {
     }
 
     if (!this.gestionDesde || !this.gestionHasta) {
-      this.errorFiltro = this.mensajes.FILTER_RANGE_REQUIRED;
+      this.errorFiltro = 'FILTER_RANGE_REQUIRED';
       return;
     }
 
     if (this.gestiones.indexOf(this.gestionDesde) > this.gestiones.indexOf(this.gestionHasta)) {
-      this.errorFiltro = this.mensajes.FILTER_RANGE_INVALID;
+      this.errorFiltro = 'FILTER_RANGE_INVALID';
       return;
     }
 
@@ -437,12 +489,16 @@ export class DocentesComponent implements OnChanges {
         this.gestionHasta
       ),
       null,
-      `${this.mensajes.FILTER_RANGE_CONTEXT} ${this.formatearGestionDocente(this.gestionDesde)} ${this.mensajes.FILTER_RANGE_SEPARATOR} ${this.formatearGestionDocente(this.gestionHasta)}`
+        {
+          tipo: 'rango',
+          desde: this.gestionDesde,
+          hasta: this.gestionHasta
+        }
     );
   }
 
   formatearGestionDocente(gestion: GestionDocente): string {
-    return gestion.replace('año-', 'Año ');
+    return gestion.replace('año-', this.mensajes.ACADEMIC_YEAR_PREFIX);
   }
 
   esGestionActiva(gestion: GestionDocente): boolean {
@@ -464,14 +520,17 @@ export class DocentesComponent implements OnChanges {
         gestion
       ),
       gestion,
-      `${this.mensajes.FILTER_GESTION_CONTEXT} ${this.formatearGestionDocente(gestion)}`
+      {
+        tipo: 'gestion',
+        gestion
+      }
     );
   }
 
   private consultarPromedios(
     consulta: Observable<CalificacionDocentePromedioResponse[]>,
     gestion: GestionDocente | null,
-    descripcion: string
+    contexto: ContextoFiltroDocentes
   ): void {
     this.consultaFiltro?.unsubscribe();
     this.cargandoFiltro = true;
@@ -483,13 +542,13 @@ export class DocentesComponent implements OnChanges {
         next: promedios => {
           this.actualizarPromediosLocales(promedios);
           this.gestionAplicada = gestion;
-          this.descripcionFiltro = descripcion;
+          this.contextoFiltro = contexto;
           this.filtroSinResultados = promedios.length === 0;
           this.cargandoFiltro = false;
           this.changeDetectorRef.detectChanges();
         },
         error: () => {
-          this.errorFiltro = this.mensajes.FILTER_ERROR;
+          this.errorFiltro = 'FILTER_ERROR';
           this.cargandoFiltro = false;
           this.changeDetectorRef.detectChanges();
         }
@@ -551,7 +610,7 @@ export class DocentesComponent implements OnChanges {
       .subscribe({
         next: (resultados: ResultadoHistorialGestion[]) => {
           this.errorHistorial = resultados.some(resultado => resultado.promedios === null)
-            ? this.mensajes.HISTORY_ERROR
+            ? 'HISTORY_ERROR'
             : '';
 
           this.historialDocente = resultados
@@ -570,7 +629,7 @@ export class DocentesComponent implements OnChanges {
           this.changeDetectorRef.detectChanges();
         },
         error: () => {
-          this.errorHistorial = this.mensajes.HISTORY_ERROR;
+          this.errorHistorial = 'HISTORY_ERROR';
           this.cargandoHistorial = false;
           this.changeDetectorRef.detectChanges();
         }
@@ -778,8 +837,7 @@ export class DocentesComponent implements OnChanges {
           this.docenteSeleccionado = null;
           this.calificacionSeleccionada = null;
 
-          this.mensajeExito =
-            this.mensajes.DELETE_SUCCESS;
+          this.mensajeExito = 'DELETE_SUCCESS';
 
           this.changeDetectorRef.detectChanges();
         },
@@ -788,8 +846,7 @@ export class DocentesComponent implements OnChanges {
 
           this.eliminandoCalificacion = false;
 
-          this.errorEnvio =
-            this.mensajes.DELETE_ERROR;
+          this.errorEnvio = 'DELETE_ERROR';
 
           this.changeDetectorRef.detectChanges();
         }
@@ -883,7 +940,7 @@ export class DocentesComponent implements OnChanges {
           this.reintentarPromedios();
 
           this.finalizarGuardado(
-            this.mensajes.SUCCESS
+            'SUCCESS'
           );
         },
 
@@ -895,8 +952,8 @@ export class DocentesComponent implements OnChanges {
 
           this.errorEnvio =
             error.status === 409
-              ? this.mensajes.DUPLICATE_ERROR
-              : this.mensajes.REGISTER_ERROR;
+              ? 'DUPLICATE_ERROR'
+              : 'REGISTER_ERROR';
 
           this.changeDetectorRef.detectChanges();
         }
@@ -942,7 +999,7 @@ export class DocentesComponent implements OnChanges {
           this.reintentarPromedios();
 
           this.finalizarGuardado(
-            this.mensajes.UPDATE_SUCCESS
+            'UPDATE_SUCCESS'
           );
         },
 
@@ -950,8 +1007,7 @@ export class DocentesComponent implements OnChanges {
 
           this.enviandoCalificacion = false;
 
-          this.errorEnvio =
-            this.mensajes.UPDATE_ERROR;
+          this.errorEnvio = 'UPDATE_ERROR';
 
           this.changeDetectorRef.detectChanges();
         }
@@ -989,7 +1045,7 @@ export class DocentesComponent implements OnChanges {
   }
 
   private finalizarGuardado(
-    mensaje: string
+    mensaje: DocenteMessageKey
   ): void {
 
     this.enviandoCalificacion = false;

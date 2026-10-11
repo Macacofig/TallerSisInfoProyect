@@ -1,7 +1,20 @@
 /**
  * Mensajes y etiquetas de la interfaz de materias
  */
+import { MATERIAS_TREE_MESSAGES } from '../materias-tree/materias-tree.messages';
+
 export const MESSAGES = {
+
+  SUBJECT_NAMES: {
+    ...MATERIAS_TREE_MESSAGES.SUBJECT_NAMES,
+    'MAT-123': 'Álgebra lineal',
+    'INF-101': 'Programación I',
+    'INF-202': 'Estructuras de Datos',
+    'INF-305': 'Bases de Datos',
+    'INF-410': 'Ingeniería de Software',
+    'INF-455': 'Taller de Interfaces Web',
+    'BDF-301': 'Bases de Datos',
+  },
 
   // Headers y títulos
   MATERIAS_PAGE_EYEBROW: 'Biblioteca académica',
@@ -14,6 +27,38 @@ export const MESSAGES = {
   MATERIA_PLURAL: 'materias disponibles',
   DEMO_NOTICE:
     'Datos de demostración: estas materias y sus indicadores son ficticios.',
+  DEMO_SUBJECTS: [
+    {
+      nombre: 'Programación I',
+      carrera: 'Ingeniería de Sistemas',
+      descripcion: 'Introducción a la programación y a la resolución de problemas mediante algoritmos. Se trabajan variables, estructuras de control, funciones y programas sencillos.',
+      conocimientosPreviosRecomendados: 'Lógica básica, operaciones matemáticas elementales y manejo básico de una computadora. No se requiere experiencia previa en programación.'
+    },
+    {
+      nombre: 'Estructuras de Datos',
+      carrera: 'Ingeniería de Sistemas',
+      descripcion: 'Estudio de estructuras para organizar y procesar información: listas, pilas, colas, árboles y grafos. Incluye su implementación y el análisis de eficiencia de algoritmos.',
+      conocimientosPreviosRecomendados: 'Programación con funciones, arreglos y recursividad. Nociones de programación orientada a objetos y lógica matemática.'
+    },
+    {
+      nombre: 'Bases de Datos',
+      carrera: 'Ingeniería de Sistemas',
+      descripcion: 'Diseño y gestión de bases de datos relacionales. Se estudian el modelado de información, la normalización y las consultas SQL para almacenar y recuperar datos.',
+      conocimientosPreviosRecomendados: 'Fundamentos de programación, estructuras de datos y nociones de conjuntos y relaciones.'
+    },
+    {
+      nombre: 'Ingeniería de Software',
+      carrera: 'Ingeniería de Sistemas',
+      descripcion: 'Aplicación de métodos para desarrollar y mantener software. Abarca análisis de requisitos, diseño, pruebas y trabajo colaborativo en proyectos.',
+      conocimientosPreviosRecomendados: 'Programación orientada a objetos, bases de datos, control de versiones y experiencia en proyectos de programación.'
+    },
+    {
+      nombre: 'Taller de Interfaces Web',
+      carrera: 'Ingeniería de Sistemas',
+      descripcion: 'Diseño y construcción de interfaces web adaptables a distintos dispositivos. Se aplican principios de usabilidad y accesibilidad mediante ejercicios prácticos.',
+      conocimientosPreviosRecomendados: 'HTML, CSS, JavaScript y fundamentos de programación. Manejo básico de herramientas de desarrollo del navegador.'
+    }
+  ],
 
   // Búsqueda de materias (HU-02)
   SEARCH_LABEL: 'Buscar',

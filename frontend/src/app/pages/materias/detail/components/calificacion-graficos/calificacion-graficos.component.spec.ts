@@ -8,8 +8,16 @@ import {
 } from '../../../../../models/calificacion-materia.model';
 
 import {
+  LanguageService
+} from '../../../../../services/language.service';
+
+import {
   MESSAGES
 } from '../../../../../strings/calificacion-graficos/calificacion-graficos.messages';
+
+import {
+  MESSAGES_EN
+} from '../../../../../strings/calificacion-graficos/calificacion-graficos-ingles.messages';
 
 import {
   CalificacionGraficosComponent
@@ -35,6 +43,7 @@ describe('CalificacionGraficosComponent', () => {
       ]
     }).compileComponents();
 
+    TestBed.inject(LanguageService).setLanguage('es');
     fixture =
       TestBed.createComponent(
         CalificacionGraficosComponent
@@ -63,7 +72,7 @@ describe('CalificacionGraficosComponent', () => {
 
   it('debería usar el contexto general por defecto', () => {
 
-    expect(component.contexto)
+    expect(component.contextoVisible)
       .toBe(
         MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT
       );
@@ -156,6 +165,28 @@ describe('CalificacionGraficosComponent', () => {
       MESSAGES.CALIFICATION_GRAPH_PREVIOUS_KNOWLEDGE_ARIA
     );
 
+  });
+
+  it('updates chart labels in English and back to Spanish', () => {
+    const languageService = TestBed.inject(LanguageService);
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(component.mensajes.CALIFICATION_GRAPH_TITLE)
+      .toBe(MESSAGES_EN.CALIFICATION_GRAPH_TITLE);
+    expect(fixture.nativeElement.textContent)
+      .toContain(MESSAGES_EN.CALIFICATION_GRAPH_TITLE);
+    expect(component.contextoVisible)
+      .toBe(MESSAGES_EN.CALIFICATION_SUMMARY_GENERAL_CONTEXT);
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent)
+      .toContain(MESSAGES.CALIFICATION_GRAPH_TITLE);
+    expect(component.contextoVisible)
+      .toBe(MESSAGES.CALIFICATION_SUMMARY_GENERAL_CONTEXT);
   });
 
 });

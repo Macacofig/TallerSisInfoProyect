@@ -22,6 +22,7 @@ export const REGISTRO_MESSAGES = {
 
   REGISTER_TAB: 'Registrarse',
   LOGIN_TAB: 'Iniciar sesión',
+  TOGGLE_LANGUAGE_LABEL: 'Cambiar idioma',
 
   // Selector de pestañas
   TABS_ARIA_LABEL: 'Elige entre iniciar sesión o crear cuenta',
@@ -42,6 +43,8 @@ export const REGISTRO_MESSAGES = {
   FIELD_PHONE_PLACEHOLDER: 'Ej. 71234567',
   FIELD_PASSWORD_LABEL: 'Contraseña',
   FIELD_PASSWORD_PLACEHOLDER: 'Mínimo 8 caracteres',
+  SHOW_PASSWORD: 'Mostrar contraseña',
+  HIDE_PASSWORD: 'Ocultar contraseña',
 
   // Botón y nota
   SUBMIT_BUTTON: 'Crear mi cuenta',
@@ -50,12 +53,17 @@ export const REGISTRO_MESSAGES = {
   // Errores de validación (debajo de cada campo)
   ERROR_NAME_REQUIRED: 'Ingresa tu nombre completo.',
   ERROR_NAME_MIN_LENGTH: 'El nombre debe tener al menos 3 caracteres.',
+  ERROR_NAME_INVALID: 'El nombre no es válido.',
   ERROR_CAREER_REQUIRED: 'Ingresa tu carrera.',
+  ERROR_CAREER_INVALID: 'La carrera no es válida.',
   ERROR_EMAIL_REQUIRED: 'Ingresa tu correo.',
   ERROR_EMAIL_INVALID: 'Ingresa un correo válido, por ejemplo nombre@ucb.edu.bo.',
   ERROR_EMAIL_UCB: 'El correo debe pertenecer al dominio @ucb.edu.bo.',
+  ERROR_PHONE_REQUIRED: 'El teléfono es obligatorio.',
   ERROR_PHONE_INVALID: 'El teléfono debe empezar por 6 o 7 y tener 8 dígitos.',
+  ERROR_PHONE_INVALID_FORMAT: 'El teléfono no es válido.',
   ERROR_PASSWORD_REQUIRED: 'Ingresa una contraseña.',
+  ERROR_PASSWORD_INVALID: 'La contraseña no es válida.',
   ERROR_PASSWORD_MIN_LENGTH: 'La contraseña debe tener al menos 8 caracteres.',
   ERROR_PASSWORD_UPPERCASE: 'La contraseña debe tener al menos una letra mayúscula.',
   ERROR_PASSWORD_NUMBER: 'La contraseña debe tener al menos un número.',

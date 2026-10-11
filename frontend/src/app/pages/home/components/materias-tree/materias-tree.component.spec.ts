@@ -3,6 +3,8 @@ import { describe, expect, it, beforeEach } from 'vitest';
 
 import { MateriasTreeComponent } from './materias-tree.component';
 import { MATERIAS_TREE_MESSAGES } from '../../../../strings/materias-tree/materias-tree.messages';
+import { MATERIAS_TREE_MESSAGES as MATERIAS_TREE_MESSAGES_EN } from '../../../../strings/materias-tree/materias-tree-ingles.messages';
+import { LanguageService } from '../../../../services/language.service';
 
 describe('MateriasTreeComponent', () => {
   let component: MateriasTreeComponent;
@@ -13,6 +15,7 @@ describe('MateriasTreeComponent', () => {
       imports: [MateriasTreeComponent],
     }).compileComponents();
 
+    TestBed.inject(LanguageService).setLanguage('es');
     fixture = TestBed.createComponent(MateriasTreeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -38,6 +41,33 @@ describe('MateriasTreeComponent', () => {
     expect(component.mensajes.ARIA_LABEL).toBe(
       'Malla curricular de materias'
     );
+  });
+
+  it('localizes all subject names and accessibility labels in both directions', () => {
+    const languageService = fixture.debugElement.injector.get(LanguageService);
+    const firstNode = component.layout.nodes[0];
+
+    expect(component.nombreVisible(firstNode.sigla, firstNode.nombre)).toBe(
+      MATERIAS_TREE_MESSAGES.SUBJECT_NAMES[firstNode.sigla as keyof typeof MATERIAS_TREE_MESSAGES.SUBJECT_NAMES]
+    );
+
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+
+    expect(component.layout.nodes.every((node) =>
+      component.nombreVisible(node.sigla, node.nombre)
+        === MATERIAS_TREE_MESSAGES_EN.SUBJECT_NAMES[node.sigla as keyof typeof MATERIAS_TREE_MESSAGES_EN.SUBJECT_NAMES]
+    )).toBe(true);
+    expect(Object.keys(MATERIAS_TREE_MESSAGES_EN.SUBJECT_NAMES))
+      .toHaveLength(component.layout.nodes.length);
+    expect(fixture.nativeElement.textContent).toContain('Linear Algebra');
+    expect(fixture.nativeElement.querySelector('.materia-node')?.getAttribute('aria-label'))
+      .toContain(MATERIAS_TREE_MESSAGES_EN.SUBJECT_NAMES[firstNode.sigla as keyof typeof MATERIAS_TREE_MESSAGES_EN.SUBJECT_NAMES]);
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Álgebra Lineal');
   });
 
   it('debería seleccionar una materia', () => {

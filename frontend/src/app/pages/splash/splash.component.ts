@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { LanguageService } from '../../services/language.service';
 import { SPLASH_MESSAGES } from '../../strings/splash/splash.messages';
+import { SPLASH_MESSAGES_EN } from '../../strings/splash/splash-ingles.messages';
 
 @Component({
   selector: 'app-splash',
@@ -12,9 +14,12 @@ import { SPLASH_MESSAGES } from '../../strings/splash/splash.messages';
 })
 export class SplashComponent implements OnInit {
 
-  readonly MESSAGES = SPLASH_MESSAGES;
+  private readonly languageService = inject(LanguageService);
+  private readonly router = inject(Router);
 
-  constructor(private router: Router) {}
+  get MESSAGES() {
+    return this.languageService.getMessages(SPLASH_MESSAGES, SPLASH_MESSAGES_EN);
+  }
 
   ngOnInit(): void {
     setTimeout(() => {

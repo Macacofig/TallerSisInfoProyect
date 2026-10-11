@@ -99,7 +99,9 @@
       </h2>
 
       <p>
-        {{ modalMensaje() }}
+        @if (modalMensaje(); as mensaje) {
+          {{ MESSAGES[mensaje] }}
+        }
       </p>
 
       <button

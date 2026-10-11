@@ -19,7 +19,7 @@
       class="docentes__exito"
       role="status"
     >
-      {{ mensajeExito }}
+      {{ mensajes[mensajeExito] }}
     </p>
   }
 
@@ -28,7 +28,7 @@
       class="docentes__estado"
       role="status"
     >
-      {{ advertenciaEstado }}
+      {{ mensajes[advertenciaEstado] }}
     </p>
   }
 
@@ -48,7 +48,7 @@
       role="alert"
     >
       <p>
-        {{ error }}
+        {{ mensajes[error] }}
       </p>
 
       <button
@@ -88,7 +88,7 @@
         role="alert"
       >
         <p>
-          {{ errorPromedios }}
+          {{ mensajes[errorPromedios] }}
         </p>
 
         <button
@@ -106,7 +106,7 @@
       </p>
     } @else if (errorGestiones) {
       <p class="docentes__promedios-error" role="alert">
-        {{ errorGestiones }}
+        {{ mensajes[errorGestiones] }}
       </p>
     } @else if (gestiones.length > 0) {
       <section class="docentes__filtros" aria-labelledby="docentes-historial-titulo">
@@ -219,7 +219,7 @@
           }
           @if (errorFiltro) {
             <div class="docentes__promedios-error" role="alert">
-              <p>{{ errorFiltro }}</p>
+              <p>{{ mensajes[errorFiltro] }}</p>
               <button type="button" (click)="reintentarFiltro()">{{ mensajes.RETRY }}</button>
             </div>
           }
@@ -265,7 +265,7 @@
               </h3>
 
               <p>
-                {{ materia.nombre }}
+                {{ nombreMateriaVisible() }}
               </p>
             </div>
 
@@ -405,7 +405,7 @@
         @if (cargandoHistorial) {
           <p class="docentes__estado" role="status">{{ mensajes.HISTORY_LOADING }}</p>
         } @else if (errorHistorial) {
-          <p class="docentes__error" role="alert">{{ errorHistorial }}</p>
+          <p class="docentes__error" role="alert">{{ mensajes[errorHistorial] }}</p>
         } @else if (historialDocente.length > 1) {
           <div class="docentes__grafico-contenedor">
             <svg
@@ -492,7 +492,7 @@
 
           <div>
             <span class="modal-docente__eyebrow">
-              {{ materia.nombre }}
+              {{ nombreMateriaVisible() }}
             </span>
 
             <h2 id="modal-docente-titulo">
@@ -511,7 +511,7 @@
           <button
             type="button"
             class="modal-docente__cerrar"
-            aria-label="Cerrar"
+            [attr.aria-label]="mensajes.CLOSE_BUTTON"
             (click)="cerrarModal()"
           >
             ×
@@ -578,7 +578,7 @@
             class="docentes__error"
             role="alert"
           >
-            {{ errorEnvio }}
+            {{ mensajes[errorEnvio] }}
           </p>
         }
 
@@ -643,7 +643,7 @@
             class="docentes__error"
             role="alert"
           >
-            {{ errorEnvio }}
+            {{ mensajes[errorEnvio] }}
           </p>
         }
 
@@ -682,7 +682,7 @@
 
           <div>
             <span class="modal-docente__eyebrow">
-              {{ materia.nombre }}
+              {{ nombreMateriaVisible() }}
             </span>
 
             <h2 id="modal-docente-titulo">
@@ -705,7 +705,7 @@
           <button
             type="button"
             class="modal-docente__cerrar"
-            aria-label="Cerrar"
+            [attr.aria-label]="mensajes.CLOSE_BUTTON"
             (click)="cerrarModal()"
           >
             ×
@@ -879,7 +879,7 @@
             class="docentes__error"
             role="alert"
           >
-            {{ errorEnvio }}
+            {{ mensajes[errorEnvio] }}
           </p>
         }
 

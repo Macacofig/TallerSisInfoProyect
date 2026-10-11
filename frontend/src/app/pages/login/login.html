@@ -1,4 +1,12 @@
 <div class="login">
+  <button
+    type="button"
+    class="login__language-toggle"
+    (click)="cambiarIdioma()"
+    [attr.aria-label]="MESSAGES.TOGGLE_LANGUAGE_LABEL"
+  >
+    {{ idiomaBoton }}
+  </button>
 
   <!-- ===== Panel izquierdo: marca ===== -->
 
@@ -162,13 +170,13 @@
 
         <!-- Error general -->
 
-        @if (errorGeneral()) {
+        @if (errorGeneral(); as error) {
 
           <p
             class="login__error-general"
             role="alert"
           >
-            {{ errorGeneral() }}
+            {{ MESSAGES[error] }}
           </p>
 
         }

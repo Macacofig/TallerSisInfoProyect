@@ -17,6 +17,7 @@ export const DOCENTES_MESSAGES = {
   SINGLE_MODE: 'Una gestión',
   RANGE_MODE: 'Rango de gestiones',
   MANAGEMENT_LABEL: 'Gestión',
+  ACADEMIC_YEAR_PREFIX: 'Año ',
   FROM_LABEL: 'Desde',
   TO_LABEL: 'Hasta',
   APPLY_FILTER: 'Aplicar filtro',

@@ -5,6 +5,7 @@ import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
 import { routes } from '../../app.routes';
+import { LanguageService } from '../../services/language.service';
 import { Registro } from '../registro/registro';
 import { SplashComponent } from './splash.component';
 
@@ -18,7 +19,18 @@ describe('Navegación: Splash → Registro', () => {
       imports: [SplashComponent],
       providers: [{ provide: Router, useValue: { navigate } }]
     });
-    TestBed.createComponent(SplashComponent).detectChanges();
+    TestBed.inject(LanguageService).setLanguage('es');
+    const fixture = TestBed.createComponent(SplashComponent);
+    fixture.detectChanges();
+
+    const languageService = fixture.debugElement.injector.get(LanguageService);
+    languageService.setLanguage('en');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Everything starts here.');
+
+    languageService.setLanguage('es');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Todo empieza aquí.');
 
     await vi.advanceTimersByTimeAsync(2999);
     expect(navigate).not.toHaveBeenCalled();

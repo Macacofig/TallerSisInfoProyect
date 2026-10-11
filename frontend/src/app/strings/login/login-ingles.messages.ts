@@ -23,6 +23,7 @@ export const LOGIN_MESSAGES_EN = {
 
   REGISTER_TAB: 'Sign up',
   LOGIN_TAB: 'Sign in',
+  TOGGLE_LANGUAGE_LABEL: 'Change language',
   SHOW_PASSWORD: 'Show password',
   HIDE_PASSWORD: 'Hide password',
 
