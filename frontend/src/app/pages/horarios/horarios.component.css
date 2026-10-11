@@ -731,6 +731,462 @@ background: #fff8e8;
 background: #f5effc;
 }
 
+
+/* ========================================
+   ACCIONES DEL ENCABEZADO
+======================================== */
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.page-title-row .title {
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-agregar,
+.btn-descargar,
+.btn-cancelar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-agregar {
+  background-color: #0b3c8c;
+  color: #ffffff;
+}
+
+.btn-agregar:hover:not(:disabled) {
+  background-color: #082d69;
+  transform: translateY(-1px);
+}
+
+.btn-agregar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-descargar {
+  background-color: #ffffff;
+  color: #0b2447;
+  border-color: #d5e0f0;
+}
+
+.btn-descargar:hover {
+  background-color: #f5f9ff;
+  border-color: #e3a82b;
+}
+
+.btn-cancelar {
+  background-color: #ffffff;
+  color: #4f5d73;
+  border-color: #d5e0f0;
+}
+
+.btn-cancelar:hover {
+  background-color: #f5f9ff;
+  border-color: #aabbd3;
+}
+
+/* ========================================
+   MODAL
+======================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background-color: rgba(11, 36, 71, 0.45);
+  overflow-y: auto;
+}
+
+.modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  background-color: #ffffff;
+  border: 1px solid #d5e0f0;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(11, 36, 71, 0.18);
+  color: #0b2447;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0.25rem 0 0.5rem;
+  color: #0b2447;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.modal-header p:not(.eyebrow) {
+  margin: 0;
+  color: #4f5d73;
+  line-height: 1.5;
+}
+
+.modal-header .eyebrow {
+  margin: 0;
+  color: #c58b13;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.modal-cerrar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d5e0f0;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #4f5d73;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-cerrar:hover {
+  background-color: #f5f9ff;
+}
+
+.modal > label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #0b2447;
+  font-weight: 600;
+}
+
+.modal > select {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d5e0f0;
+  border-radius: 9px;
+  background-color: #f8fbff;
+  color: #0b2447;
+  font: inherit;
+}
+
+.modal > select:focus {
+  outline: 2px solid #e3a82b;
+  outline-offset: 2px;
+}
+
+/* ========================================
+   LISTA DE MATERIAS DEL MODAL
+======================================== */
+
+.modal-materias {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.modal-materia {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem;
+  border: 1px solid #d5e0f0;
+  border-radius: 10px;
+  background-color: #f8fbff;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.modal-materia:hover {
+  border-color: #e3a82b;
+  background-color: #fffdf7;
+}
+
+.modal-materia input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: #0b3c8c;
+  cursor: pointer;
+}
+
+.modal-materia span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.modal-materia strong {
+  color: #0b2447;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.modal-materia small {
+  color: #4f5d73;
+  font-size: 0.8rem;
+}
+
+.modal-vacio {
+  padding: 1.5rem 1rem;
+  border: 1px dashed #d5e0f0;
+  border-radius: 10px;
+  color: #4f5d73;
+  text-align: center;
+  line-height: 1.5;
+}
+
+
+/* ========================================
+   VISTA PREVIA DE DESCARGA
+======================================== */
+
+.descarga-vista-previa {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #d5e0f0;
+  border-radius: 12px;
+  background-color: #f5f9ff;
+}
+
+.descarga-vista-previa__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background-color: #e3a82b;
+  color: #0b2447;
+  font-size: 1.7rem;
+}
+
+.descarga-vista-previa__contenido h3 {
+  margin: 0 0 0.35rem;
+  color: #0b2447;
+  font-size: 1rem;
+}
+
+.descarga-vista-previa__contenido p {
+  margin: 0.2rem 0;
+  color: #4f5d73;
+  font-size: 0.875rem;
+}
+
+.descarga-materias {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.descarga-materias > h3 {
+  margin: 0 0 0.25rem;
+  color: #0b2447;
+  font-size: 1rem;
+}
+
+.descarga-materia {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #d5e0f0;
+  border-radius: 9px;
+}
+
+.descarga-materia__color {
+  width: 5px;
+  align-self: stretch;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.descarga-materia > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.descarga-materia strong {
+  color: #0b2447;
+  font-size: 0.9rem;
+}
+
+.descarga-materia small {
+  color: #4f5d73;
+  font-size: 0.8rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #d5e0f0;
+}
+
+
+/* ========================================
+   PAGINACIÓN DE MATERIAS
+======================================== */
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.panel-heading .panel-title {
+  margin: 0;
+  min-width: 0;
+}
+
+.materias-paginacion {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.materias-paginacion button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #d5e0f0;
+  border-radius: 7px;
+  background-color: #ffffff;
+  color: #0b2447;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.materias-paginacion button:hover:not(:disabled) {
+  background-color: #f6e6b8;
+  border-color: #e3a82b;
+}
+
+.materias-paginacion button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.materias-paginacion span {
+  min-width: 34px;
+  color: #4f5d73;
+  font-size: 0.8rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========================================
+   ADAPTACIÓN A PANTALLAS PEQUEÑAS
+======================================== */
+
+@media (max-width: 900px) {
+  .page-title-row {
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-title-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-agregar,
+  .btn-descargar {
+    width: 100%;
+  }
+
+  .modal {
+    padding: 1.25rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+}
+
+
 /* =========================
 RESPONSIVE
 ========================= */
