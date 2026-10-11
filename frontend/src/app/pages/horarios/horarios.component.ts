@@ -5,6 +5,11 @@ import {
   MateriaHorario
 } from '../../data/horarios.data';
 
+import {
+  MATERIAS_DISPONIBLES,
+  MateriaDisponible
+} from '../../data/materias-disponibles.data';
+
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
 
 @Component({
@@ -19,6 +24,16 @@ export class HorariosComponent {
   readonly textos = HORARIOS_MESSAGES;
 
   readonly materias: MateriaHorario[] = MATERIAS_HORARIOS;
+
+  readonly materiasDisponibles: MateriaDisponible[] = MATERIAS_DISPONIBLES;
+
+  modalAgregarAbierto = false;
+
+  modalDescargarAbierto = false;
+
+  semestreSeleccionado = 1;
+
+  materiasParaAgregar: string[] = [];
 
   materiasSeleccionadas: MateriaHorario[] = [];
 
@@ -49,6 +64,9 @@ export class HorariosComponent {
   paginaActual = 1;
 
   readonly alturaFila = 72;
+  paginaMaterias = 1;
+  readonly materiasPorPagina = 4;
+
 
   constructor() {
     this.materiasSeleccionadas = this.materias.filter(
@@ -306,4 +324,117 @@ export class HorariosComponent {
 
     return colores[codigo] ?? '#4f5d73';
   }
+
+  // Abrir el modal
+  abrirModalAgregar(): void {
+    this.modalAgregarAbierto = true;
+    this.materiasParaAgregar = [];
+  }
+
+  // Cerrar el modal
+  cerrarModalAgregar(): void {
+    this.modalAgregarAbierto = false;
+    this.materiasParaAgregar = [];
+  }
+
+  // Cambiar el semestre que se muestra
+  cambiarSemestre(semestre: number): void {
+    this.semestreSeleccionado = semestre;
+    this.materiasParaAgregar = [];
+  }
+
+  // Mostrar únicamente materias del semestre que no estén agregadas
+  get materiasFiltradas(): MateriaDisponible[] {
+    return this.materiasDisponibles.filter(materia => {
+      const mismoSemestre = materia.semestre === this.semestreSeleccionado;
+
+      const yaAgregada = this.materias.some(
+        existente => existente.codigo === materia.codigo ||
+          existente.nombre.trim().toLowerCase() === materia.nombre.trim().toLowerCase()
+      );
+
+      return mismoSemestre && !yaAgregada;
+    });
+  }
+
+  // Marcar o desmarcar una materia en el modal
+  alternarMateriaParaAgregar(codigo: string): void {
+    const yaSeleccionada = this.materiasParaAgregar.includes(codigo);
+
+    if (yaSeleccionada) {
+      this.materiasParaAgregar = this.materiasParaAgregar.filter(
+        item => item !== codigo
+      );
+    } else {
+      this.materiasParaAgregar.push(codigo);
+    }
+  }
+
+  // Agregar las materias elegidas al panel actual
+  agregarMaterias(): void {
+    const nuevasMaterias = this.materiasDisponibles.filter(
+      materia => this.materiasParaAgregar.includes(materia.codigo)
+    );
+
+    for (const materia of nuevasMaterias) {
+      const yaExiste = this.materias.some(
+        existente => existente.codigo === materia.codigo ||
+          existente.nombre.trim().toLowerCase() === materia.nombre.trim().toLowerCase()
+      );
+
+      if (!yaExiste) {
+        materia.seleccionada = true;
+        this.materias.push(materia);
+        this.materiasSeleccionadas.push(materia);
+      }
+    }
+
+    this.render();
+    this.cerrarModalAgregar();
+  }
+
+  
+  // Abrir la vista previa del horario
+  abrirModalDescargar(): void {
+    this.modalDescargarAbierto = true;
+  }
+
+  // Cerrar la vista previa del horario
+  cerrarModalDescargar(): void {
+    this.modalDescargarAbierto = false;
+  }
+
+
+  // Materias que se muestran en la página actual
+  get materiasPaginadas(): MateriaHorario[] {
+    const inicio = (this.paginaMaterias - 1) * this.materiasPorPagina;
+
+    return this.materias.slice(
+      inicio,
+      inicio + this.materiasPorPagina
+    );
+  }
+
+  // Cantidad total de páginas de materias
+  get totalPaginasMaterias(): number {
+    return Math.max(
+      1,
+      Math.ceil(this.materias.length / this.materiasPorPagina)
+    );
+  }
+
+  // Ir a la página anterior de materias
+  anteriorMaterias(): void {
+    if (this.paginaMaterias > 1) {
+      this.paginaMaterias--;
+    }
+  }
+
+  // Ir a la página siguiente de materias
+  siguienteMaterias(): void {
+    if (this.paginaMaterias < this.totalPaginasMaterias) {
+      this.paginaMaterias++;
+    }
+  }
+
 }
