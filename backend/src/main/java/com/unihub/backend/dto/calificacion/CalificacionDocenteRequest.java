@@ -10,7 +10,7 @@ public record CalificacionDocenteRequest(
 
         @NotNull Long idDocente,
         @NotNull Long idMateria,
-        Long idEstudiante,
+        @NotNull Long idEstudiante,
 
         @NotNull @Min(1) @Max(10) Integer claridadExplicaciones,
         @NotNull @Min(1) @Max(10) Integer metodologia,

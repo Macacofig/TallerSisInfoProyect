@@ -9,6 +9,7 @@ import {
 } from '../models/calificacion-materia.model';
 
 import { APP_CONFIG } from '../config/app-config';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,8 @@ export class CalificacionesMateriaService {
     `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_MATERIA}`;
 
   constructor(
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly authService: AuthService
   ) {}
 
   registrarCalificacion(
@@ -28,7 +30,8 @@ export class CalificacionesMateriaService {
 
     return this.http.post<CalificacionMateriaResponse>(
       this.apiUrl,
-      calificacion
+      calificacion,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 
@@ -43,7 +46,8 @@ export class CalificacionesMateriaService {
 
     return this.http.put<CalificacionMateriaResponse>(
       url,
-      calificacion
+      calificacion,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 
@@ -56,7 +60,8 @@ export class CalificacionesMateriaService {
       `${this.apiUrl}/estudiante/${idEstudiante}/materia/${idMateria}`;
 
     return this.http.delete<void>(
-      url
+      url,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 
@@ -69,7 +74,8 @@ export class CalificacionesMateriaService {
       `${this.apiUrl}/estudiante/${idEstudiante}/materia/${idMateria}`;
 
     return this.http.get<CalificacionMateriaResponse | null>(
-      url
+      url,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 

@@ -4,6 +4,7 @@ import com.unihub.backend.dto.calificacion.CalificacionDocentePromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.service.CalificacionDocenteService;
+import com.unihub.backend.service.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -33,15 +35,19 @@ import static com.unihub.backend.common.Constants.CalificacionDocente.PROMEDIOS_
 public class CalificacionDocenteController {
 
     private final CalificacionDocenteService calificacionService;
+    private final JwtService jwtService;
 
-    public CalificacionDocenteController(CalificacionDocenteService calificacionService) {
+    public CalificacionDocenteController(CalificacionDocenteService calificacionService, JwtService jwtService) {
 	this.calificacionService = calificacionService;
+    this.jwtService = jwtService;
     }
 
     @PostMapping(CREAR_URL)
     public ResponseEntity<CalificacionDocenteResponse> crear(
+	    @RequestHeader(value = "Authorization", required = false) String authorization,
 	    @Valid @RequestBody CalificacionDocenteRequest request
     ) {
+	jwtService.requerirPropietario(authorization, request.idEstudiante());
 	return ResponseEntity.status(HttpStatus.CREATED).body(calificacionService.crear(request));
     }
 
@@ -54,21 +60,25 @@ public class CalificacionDocenteController {
 
     @GetMapping(OBTENER_POR_ESTUDIANTE_URL)
         public ResponseEntity<CalificacionDocenteResponse> obtenerPorEstudianteEnMateria(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
             @PathVariable Long idEstudiante,
             @PathVariable Long idDocente,
             @PathVariable Long idMateria
         ) {
+        jwtService.requerirPropietario(authorization, idEstudiante);
         return ResponseEntity.ok(calificacionService
             .obtenerPorEstudiante(idEstudiante, idDocente, idMateria).orElse(null));
         }
 
     @PutMapping(ACTUALIZAR_URL)
         public ResponseEntity<CalificacionDocenteResponse> actualizarEnMateria(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
             @PathVariable Long idEstudiante,
             @PathVariable Long idDocente,
             @PathVariable Long idMateria,
             @Valid @RequestBody CalificacionDocenteRequest request
         ) {
+        jwtService.requerirPropietario(authorization, idEstudiante);
         return calificacionService.actualizar(idEstudiante, idDocente, idMateria, request)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
@@ -76,10 +86,12 @@ public class CalificacionDocenteController {
 
     @DeleteMapping(ELIMINAR_URL)
         public ResponseEntity<Void> eliminarEnMateria(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
             @PathVariable Long idEstudiante,
             @PathVariable Long idDocente,
             @PathVariable Long idMateria
         ) {
+        jwtService.requerirPropietario(authorization, idEstudiante);
         return calificacionService.eliminar(idEstudiante, idDocente, idMateria)
             ? ResponseEntity.noContent().build()
             : ResponseEntity.notFound().build();

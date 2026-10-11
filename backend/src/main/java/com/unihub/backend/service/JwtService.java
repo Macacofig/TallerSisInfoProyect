@@ -1,7 +1,10 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.exception.AccesoNoAutorizadoException;
+import com.unihub.backend.exception.CredencialesInvalidasException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class JwtService {
@@ -46,5 +50,29 @@ public class JwtService {
 
     public long obtenerDuracionSegundos() {
         return expirationSeconds;
+    }
+
+    public Optional<Long> obtenerIdEstudiante(String token) {
+        try {
+            Long id = Jwts.parser().verifyWith(signingKey).build()
+                    .parseSignedClaims(token).getPayload().get("studentId", Long.class);
+            return Optional.ofNullable(id);
+        } catch (JwtException | IllegalArgumentException exception) {
+            return Optional.empty();
+        }
+    }
+
+    public Long requerirIdEstudiante(String authorization) {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            throw new CredencialesInvalidasException();
+        }
+        return obtenerIdEstudiante(authorization.substring(7))
+                .orElseThrow(CredencialesInvalidasException::new);
+    }
+
+    public void requerirPropietario(String authorization, Long idEstudiante) {
+        if (!requerirIdEstudiante(authorization).equals(idEstudiante)) {
+            throw new AccesoNoAutorizadoException();
+        }
     }
 }

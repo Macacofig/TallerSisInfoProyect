@@ -59,6 +59,10 @@ public class Estudiante {
         return contrasena;
     }
 
+    public void actualizarContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
+
     public String getTelefono() {
         return telefono;
     }

@@ -4,6 +4,9 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
+  accessToken?: string;
+  tokenType?: string;
+  expiresIn?: number;
   id: number;
   nombre: string;
   telefono: string;

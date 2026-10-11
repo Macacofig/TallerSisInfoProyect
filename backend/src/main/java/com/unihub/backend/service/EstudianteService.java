@@ -14,6 +14,7 @@ import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class EstudianteService {
@@ -21,15 +22,21 @@ public class EstudianteService {
     private final EstudianteRepository estudianteRepository;
     private final EstudianteMapper estudianteMapper;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final LoginAttemptRateLimiter loginAttemptRateLimiter;
 
     public EstudianteService(
             EstudianteRepository estudianteRepository,
             EstudianteMapper estudianteMapper,
-            JwtService jwtService
+            JwtService jwtService,
+            PasswordEncoder passwordEncoder,
+            LoginAttemptRateLimiter loginAttemptRateLimiter
     ) {
         this.estudianteRepository = estudianteRepository;
         this.estudianteMapper = estudianteMapper;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.loginAttemptRateLimiter = loginAttemptRateLimiter;
     }
 
     public EstudianteResponse registrar(EstudianteRequest request) {
@@ -39,7 +46,7 @@ public class EstudianteService {
 
         Estudiante estudiante = new Estudiante(
                 request.nombre(),
-                request.contrasena(),
+                passwordEncoder.encode(request.contrasena()),
                 request.telefono(),
                 request.correoElectronico(),
                 request.carrera()
@@ -66,19 +73,38 @@ public class EstudianteService {
     public EstudianteLoginResponse iniciarSesion(EstudianteLoginRequest request) {
         String correoElectronico = request.correoElectronico();
         String contrasena = request.contrasena();
+        loginAttemptRateLimiter.verificarPermitido(correoElectronico);
 
         Estudiante estudiante = estudianteRepository.findByCorreoElectronicoIgnoreCase(correoElectronico)
-                .orElseThrow(CredencialesInvalidasException::new);
+                .orElseThrow(() -> {
+                    loginAttemptRateLimiter.registrarFallo(correoElectronico);
+                    return new CredencialesInvalidasException();
+                });
 
-        if (!estudiante.getContrasena().equals(contrasena)) {
+        String contrasenaGuardada = estudiante.getContrasena();
+        boolean coincide = esHashBcrypt(contrasenaGuardada)
+                ? passwordEncoder.matches(contrasena, contrasenaGuardada)
+                : contrasenaGuardada.equals(contrasena);
+        if (!coincide) {
+            loginAttemptRateLimiter.registrarFallo(correoElectronico);
             throw new CredencialesInvalidasException();
         }
 
+        if (!esHashBcrypt(contrasenaGuardada)) {
+            estudiante.actualizarContrasena(passwordEncoder.encode(contrasena));
+            estudianteRepository.save(estudiante);
+        }
+
         LogHelper.debug(EstudianteService.class, "Inicio de sesión completado correctamente");
+        loginAttemptRateLimiter.registrarExito(correoElectronico);
         return new EstudianteLoginResponse(
             jwtService.generarToken(estudiante),
             jwtService.obtenerDuracionSegundos(),
             estudianteMapper.toResponse(estudiante)
         );
+    }
+
+    private boolean esHashBcrypt(String valor) {
+        return valor.matches("\\$2[aby]\\$\\d{2}\\$[./A-Za-z0-9]{53}");
     }
 }

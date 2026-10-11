@@ -8,8 +8,11 @@ import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CorreoDuplicadoException;
+import com.unihub.backend.exception.TooManyLoginAttemptsException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -24,6 +27,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -39,6 +43,7 @@ class EstudianteServiceTest {
     private EstudianteRepository estudianteRepository;
 
     private EstudianteService estudianteService;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private static int numeroPrueba;
 
     @BeforeEach
@@ -46,7 +51,9 @@ class EstudianteServiceTest {
         estudianteService = new EstudianteService(
                 estudianteRepository,
                 new EstudianteMapper(),
-                new JwtService("test-secret-key-with-at-least-32-bytes", 3600)
+                new JwtService("test-secret-key-with-at-least-32-bytes", 3600),
+                passwordEncoder,
+                new LoginAttemptRateLimiter()
         );
         numeroPrueba++;
     }
@@ -83,7 +90,9 @@ class EstudianteServiceTest {
 
         ArgumentCaptor<Estudiante> captor = ArgumentCaptor.forClass(Estudiante.class);
         verify(estudianteRepository).save(captor.capture());
-        assertEquals("ClaveSegura1!", captor.getValue().getContrasena());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                passwordEncoder.matches("ClaveSegura1!", captor.getValue().getContrasena())
+        );
         mostrarResultado("Registrar estudiante normalizando espacios en los campos");
     }
 
@@ -156,6 +165,10 @@ class EstudianteServiceTest {
         assertEquals("Bearer", resultado.tokenType());
         assertEquals(3600, resultado.expiresIn());
         org.junit.jupiter.api.Assertions.assertFalse(resultado.accessToken().isBlank());
+        org.junit.jupiter.api.Assertions.assertTrue(passwordEncoder.matches(
+                "ClaveSegura1!", estudiante.getContrasena()
+        ));
+        verify(estudianteRepository).save(estudiante);
         mostrarResultado("Iniciar sesión con correo y contraseña válidos");
     }
 
@@ -200,5 +213,20 @@ class EstudianteServiceTest {
 
         assertEquals("Correo electrónico o contraseña incorrectos", excepcion.getMessage());
         mostrarResultado("Rechazar inicio de sesión cuando la contraseña es incorrecta");
+    }
+
+    @Test
+    void deberiaLimitarLosIntentosFallidosRepetidos() {
+        EstudianteLoginRequest request = new EstudianteLoginRequest("bloqueado@ucb.edu.bo", "incorrecta");
+        when(estudianteRepository.findByCorreoElectronicoIgnoreCase("bloqueado@ucb.edu.bo"))
+                .thenReturn(Optional.empty());
+
+        for (int i = 0; i < 5; i++) {
+            assertThrows(IllegalArgumentException.class, () -> estudianteService.iniciarSesion(request));
+        }
+        assertInstanceOf(TooManyLoginAttemptsException.class,
+                assertThrows(RuntimeException.class, () -> estudianteService.iniciarSesion(request)));
+        verify(estudianteRepository, org.mockito.Mockito.times(5))
+                .findByCorreoElectronicoIgnoreCase("bloqueado@ucb.edu.bo");
     }
 }

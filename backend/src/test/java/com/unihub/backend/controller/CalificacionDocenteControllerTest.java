@@ -5,8 +5,10 @@ import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.exception.CalificacionDocenteDuplicadaException;
 import com.unihub.backend.exception.DocenteInexistenteException;
 import com.unihub.backend.service.CalificacionDocenteService;
+import com.unihub.backend.service.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -18,6 +20,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,6 +39,15 @@ class CalificacionDocenteControllerTest {
 
     @MockitoBean
     private CalificacionDocenteService calificacionService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @BeforeEach
+    void permitirTokenDePruebaEnEndpointsPropios() {
+        doNothing().when(jwtService).requerirPropietario(org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any());
+    }
 
     @Test
         @DisplayName("Crear una calificacion de docente asociada obligatoriamente a una materia")

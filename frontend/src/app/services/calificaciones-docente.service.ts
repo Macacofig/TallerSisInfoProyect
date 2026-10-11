@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { APP_CONFIG } from '../config/app-config';
+import { AuthService } from './auth.service';
 
 import {
   CalificacionDocentePromedioResponse,
@@ -20,7 +21,8 @@ export class CalificacionesDocenteService {
     `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.CALIFICACION_DOCENTE}`;
 
   constructor(
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly authService: AuthService
   ) {}
 
   obtenerPromediosPorMateria(
@@ -76,7 +78,8 @@ export class CalificacionesDocenteService {
 
     return this.http.post<CalificacionDocenteResponse>(
       this.apiUrl,
-      calificacion
+      calificacion,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 
@@ -90,7 +93,8 @@ export class CalificacionesDocenteService {
       `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}/materia/${idMateria}`;
 
     return this.http.get<CalificacionDocenteResponse | null>(
-      url
+      url,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 
@@ -106,7 +110,8 @@ export class CalificacionesDocenteService {
 
     return this.http.put<CalificacionDocenteResponse>(
       url,
-      calificacion
+      calificacion,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 
@@ -120,7 +125,8 @@ export class CalificacionesDocenteService {
       `${this.apiUrl}/estudiante/${idEstudiante}/docente/${idDocente}/materia/${idMateria}`;
 
     return this.http.delete<void>(
-      url
+      url,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
 }
