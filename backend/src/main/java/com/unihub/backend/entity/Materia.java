@@ -1,6 +1,11 @@
 package com.unihub.backend.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "materias")
@@ -21,6 +26,14 @@ public class Materia {
 
     @Column(nullable = false)
     private Integer semestre;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "prerequisitos", nullable = false, columnDefinition = "text[]")
+    private List<String> prerequisitos = new ArrayList<>();
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "carrera_total", nullable = false, columnDefinition = "text[]")
+    private List<String> carreraTotal = new ArrayList<>();
 
     public Materia() {
     }
@@ -66,5 +79,21 @@ public class Materia {
 
     public void setSemestre(Integer semestre) {
         this.semestre = semestre;
+    }
+
+    public List<String> getPrerequisitos() {
+        return prerequisitos;
+    }
+
+    public void setPrerequisitos(List<String> prerequisitos) {
+        this.prerequisitos = prerequisitos;
+    }
+
+    public List<String> getCarreraTotal() {
+        return carreraTotal;
+    }
+
+    public void setCarreraTotal(List<String> carreraTotal) {
+        this.carreraTotal = carreraTotal;
     }
 }
