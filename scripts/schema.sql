@@ -6,8 +6,20 @@
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- materias
+-- Reinicio de la base.
+-- Se eliminan en cascada las tablas relacionadas con materias junto con ella,
+-- y al volver a crearlas los id se reinician desde 1.
 -- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS calificacion_materia CASCADE;
+DROP TABLE IF EXISTS calificacion_docente CASCADE;
+DROP TABLE IF EXISTS docente_materia CASCADE;
+DROP TABLE IF EXISTS estudiantes CASCADE;
+DROP TABLE IF EXISTS docentes CASCADE;
+DROP TABLE IF EXISTS materias CASCADE;
+
+-- ============================================================================
+-- 1) Materias (tabla base, con sus datos)
+-- ============================================================================
 CREATE TABLE materias (
     id             BIGSERIAL PRIMARY KEY,
     codigo         VARCHAR(255) NOT NULL UNIQUE,
@@ -17,71 +29,6 @@ CREATE TABLE materias (
     prerequisitos  TEXT[]       NOT NULL DEFAULT '{}',
     carrera_total  TEXT[]       NOT NULL DEFAULT '{}'
 );
-
--- ----------------------------------------------------------------------------
--- estudiantes
--- ----------------------------------------------------------------------------
-CREATE TABLE estudiantes (
-    id                 BIGSERIAL PRIMARY KEY,
-    nombre             VARCHAR(255) NOT NULL,
-    contrasena         VARCHAR(255) NOT NULL,
-    telefono           VARCHAR(255) NOT NULL,
-    correo_electronico VARCHAR(255) NOT NULL UNIQUE,
-    carrera            VARCHAR(255) NOT NULL
-);
-
--- ----------------------------------------------------------------------------
--- docentes
--- ----------------------------------------------------------------------------
-CREATE TABLE docentes (
-    id     BIGSERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL
-);
-
--- ----------------------------------------------------------------------------
--- docente_materia
--- ----------------------------------------------------------------------------
-CREATE TABLE docente_materia (
-    id         BIGSERIAL PRIMARY KEY,
-    id_docente BIGINT NOT NULL REFERENCES docentes (id),
-    id_materia BIGINT NOT NULL REFERENCES materias (id),
-    CONSTRAINT uk_docente_materia UNIQUE (id_docente, id_materia)
-);
-
--- ----------------------------------------------------------------------------
--- calificacion_docente
--- ----------------------------------------------------------------------------
-CREATE TABLE calificacion_docente (
-    id                            BIGSERIAL PRIMARY KEY,
-    id_docente                    BIGINT       NOT NULL REFERENCES docentes (id),
-    id_materia                    BIGINT       NOT NULL REFERENCES materias (id),
-    id_estudiante                 BIGINT       REFERENCES estudiantes (id),
-    claridad_explicaciones        INTEGER      NOT NULL,
-    metodologia                   INTEGER      NOT NULL,
-    relacion_clases_evaluaciones  INTEGER      NOT NULL,
-    gestion                       VARCHAR(255) NOT NULL,
-    CONSTRAINT uk_calificacion_docente UNIQUE (id_estudiante, id_docente, id_materia)
-);
-
--- ----------------------------------------------------------------------------
--- calificacion_materia
--- ----------------------------------------------------------------------------
-CREATE TABLE calificacion_materia (
-    id                  BIGSERIAL PRIMARY KEY,
-    id_materia          BIGINT       NOT NULL REFERENCES materias (id),
-    id_estudiante       BIGINT       REFERENCES estudiantes (id),
-    dificultad          INTEGER      NOT NULL,
-    carga               INTEGER      NOT NULL,
-    conocimiento_previo INTEGER      NOT NULL,
-    prerequisitos_text  VARCHAR(255) NOT NULL,
-    predominio          VARCHAR(255) NOT NULL,
-    gestion             VARCHAR(255) NOT NULL
-);
-
--- ============================================================================
--- Datos iniciales (seed)
--- Todo el texto se almacena en minúsculas, respetando tildes y la letra ñ.
--- ============================================================================
 
 -- Materias (a partir de rapido.csv).
 -- carrera_total = ['ingeniería en sistemas'] para todas las materias.
@@ -136,7 +83,16 @@ INSERT INTO materias (codigo, nombre, carrera, semestre, prerequisitos, carrera_
 ('sis-362', 'taller de grado i', 'ingeniería en sistemas', 8, ARRAY['sis-312', 'sis-331'], ARRAY['ingeniería en sistemas']),
 ('sis-363', 'taller de grado ii', 'ingeniería en sistemas', 9, ARRAY['sis-362'], ARRAY['ingeniería en sistemas']);
 
+-- ============================================================================
+-- 2) Tablas dependientes (10 registros cada una)
+-- ============================================================================
+
 -- Docentes
+CREATE TABLE docentes (
+    id     BIGSERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
+);
+
 INSERT INTO docentes (nombre) VALUES
 ('juan pérez'),
 ('maría gonzález'),
@@ -145,61 +101,98 @@ INSERT INTO docentes (nombre) VALUES
 ('luis ñáñez'),
 ('sofía vargas'),
 ('rodrigo flores'),
-('elena quispia');
+('elena quispia'),
+('diego mamani'),
+('carla rojas');
 
 -- Estudiantes (contraseña de ejemplo para todos: 123456)
+CREATE TABLE estudiantes (
+    id                 BIGSERIAL PRIMARY KEY,
+    nombre             VARCHAR(255) NOT NULL,
+    contrasena         VARCHAR(255) NOT NULL,
+    telefono           VARCHAR(255) NOT NULL,
+    correo_electronico VARCHAR(255) NOT NULL UNIQUE,
+    carrera            VARCHAR(255) NOT NULL
+);
+
 INSERT INTO estudiantes (nombre, contrasena, telefono, correo_electronico, carrera) VALUES
-('pedro ramírez', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77712345', 'pedro.ramirez@unihub.com', 'ingeniería en sistemas'),
-('lucía flores', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77723456', 'lucia.flores@unihub.com', 'ingeniería en sistemas'),
-('miguel choque', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77734567', 'miguel.choque@unihub.com', 'ingeniería en sistemas'),
-('elena ñusta', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77745678', 'elena.nusta@unihub.com', 'ingeniería en sistemas'),
-('jorge quispia', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77756789', 'jorge.quispia@unihub.com', 'ingeniería en sistemas');
+('pedro ramírez', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710001', 'pedro.ramirez@unihub.com', 'ingeniería en sistemas'),
+('lucía flores', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710002', 'lucia.flores@unihub.com', 'ingeniería en sistemas'),
+('miguel choque', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710003', 'miguel.choque@unihub.com', 'ingeniería en sistemas'),
+('elena ñusta', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710004', 'elena.nusta@unihub.com', 'ingeniería en sistemas'),
+('jorge quispia', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710005', 'jorge.quispia@unihub.com', 'ingeniería en sistemas'),
+('andrea cárdenas', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710006', 'andrea.cardenas@unihub.com', 'ingeniería en sistemas'),
+('fernando órtiz', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710007', 'fernando.ortiz@unihub.com', 'ingeniería en sistemas'),
+('paola muñoz', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710008', 'paola.munoz@unihub.com', 'ingeniería en sistemas'),
+('ricardo loza', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710009', 'ricardo.loza@unihub.com', 'ingeniería en sistemas'),
+('valeria ibáñez', '$2a$10$Cu1lbnVn60cGRs7DRY9OZ.Z9ZP4lv4rfh9SJVRXin4VOYlpeNQTHm', '77710010', 'valeria.ibanez@unihub.com', 'ingeniería en sistemas');
 
 -- Docente - Materia
+CREATE TABLE docente_materia (
+    id         BIGSERIAL PRIMARY KEY,
+    id_docente BIGINT NOT NULL REFERENCES docentes (id),
+    id_materia BIGINT NOT NULL REFERENCES materias (id),
+    CONSTRAINT uk_docente_materia UNIQUE (id_docente, id_materia)
+);
+
 INSERT INTO docente_materia (id_docente, id_materia) VALUES
 ((SELECT id FROM docentes WHERE nombre = 'juan pérez'), (SELECT id FROM materias WHERE codigo = 'sis-111')),
 ((SELECT id FROM docentes WHERE nombre = 'juan pérez'), (SELECT id FROM materias WHERE codigo = 'sis-112')),
-((SELECT id FROM docentes WHERE nombre = 'juan pérez'), (SELECT id FROM materias WHERE codigo = 'sis-113')),
 ((SELECT id FROM docentes WHERE nombre = 'maría gonzález'), (SELECT id FROM materias WHERE codigo = 'mat-123')),
-((SELECT id FROM docentes WHERE nombre = 'maría gonzález'), (SELECT id FROM materias WHERE codigo = 'mat-122')),
 ((SELECT id FROM docentes WHERE nombre = 'maría gonzález'), (SELECT id FROM materias WHERE codigo = 'mat-132')),
 ((SELECT id FROM docentes WHERE nombre = 'carlos rodríguez'), (SELECT id FROM materias WHERE codigo = 'sis-121')),
 ((SELECT id FROM docentes WHERE nombre = 'carlos rodríguez'), (SELECT id FROM materias WHERE codigo = 'sis-133')),
-((SELECT id FROM docentes WHERE nombre = 'carlos rodríguez'), (SELECT id FROM materias WHERE codigo = 'sis-231')),
 ((SELECT id FROM docentes WHERE nombre = 'ana martínez'), (SELECT id FROM materias WHERE codigo = 'sis-122')),
 ((SELECT id FROM docentes WHERE nombre = 'ana martínez'), (SELECT id FROM materias WHERE codigo = 'sis-221')),
-((SELECT id FROM docentes WHERE nombre = 'ana martínez'), (SELECT id FROM materias WHERE codigo = 'sis-225')),
 ((SELECT id FROM docentes WHERE nombre = 'luis ñáñez'), (SELECT id FROM materias WHERE codigo = 'fis-111')),
-((SELECT id FROM docentes WHERE nombre = 'luis ñáñez'), (SELECT id FROM materias WHERE codigo = 'mat-142')),
-((SELECT id FROM docentes WHERE nombre = 'luis ñáñez'), (SELECT id FROM materias WHERE codigo = 'mat-143')),
-((SELECT id FROM docentes WHERE nombre = 'sofía vargas'), (SELECT id FROM materias WHERE codigo = 'fil-107')),
-((SELECT id FROM docentes WHERE nombre = 'sofía vargas'), (SELECT id FROM materias WHERE codigo = 'fil-207')),
-((SELECT id FROM docentes WHERE nombre = 'sofía vargas'), (SELECT id FROM materias WHERE codigo = 'sis-161')),
-((SELECT id FROM docentes WHERE nombre = 'rodrigo flores'), (SELECT id FROM materias WHERE codigo = 'sis-211')),
-((SELECT id FROM docentes WHERE nombre = 'rodrigo flores'), (SELECT id FROM materias WHERE codigo = 'sis-214')),
-((SELECT id FROM docentes WHERE nombre = 'rodrigo flores'), (SELECT id FROM materias WHERE codigo = 'sis-215')),
-((SELECT id FROM docentes WHERE nombre = 'elena quispia'), (SELECT id FROM materias WHERE codigo = 'fhc-140')),
-((SELECT id FROM docentes WHERE nombre = 'elena quispia'), (SELECT id FROM materias WHERE codigo = 'fhc-240')),
-((SELECT id FROM docentes WHERE nombre = 'elena quispia'), (SELECT id FROM materias WHERE codigo = 'fhc-340'));
+((SELECT id FROM docentes WHERE nombre = 'sofía vargas'), (SELECT id FROM materias WHERE codigo = 'fil-107'));
 
 -- Calificaciones de docentes
+CREATE TABLE calificacion_docente (
+    id                            BIGSERIAL PRIMARY KEY,
+    id_docente                    BIGINT       NOT NULL REFERENCES docentes (id),
+    id_materia                    BIGINT       NOT NULL REFERENCES materias (id),
+    id_estudiante                 BIGINT       REFERENCES estudiantes (id),
+    claridad_explicaciones        INTEGER      NOT NULL,
+    metodologia                   INTEGER      NOT NULL,
+    relacion_clases_evaluaciones  INTEGER      NOT NULL,
+    gestion                       VARCHAR(255) NOT NULL,
+    CONSTRAINT uk_calificacion_docente UNIQUE (id_estudiante, id_docente, id_materia)
+);
+
 INSERT INTO calificacion_docente (id_docente, id_materia, id_estudiante, claridad_explicaciones, metodologia, relacion_clases_evaluaciones, gestion) VALUES
 ((SELECT id FROM docentes WHERE nombre = 'juan pérez'), (SELECT id FROM materias WHERE codigo = 'sis-111'), (SELECT id FROM estudiantes WHERE correo_electronico = 'pedro.ramirez@unihub.com'), 9, 8, 9, 'año-i'),
 ((SELECT id FROM docentes WHERE nombre = 'maría gonzález'), (SELECT id FROM materias WHERE codigo = 'mat-123'), (SELECT id FROM estudiantes WHERE correo_electronico = 'pedro.ramirez@unihub.com'), 8, 7, 8, 'año-i'),
 ((SELECT id FROM docentes WHERE nombre = 'juan pérez'), (SELECT id FROM materias WHERE codigo = 'sis-112'), (SELECT id FROM estudiantes WHERE correo_electronico = 'lucia.flores@unihub.com'), 7, 8, 9, 'año-i'),
 ((SELECT id FROM docentes WHERE nombre = 'ana martínez'), (SELECT id FROM materias WHERE codigo = 'sis-122'), (SELECT id FROM estudiantes WHERE correo_electronico = 'lucia.flores@unihub.com'), 9, 9, 8, 'año-ii'),
 ((SELECT id FROM docentes WHERE nombre = 'carlos rodríguez'), (SELECT id FROM materias WHERE codigo = 'sis-121'), (SELECT id FROM estudiantes WHERE correo_electronico = 'miguel.choque@unihub.com'), 6, 7, 7, 'año-i'),
-((SELECT id FROM docentes WHERE nombre = 'rodrigo flores'), (SELECT id FROM materias WHERE codigo = 'sis-211'), (SELECT id FROM estudiantes WHERE correo_electronico = 'miguel.choque@unihub.com'), 8, 8, 9, 'año-ii'),
+((SELECT id FROM docentes WHERE nombre = 'juan pérez'), (SELECT id FROM materias WHERE codigo = 'sis-111'), (SELECT id FROM estudiantes WHERE correo_electronico = 'miguel.choque@unihub.com'), 8, 8, 9, 'año-ii'),
 ((SELECT id FROM docentes WHERE nombre = 'sofía vargas'), (SELECT id FROM materias WHERE codigo = 'fil-107'), (SELECT id FROM estudiantes WHERE correo_electronico = 'elena.nusta@unihub.com'), 9, 9, 10, 'año-i'),
-((SELECT id FROM docentes WHERE nombre = 'elena quispia'), (SELECT id FROM materias WHERE codigo = 'fhc-140'), (SELECT id FROM estudiantes WHERE correo_electronico = 'jorge.quispia@unihub.com'), 7, 6, 8, 'año-ii');
+((SELECT id FROM docentes WHERE nombre = 'carlos rodríguez'), (SELECT id FROM materias WHERE codigo = 'sis-133'), (SELECT id FROM estudiantes WHERE correo_electronico = 'jorge.quispia@unihub.com'), 7, 6, 8, 'año-ii'),
+((SELECT id FROM docentes WHERE nombre = 'ana martínez'), (SELECT id FROM materias WHERE codigo = 'sis-221'), (SELECT id FROM estudiantes WHERE correo_electronico = 'andrea.cardenas@unihub.com'), 8, 7, 9, 'año-i'),
+((SELECT id FROM docentes WHERE nombre = 'maría gonzález'), (SELECT id FROM materias WHERE codigo = 'mat-132'), (SELECT id FROM estudiantes WHERE correo_electronico = 'fernando.ortiz@unihub.com'), 6, 7, 8, 'año-ii');
 
 -- Calificaciones de materias
+CREATE TABLE calificacion_materia (
+    id                  BIGSERIAL PRIMARY KEY,
+    id_materia          BIGINT       NOT NULL REFERENCES materias (id),
+    id_estudiante       BIGINT       REFERENCES estudiantes (id),
+    dificultad          INTEGER      NOT NULL,
+    carga               INTEGER      NOT NULL,
+    conocimiento_previo INTEGER      NOT NULL,
+    prerequisitos_text  VARCHAR(255) NOT NULL,
+    predominio          VARCHAR(255) NOT NULL,
+    gestion             VARCHAR(255) NOT NULL
+);
+
 INSERT INTO calificacion_materia (id_materia, id_estudiante, dificultad, carga, conocimiento_previo, prerequisitos_text, predominio, gestion) VALUES
 ((SELECT id FROM materias WHERE codigo = 'sis-111'), (SELECT id FROM estudiantes WHERE correo_electronico = 'pedro.ramirez@unihub.com'), 4, 5, 6, 'ninguno', 'practico', 'i-año'),
 ((SELECT id FROM materias WHERE codigo = 'mat-123'), (SELECT id FROM estudiantes WHERE correo_electronico = 'pedro.ramirez@unihub.com'), 7, 6, 5, 'ninguno', 'teorico', 'i-año'),
 ((SELECT id FROM materias WHERE codigo = 'sis-112'), (SELECT id FROM estudiantes WHERE correo_electronico = 'lucia.flores@unihub.com'), 5, 6, 7, 'sis-111', 'practico', 'i-año'),
 ((SELECT id FROM materias WHERE codigo = 'mat-132'), (SELECT id FROM estudiantes WHERE correo_electronico = 'miguel.choque@unihub.com'), 8, 7, 6, 'mat-123', 'teorico', 'ii-año'),
 ((SELECT id FROM materias WHERE codigo = 'sis-122'), (SELECT id FROM estudiantes WHERE correo_electronico = 'elena.nusta@unihub.com'), 6, 7, 5, 'sis-112', 'practico', 'ii-año'),
-((SELECT id FROM materias WHERE codigo = 'sis-211'), (SELECT id FROM estudiantes WHERE correo_electronico = 'jorge.quispia@unihub.com'), 7, 8, 6, 'sis-113', 'practico', 'ii-año'),
-((SELECT id FROM materias WHERE codigo = 'sis-214'), (SELECT id FROM estudiantes WHERE correo_electronico = 'pedro.ramirez@unihub.com'), 6, 7, 5, 'sis-113, sis-122', 'practico', 'i-año'),
-((SELECT id FROM materias WHERE codigo = 'sis-225'), (SELECT id FROM estudiantes WHERE correo_electronico = 'lucia.flores@unihub.com'), 5, 5, 6, 'sis-122', 'teorico', 'ii-año');
+((SELECT id FROM materias WHERE codigo = 'sis-133'), (SELECT id FROM estudiantes WHERE correo_electronico = 'jorge.quispia@unihub.com'), 7, 8, 6, 'sis-121', 'practico', 'ii-año'),
+((SELECT id FROM materias WHERE codigo = 'sis-221'), (SELECT id FROM estudiantes WHERE correo_electronico = 'andrea.cardenas@unihub.com'), 6, 7, 5, 'sis-122', 'practico', 'i-año'),
+((SELECT id FROM materias WHERE codigo = 'mat-123'), (SELECT id FROM estudiantes WHERE correo_electronico = 'fernando.ortiz@unihub.com'), 5, 5, 6, 'ninguno', 'teorico', 'ii-año'),
+((SELECT id FROM materias WHERE codigo = 'sis-121'), (SELECT id FROM estudiantes WHERE correo_electronico = 'paola.munoz@unihub.com'), 4, 6, 5, 'ninguno', 'teorico', 'i-año'),
+((SELECT id FROM materias WHERE codigo = 'fis-111'), (SELECT id FROM estudiantes WHERE correo_electronico = 'ricardo.loza@unihub.com'), 6, 5, 7, 'ninguno', 'practico', 'i-año');
