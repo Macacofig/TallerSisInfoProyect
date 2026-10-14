@@ -24,21 +24,34 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws IOException {
+    public boolean preHandle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Object handler
+    ) throws IOException {
+
+        // Permite las comprobaciones previas de CORS sin exigir JWT.
+        if (HttpMethod.OPTIONS.matches(request.getMethod())) {
+            return true;
+        }
+
         if (esPublica(request)) {
             return true;
         }
 
         String authorization = request.getHeader("Authorization");
+
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             return rechazar(response);
         }
 
-        Optional<Long> studentId = jwtService.obtenerIdEstudiante(authorization.substring(7));
+        Optional<Long> studentId =
+                jwtService.obtenerIdEstudiante(authorization.substring(7));
+
         if (studentId.isEmpty()) {
             return rechazar(response);
         }
+
         request.setAttribute(STUDENT_ID_ATTRIBUTE, studentId.get());
         return true;
     }
