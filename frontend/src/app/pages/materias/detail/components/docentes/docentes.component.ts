@@ -61,6 +61,10 @@ import {
 } from '../../../../../services/language.service';
 
 import {
+  AuthService
+} from '../../../../../services/auth.service';
+
+import {
   MESSAGES
 } from '../../../../../strings/materias/materias.messages';
 
@@ -134,6 +138,7 @@ export class DocentesComponent implements OnChanges {
   materia!: Materia;
 
   private readonly languageService = inject(LanguageService);
+  private readonly authService = inject(AuthService);
 
   get mensajes() {
     return this.languageService.getMessages(
@@ -238,8 +243,9 @@ export class DocentesComponent implements OnChanges {
         ? 'I'
         : 'II';
 
-  private readonly idEstudianteActual =
-    APP_CONFIG.DEMO.STUDENT_ID;
+  private get idEstudianteActual(): number {
+    return this.authService.obtenerUsuario()?.id ?? 0;
+  }
 
   private readonly destroyRef =
     inject(DestroyRef);

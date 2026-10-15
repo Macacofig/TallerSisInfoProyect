@@ -10,6 +10,7 @@ import { Materia } from '../../../../../models/materia';
 import { CalificacionesDocenteService } from '../../../../../services/calificaciones-docente.service';
 import { DocentesService } from '../../../../../services/docentes.service';
 import { LanguageService } from '../../../../../services/language.service';
+import { AuthService } from '../../../../../services/auth.service';
 import { DOCENTES_MESSAGES } from '../../../../../strings/materias/docentes.messages';
 import { DOCENTES_MESSAGES_EN } from '../../../../../strings/materias/docentes-ingles.messages';
 import { DocentesComponent } from './docentes.component';
@@ -69,6 +70,19 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     obtenerPorMateria: vi.fn(() => of(docentes))
   };
 
+  const authServiceMock = {
+    obtenerUsuario: vi.fn(() => ({
+      accessToken: 'token-de-prueba',
+      tokenType: 'Bearer',
+      expiresIn: 3600,
+      id: 2,
+      nombre: 'Estudiante Demo',
+      telefono: '70000000',
+      correoElectronico: 'demo@ucb.edu.bo',
+      carrera: 'Ingeniería de Sistemas'
+    }))
+  };
+
   const calificacionesServiceMock = {
     obtenerGestionesPorMateria: vi.fn(() => of(['2026-I', '2026-II'])),
     obtenerPromediosPorMateria: vi.fn(() => of(promedios)),
@@ -102,7 +116,8 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       imports: [DocentesComponent],
       providers: [
         { provide: DocentesService, useValue: docentesServiceMock },
-        { provide: CalificacionesDocenteService, useValue: calificacionesServiceMock }
+        { provide: CalificacionesDocenteService, useValue: calificacionesServiceMock },
+        { provide: AuthService, useValue: authServiceMock }
       ]
     }).compileComponents();
 
