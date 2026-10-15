@@ -35,7 +35,7 @@ import {
   CalificacionesMateriaService
 } from '../../../services/calificaciones-materia.service';
 
-import { APP_CONFIG } from '../../../config/app-config';
+import { AuthService } from '../../../services/auth.service';
 import { LanguageService } from '../../../services/language.service';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
 import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
@@ -90,6 +90,7 @@ type MateriaDetailMessageKey = keyof typeof MESSAGES;
 export class MateriaDetalleComponent implements OnInit {
 
   private readonly languageService = inject(LanguageService);
+  private readonly authService = inject(AuthService);
 
   get mensajes() {
     return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
@@ -154,8 +155,9 @@ export class MateriaDetalleComponent implements OnInit {
 
   formularioCalificacion: FormGroup;
 
-  private readonly idEstudianteActual =
-    APP_CONFIG.DEMO.STUDENT_ID;
+  private get idEstudianteActual(): number {
+    return this.authService.obtenerUsuario()?.id ?? 0;
+  }
 
   constructor(
     private readonly route: ActivatedRoute,
