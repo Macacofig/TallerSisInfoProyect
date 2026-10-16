@@ -66,6 +66,31 @@ class MateriaServiceTest {
     }
 
     @Test
+    void deberiaPropagarPrerequisitosAcademicos() {
+        Materia materia = materia("sis-112", "programación i", "ingeniería en sistemas", 2);
+        materia.setPrerequisitos(List.of("sis-111", "mat-123"));
+        configurarMaterias(materia);
+
+        assertEquals(List.of("sis-111", "mat-123"), obtener(null, null, null).getFirst().prerequisitos());
+    }
+
+    @Test
+    void deberiaPropagarListaVaciaDePrerequisitos() {
+        configurarMaterias(materia("sis-111", "introducción a la programación", "ingeniería en sistemas", 1));
+
+        assertEquals(List.of(), obtener(null, null, null).getFirst().prerequisitos());
+    }
+
+    @Test
+    void deberiaNormalizarPrerequisitosNulosComoListaVacia() {
+        Materia materia = materia("sis-111", "introducción a la programación", "ingeniería en sistemas", 1);
+        materia.setPrerequisitos(null);
+        configurarMaterias(materia);
+
+        assertEquals(List.of(), obtener(null, null, null).getFirst().prerequisitos());
+    }
+
+    @Test
     @Order(1)
     void deberiaRetornarTodasLasMaterias() {
         configurarMaterias(

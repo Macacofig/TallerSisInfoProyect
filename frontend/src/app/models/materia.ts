@@ -9,6 +9,7 @@ export interface Materia {
   nombre: string;
   carrera: string;
   semestre: number;
+  prerequisitos?: string[];
   // Campos de HU-04 opcionales hasta que la API incluya esta información.
   descripcion?: string | null;
   conocimientosPreviosRecomendados?: string | null;
