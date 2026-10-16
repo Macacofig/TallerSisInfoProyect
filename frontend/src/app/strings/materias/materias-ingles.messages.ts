@@ -141,6 +141,7 @@ export const MESSAGES_EN = {
   MODAL_RECOMMENDED_PREREQUISITES_LABEL:
     'Recommended previous knowledge',
   MODAL_INFORMATION_UNAVAILABLE: 'Information unavailable',
+  MODAL_NO_PREREQUISITES: 'No prerequisites',
   MODAL_DOMINANCE_LABEL: 'Predominance',
   MODAL_DIFFICULTY_LABEL: 'Difficulty',
   MODAL_WORKLOAD_LABEL: 'Workload',

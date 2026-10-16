@@ -117,6 +117,54 @@ describe('HU-04: visualizar información de una materia', () => {
     expect(dialogo.querySelector('h2')?.textContent).toBe('Álgebra lineal');
   });
 
+  it('muestra múltiples prerequisitos traducidos, conserva códigos y actualiza el idioma sin consultar la API', () => {
+    responder([{ ...materia, prerequisitos: ['sis-111', 'mat-123', 'codigo-desconocido'] }]);
+    abrir();
+    const seccion = () => dialogo.querySelector('[aria-labelledby="prerrequisitos-detalle"]')!;
+    expect(seccion().querySelectorAll('p')).toHaveLength(3);
+    expect(seccion().textContent).toContain(`sis-111 — ${MESSAGES.SUBJECT_NAMES['SIS-111']}`);
+    expect(seccion().textContent).toContain(`mat-123 — ${MESSAGES.SUBJECT_NAMES['MAT-123']}`);
+    expect(seccion().querySelectorAll('p')[2].textContent).toBe('codigo-desconocido');
+
+    TestBed.inject(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    expect(seccion().querySelector('h3')?.textContent).toBe('Prerequisites');
+    expect(seccion().textContent).toContain(`sis-111 — ${MESSAGES_EN.SUBJECT_NAMES['SIS-111']}`);
+    expect(seccion().textContent).toContain(`mat-123 — ${MESSAGES_EN.SUBJECT_NAMES['MAT-123']}`);
+
+    TestBed.inject(LanguageService).setLanguage('es');
+    fixture.detectChanges();
+    expect(seccion().textContent).toContain(`sis-111 — ${MESSAGES.SUBJECT_NAMES['SIS-111']}`);
+    http.expectNone(() => true);
+  });
+
+  it('distingue lista vacía de campo ausente y limpia prerequisitos al cambiar de materia', () => {
+    responder([
+      { ...materia, prerequisitos: ['sis-111', 'mat-123'] },
+      { ...materia, id: 12, codigo: 'VACIA', prerequisitos: [] },
+      { ...materia, id: 13, codigo: 'AUSENTE' }
+    ]);
+    abrir();
+    dialogo.close();
+    fixture.detectChanges();
+    abrir(1);
+    const seccion = () => dialogo.querySelector('[aria-labelledby="prerrequisitos-detalle"]')!;
+    expect(seccion().querySelector('p')?.textContent).toBe('Sin prerequisitos');
+    expect(seccion().textContent).not.toContain('sis-111');
+    expect(seccion().textContent).not.toContain('mat-123');
+
+    TestBed.inject(LanguageService).setLanguage('en');
+    fixture.detectChanges();
+    expect(seccion().querySelector('p')?.textContent).toBe('No prerequisites');
+    dialogo.close();
+    fixture.detectChanges();
+    abrir(2);
+    expect(seccion().querySelector('p')?.textContent).toBe(MESSAGES_EN.MODAL_INFORMATION_UNAVAILABLE);
+    TestBed.inject(LanguageService).setLanguage('es');
+    fixture.detectChanges();
+    expect(seccion().querySelector('p')?.textContent).toBe('Información no disponible');
+  });
+
   it('Explorar materia navega con el id de la tarjeta seleccionada sin abrir el modal', () => {
     responder([materia, {
       id: 25, codigo: 'MAT-102', nombre: 'Matemática II', carrera: 'Ingeniería Civil', semestre: 2

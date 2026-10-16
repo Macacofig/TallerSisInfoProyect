@@ -332,8 +332,15 @@
       </dl>
       <section class="materia-detalle__seccion" aria-labelledby="prerrequisitos-detalle">
         <h3 id="prerrequisitos-detalle">{{ MESSAGES.MODAL_ACADEMIC_PREREQUISITES_LABEL }}</h3>
-        <!-- El contrato de materias aún no proporciona prerrequisitos académicos. -->
-        <p>{{ MESSAGES.MODAL_INFORMATION_UNAVAILABLE }}</p>
+        @if (materia.prerequisitos === undefined) {
+          <p>{{ MESSAGES.MODAL_INFORMATION_UNAVAILABLE }}</p>
+        } @else if (materia.prerequisitos.length === 0) {
+          <p>{{ MESSAGES.MODAL_NO_PREREQUISITES }}</p>
+        } @else {
+          @for (codigo of materia.prerequisitos; track $index) {
+            <p>{{ presentarPrerequisito(codigo) }}</p>
+          }
+        }
       </section>
       <section class="materia-detalle__seccion" aria-labelledby="conocimientos-detalle">
         <h3 id="conocimientos-detalle">{{ MESSAGES.MODAL_RECOMMENDED_PREREQUISITES_LABEL }}</h3>

@@ -12,6 +12,17 @@ describe('Api', () => {
     service = TestBed.inject(ApiService);
   });
 
+  it('conserva los prerequisitos de la respuesta de materias', () => {
+    const respuesta = [{
+      id: 1, codigo: 'sis-112', nombre: 'programación i',
+      carrera: 'ingeniería en sistemas', semestre: 2, prerequisitos: ['sis-111']
+    }];
+    service.obtenerMaterias().subscribe(materias => expect(materias).toEqual(respuesta));
+    TestBed.inject(HttpTestingController)
+      .expectOne({ method: 'GET', url: 'https://tallersisinfoproyect.onrender.com/api/materias' })
+      .flush(respuesta);
+  });
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
