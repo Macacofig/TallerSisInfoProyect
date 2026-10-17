@@ -1,0 +1,254 @@
+
+:host {
+  display: block;
+  color: #10213f;
+}
+
+.ayudantes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: #f7f9fc;
+  background-image: radial-gradient(#dce5f0 0.8px, transparent 0.8px);
+  background-size: 18px 18px;
+  border-radius: 16px;
+}
+
+.ayudantes-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce3ed;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgb(16 33 63 / 4%);
+}
+
+.ayudantes-info-texto {
+  min-width: 0;
+}
+
+.ayudantes-info-texto h2 {
+  margin: 0 0 8px;
+  color: #10213f;
+  font-size: 1.15rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.ayudantes-info-texto p {
+  margin: 0;
+  color: #667085;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.ayudantes-info-boton {
+  flex-shrink: 0;
+  padding: 11px 16px;
+  color: #475467;
+  background: #ffffff;
+  border: 1px solid #dce3ed;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.ayudantes-info-boton:hover {
+  background: #f7f9fc;
+  border-color: #b7c6d9;
+}
+
+.ayudantes-lista {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 290px), 360px)
+  );
+  gap: 20px;
+  align-items: start;
+}
+
+.ayudante-card {
+  min-width: 0;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce3ed;
+  border-radius: 15px;
+  box-shadow: 0 5px 18px rgb(16 33 63 / 5%);
+}
+
+.ayudante-identidad {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.ayudante-avatar {
+  display: flex;
+  flex: 0 0 52px;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  color: #875b16;
+  background: #fff0cf;
+  border: 1px solid #f1d9a6;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.ayudante-datos {
+  min-width: 0;
+}
+
+.ayudante-datos h3 {
+  margin: 0 0 7px;
+  color: #10213f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.ayudante-verificado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #53677f;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.verificado-punto {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  background: #3d9870;
+  border-radius: 50%;
+}
+
+.ayudante-horario {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: #475467;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.icono-reloj {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #b98535;
+}
+
+.ayudante-calificacion {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding: 13px 14px;
+  background: #fffdf8;
+  border: 1px solid #f0e2c8;
+  border-radius: 10px;
+}
+
+.icono-estrella {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  color: #b98535;
+}
+
+.calificacion-valor {
+  color: #10213f;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.calificacion-etiqueta {
+  color: #667085;
+  font-size: 0.82rem;
+}
+
+.ayudante-contacto {
+  width: 100%;
+  padding: 12px 16px;
+  color: #ffffff;
+  background: #165dab;
+  border: 1px solid #165dab;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.ayudante-contacto:hover {
+  background: #124d90;
+  box-shadow: 0 3px 9px rgb(22 93 171 / 18%);
+}
+
+.ayudante-contacto:focus-visible,
+.ayudantes-info-boton:focus-visible {
+  outline: 3px solid #91bff0;
+  outline-offset: 3px;
+}
+
+.ayudante-privacidad {
+  margin: 12px 0 0;
+  color: #7b8798;
+  font-size: 0.73rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .ayudantes-container {
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .ayudantes-info {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .ayudantes-info-boton {
+    width: 100%;
+  }
+
+  .ayudantes-lista {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ayudante-card {
+    padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ayudantes-info-boton,
+  .ayudante-contacto {
+    transition: none;
+  }
+}

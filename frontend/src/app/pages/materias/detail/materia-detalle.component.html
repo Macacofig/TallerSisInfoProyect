@@ -243,21 +243,13 @@
 
     </section>
     } @else if (seccionActiva === 'docentes') {
-
-      <app-docentes
-        [materia]="materia"
-      />
-
-    } @else {
-
+        <app-docentes [materia]="materia" />
+      } @else if (seccionActiva === 'ayudantes') {
+        <app-ayudantes class="component"></app-ayudantes>
+      } @else {
       <section class="resumen-calificaciones">
-
-        <p>
-          {{ mensajes.MATERIA_DETAIL_SECTION_PENDING }}
-        </p>
-
+        <p>{{ mensajes.MATERIA_DETAIL_SECTION_PENDING }}</p>
       </section>
-
     }
 
     @if (mostrarFormularioCalificacion) {

@@ -70,11 +70,14 @@ import {
   DocentesComponent
 } from './components/docentes/docentes.component';
 
+import { 
+  AyudantesComponent 
+} from './components/ayudantes/ayudantes.component';
+
 type MateriaDetailMessageKey = keyof typeof MESSAGES;
 
 @Component({
   selector: 'app-materia-detalle',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     NombreMateriaPipe,
@@ -82,7 +85,8 @@ type MateriaDetailMessageKey = keyof typeof MESSAGES;
     FiltroGestionesComponent,
     HistorialCalificacionesComponent,
     SeccionesDetalleComponent,
-    DocentesComponent
+    DocentesComponent,
+    AyudantesComponent,
   ],
   templateUrl: './materia-detalle.component.html',
   styleUrl: './materia-detalle.component.css'
@@ -264,6 +268,7 @@ export class MateriaDetalleComponent implements OnInit {
   seleccionarSeccion(
     seccion: SeccionDetalleMateria
   ): void {
+     console.log('Pestaña seleccionada:', seccion);
     this.seccionActiva =
       seccion;
   }
