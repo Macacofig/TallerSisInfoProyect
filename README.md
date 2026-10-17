@@ -20,14 +20,6 @@ Además, UniHub incorpora herramientas para **organizar horarios** y un sistema 
 
 ### Angular
 
-**Puerto de desarrollo:**
-
-```text
-http://localhost:4200
-```
-
----
-
 ## Backend
 
 ### Java
@@ -52,14 +44,6 @@ PostgreSQL
 
 Spring Boot será responsable de exponer los endpoints que utilizará Angular.
 
-**Puerto del backend:**
-
-```text
-http://localhost:8081
-```
-
----
-
 ## Base de datos
 
 ### PostgreSQL
@@ -78,12 +62,6 @@ Almacenará información relacionada con:
 * Horarios.
 * Entre otros datos del sistema.
 
-**Puerto de Desarrollo:**
-
-```text
-5432
-```
-
 ---
 
 ## ORM
@@ -96,7 +74,7 @@ Esto permitirá trabajar con objetos Java en lugar de realizar manualmente todas
 
 ---
 
-### Docker
+### Puesta en marcha
 
 Para levantar el proyecto:
 
@@ -124,44 +102,15 @@ docker compose ps
 
 ---
 
-# ⚙️ Puesta en marcha
-
-## Requisitos
-
-Para ejecutar el proyecto se necesita tener instalado:
-
-* Node.js
-* npm
-* Angular CLI
-* Java JDK
-* Maven Wrapper
-* Docker
-* Docker Compose
-* Git
-
-Las versiones utilizadas durante el desarrollo pueden consultarse mediante:
-
-```bash
-node -v
-npm -v
-ng version
-
-java -version
-javac -version
-./mvnw -version
-
-docker --version
-docker compose version
-
-git --version
-```
-
-## Catalog administration
-
-Adding docentes and linking them to materias requires `X-Catalog-Admin-Token`. Set `CATALOG_ADMIN_TOKEN` in the root `.env` to a private random secret of at least 32 bytes. Leave it empty to keep these catalog write operations disabled. Do not reuse `JWT_SECRET` for this purpose.
-
-## HTTPS for a self-hosted backend
-
-The backend can terminate HTTPS directly when deployed with a PKCS12 certificate. Place the certificate at the configured host path and set `SERVER_SSL_ENABLED=true`, `SERVER_SSL_KEY_STORE_HOST_PATH`, `SERVER_SSL_KEY_STORE`, `SERVER_SSL_KEY_STORE_PASSWORD`, and `SERVER_SSL_KEY_ALIAS` in the deployment environment. The Compose file mounts the certificate read-only and publishes the configured backend port. Keep the keystore password outside version control. The default `SERVER_SSL_ENABLED=false` is for local development; the deployed frontend must use the matching HTTPS backend URL.
-
 # 🚀 Funcionalidades
+
+Idea general de lo que ofrece el backend, agrupado por recurso:
+
+* **Materia:** Mostrar materias con filtros opcionales (nombre, carrera y semestre), listar las carreras disponibles.
+* **Docente:** Agregar docentes (solo administrador de catálogo), mostrar los docentes de una materia.
+* **Docente-Materia:** Asociar un docente a una materia (solo administrador de catálogo).
+* **Estudiante:** Registrarse, iniciar sesión (genera token JWT), actualizar su perfil.
+* **Calificación Materia:** Calificar materias (crear, editar y eliminar la calificación propia), ver la calificación hecha en una materia, y obtener estadísticas y promedios de una materia o de todas las materias, con filtros por gestión y rango de gestiones.
+* **Calificación Docente:** Calificar docentes (crear, editar y eliminar la calificación propia), ver la calificación hecha a un docente en una materia, y obtener promedios por docente de una materia, con filtros por gestión y rango de gestiones.
+* **Horario:** Normalizar materias crudas del usuario y generar combinaciones de horarios posibles.
+* **Test:** Comprobar el estado de la API.
