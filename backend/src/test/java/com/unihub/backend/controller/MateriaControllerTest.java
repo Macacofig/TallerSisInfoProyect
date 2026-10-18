@@ -34,7 +34,7 @@ class MateriaControllerTest {
         private static int numeroPrueba;
 
     private MateriaResponse materia(long id, String codigo, String nombre, String carrera, int semestre) {
-        return new MateriaResponse(id, codigo, nombre, carrera, semestre);
+        return new MateriaResponse(id, codigo, nombre, carrera, semestre, List.of());
     }
 
     private void mostrarResultado(String descripcion) {
@@ -52,6 +52,23 @@ class MateriaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.size()").value(cantidad));
+    }
+
+    @Test
+    void deberiaRetornarPrerequisitosAcademicos() throws Exception {
+        when(materiaService.obtenerMaterias(null, null, null)).thenReturn(List.of(
+                new MateriaResponse(1L, "sis-112", "programación i", "ingeniería en sistemas", 2,
+                        List.of("sis-111", "mat-123")),
+                materia(2, "sis-111", "introducción a la programación", "ingeniería en sistemas", 1)
+        ));
+
+        mockMvc.perform(get("/api/materias"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].prerequisitos.size()").value(2))
+                .andExpect(jsonPath("$[0].prerequisitos[0]").value("sis-111"))
+                .andExpect(jsonPath("$[0].prerequisitos[1]").value("mat-123"))
+                .andExpect(jsonPath("$[1].prerequisitos").isArray())
+                .andExpect(jsonPath("$[1].prerequisitos").isEmpty());
     }
 
     @Test

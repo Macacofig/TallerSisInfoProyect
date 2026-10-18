@@ -219,6 +219,14 @@ export class MateriasComponent implements OnInit {
     );
   }
 
+  presentarPrerequisito(codigo: string): string {
+    const traducciones: Readonly<Record<string, string>> = this.MESSAGES.SUBJECT_NAMES;
+    const codigoNormalizado = codigo.toUpperCase();
+    return traducciones[codigoNormalizado]
+      ? `${codigo} — ${presentarNombreMateriaPorCodigo(codigoNormalizado, codigo, traducciones)}`
+      : codigo;
+  }
+
   obtenerCarreraVisible(materia: Materia): string {
     const indiceDemo = this.obtenerIndiceMateriaDemo(materia);
     return indiceDemo >= 0
