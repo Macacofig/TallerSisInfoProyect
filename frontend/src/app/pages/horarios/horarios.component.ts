@@ -1,18 +1,33 @@
-import { Component, inject } from '@angular/core';
-import {
-  MATERIAS_HORARIOS,
-  MateriaHorario
-} from '../../data/horarios.data';
-import {
-  MATERIAS_DISPONIBLES,
-  MateriaDisponible
-} from '../../data/materias-disponibles.data';
+import { ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timeout } from 'rxjs';
+import { MateriaHorario, OpcionHorario } from '../../data/horarios.data';
 import { LanguageService } from '../../services/language.service';
+import { HorariosService } from '../../services/horarios.service';
+import {
+  HorarioMateriaRequest,
+  HorarioNormalizacionResponse
+} from '../../models/horario';
+import { APP_CONFIG } from '../../config/app-config';
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
 import { HORARIOS_MESSAGES as HORARIOS_MESSAGES_EN } from '../../strings/horarios/horarios-ingles.messages';
 import { MESSAGES } from '../../strings/materias/materias.messages';
 import { MESSAGES_EN } from '../../strings/materias/materias-ingles.messages';
 import { presentarNombreMateriaPorCodigo } from '../../utils/text.utils';
+
+interface BloqueFormulario {
+  dia: number;
+  horaInicio: string;
+  horaFin: string;
+}
+
+interface MateriaFormulario {
+  sigla: string;
+  nombre: string;
+  paralelo: number;
+  docente: string;
+  bloques: BloqueFormulario[];
+}
 
 @Component({
   selector: 'app-horarios',
@@ -24,6 +39,22 @@ import { presentarNombreMateriaPorCodigo } from '../../utils/text.utils';
 export class HorariosComponent {
 
   private readonly languageService = inject(LanguageService);
+  private readonly horariosService = inject(HorariosService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+
+  private static readonly PALETA_COLORES = [
+    '#0b3c8c',
+    '#2e7d5b',
+    '#e3a82b',
+    '#7957a8',
+    '#b03a48',
+    '#2b7a9e',
+    '#8a5a2b',
+    '#4f5d73'
+  ];
+
+  private static readonly TIEMPO_ESPERA = APP_CONFIG.TIMEOUTS.API_REQUEST;
 
   get textos() {
     return this.languageService.getMessages(HORARIOS_MESSAGES, HORARIOS_MESSAGES_EN);
@@ -33,11 +64,11 @@ export class HorariosComponent {
     return this.textos.DAYS;
   }
 
-  obtenerEtiquetaOpcion(etiqueta: string): string {
-    return etiqueta.replace(
-      HORARIOS_MESSAGES.OPTION_LABEL,
-      this.textos.OPTION_LABEL
-    );
+  get opcionesDia(): { valor: number; nombre: string }[] {
+    return this.dias.map((nombre, indice) => ({
+      valor: indice + 1,
+      nombre
+    }));
   }
 
   obtenerHorarioVisible(horario: string): string {
@@ -56,16 +87,19 @@ export class HorariosComponent {
     );
   }
 
-  readonly materias: MateriaHorario[] = MATERIAS_HORARIOS;
+  readonly materias: MateriaHorario[] = [];
 
-  readonly materiasDisponibles: MateriaDisponible[] = MATERIAS_DISPONIBLES;
+  materiasCrudas: HorarioMateriaRequest[] = [];
 
   modalAgregarAbierto = false;
 
   modalDescargarAbierto = false;
 
-  semestreSeleccionado = 1;
-  materiasParaAgregar: string[] = [];
+  formulario: MateriaFormulario = this.crearFormularioVacio();
+
+  errorFormulario = '';
+
+  private readonly materiasExpandidas = new Set<string>();
 
   materiasSeleccionadas: MateriaHorario[] = [];
 
@@ -99,11 +133,173 @@ export class HorariosComponent {
 
 
   constructor() {
+    this.render();
+  }
+
+  /* =========================
+     CARGA DESDE EL BACKEND
+     ========================= */
+
+  cargarDatos(): void {
+    const solicitud = this.materiasCrudas.map(materia => ({
+      ...materia,
+      horarios: (materia.horarios ?? []).map(bloque => ({ ...bloque }))
+    }));
+
+    if (solicitud.length === 0) {
+      this.materias.splice(0, this.materias.length);
+      this.materiasSeleccionadas = [];
+      this.paginaMaterias = 1;
+      this.render();
+      this.changeDetector.markForCheck();
+      return;
+    }
+
+    const orden = this.ordenMaterias(solicitud);
+
+    this.horariosService.obtenerDatos(solicitud).pipe(
+      timeout(HorariosComponent.TIEMPO_ESPERA),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: respuesta => this.aplicarRespuesta(respuesta, orden),
+      error: () => this.changeDetector.markForCheck()
+    });
+  }
+
+  private ordenMaterias(
+    solicitud: HorarioMateriaRequest[]
+  ): { codigo: string; nombre: string }[] {
+    const vistos = new Set<string>();
+    const orden: { codigo: string; nombre: string }[] = [];
+
+    for (const materia of solicitud) {
+      const codigo = (materia.siglaMateria ?? '').trim();
+
+      if (!codigo || vistos.has(this.normalizarTexto(codigo))) {
+        continue;
+      }
+
+      vistos.add(this.normalizarTexto(codigo));
+      orden.push({ codigo, nombre: materia.nombreMateria });
+    }
+
+    return orden;
+  }
+
+  private aplicarRespuesta(
+    respuesta: HorarioNormalizacionResponse,
+    orden: { codigo: string; nombre: string }[]
+  ): void {
+    const porId = new Map<number, { codigo: string; nombre: string }>();
+    orden.forEach((materia, indice) => porId.set(indice + 1, materia));
+
+    const porNombre = new Map<string, { codigo: string; nombre: string }>();
+    for (const materia of orden) {
+      const clave = this.normalizarTexto(materia.nombre);
+
+      if (!porNombre.has(clave)) {
+        porNombre.set(clave, materia);
+      }
+    }
+
+    const seleccionPrevia = new Map(
+      this.materias.map(materia => [materia.codigo, materia.seleccionada])
+    );
+
+    const actualizaciones = new Map<string, MateriaHorario>();
+
+    for (const materiaRespuesta of respuesta.materias ?? []) {
+      const nombreRespuesta = this.normalizarTexto(
+        materiaRespuesta.NombreMateria
+      );
+
+      let fuente = porId.get(materiaRespuesta.idMateria);
+
+      if (
+        fuente &&
+        this.normalizarTexto(fuente.nombre) !== nombreRespuesta
+      ) {
+        fuente = porNombre.get(nombreRespuesta);
+      }
+
+      fuente = fuente ?? porNombre.get(nombreRespuesta);
+
+      const codigo = fuente?.codigo ?? `MAT-${materiaRespuesta.idMateria}`;
+
+      const opciones: OpcionHorario[] = (
+        materiaRespuesta.Ofertas ?? []
+      ).map(oferta => ({
+        docente: (oferta.Docente ?? '').trim(),
+        paralelo: oferta.Paralelo,
+        horario: (oferta.Horarios ?? [])
+          .map(
+            bloque =>
+              `${bloque.Dia} ${this.compactarHoras(bloque.Horas)}`
+          )
+          .join(' · ')
+      }));
+
+      actualizaciones.set(codigo, {
+        codigo,
+        nombre: materiaRespuesta.NombreMateria,
+        seleccionada: seleccionPrevia.get(codigo) ?? true,
+        opciones
+      });
+    }
+
+    const resultado: MateriaHorario[] = [];
+    const agregados = new Set<string>();
+
+    for (const fuente of orden) {
+      resultado.push(actualizaciones.get(fuente.codigo) ?? {
+        codigo: fuente.codigo,
+        nombre: fuente.nombre,
+        seleccionada: seleccionPrevia.get(fuente.codigo) ?? true,
+        opciones: []
+      });
+      agregados.add(fuente.codigo);
+    }
+
+    for (const [codigo, materia] of actualizaciones) {
+      if (!agregados.has(codigo)) {
+        resultado.push(materia);
+        agregados.add(codigo);
+      }
+    }
+
+    for (const materia of this.materias) {
+      if (agregados.has(materia.codigo)) {
+        continue;
+      }
+
+      resultado.push(materia);
+      agregados.add(materia.codigo);
+    }
+
+    this.materias.splice(0, this.materias.length, ...resultado);
     this.materiasSeleccionadas = this.materias.filter(
       materia => materia.seleccionada
     );
+    this.paginaMaterias = Math.max(
+      1,
+      Math.min(this.paginaMaterias, this.totalPaginasMaterias)
+    );
 
     this.render();
+    this.changeDetector.markForCheck();
+  }
+
+  private compactarHoras(horas: string): string {
+    return (horas ?? '').replace(/\s*-\s*/g, '-');
+  }
+
+  private normalizarTexto(valor: string): string {
+    return (valor ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
   }
 
   /* =========================
@@ -190,17 +386,30 @@ export class HorariosComponent {
   private obtenerHorarioPrincipal(
     materia: MateriaHorario
   ): string {
-    const indiceOpcion = this.paginaActual - 1;
+    const opciones = materia.opciones ?? [];
+    const indice = this.paginaActual - 1;
 
-    if (
-      !materia.opciones ||
-      indiceOpcion < 0 ||
-      indiceOpcion >= materia.opciones.length
-    ) {
+    if (indice < 0 || indice >= opciones.length) {
       return '';
     }
 
-    return materia.opciones[indiceOpcion].horario;
+    return opciones[indice].horario;
+  }
+
+  /* =========================
+     EXPANSIÓN DE OFERTAS
+     ========================= */
+
+  estaExpandida(materia: MateriaHorario): boolean {
+    return this.materiasExpandidas.has(materia.codigo);
+  }
+
+  alternarExpansion(materia: MateriaHorario): void {
+    if (this.materiasExpandidas.has(materia.codigo)) {
+      this.materiasExpandidas.delete(materia.codigo);
+    } else {
+      this.materiasExpandidas.add(materia.codigo);
+    }
   }
 
   /* =========================
@@ -349,82 +558,175 @@ export class HorariosComponent {
      ========================= */
 
   obtenerColorMateria(codigo: string): string {
-    const colores: Record<string, string> = {
-      'INF-101': '#0b3c8c',
-      'INF-202': '#2e7d5b',
-      'INF-305': '#e3a82b',
-      'INF-410': '#7957a8'
-    };
+    const base = this.normalizarTexto(codigo);
+    let hash = 0;
 
-    return colores[codigo] ?? '#4f5d73';
+    for (let indice = 0; indice < base.length; indice++) {
+      hash = (hash * 31 + base.charCodeAt(indice)) >>> 0;
+    }
+
+    const paleta = HorariosComponent.PALETA_COLORES;
+
+    return paleta[hash % paleta.length];
   }
 
-  // Abrir el modal
+  /* =========================
+     FORMULARIO DE MATERIAS
+     ========================= */
+
+  private crearFormularioVacio(): MateriaFormulario {
+    return {
+      sigla: '',
+      nombre: '',
+      paralelo: 1,
+      docente: '',
+      bloques: [this.crearBloqueVacio()]
+    };
+  }
+
+  private crearBloqueVacio(): BloqueFormulario {
+    return { dia: 1, horaInicio: '', horaFin: '' };
+  }
+
+  get formularioValido(): boolean {
+    const formulario = this.formulario;
+
+    return (
+      formulario.sigla.trim() !== '' &&
+      formulario.nombre.trim() !== '' &&
+      formulario.docente.trim() !== '' &&
+      formulario.bloques.length > 0 &&
+      formulario.bloques.every(
+        bloque =>
+          bloque.horaInicio !== '' &&
+          bloque.horaFin !== '' &&
+          bloque.horaInicio < bloque.horaFin
+      )
+    );
+  }
+
   abrirModalAgregar(): void {
     this.modalAgregarAbierto = true;
-    this.materiasParaAgregar = [];
+    this.formulario = this.crearFormularioVacio();
+    this.errorFormulario = '';
   }
 
-  // Cerrar el modal
   cerrarModalAgregar(): void {
     this.modalAgregarAbierto = false;
-    this.materiasParaAgregar = [];
   }
 
-  // Cambiar el semestre que se muestra
-  cambiarSemestre(semestre: number): void {
-    this.semestreSeleccionado = semestre;
-    this.materiasParaAgregar = [];
+  agregarBloque(): void {
+    this.formulario.bloques.push(this.crearBloqueVacio());
   }
 
-  // Mostrar únicamente materias del semestre que no estén agregadas
-  get materiasFiltradas(): MateriaDisponible[] {
-    return this.materiasDisponibles.filter(materia => {
-      const mismoSemestre = materia.semestre === this.semestreSeleccionado;
+  quitarBloque(indice: number): void {
+    this.formulario.bloques.splice(indice, 1);
 
-      const yaAgregada = this.materias.some(
-        existente => existente.codigo === materia.codigo ||
-          existente.nombre.trim().toLowerCase() === materia.nombre.trim().toLowerCase()
-      );
+    if (this.formulario.bloques.length === 0) {
+      this.formulario.bloques.push(this.crearBloqueVacio());
+    }
+  }
 
-      return mismoSemestre && !yaAgregada;
+  agregarMateria(): void {
+    if (!this.formularioValido) {
+      return;
+    }
+
+    const formulario = this.formulario;
+    const paralelo = Number(formulario.paralelo) || 1;
+    const docente = formulario.docente.trim();
+
+    if (this.esDuplicada(formulario.sigla, docente, paralelo)) {
+      this.errorFormulario = this.textos.DUPLICATE_SUBJECT;
+      return;
+    }
+
+    this.materiasCrudas.push({
+      siglaMateria: formulario.sigla.trim(),
+      paralelo: paralelo,
+      nombreMateria: formulario.nombre.trim(),
+      horarios: formulario.bloques.map(bloque => ({
+        docenteNombre: docente,
+        dia: Number(bloque.dia) || 1,
+        horas: `${bloque.horaInicio} - ${bloque.horaFin}`
+      }))
     });
+
+    this.formulario = this.crearFormularioVacio();
+    this.errorFormulario = '';
   }
 
-  // Marcar o desmarcar una materia en el modal
-  alternarMateriaParaAgregar(codigo: string): void {
-    const yaSeleccionada = this.materiasParaAgregar.includes(codigo);
+  reutilizarMateria(indice: number): void {
+    const materia = this.materiasCrudas[indice];
 
-    if (yaSeleccionada) {
-      this.materiasParaAgregar = this.materiasParaAgregar.filter(
-        item => item !== codigo
-      );
-    } else {
-      this.materiasParaAgregar.push(codigo);
+    if (!materia) {
+      return;
     }
+
+    this.formulario = {
+      sigla: materia.siglaMateria,
+      nombre: materia.nombreMateria,
+      paralelo: materia.paralelo,
+      docente: this.docenteDeMateria(materia),
+      bloques: [this.crearBloqueVacio()]
+    };
+
+    this.errorFormulario = '';
   }
 
-  // Agregar las materias elegidas al panel actual
-  agregarMaterias(): void {
-    const nuevasMaterias = this.materiasDisponibles.filter(
-      materia => this.materiasParaAgregar.includes(materia.codigo)
+  private esDuplicada(
+    sigla: string,
+    docente: string,
+    paralelo: number
+  ): boolean {
+    const clave = this.claveDuplicado(sigla, docente, paralelo);
+
+    return this.materiasCrudas.some(
+      materia =>
+        this.claveDuplicado(
+          materia.siglaMateria,
+          this.docenteDeMateria(materia),
+          materia.paralelo
+        ) === clave
     );
+  }
 
-    for (const materia of nuevasMaterias) {
-      const yaExiste = this.materias.some(
-        existente => existente.codigo === materia.codigo ||
-          existente.nombre.trim().toLowerCase() === materia.nombre.trim().toLowerCase()
-      );
+  private claveDuplicado(
+    sigla: string,
+    docente: string,
+    paralelo: number
+  ): string {
+    return [
+      this.normalizarTexto(sigla),
+      this.normalizarTexto(docente),
+      paralelo
+    ].join('|');
+  }
 
-      if (!yaExiste) {
-        materia.seleccionada = true;
-        this.materias.push(materia);
-        this.materiasSeleccionadas.push(materia);
-      }
-    }
+  quitarMateriaCruda(indice: number): void {
+    this.materiasCrudas.splice(indice, 1);
+  }
 
-    this.render();
+  docenteDeMateria(materia: HorarioMateriaRequest): string {
+    return materia.horarios?.[0]?.docenteNombre ?? '';
+  }
+
+  horarioDeMateria(materia: HorarioMateriaRequest): string {
+    return (materia.horarios ?? [])
+      .map(
+        bloque =>
+          `${this.nombreDia(bloque.dia)} ${this.compactarHoras(bloque.horas)}`
+      )
+      .join(' · ');
+  }
+
+  private nombreDia(dia: number): string {
+    return this.dias[dia - 1] ?? String(dia);
+  }
+
+  enviarMaterias(): void {
     this.cerrarModalAgregar();
+    this.cargarDatos();
   }
 
   // Abrir la vista previa del horario

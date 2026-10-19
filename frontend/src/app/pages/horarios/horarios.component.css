@@ -523,6 +523,16 @@
   color: #0b2447;
 }
 
+.modal--agregar {
+  max-width: 54rem;
+}
+
+.modal-agregar__cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.75rem;
+}
+
 .modal-header {
   display: flex;
   align-items: flex-start;
@@ -599,6 +609,7 @@
 
 .modal-materias {
   display: flex;
+  flex: 0 0 17rem;
   flex-direction: column;
   gap: 0.65rem;
   max-height: 18.75rem;
@@ -656,6 +667,249 @@
   color: #4f5d73;
   text-align: center;
   line-height: 1.5;
+}
+
+.formulario {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1rem;
+}
+
+.formulario__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.formulario__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.formulario__campo--ancho {
+  grid-column: 1 / -1;
+}
+
+.formulario__campo > span {
+  color: #0b2447;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.formulario__campo input,
+.formulario__campo select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.5625rem;
+  background-color: #f8fbff;
+  color: #0b2447;
+  font: inherit;
+}
+
+.formulario__campo input:focus,
+.formulario__campo select:focus {
+  outline: 0.125rem solid #e3a82b;
+  outline-offset: 0.125rem;
+}
+
+.formulario__bloques {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.formulario__bloques > h3 {
+  margin: 0;
+  color: #0b2447;
+  font-size: 0.95rem;
+}
+
+.bloque {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr auto;
+  align-items: end;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.625rem;
+  background-color: #f8fbff;
+}
+
+.bloque__quitar,
+.modal-materia__quitar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #4f5d73;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.bloque__quitar:hover,
+.modal-materia__quitar:hover {
+  background-color: #fdeeee;
+  color: #b03a48;
+}
+
+.bloque-agregar {
+  align-self: flex-start;
+  padding: 0.5rem 0.9rem;
+  border: 0.0625rem dashed #0b3c8c;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  color: #0b3c8c;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.bloque-agregar:hover {
+  background-color: #f5f9ff;
+}
+
+.formulario__anadir {
+  align-self: flex-start;
+  padding: 0.6rem 1.1rem;
+  border: 0.0625rem solid #0b3c8c;
+  border-radius: 0.5rem;
+  background-color: #eef4ff;
+  color: #0b3c8c;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.formulario__anadir:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.modal-materias > h3 {
+  margin: 0;
+  color: #0b2447;
+  font-size: 0.95rem;
+}
+
+.modal-materia--cruda {
+  align-items: flex-start;
+  justify-content: space-between;
+  cursor: default;
+}
+
+.modal-materia--cruda:hover {
+  border-color: #d5e0f0;
+  background-color: #f8fbff;
+}
+
+.modal-materia--cruda > span {
+  flex: 1;
+}
+
+.modal-materia__quitar {
+  flex-shrink: 0;
+}
+
+.modal-materia__reutilizar {
+  flex-shrink: 0;
+  padding: 0.4rem 0.75rem;
+  border: 0.0625rem solid #0b3c8c;
+  border-radius: 0.5rem;
+  background-color: #eef4ff;
+  color: #0b3c8c;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-materia__reutilizar:hover {
+  background-color: #dce8ff;
+}
+
+.formulario__error {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  border: 0.0625rem solid #e6b7bd;
+  border-radius: 0.5rem;
+  background-color: #fdeeee;
+  color: #b03a48;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.materia-horario__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 0.0625rem solid #d5e0f0;
+  border-radius: 0.5rem;
+  background-color: #f8fbff;
+  color: #0b3c8c;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.materia-horario__toggle:hover {
+  background-color: #eef4ff;
+}
+
+.materia-horario__chevron {
+  transition: transform 0.2s ease;
+}
+
+.materia-horario__toggle--abierto .materia-horario__chevron {
+  transform: rotate(90deg);
+}
+
+.materia-horario__ofertas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oferta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.45rem 0.65rem;
+  border: 0.0625rem solid #e1e8f3;
+  border-radius: 0.5rem;
+  background-color: #fbfdff;
+}
+
+.oferta__docente {
+  color: #0b2447;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.oferta__horario {
+  color: #4f5d73;
+  font-size: 0.75rem;
+  text-align: right;
 }
 
 .descarga-vista-previa {
@@ -826,6 +1080,16 @@
 
   .horario-grid {
     order: 3;
+  }
+
+  .modal-agregar__cuerpo {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .modal-materias {
+    flex: 1 1 auto;
+    width: 100%;
   }
 }
 
