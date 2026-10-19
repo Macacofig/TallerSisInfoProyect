@@ -141,6 +141,7 @@ export const MESSAGES = {
   MODAL_ACADEMIC_PREREQUISITES_LABEL: 'Prerrequisitos',
   MODAL_RECOMMENDED_PREREQUISITES_LABEL: 'Conocimientos previos recomendados',
   MODAL_INFORMATION_UNAVAILABLE: 'Información no disponible',
+  MODAL_NO_PREREQUISITES: 'Sin prerequisitos',
   MODAL_DOMINANCE_LABEL: 'Predominio',
   MODAL_DIFFICULTY_LABEL: 'Dificultad',
   MODAL_WORKLOAD_LABEL: 'Carga de trabajo',
