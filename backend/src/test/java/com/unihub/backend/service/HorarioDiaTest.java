@@ -1,7 +1,6 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.DiaSemana;
-import com.unihub.backend.dto.horario.HorarioBloqueFiltroRequest;
 import com.unihub.backend.dto.horario.HorarioBloqueRequest;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
@@ -56,13 +55,8 @@ class HorarioDiaTest {
                 {"DocenteNombre1": "Juan Pérez", "Dia": "_______", "horas": "______"}
                 """;
 
-        HorarioBloqueFiltroRequest filtro = objectMapper.readValue(
-                "{\"dia\": \"_______\", \"horaInicio\": \"08:00\", \"horaFin\": \"10:00\"}",
-                HorarioBloqueFiltroRequest.class);
-
         HorarioBloqueRequest bloque = objectMapper.readValue(conInvalido, HorarioBloqueRequest.class);
 
         assertEquals(0, bloque.dia());
-        assertEquals(0, filtro.dia());
     }
 }

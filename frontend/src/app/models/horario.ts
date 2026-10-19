@@ -33,3 +33,16 @@ export interface HorarioNormalizacionResponse {
   sessionId: string;
   materias: HorarioMateriaResponse[];
 }
+
+export interface HorarioCantidadRequest {
+  min: number;
+  max: number;
+}
+
+export interface HorarioFiltroRequest {
+  cantidadMaterias: HorarioCantidadRequest;
+  materiasObligatorias: number[];
+  materiasExcluidas: number[];
+  docentes: Record<number, number[]>;
+  evitarHuecos: boolean;
+}

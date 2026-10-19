@@ -1,10 +1,12 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { timeout } from 'rxjs';
 import { MateriaHorario, OpcionHorario } from '../../data/horarios.data';
 import { LanguageService } from '../../services/language.service';
 import { HorariosService } from '../../services/horarios.service';
 import {
+  HorarioFiltroRequest,
   HorarioMateriaRequest,
   HorarioNormalizacionResponse
 } from '../../models/horario';
@@ -32,7 +34,7 @@ interface MateriaFormulario {
 @Component({
   selector: 'app-horarios',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './horarios.component.html',
   styleUrl: './horarios.component.css',
 })
@@ -131,6 +133,10 @@ export class HorariosComponent {
   paginaMaterias = 1;
   readonly materiasPorPagina = 4;
 
+  cantidadMin = 4;
+  cantidadMax = 6;
+  evitarHuecos = false;
+
 
   constructor() {
     this.render();
@@ -206,6 +212,18 @@ export class HorariosComponent {
       this.materias.map(materia => [materia.codigo, materia.seleccionada])
     );
 
+    const filtroPrevia = new Map(
+      this.materias.map(materia => [materia.codigo, materia.estadoFiltro])
+    );
+
+    const docentePrevia = new Map(
+      this.materias.flatMap(materia =>
+        materia.opciones.map(
+          oferta => [`${materia.codigo}|${oferta.idDocente}`, oferta.obligatorio] as const
+        )
+      )
+    );
+
     const actualizaciones = new Map<string, MateriaHorario>();
 
     for (const materiaRespuesta of respuesta.materias ?? []) {
@@ -229,6 +247,7 @@ export class HorariosComponent {
       const opciones: OpcionHorario[] = (
         materiaRespuesta.Ofertas ?? []
       ).map(oferta => ({
+        idDocente: oferta.idDocente,
         docente: (oferta.Docente ?? '').trim(),
         paralelo: oferta.Paralelo,
         horario: (oferta.Horarios ?? [])
@@ -236,13 +255,17 @@ export class HorariosComponent {
             bloque =>
               `${bloque.Dia} ${this.compactarHoras(bloque.Horas)}`
           )
-          .join(' · ')
+          .join(' · '),
+        obligatorio:
+          docentePrevia.get(`${codigo}|${oferta.idDocente}`) ?? false
       }));
 
       actualizaciones.set(codigo, {
         codigo,
         nombre: materiaRespuesta.NombreMateria,
         seleccionada: seleccionPrevia.get(codigo) ?? true,
+        idMateria: materiaRespuesta.idMateria,
+        estadoFiltro: filtroPrevia.get(codigo) ?? 'normal',
         opciones
       });
     }
@@ -255,6 +278,8 @@ export class HorariosComponent {
         codigo: fuente.codigo,
         nombre: fuente.nombre,
         seleccionada: seleccionPrevia.get(fuente.codigo) ?? true,
+        idMateria: 0,
+        estadoFiltro: filtroPrevia.get(fuente.codigo) ?? 'normal',
         opciones: []
       });
       agregados.add(fuente.codigo);
@@ -410,6 +435,80 @@ export class HorariosComponent {
     } else {
       this.materiasExpandidas.add(materia.codigo);
     }
+  }
+
+  /* =========================
+     FILTROS DE GENERACIÓN
+     ========================= */
+
+  alternarObligatoria(materia: MateriaHorario): void {
+    materia.estadoFiltro =
+      materia.estadoFiltro === 'obligatoria' ? 'normal' : 'obligatoria';
+  }
+
+  alternarExcluida(materia: MateriaHorario): void {
+    materia.estadoFiltro =
+      materia.estadoFiltro === 'excluida' ? 'normal' : 'excluida';
+  }
+
+  alternarDocenteObligatorio(oferta: OpcionHorario): void {
+    oferta.obligatorio = !oferta.obligatorio;
+  }
+
+  construirFiltros(): HorarioFiltroRequest {
+    const min = this.normalizarCantidad(this.cantidadMin, 1);
+    const max = Math.max(min, this.normalizarCantidad(this.cantidadMax, min));
+
+    const materiasObligatorias: number[] = [];
+    const materiasExcluidas: number[] = [];
+    const docentes = new Map<number, Set<number>>();
+
+    for (const materia of this.materias) {
+      if (materia.idMateria <= 0) {
+        continue;
+      }
+
+      if (materia.estadoFiltro === 'excluida') {
+        materiasExcluidas.push(materia.idMateria);
+        continue;
+      }
+
+      if (materia.estadoFiltro === 'obligatoria') {
+        materiasObligatorias.push(materia.idMateria);
+      }
+
+      for (const oferta of materia.opciones) {
+        if (!oferta.obligatorio) {
+          continue;
+        }
+
+        const materiasDelDocente =
+          docentes.get(oferta.idDocente) ?? new Set<number>();
+
+        materiasDelDocente.add(materia.idMateria);
+        docentes.set(oferta.idDocente, materiasDelDocente);
+      }
+    }
+
+    return {
+      cantidadMaterias: { min, max },
+      materiasObligatorias,
+      materiasExcluidas,
+      docentes: Object.fromEntries(
+        [...docentes].map(([docente, materias]) => [docente, [...materias]])
+      ),
+      evitarHuecos: this.evitarHuecos
+    };
+  }
+
+  private normalizarCantidad(valor: number, minimo: number): number {
+    const numero = Math.trunc(Number(valor));
+
+    if (!Number.isFinite(numero)) {
+      return minimo;
+    }
+
+    return Math.min(Math.max(numero, minimo), 99);
   }
 
   /* =========================

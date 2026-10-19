@@ -67,6 +67,39 @@
         </div>
       </div>
 
+      <div class="panel-filtros">
+
+        <h3 class="panel-filtros__titulo">{{ textos.FILTERS }}</h3>
+
+        <div class="panel-filtros__cantidad">
+          <span class="panel-filtros__label">{{ textos.COUNT_SUBJECTS }}</span>
+
+          <input
+            type="number"
+            class="panel-filtros__numero"
+            min="1"
+            [attr.aria-label]="textos.MIN_SUBJECTS"
+            [(ngModel)]="cantidadMin"
+          >
+
+          <span class="panel-filtros__separador" aria-hidden="true">–</span>
+
+          <input
+            type="number"
+            class="panel-filtros__numero"
+            min="1"
+            [attr.aria-label]="textos.MAX_SUBJECTS"
+            [(ngModel)]="cantidadMax"
+          >
+        </div>
+
+        <label class="panel-filtros__huecos">
+          <input type="checkbox" [(ngModel)]="evitarHuecos">
+          <span>{{ textos.NO_GAPS }}</span>
+        </label>
+
+      </div>
+
       <div class="panel-list">
 
         @for (materia of materiasPaginadas; track materia.codigo) {
@@ -84,6 +117,28 @@
               <div class="materia-horario__info">
                 <h3>{{ nombreMateriaVisible(materia) }}</h3>
                 <p>{{ materia.codigo }}</p>
+              </div>
+
+              <div class="materia-horario__filtros">
+
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip--activo]="materia.estadoFiltro === 'obligatoria'"
+                  [attr.aria-pressed]="materia.estadoFiltro === 'obligatoria'"
+                  (click)="alternarObligatoria(materia)">
+                  {{ textos.REQUIRED_SUBJECT }}
+                </button>
+
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip--activo]="materia.estadoFiltro === 'excluida'"
+                  [attr.aria-pressed]="materia.estadoFiltro === 'excluida'"
+                  (click)="alternarExcluida(materia)">
+                  {{ textos.EXCLUDE_SUBJECT }}
+                </button>
+
               </div>
 
             </div>
@@ -117,9 +172,28 @@
                           {{ oferta.docente || textos.TEACHER }}
                         </span>
 
-                        <span class="oferta__horario">
-                          {{ obtenerHorarioVisible(oferta.horario) }}
-                        </span>
+                        <div class="oferta__detalles">
+
+                          <span class="oferta__horario">
+                            {{ obtenerHorarioVisible(oferta.horario) }}
+                          </span>
+
+                          <button
+                            type="button"
+                            class="chip chip--docente"
+                            [class.chip--activo]="oferta.obligatorio"
+                            [attr.aria-pressed]="oferta.obligatorio"
+                            (click)="alternarDocenteObligatorio(oferta)">
+
+                            {{
+                              oferta.obligatorio
+                                ? textos.TEACHER_REQUIRED
+                                : textos.TEACHER_FREE
+                            }}
+
+                          </button>
+
+                        </div>
 
                       </li>
                     }

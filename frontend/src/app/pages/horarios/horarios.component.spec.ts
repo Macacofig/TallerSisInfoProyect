@@ -344,9 +344,11 @@ describe('HorariosComponent', () => {
     expect(programacion.seleccionada).toBe(true);
     expect(programacion.opciones.length).toBe(2);
     expect(programacion.opciones[0]).toEqual({
+      idDocente: 1,
       docente: 'Ana Torres',
       paralelo: 1,
-      horario: 'Lunes 08:00-10:00 · Miércoles 08:00-10:00'
+      horario: 'Lunes 08:00-10:00 · Miércoles 08:00-10:00',
+      obligatorio: false
     });
 
     expect(component.materiasSeleccionadas.map(materia => materia.codigo))
@@ -492,6 +494,194 @@ describe('HorariosComponent', () => {
 
     component.anterior();
     expect(component.paginaActual).toBe(1);
+  });
+
+  /* =========================
+     FILTROS DE GENERACIÓN
+     ========================= */
+
+  it('builds the default filters payload', () => {
+    cargarPanel();
+
+    expect(component.construirFiltros()).toEqual({
+      cantidadMaterias: { min: 4, max: 6 },
+      materiasObligatorias: [],
+      materiasExcluidas: [],
+      docentes: {},
+      evitarHuecos: false
+    });
+  });
+
+  it('marks a subject as required or excluded keeping them exclusive', () => {
+    cargarPanel();
+
+    const programacion = component.materias[0];
+
+    component.alternarObligatoria(programacion);
+
+    expect(programacion.estadoFiltro).toBe('obligatoria');
+    expect(component.construirFiltros().materiasObligatorias).toEqual([1]);
+
+    component.alternarExcluida(programacion);
+
+    expect(programacion.estadoFiltro).toBe('excluida');
+    expect(component.construirFiltros().materiasObligatorias).toEqual([]);
+    expect(component.construirFiltros().materiasExcluidas).toEqual([1]);
+
+    component.alternarExcluida(programacion);
+
+    expect(programacion.estadoFiltro).toBe('normal');
+  });
+
+  it('requires a subject and its teacher in the filters payload', () => {
+    cargarPanel();
+
+    const programacion = component.materias[0];
+    component.alternarObligatoria(programacion);
+    component.alternarDocenteObligatorio(programacion.opciones[0]);
+
+    const filtros = component.construirFiltros();
+
+    expect(filtros.materiasObligatorias).toEqual([1]);
+    expect(filtros.docentes).toEqual({ 1: [1] });
+
+    component.alternarDocenteObligatorio(programacion.opciones[0]);
+
+    expect(component.construirFiltros().docentes).toEqual({});
+  });
+
+  it('ignores the teachers of an excluded subject', () => {
+    cargarPanel();
+
+    const estructuras = component.materias.find(
+      materia => materia.codigo === 'INF-202'
+    );
+
+    expect(estructuras).toBeTruthy();
+
+    component.alternarExcluida(estructuras!);
+    component.alternarDocenteObligatorio(estructuras!.opciones[0]);
+
+    const filtros = component.construirFiltros();
+
+    expect(filtros.materiasExcluidas).toEqual([2]);
+    expect(filtros.docentes).toEqual({});
+  });
+
+  it('normalizes the subject count range', () => {
+    component.cantidadMin = 2;
+    component.cantidadMax = 1;
+
+    expect(component.construirFiltros().cantidadMaterias).toEqual({
+      min: 2,
+      max: 2
+    });
+
+    component.cantidadMin = 0;
+    component.cantidadMax = Number('');
+
+    expect(component.construirFiltros().cantidadMaterias).toEqual({
+      min: 1,
+      max: 1
+    });
+
+    component.cantidadMin = 3;
+    component.cantidadMax = 5;
+
+    expect(component.construirFiltros().cantidadMaterias).toEqual({
+      min: 3,
+      max: 5
+    });
+  });
+
+  it('toggles the no-gaps filter from the panel', () => {
+    const casilla = fixture.nativeElement.querySelector(
+      '.panel-filtros__huecos input'
+    ) as HTMLInputElement;
+
+    expect(component.evitarHuecos).toBe(false);
+
+    casilla.click();
+    fixture.detectChanges();
+
+    expect(component.evitarHuecos).toBe(true);
+    expect(component.construirFiltros().evitarHuecos).toBe(true);
+  });
+
+  it('toggles the required and excluded chips of a subject', () => {
+    cargarPanel();
+
+    const tarjeta = fixture.nativeElement.querySelector(
+      '.materia-horario'
+    ) as HTMLElement;
+    const [obligatoria, excluida] = Array.from(
+      tarjeta.querySelectorAll('.materia-horario__filtros .chip')
+    ) as HTMLButtonElement[];
+
+    expect(obligatoria.getAttribute('aria-pressed')).toBe('false');
+
+    obligatoria.click();
+    fixture.detectChanges();
+
+    expect(component.materias[0].estadoFiltro).toBe('obligatoria');
+    expect(obligatoria.getAttribute('aria-pressed')).toBe('true');
+
+    excluida.click();
+    fixture.detectChanges();
+
+    expect(component.materias[0].estadoFiltro).toBe('excluida');
+    expect(obligatoria.getAttribute('aria-pressed')).toBe('false');
+    expect(excluida.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('marks a teacher as required from the expanded offers', () => {
+    cargarPanel();
+
+    const tarjeta = fixture.nativeElement.querySelector(
+      '.materia-horario'
+    ) as HTMLElement;
+    const toggle = tarjeta.querySelector(
+      '.materia-horario__toggle'
+    ) as HTMLButtonElement;
+
+    toggle.click();
+    fixture.detectChanges();
+
+    const chip = tarjeta.querySelector(
+      '.oferta .chip--docente'
+    ) as HTMLButtonElement;
+
+    expect(chip.textContent).toContain(HORARIOS_MESSAGES.TEACHER_FREE);
+
+    chip.click();
+    fixture.detectChanges();
+
+    expect(component.materias[0].opciones[0].obligatorio).toBe(true);
+    expect(chip.getAttribute('aria-pressed')).toBe('true');
+    expect(chip.textContent).toContain(HORARIOS_MESSAGES.TEACHER_REQUIRED);
+  });
+
+  it('keeps the subject filters when the panel is rebuilt', () => {
+    cargarPanel();
+
+    component.alternarObligatoria(component.materias[0]);
+
+    component.materiasCrudas.push(crearCruda({
+      siglaMateria: 'INF-305',
+      nombreMateria: 'Bases de Datos'
+    }));
+    component.enviarMaterias();
+    fixture.detectChanges();
+
+    expectObtenerDatos(http).flush(respuestaEjemplo());
+    fixture.detectChanges();
+
+    const programacion = component.materias.find(
+      materia => materia.codigo === 'INF-101'
+    );
+
+    expect(programacion?.estadoFiltro).toBe('obligatoria');
+    expect(component.construirFiltros().materiasObligatorias).toEqual([1]);
   });
 
   /* =========================

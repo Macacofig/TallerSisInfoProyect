@@ -68,6 +68,16 @@ export const HORARIOS_MESSAGES = {
   SELECTED_SUBJECTS_EMPTY: 'No subjects selected to display.',
   CONFIRM: 'Confirm',
 
+  FILTERS: 'Generation filters',
+  COUNT_SUBJECTS: 'Number of subjects',
+  MIN_SUBJECTS: 'Minimum number of subjects',
+  MAX_SUBJECTS: 'Maximum number of subjects',
+  NO_GAPS: 'Avoid gaps',
+  REQUIRED_SUBJECT: 'Required',
+  EXCLUDE_SUBJECT: 'Exclude',
+  TEACHER_REQUIRED: 'Required',
+  TEACHER_FREE: 'Free',
+
   DAYS: [
     'Monday',
     'Tuesday',
