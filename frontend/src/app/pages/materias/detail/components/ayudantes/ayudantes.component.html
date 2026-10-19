@@ -1,0 +1,104 @@
+
+<section class="ayudantes-container">
+
+  <div class="ayudantes-info">
+    <div class="ayudantes-info-texto">
+      <h2>{{ mensajes.ASSISTANTS_INFO_TITLE }}</h2>
+
+      <p>{{ mensajes.ASSISTANTS_INFO_DESCRIPTION }}</p>
+    </div>
+
+    <button
+      type="button"
+      class="ayudantes-info-boton"
+    >
+      {{ mensajes.ASSISTANTS_INFO_BUTTON }}
+    </button>
+  </div>
+
+  <div class="ayudantes-lista">
+    @for (ayudante of ayudantes; track ayudante.id) {
+      <article class="ayudante-card">
+
+        <div class="ayudante-identidad">
+          <div
+            class="ayudante-avatar"
+            aria-hidden="true"
+          >
+            {{ ayudante.iniciales }}
+          </div>
+
+          <div class="ayudante-datos">
+            <h3>{{ ayudante.nombre }}</h3>
+
+            @if (ayudante.verificado) {
+              <span class="ayudante-verificado">
+                <span class="verificado-punto"></span>
+                {{ mensajes.ASSISTANT_VERIFIED }}
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="ayudante-horario">
+          <svg
+            class="icono-reloj"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 7v5l3 2"></path>
+          </svg>
+
+          <span>{{ ayudante.horario }}</span>
+        </div>
+
+        <div
+          class="ayudante-calificacion"
+          [attr.aria-label]="mensajes.ASSISTANT_RATING_LABEL"
+        >
+          <svg
+            class="icono-estrella"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3z"></path>
+          </svg>
+
+          <span class="calificacion-valor">
+            {{ ayudante.calificacion.toFixed(1) }}/5
+          </span>
+
+          <span class="calificacion-etiqueta">
+            {{ mensajes.ASSISTANT_RATING_LABEL }}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="ayudante-contacto"
+        >
+          {{ mensajes.ASSISTANT_CONTACT_BUTTON }}
+        </button>
+
+        <p class="ayudante-privacidad">
+          {{ mensajes.ASSISTANT_PRIVACY_NOTE }}
+        </p>
+
+      </article>
+    }
+  </div>
+
+</section>

@@ -472,4 +472,19 @@ export const MESSAGES = {
   CALIFICATION_HISTORY_EMPTY:
     'No existen suficientes gestiones para construir el historial.',
 
+    // HU - Ayudantes de materias
+  ASSISTANTS_INFO_TITLE:
+    '¿Necesitas ayuda con esta materia?',
+  ASSISTANTS_INFO_DESCRIPTION:
+    'Contacta con un ayudante para resolver tus dudas y reforzar lo aprendido.',
+  ASSISTANTS_INFO_BUTTON:
+    'Quiero ser ayudante',
+  ASSISTANT_VERIFIED:
+    'Ayudante Verificado',
+  ASSISTANT_RATING_LABEL:
+    'Calificación',
+  ASSISTANT_CONTACT_BUTTON:
+    'Solicitar contacto',
+  ASSISTANT_PRIVACY_NOTE:
+    'Los datos de contacto no se muestran públicamente.',
 } as const;

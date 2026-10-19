@@ -471,4 +471,20 @@ export const MESSAGES_EN = {
 
   CALIFICATION_HISTORY_EMPTY:
     'There are not enough academic terms to build the history.',
+    
+    // HU - Teaching assistants
+  ASSISTANTS_INFO_TITLE:
+    'Need help with this subject?',
+  ASSISTANTS_INFO_DESCRIPTION:
+    'Contact a teaching assistant to get answers and reinforce what you have learned.',
+  ASSISTANTS_INFO_BUTTON:
+    'Become a teaching assistant',
+  ASSISTANT_VERIFIED:
+    'Verified Teaching Assistant',
+  ASSISTANT_RATING_LABEL:
+    'Rating',
+  ASSISTANT_CONTACT_BUTTON:
+    'Request contact',
+  ASSISTANT_PRIVACY_NOTE:
+    'Contact details are not displayed publicly.',
 } as const;
