@@ -58,7 +58,7 @@ public class HorarioService {
         }
 
         HorarioFiltroRequest filtros = request.filtros() == null
-                ? new HorarioFiltroRequest(null, null, null, null, null, false)
+                ? new HorarioFiltroRequest(null, null, null, null, false)
                 : request.filtros();
         List<SolucionHorario> soluciones = horarioGeneradorService.generar(sesion.ofertasPorMateria(), filtros, sesion.mapeo());
         return horarioMapper.toResponse2(soluciones, sesion.mapeo());

@@ -67,6 +67,39 @@
         </div>
       </div>
 
+      <div class="panel-filtros">
+
+        <h3 class="panel-filtros__titulo">{{ textos.FILTERS }}</h3>
+
+        <div class="panel-filtros__cantidad">
+          <span class="panel-filtros__label">{{ textos.COUNT_SUBJECTS }}</span>
+
+          <input
+            type="number"
+            class="panel-filtros__numero"
+            min="1"
+            [attr.aria-label]="textos.MIN_SUBJECTS"
+            [(ngModel)]="cantidadMin"
+          >
+
+          <span class="panel-filtros__separador" aria-hidden="true">–</span>
+
+          <input
+            type="number"
+            class="panel-filtros__numero"
+            min="1"
+            [attr.aria-label]="textos.MAX_SUBJECTS"
+            [(ngModel)]="cantidadMax"
+          >
+        </div>
+
+        <label class="panel-filtros__huecos">
+          <input type="checkbox" [(ngModel)]="evitarHuecos">
+          <span>{{ textos.NO_GAPS }}</span>
+        </label>
+
+      </div>
+
       <div class="panel-list">
 
         @for (materia of materiasPaginadas; track materia.codigo) {
@@ -86,22 +119,92 @@
                 <p>{{ materia.codigo }}</p>
               </div>
 
+              <div class="materia-horario__filtros">
+
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip--activo]="materia.estadoFiltro === 'obligatoria'"
+                  [attr.aria-pressed]="materia.estadoFiltro === 'obligatoria'"
+                  (click)="alternarObligatoria(materia)">
+                  {{ textos.REQUIRED_SUBJECT }}
+                </button>
+
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip--activo]="materia.estadoFiltro === 'excluida'"
+                  [attr.aria-pressed]="materia.estadoFiltro === 'excluida'"
+                  (click)="alternarExcluida(materia)">
+                  {{ textos.EXCLUDE_SUBJECT }}
+                </button>
+
+              </div>
+
             </div>
 
             <div class="materia-horario__opciones">
 
-              @for (opcion of materia.opciones; track opcion.etiqueta) {
-                <p class="opcion">
+              @if (materia.opciones.length > 0) {
 
-                  <span class="opcion__etiqueta">
-                    {{ obtenerEtiquetaOpcion(opcion.etiqueta) }}
+                <button
+                  type="button"
+                  class="materia-horario__toggle"
+                  [class.materia-horario__toggle--abierto]="estaExpandida(materia)"
+                  [attr.aria-expanded]="estaExpandida(materia)"
+                  (click)="alternarExpansion(materia)">
+
+                  <span>
+                    {{ estaExpandida(materia) ? textos.HIDE_OFFERS : textos.SHOW_OFFERS }}
                   </span>
 
-                  <span class="opcion__horario">
-                    {{ obtenerHorarioVisible(opcion.horario) }}
-                  </span>
+                  <span class="materia-horario__chevron" aria-hidden="true">›</span>
 
-                </p>
+                </button>
+
+                @if (estaExpandida(materia)) {
+                  <ul class="materia-horario__ofertas">
+
+                    @for (oferta of materia.opciones; track $index) {
+                      <li class="oferta">
+
+                        <span class="oferta__docente">
+                          {{ oferta.docente || textos.TEACHER }}
+                        </span>
+
+                        <div class="oferta__detalles">
+
+                          <span class="oferta__horario">
+                            {{ obtenerHorarioVisible(oferta.horario) }}
+                          </span>
+
+                          <button
+                            type="button"
+                            class="chip chip--docente"
+                            [class.chip--activo]="oferta.obligatorio"
+                            [attr.aria-pressed]="oferta.obligatorio"
+                            (click)="alternarDocenteObligatorio(oferta)">
+
+                            {{
+                              oferta.obligatorio
+                                ? textos.TEACHER_REQUIRED
+                                : textos.TEACHER_FREE
+                            }}
+
+                          </button>
+
+                        </div>
+
+                      </li>
+                    }
+
+                  </ul>
+                }
+
+              } @else {
+
+                <p class="modal-vacio">{{ textos.NO_OFFERS }}</p>
+
               }
 
             </div>
@@ -329,7 +432,7 @@
       (click)="cerrarModalAgregar()">
 
       <section
-        class="modal"
+        class="modal modal--agregar"
         role="dialog"
         aria-modal="true"
         aria-labelledby="titulo-modal-agregar"
@@ -355,47 +458,165 @@
 
         </div>
 
-        <label for="semestre">{{ textos.SEMESTER }}</label>
+        <div class="modal-agregar__cuerpo">
 
-        <select
-          id="semestre"
-          [value]="semestreSeleccionado"
-          (change)="cambiarSemestre(+$any($event.target).value)">
+        <div class="formulario">
 
-          @for (semestre of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track semestre) {
-            <option [value]="semestre">
-              {{ semestre }}{{ textos.SEMESTER_OPTION_SUFFIX }}
-            </option>
+          <div class="formulario__campos">
+
+            <label class="formulario__campo">
+              <span>{{ textos.SIGLA }}</span>
+              <input
+                type="text"
+                [value]="formulario.sigla"
+                (input)="formulario.sigla = $any($event.target).value">
+            </label>
+
+            <label class="formulario__campo formulario__campo--ancho">
+              <span>{{ textos.SUBJECT_NAME }}</span>
+              <input
+                type="text"
+                [value]="formulario.nombre"
+                (input)="formulario.nombre = $any($event.target).value">
+            </label>
+
+            <label class="formulario__campo">
+              <span>{{ textos.PARALLEL }}</span>
+              <input
+                type="number"
+                min="1"
+                [value]="formulario.paralelo"
+                (input)="formulario.paralelo = +$any($event.target).value">
+            </label>
+
+            <label class="formulario__campo formulario__campo--ancho">
+              <span>{{ textos.TEACHER }}</span>
+              <input
+                type="text"
+                [value]="formulario.docente"
+                (input)="formulario.docente = $any($event.target).value">
+            </label>
+
+          </div>
+
+          <div class="formulario__bloques">
+
+            <h3>{{ textos.SCHEDULE_BLOCKS }}</h3>
+
+            @for (bloque of formulario.bloques; track $index) {
+
+              <div class="bloque">
+
+                <label class="formulario__campo">
+                  <span>{{ textos.DAY }}</span>
+                  <select
+                    [value]="bloque.dia"
+                    (change)="bloque.dia = +$any($event.target).value">
+
+                    @for (dia of opcionesDia; track dia.valor) {
+                      <option [value]="dia.valor">{{ dia.nombre }}</option>
+                    }
+
+                  </select>
+                </label>
+
+                <label class="formulario__campo">
+                  <span>{{ textos.START_TIME }}</span>
+                  <input
+                    type="time"
+                    [value]="bloque.horaInicio"
+                    (input)="bloque.horaInicio = $any($event.target).value">
+                </label>
+
+                <label class="formulario__campo">
+                  <span>{{ textos.END_TIME }}</span>
+                  <input
+                    type="time"
+                    [value]="bloque.horaFin"
+                    (input)="bloque.horaFin = $any($event.target).value">
+                </label>
+
+                <button
+                  type="button"
+                  class="bloque__quitar"
+                  [attr.aria-label]="textos.REMOVE"
+                  (click)="quitarBloque($index)">
+                  ×
+                </button>
+
+              </div>
+
+            }
+
+            <button
+              type="button"
+              class="bloque-agregar"
+              (click)="agregarBloque()">
+              + {{ textos.ADD_SCHEDULE_BLOCK }}
+            </button>
+
+          </div>
+
+          <button
+            type="button"
+            class="formulario__anadir"
+            [disabled]="!formularioValido"
+            (click)="agregarMateria()">
+            + {{ textos.ADD_TO_LIST }}
+          </button>
+
+          @if (errorFormulario) {
+            <p class="formulario__error" role="alert">
+              {{ errorFormulario }}
+            </p>
           }
 
-        </select>
+        </div>
 
         <div class="modal-materias">
 
-          @for (materia of materiasFiltradas; track materia.codigo) {
+          <h3>{{ textos.SUBJECTS_TO_SEND }}</h3>
 
-            <label class="modal-materia">
+          @for (materia of materiasCrudas; track $index) {
 
-              <input
-                type="checkbox"
-                [checked]="materiasParaAgregar.includes(materia.codigo)"
-                (change)="alternarMateriaParaAgregar(materia.codigo)"
-              >
+            <div class="modal-materia modal-materia--cruda">
 
               <span>
-                <strong>{{ nombreMateriaVisible(materia) }}</strong>
-                <small>{{ materia.codigo }}</small>
+                <strong>{{ materia.nombreMateria }}</strong>
+                <small>
+                  {{ materia.siglaMateria }} ·
+                  {{ textos.PARALLEL }} {{ materia.paralelo }} ·
+                  {{ docenteDeMateria(materia) }}
+                </small>
+                <small>{{ horarioDeMateria(materia) }}</small>
               </span>
 
-            </label>
+              <button
+                type="button"
+                class="modal-materia__reutilizar"
+                (click)="reutilizarMateria($index)">
+                {{ textos.REUSE }}
+              </button>
+
+              <button
+                type="button"
+                class="modal-materia__quitar"
+                [attr.aria-label]="textos.REMOVE"
+                (click)="quitarMateriaCruda($index)">
+                ×
+              </button>
+
+            </div>
 
           } @empty {
 
             <p class="modal-vacio">
-              {{ textos.ADD_SUBJECTS_EMPTY }}
+              {{ textos.SUBJECTS_TO_SEND_EMPTY }}
             </p>
 
           }
+
+        </div>
 
         </div>
 
@@ -411,9 +632,9 @@
           <button
             type="button"
             class="btn-agregar"
-            [disabled]="materiasParaAgregar.length === 0"
-            (click)="agregarMaterias()">
-            {{ textos.ADD_SELECTED }}
+            [disabled]="materiasCrudas.length === 0"
+            (click)="enviarMaterias()">
+            {{ textos.SEND_SUBJECTS }}
           </button>
 
         </div>

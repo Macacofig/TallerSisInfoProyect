@@ -1,6 +1,5 @@
 package com.unihub.backend.service;
 
-import com.unihub.backend.dto.horario.HorarioBloqueFiltroRequest;
 import com.unihub.backend.dto.horario.HorarioBloqueRequest;
 import com.unihub.backend.dto.horario.HorarioCantidadRequest;
 import com.unihub.backend.dto.horario.HorarioFiltroRequest;
@@ -43,7 +42,7 @@ class HorarioSchedulingFlowTest {
     }
 
     @Test
-    void generaDesdeSesionYAplicaMateriasDocenteYHorarioNoDisponible() {
+    void generaDesdeSesionYAplicaMateriasObligatoriasExcluidasYDocente() {
         HorarioNormalizacionResponse normalizado = horarioService.normalizarEntradaCruda(materiasCrudas());
         HorarioResponse1 matematica = normalizado.materias().getFirst();
         Long materiaId = matematica.idMateria();
@@ -57,7 +56,6 @@ class HorarioSchedulingFlowTest {
                 List.of(materiaId),
                 List.of(fisicaId),
                 Map.of(docenteJuanId, List.of(materiaId)),
-                List.of(new HorarioBloqueFiltroRequest(1, "08:00", "09:00")),
                 false
         );
         List<HorarioResponse2> soluciones = horarioService.generarDesdeSession(
@@ -69,8 +67,6 @@ class HorarioSchedulingFlowTest {
             assertEquals(1, solucion.horarios().size());
             assertEquals("Matemática I", solucion.horarios().getFirst().materia());
             assertEquals("Juan Pérez", solucion.horarios().getFirst().docente());
-            assertTrue(solucion.horarios().getFirst().horarios().stream()
-                    .allMatch(bloque -> !"Lunes".equals(bloque.dia())));
         }
         assertTrue(horarioService.generarDesdeSession(
                 new HorarioGeneracionRequest(normalizado.sessionId(), filtros)).isEmpty());
