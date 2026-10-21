@@ -57,7 +57,7 @@ Almacenará información relacionada con:
 * Docentes.
 * Materiales.
 * Reseñas.
-* Ayudantías.
+* **Ayudantías.**
 * Solicitudes.
 * Horarios.
 * Entre otros datos del sistema.
@@ -113,4 +113,5 @@ Idea general de lo que ofrece el backend, agrupado por recurso:
 * **Calificación Materia:** Calificar materias (crear, editar y eliminar la calificación propia), ver la calificación hecha en una materia, y obtener estadísticas y promedios de una materia o de todas las materias, con filtros por gestión y rango de gestiones.
 * **Calificación Docente:** Calificar docentes (crear, editar y eliminar la calificación propia), ver la calificación hecha a un docente en una materia, y obtener promedios por docente de una materia, con filtros por gestión y rango de gestiones.
 * **Horario:** Normalizar materias crudas del usuario y generar combinaciones de horarios posibles.
+* **Ayudante:** Solicitar ser ayudante de una materia (con motivo, calificación y horarios), listar ayudantes aprobados por materia, dejar de ser ayudante, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
 * **Test:** Comprobar el estado de la API.
