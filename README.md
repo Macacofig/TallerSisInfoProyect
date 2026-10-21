@@ -114,4 +114,5 @@ Idea general de lo que ofrece el backend, agrupado por recurso:
 * **Calificación Docente:** Calificar docentes (crear, editar y eliminar la calificación propia), ver la calificación hecha a un docente en una materia, y obtener promedios por docente de una materia, con filtros por gestión y rango de gestiones.
 * **Horario:** Normalizar materias crudas del usuario y generar combinaciones de horarios posibles.
 * **Ayudante:** Solicitar ser ayudante de una materia (con motivo, calificación y horarios), listar ayudantes aprobados por materia, dejar de ser ayudante, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
+* **Solicitud de Ayuda:** Solicitar ayuda a un ayudante aprobado, listar solicitudes recibidas por ayudante, resolver solicitudes (ayudante), cancelar solicitudes (estudiante), ver solicitudes pendientes por ayudante.
 * **Test:** Comprobar el estado de la API.
