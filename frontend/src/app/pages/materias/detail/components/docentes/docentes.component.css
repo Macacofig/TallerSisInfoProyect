@@ -1,5 +1,12 @@
+:host {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .docentes {
   display: grid;
+  min-width: 0;
   gap: 1.25rem;
 }
 
@@ -22,6 +29,7 @@
 }
 
 .docente-card {
+  min-width: 0;
   display: grid;
   align-content: start;
   gap: 1.25rem;
@@ -34,6 +42,7 @@
 
 .docente-card__identidad {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.875rem;
   min-width: 0;
@@ -54,6 +63,8 @@
 .docente-card__identidad h3 {
   font-size: 1.05rem;
 }
+
+.docente-card__identidad > div { min-width: 0; }
 
 .docente-card__identidad p {
   margin: 0.25rem 0 0;
@@ -81,6 +92,7 @@
 
 .docente-metrica__encabezado {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
@@ -146,7 +158,8 @@
 .boton-secundario,
 .docentes__error button,
 .docentes__promedios-error button {
-  min-height: 2.625rem;
+  min-height: 2.75rem;
+  max-width: 100%;
   padding: 0.625rem 1rem;
   border-radius: 0.5625rem;
   font-weight: 700;
@@ -238,6 +251,7 @@ button:disabled {
 
 .docentes__historial-encabezado {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
@@ -271,7 +285,8 @@ button:disabled {
 
 .docentes__gestion-rapida,
 .docentes__filtro-modos button {
-  min-height: 2.5rem;
+  min-height: 2.75rem;
+  max-width: 100%;
   padding: 0.5rem 1rem;
   /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #cfd7e4;
@@ -302,6 +317,7 @@ button:disabled {
 
 .docentes__campo-filtro {
   display: grid;
+  min-width: 0;
   width: min(100%, 20rem);
   gap: 0.4375rem;
   color: #344054;
@@ -309,7 +325,9 @@ button:disabled {
 }
 
 .docentes__campo-filtro select {
-  min-height: 2.625rem;
+  min-height: 2.75rem;
+  min-width: 0;
+  width: 100%;
   padding: 0.5625rem 0.625rem;
   /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #cdd6e3;
@@ -332,11 +350,15 @@ button:disabled {
 
 .docentes__historial-grafico {
   display: grid;
+  min-width: 0;
   gap: 0.875rem;
   padding: 1.375rem;
 }
 
 .docentes__grafico-contenedor {
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior-x: contain;
   overflow-x: auto;
 }
 
@@ -422,7 +444,10 @@ button:disabled {
 
 .modal-docente__contenido {
   width: min(100%, 38.75rem);
+  min-width: 0;
+  max-width: calc(100vw - 3rem);
   max-height: calc(100vh - 3rem);
+  max-height: calc(100dvh - 3rem);
   overflow-y: auto;
   padding: 1.625rem;
   border-radius: 1rem;
@@ -435,6 +460,8 @@ button:disabled {
   justify-content: space-between;
   gap: 1.25rem;
 }
+
+.modal-docente__encabezado > div { min-width: 0; }
 
 .modal-docente__encabezado h2 {
   margin: 0.25rem 0;
@@ -454,8 +481,9 @@ button:disabled {
 .modal-docente__cerrar {
   display: grid;
   place-items: center;
-  width: 2.375rem;
-  height: 2.375rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
   border: 0;
   border-radius: 50%;
   background: #f1f5f9;
@@ -477,6 +505,7 @@ button:disabled {
 
 .criterio-docente__encabezado {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem;
   font-weight: 700;
@@ -488,6 +517,8 @@ button:disabled {
 
 .criterio-docente input[type='range'] {
   width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
   cursor: pointer;
   accent-color: #165dab;
 }
@@ -501,6 +532,7 @@ button:disabled {
 
 .periodo-docente {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem;
   padding: 0.875rem 1rem;
@@ -514,6 +546,7 @@ button:disabled {
 
 .modal-docente__acciones {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1.5rem;
@@ -531,6 +564,7 @@ button:disabled {
 
 .confirmacion-docente__fila {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 1.25rem;
   padding: 0.875rem 1rem;
@@ -579,10 +613,20 @@ button:disabled {
   }
 
   .modal-docente__contenido {
+    max-width: calc(100vw - 1.5rem);
+    max-height: calc(100vh - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
     padding: 1.25rem;
   }
 
   .modal-docente__acciones {
     flex-direction: column-reverse;
   }
+}
+
+@media (max-width: 30rem) {
+  .docente-card,
+  .docentes__historial-grafico,
+  .docentes__historial-encabezado,
+  .docentes__consulta-personalizada { padding: 0.75rem; }
 }

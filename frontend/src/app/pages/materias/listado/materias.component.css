@@ -8,7 +8,10 @@
 * { box-sizing: border-box; }
 
 .materias-page {
+  container-type: inline-size;
   min-height: calc(100vh - 5rem);
+  min-height: calc(100dvh - 4.25rem);
+  overflow-wrap: anywhere;
   padding: 2.5rem clamp(1.25rem, 2.5vw, 2.5rem);
   background-color: #f7faff;
   background-image: radial-gradient(#dce7f5 0.040625rem, transparent 0.040625rem);
@@ -59,7 +62,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materias-search {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 1.5rem;
@@ -81,17 +84,18 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 }
 
 .materias-search__name,
-.materias-search__career {
-  flex: 1 1 0;
+.materias-search__career,
+.materias-search__semester {
+  flex: 1 1 12rem;
   min-width: 0;
 }
-.materias-search__field { display: flex; gap: 0.75rem; }
+.materias-search__field { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .materias-search input,
 .materias-search select {
   flex: 1 1 0;
   min-width: 0;
   width: 100%;
-  height: 2.25rem;
+  min-height: 2.75rem;
   padding: 0.5rem 0.75rem;
   /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
@@ -100,12 +104,12 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
   box-shadow: 0 0.0625rem 0.1875rem #193c6520;
   color: #183454;
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
 .materias-search input::placeholder { color: #617794; opacity: 1; }
 .materias-search__clear {
   flex-shrink: 0;
-  height: 2.25rem;
+  min-height: 2.75rem;
   padding: 0.5rem 0.75rem;
   /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
@@ -145,6 +149,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 
 .materia-card__etiqueta {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
   gap: 0.65rem;
@@ -206,7 +211,7 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 
 .materia-button {
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   margin-top: auto;
   padding: 0.65rem 1rem;
   /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
@@ -293,6 +298,9 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materia-detalle {
   width: min(32rem, calc(100% - 2rem));
   max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  max-width: calc(100vw - 2rem);
+  overflow-y: auto;
   padding: clamp(1rem, 4vw, 2rem);
   /* Excepcion HU-39: borde de un pixel para conservar nitidez visual. */
   border: 1px solid #d3e1f2;
@@ -312,12 +320,27 @@ h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); }
 .materia-detalle__seccion h3 { margin: 0 0 0.5rem; font-size: 1rem; }
 .materia-detalle__seccion p { margin: 0; color: #5d6f88; line-height: 1.6; white-space: pre-line; }
 
-@media (max-width: 75rem) { .materias-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 43.75rem) { .materias-grid { grid-template-columns: minmax(0, 1fr); } }
+/* Use the content width after the sidebar, preserving up to three cards. */
+@container (max-width: 56rem) {
+  .materias-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@container (max-width: 38rem) {
+  .materias-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (max-width: 37.5rem) {
   .materias-search { flex-direction: column; }
   .materias-search__name,
-  .materias-search__career { width: 100%; }
+  .materias-search__career,
+  .materias-search__semester { width: 100%; flex-basis: auto; }
   .materias-pagination { justify-content: space-between; }
   .materias-pagination__pages { order: 3; justify-content: center; width: 100%; }
+}
+
+@media (max-width: 30rem) {
+  .materias-page { padding: 1.5rem 0.75rem; }
+  .materia-card { padding: 1rem; }
+  .materias-search { padding: 0.75rem; }
+  .materias-search__field input { flex-basis: 8rem; }
 }

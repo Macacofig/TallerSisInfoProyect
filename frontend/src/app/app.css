@@ -1,10 +1,12 @@
 :host {
 	display: block;
 	min-height: 100vh;
+	min-height: 100dvh;
 }
 
 .app-shell {
 	min-height: 100vh;
+	min-height: 100dvh;
 	background-color: #f4f7fb;
 }
 
@@ -20,6 +22,7 @@ app-sidebar {
 .app-main {
 	min-width: 0;
 	min-height: 100vh;
+	min-height: 100dvh;
 	margin-left: 16.25rem;
 	display: flex;
 	flex-direction: column;
@@ -30,17 +33,7 @@ app-sidebar {
 	flex: 1;
 }
 
-@media (max-width: 48rem) {
-	app-sidebar {
-		width: 14rem;
-	}
-
-	.app-main {
-		margin-left: 14rem;
-	}
-}
-
-@media (max-width: 36rem) {
+@media (max-width: 64rem) {
 	app-sidebar {
 		width: 4.25rem;
 	}
