@@ -115,4 +115,5 @@ Idea general de lo que ofrece el backend, agrupado por recurso:
 * **Horario:** Normalizar materias crudas del usuario y generar combinaciones de horarios posibles.
 * **Ayudante:** Solicitar ser ayudante de una materia (con motivo, calificación y horarios), listar ayudantes aprobados por materia, dejar de ser ayudante, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
 * **Solicitud de Ayuda:** Solicitar ayuda a un ayudante aprobado, listar solicitudes recibidas por ayudante, resolver solicitudes (ayudante), cancelar solicitudes (estudiante), ver solicitudes pendientes por ayudante.
+* **Solicitud de Ayudante:** Solicitar ser ayudante con motivo, calificación y horarios, listar solicitudes por estudiante/materia, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
 * **Test:** Comprobar el estado de la API.
