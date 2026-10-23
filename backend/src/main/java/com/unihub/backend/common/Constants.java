@@ -236,4 +236,127 @@ public final class Constants {
 
 	}
 
+	// AYUDANTE MATERIA
+	public static final class AyudanteMateria {
+
+	private AyudanteMateria() {
+	}
+
+	// Base = AYUDANTE MATERIA
+	public static final String BASE = "/api/ayudante-materia";
+
+	// Crear solicitud de ayudante
+	public static final String CREAR_URL = BASE;
+	// Que necesita: body AyudanteMateriaRequest (idEstudiante, idMateria, horario)
+	// Que devuelve: AyudanteMateriaResponse creado
+
+	// Obtener ayudantes aprobados de una materia
+	public static final String POR_MATERIA_APROBADOS_URL = BASE + "/materia/{idMateria}/aprobados";
+	// Que necesita: idMateria
+	// Que devuelve: Lista de AyudanteMateriaResponse con estado APROBADO
+
+	// Dejar de ser ayudante
+	public static final String DEJAR_URL = BASE + "/{idAyudanteMateria}/estudiante/{idEstudiante}";
+	// Que necesita: idAyudanteMateria, idEstudiante
+	// Que devuelve: 204 No Content
+
+	// Aprobar solicitud de ayudante (admin)
+	public static final String APROBAR_URL = BASE + "/{idAyudanteMateria}/aprobar";
+	// Que necesita: idAyudanteMateria
+	// Que devuelve: AyudanteMateriaResponse actualizado
+
+	// Rechazar solicitud de ayudante (admin)
+	public static final String RECHAZAR_URL = BASE + "/{idAyudanteMateria}/rechazar";
+	// Que necesita: idAyudanteMateria
+	// Que devuelve: AyudanteMateriaResponse actualizado
+
+	// Obtener solicitudes pendientes (admin)
+	public static final String PENDIENTES_URL = BASE + "/pendientes";
+	// Que necesita: nada
+	// Que devuelve: Lista de AyudanteMateriaResponse con estado PENDIENTE
+
+	}
+
+	// SOLICITUD AYUDANTE
+	public static final class SolicitudAyudante {
+
+	private SolicitudAyudante() {
+	}
+
+	// Base = SOLICITUD AYUDANTE
+	public static final String BASE = "/api/solicitud-ayudante";
+
+	// Solicitar ser ayudante
+	public static final String CREAR_URL = BASE;
+	// Que necesita: body SolicitudAyudanteRequest (idEstudiante, idMateria, motivo, calificacion, horarios)
+	// Que devuelve: SolicitudAyudanteResponse creado
+
+	// Obtener solicitudes de un estudiante
+	public static final String POR_ESTUDIANTE_URL = BASE + "/estudiante/{idEstudiante}";
+	// Que necesita: idEstudiante
+	// Que devuelve: Lista de SolicitudAyudanteResponse
+
+	// Obtener solicitudes de una materia
+	public static final String POR_MATERIA_URL = BASE + "/materia/{idMateria}";
+	// Que necesita: idMateria
+	// Que devuelve: Lista de SolicitudAyudanteResponse
+
+	// Obtener solicitudes pendientes (admin)
+	public static final String PENDIENTES_URL = BASE + "/pendientes";
+	// Que necesita: nada
+	// Que devuelve: Lista de SolicitudAyudanteResponse con estado PENDIENTE
+
+	// Aprobar solicitud (admin)
+	public static final String APROBAR_URL = BASE + "/{idSolicitud}/aprobar";
+	// Que necesita: idSolicitud
+	// Que devuelve: SolicitudAyudanteResponse actualizado
+
+	// Rechazar solicitud (admin)
+	public static final String RECHAZAR_URL = BASE + "/{idSolicitud}/rechazar";
+	// Que necesita: idSolicitud
+	// Que devuelve: SolicitudAyudanteResponse actualizado
+
+	}
+
+	// SOLICITUD AYUDA
+	public static final class SolicitudAyuda {
+
+	private SolicitudAyuda() {
+	}
+
+	// Base = SOLICITUD AYUDA
+	public static final String BASE = "/api/solicitud-ayuda";
+
+	// Solicitar ayuda
+	public static final String CREAR_URL = BASE;
+	// Que necesita: body SolicitudAyudaRequest (idEstudiante, idAyudante, idMateria, peticion)
+	// Que devuelve: SolicitudAyudaResponse creado
+
+	// Obtener solicitudes de un ayudante
+	public static final String POR_AYUDANTE_URL = BASE + "/ayudante/{idAyudante}";
+	// Que necesita: idAyudante
+	// Que devuelve: Lista de SolicitudAyudaResponse
+
+	// Obtener solicitudes pendientes de un ayudante
+	public static final String PENDIENTES_POR_AYUDANTE_URL = BASE + "/ayudante/{idAyudante}/pendientes";
+	// Que necesita: idAyudante
+	// Que devuelve: Lista de SolicitudAyudaResponse con estado PENDIENTE
+
+	// Obtener solicitudes de un estudiante
+	public static final String POR_ESTUDIANTE_URL = BASE + "/estudiante/{idEstudiante}";
+	// Que necesita: idEstudiante
+	// Que devuelve: Lista de SolicitudAyudaResponse
+
+	// Resolver solicitud (ayudante)
+	public static final String RESOLVER_URL = BASE + "/{idSolicitud}/resolver";
+	// Que necesita: idSolicitud
+	// Que devuelve: SolicitudAyudaResponse actualizado
+
+	// Cancelar solicitud (estudiante)
+	public static final String CANCELAR_URL = BASE + "/{idSolicitud}/estudiante/{idEstudiante}/cancelar";
+	// Que necesita: idSolicitud, idEstudiante
+	// Que devuelve: SolicitudAyudaResponse actualizado
+
+	}
+
 }

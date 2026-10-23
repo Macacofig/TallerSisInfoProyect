@@ -108,6 +108,15 @@ Las URLs JDBC generadas por Compose usan `sslmode=require`: los servidores deben
 Hibernate usa `spring.jpa.hibernate.ddl-auto=update`: puede crear o actualizar tablas al arrancar, pero no carga automáticamente datos del catálogo. En una base nueva, un listado vacío puede ser esperado.
 
 [scripts/schema.sql](scripts/schema.sql) contiene estructura y ejemplos, pero también `DROP TABLE ... CASCADE`. Úsalo solamente para preparar una base de prueba descartable tras revisar el script; no lo ejecutes sobre datos compartidos. Para probar el login, registra una cuenta nueva desde la aplicación: los ejemplos históricos del SQL no sustituyen ese flujo.
+* Estudiantes.
+* Materias.
+* Docentes.
+* Materiales.
+* Reseñas.
+* **Ayudantías.**
+* Solicitudes.
+* Horarios.
+* Entre otros datos del sistema.
 
 ### 4. Elegir la API del frontend
 
@@ -274,3 +283,14 @@ El puerto predeterminado es 3000, configurable con `PORT`. Chromium usa `headles
 Cada PR incluye **Descripción**, **Historia / Issue**, **Cambios realizados**, **Pruebas realizadas** con checklist, **Capturas** del frontend, **Capturas** de terminal y **Notas**. Marca únicamente pruebas ejecutadas y adjunta evidencia correspondiente al cambio.
 
 El grupo utiliza **squash** para integrar cada PR como un único commit en la rama de destino.
+* **Materia:** Mostrar materias con filtros opcionales (nombre, carrera y semestre), listar las carreras disponibles.
+* **Docente:** Agregar docentes (solo administrador de catálogo), mostrar los docentes de una materia.
+* **Docente-Materia:** Asociar un docente a una materia (solo administrador de catálogo).
+* **Estudiante:** Registrarse, iniciar sesión (genera token JWT), actualizar su perfil.
+* **Calificación Materia:** Calificar materias (crear, editar y eliminar la calificación propia), ver la calificación hecha en una materia, y obtener estadísticas y promedios de una materia o de todas las materias, con filtros por gestión y rango de gestiones.
+* **Calificación Docente:** Calificar docentes (crear, editar y eliminar la calificación propia), ver la calificación hecha a un docente en una materia, y obtener promedios por docente de una materia, con filtros por gestión y rango de gestiones.
+* **Horario:** Normalizar materias crudas del usuario y generar combinaciones de horarios posibles.
+* **Ayudante:** Solicitar ser ayudante de una materia (con motivo, calificación y horarios), listar ayudantes aprobados por materia, dejar de ser ayudante, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
+* **Solicitud de Ayuda:** Solicitar ayuda a un ayudante aprobado, listar solicitudes recibidas por ayudante, resolver solicitudes (ayudante), cancelar solicitudes (estudiante), ver solicitudes pendientes por ayudante.
+* **Solicitud de Ayudante:** Solicitar ser ayudante con motivo, calificación y horarios, listar solicitudes por estudiante/materia, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
+* **Test:** Comprobar el estado de la API.

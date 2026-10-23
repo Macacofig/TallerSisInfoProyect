@@ -10,6 +10,9 @@
 -- Se eliminan en cascada las tablas relacionadas con materias junto con ella,
 -- y al volver a crearlas los id se reinician desde 1.
 -- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS solicitudes_ayuda CASCADE;
+DROP TABLE IF EXISTS solicitudes_ayudantes CASCADE;
+DROP TABLE IF EXISTS ayudante_materia CASCADE;
 DROP TABLE IF EXISTS calificacion_materia CASCADE;
 DROP TABLE IF EXISTS calificacion_docente CASCADE;
 DROP TABLE IF EXISTS docente_materia CASCADE;
@@ -196,3 +199,39 @@ INSERT INTO calificacion_materia (id_materia, id_estudiante, dificultad, carga, 
 ((SELECT id FROM materias WHERE codigo = 'mat-123'), (SELECT id FROM estudiantes WHERE correo_electronico = 'fernando.ortiz@unihub.com'), 5, 5, 6, 'ninguno', 'teorico', 'ii-año'),
 ((SELECT id FROM materias WHERE codigo = 'sis-121'), (SELECT id FROM estudiantes WHERE correo_electronico = 'paola.munoz@unihub.com'), 4, 6, 5, 'ninguno', 'teorico', 'i-año'),
 ((SELECT id FROM materias WHERE codigo = 'fis-111'), (SELECT id FROM estudiantes WHERE correo_electronico = 'ricardo.loza@unihub.com'), 6, 5, 7, 'ninguno', 'practico', 'i-año');
+
+-- ============================================================================
+-- 3) Tablas de Ayudantes y Solicitudes
+-- ============================================================================
+
+-- Ayudante - Materia
+CREATE TABLE ayudante_materia (
+    id             BIGSERIAL PRIMARY KEY,
+    id_estudiante  BIGINT NOT NULL REFERENCES estudiantes (id),
+    id_materia     BIGINT NOT NULL REFERENCES materias (id),
+    horario        VARCHAR(255) NOT NULL,
+    estado         VARCHAR(50) NOT NULL DEFAULT 'PENDIENTE',
+    CONSTRAINT uk_ayudante_materia_estudiante_materia_activo UNIQUE (id_estudiante, id_materia, estado)
+);
+
+-- Solicitudes de Ayudante
+CREATE TABLE solicitudes_ayudantes (
+    id_solicitud_ayudante BIGSERIAL PRIMARY KEY,
+    id_estudiante         BIGINT NOT NULL REFERENCES estudiantes (id),
+    id_materia            BIGINT NOT NULL REFERENCES materias (id),
+    motivo                TEXT NOT NULL,
+    calificacion          DOUBLE PRECISION NOT NULL,
+    horarios              VARCHAR(255) NOT NULL,
+    estado                VARCHAR(50) NOT NULL DEFAULT 'PENDIENTE',
+    CONSTRAINT uk_solicitud_ayudante_estudiante_materia_activo UNIQUE (id_estudiante, id_materia, estado)
+);
+
+-- Solicitudes de Ayuda
+CREATE TABLE solicitudes_ayuda (
+    id_solicitud_ayuda BIGSERIAL PRIMARY KEY,
+    id_estudiante      BIGINT NOT NULL REFERENCES estudiantes (id),
+    id_ayudante        BIGINT NOT NULL REFERENCES ayudante_materia (id),
+    id_materia         BIGINT NOT NULL REFERENCES materias (id),
+    peticion           TEXT NOT NULL,
+    estado             VARCHAR(50) NOT NULL DEFAULT 'PENDIENTE'
+);
