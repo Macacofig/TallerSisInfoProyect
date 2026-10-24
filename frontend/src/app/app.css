@@ -42,3 +42,8 @@ app-sidebar {
 		margin-left: 4.25rem;
 	}
 }
+
+@media (max-width: 48rem) {
+  app-sidebar { top: auto; right: 0; width: auto; }
+  .app-main { margin-left: 0; padding-bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
+}

@@ -365,7 +365,8 @@ button:disabled {
 .docentes__grafico-contenedor svg {
   display: block;
   width: 100%;
-  min-width: 42.5rem;
+  min-width: 0;
+  max-width: 100%;
   height: auto;
 }
 
@@ -629,4 +630,17 @@ button:disabled {
   .docentes__historial-grafico,
   .docentes__historial-encabezado,
   .docentes__consulta-personalizada { padding: 0.75rem; }
+}
+
+.docentes__encabezado { padding-inline: 1.25rem; }
+@media (max-width: 30rem) {
+  .docentes__encabezado { padding-inline: 0.75rem; }
+  .docentes__gestiones-rapidas, .docentes__filtro-modos, .docentes__acciones-filtro { align-items: stretch; }
+  .docentes__gestiones-rapidas button, .docentes__filtro-modos button, .docentes__acciones-filtro button { flex: 1 1 100%; }
+}
+
+/* Scale labels with the SVG so they remain readable on narrow cards. */
+.docentes__grafico-contenedor { container-type: inline-size; }
+@container (max-width: 40rem) {
+  .docentes__grafico-contenedor svg text { font-size: clamp(20px, calc(65px - 5cqw), 42px); }
 }

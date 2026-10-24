@@ -1224,7 +1224,7 @@
 
   .materias-panel {
     width: 100%;
-    order: 2;
+    order: 0;
   }
 
   .resultados {
@@ -1300,13 +1300,7 @@
     padding: 0.5rem;
   }
 
-  .materia-calendario strong {
-    font-size: 0.6875rem;
-  }
 
-  .materia-calendario span {
-    font-size: 0.5625rem;
-  }
 
   .modal {
     padding: 1.25rem;
@@ -1323,4 +1317,23 @@
   .modal-footer button {
     width: 100%;
   }
+}
+
+/* Keep hour/block geometry; retain day and time references while scrolling. */
+.calendario__encabezado { position: sticky; top: 0; z-index: 12; }
+.calendario__horas { position: sticky; left: 0; z-index: 11; }
+.calendario__espacio-hora { position: sticky; left: 0; z-index: 13; background: #f8fbff; }
+.calendario__scroll { scrollbar-color: #537696 #e5ecf3; }
+@media (min-width: 48.001rem) and (max-width: 64rem) {
+  .panel-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .panel-filtros { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 1rem; }
+}
+@media (max-width: 48rem) {
+  .horarios-page { padding: 1.25rem 0.75rem; }
+  .page-header { padding: 0; }
+  .resultados__barra { padding: 0.875rem; }
+  .calendario__scroll { max-height: 65dvh; }
+  .calendario__dia { min-height: 2.75rem; }
+  .materia-calendario strong { font-size: 0.8125rem; }
+  .materia-calendario span { font-size: 0.6875rem; }
 }

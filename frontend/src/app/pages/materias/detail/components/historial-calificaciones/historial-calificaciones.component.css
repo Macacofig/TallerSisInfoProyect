@@ -40,7 +40,8 @@
 svg {
   display: block;
   width: 100%;
-  min-width: 42.5rem;
+  min-width: 0;
+  max-width: 100%;
   height: auto;
 }
 
@@ -158,4 +159,10 @@ svg {
 
 @media (max-width: 30rem) {
   .historial-calificaciones { padding: 0.75rem; }
+}
+
+/* Scale labels with the SVG so they remain readable on narrow cards. */
+.grafico { container-type: inline-size; }
+@container (max-width: 40rem) {
+  .grafico svg text { font-size: clamp(20px, calc(65px - 5cqw), 42px); }
 }
