@@ -76,9 +76,12 @@ export class AuthService {
       localStorage.removeItem('usuario');
   }
 
-  registerUser(datos: RegistroRequest): Observable<RegistroResponse> {
+  private postAutenticacion<TRespuesta, TSolicitud>(
+    url: string,
+    datos: TSolicitud
+  ): Observable<TRespuesta> {
     return this.http
-      .post<RegistroResponse>(this.urlRegistro, datos, {
+      .post<TRespuesta>(url, datos, {
         headers: { 'Content-Type': 'application/json' }
       })
       .pipe(
@@ -89,17 +92,18 @@ export class AuthService {
       );
   }
 
+  registerUser(datos: RegistroRequest): Observable<RegistroResponse> {
+    return this.postAutenticacion<RegistroResponse, RegistroRequest>(
+      this.urlRegistro,
+      datos
+    );
+  }
+
   loginUser(datos: LoginRequest): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(this.urlLogin, datos, {
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .pipe(
-        timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
-        catchError((error: unknown) =>
-          throwError(() => mapearErrorHttp(error))
-        )
-      );
+    return this.postAutenticacion<LoginResponse, LoginRequest>(
+      this.urlLogin,
+      datos
+    );
   }
 
   actualizarUsuario(

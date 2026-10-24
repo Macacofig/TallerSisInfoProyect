@@ -101,12 +101,6 @@
    USER
    ======================================== */
 
-.navbar__user {
-  display: flex;
-  align-items: center;
-
-  gap: 0.625rem;
-}
 
 
 /* Avatar */
