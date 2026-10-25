@@ -1,6 +1,8 @@
 
 :host {
   display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: #10213f;
 }
 
@@ -17,6 +19,7 @@
 
 .ayudantes-info {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
@@ -47,6 +50,8 @@
 }
 
 .ayudantes-info-boton {
+  min-height: 2.75rem;
+  max-width: 100%;
   flex-shrink: 0;
   padding: 11px 16px;
   color: #475467;
@@ -88,6 +93,7 @@
 
 .ayudante-identidad {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
   margin-bottom: 22px;
@@ -158,6 +164,7 @@
 
 .ayudante-calificacion {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 9px;
   margin-bottom: 18px;
@@ -186,6 +193,7 @@
 }
 
 .ayudante-contacto {
+  min-height: 2.75rem;
   width: 100%;
   padding: 12px 16px;
   color: #ffffff;
@@ -251,4 +259,10 @@
   .ayudante-contacto {
     transition: none;
   }
+}
+
+@media (max-width: 30rem) {
+  .ayudantes-container { padding: 0.5rem; }
+  .ayudante-card,
+  .ayudantes-info { padding: 0.75rem; }
 }

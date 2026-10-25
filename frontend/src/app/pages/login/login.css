@@ -16,6 +16,7 @@
 
 display: block;
 min-height: 100vh;
+min-height: 100dvh;
 font-family: var(--fuente-texto);
 }
 
@@ -25,17 +26,20 @@ Igual que Registro
 ========================================================= */
 
 .login {
+position: relative;
 display: flex;
 min-height: 100vh;
+min-height: 100dvh;
+overflow-wrap: anywhere;
 }
 
 .login__language-toggle {
-position: fixed;
+position: absolute;
 top: 1rem;
 right: 1rem;
 z-index: 20;
-min-width: 2.5rem;
-height: 2rem;
+min-width: 2.75rem;
+height: 2.75rem;
 border: 1px solid rgba(255, 255, 255, 0.45);
 border-radius: 9999px;
 background: #063b78;
@@ -208,7 +212,7 @@ display: flex;
 align-items: center;
 justify-content: center;
 
-padding: 2.5rem 3rem;
+padding: 4.5rem 3rem 2.5rem;
 
 background-color: var(--fondo);
 }
@@ -267,7 +271,7 @@ font-size: 1rem;
 }
 
 .login__tab {
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   border: 0;
   border-radius: 0.45rem;
   background: transparent;
@@ -362,7 +366,7 @@ box-shadow:
 
 color: var(--texto);
 
-font: 400 0.95rem var(--fuente-texto);
+font: 400 1rem var(--fuente-texto);
 
 transition:
 border-color 0.15s ease,
@@ -392,14 +396,14 @@ outline: none;
 }
 
 .login__input-contrasena {
-  padding-right: 3rem;
+  padding-right: 3.5rem;
 }
 
 .login__mostrar-contrasena {
   position: absolute;
 
   top: 50%;
-  right: 0.75rem;
+  right: 0.125rem;
 
   transform: translateY(-50%);
 
@@ -407,8 +411,8 @@ outline: none;
   align-items: center;
   justify-content: center;
 
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem;
+  height: 2.75rem;
 
   padding: 0;
 
@@ -536,7 +540,7 @@ RESPONSIVE
     }
 
     .login__formulario {
-    padding: 2.5rem 2rem;
+    padding: 4.5rem 2rem 2.5rem;
     }
 
     }
@@ -550,7 +554,7 @@ RESPONSIVE
     .login__marca {
     flex: none;
     max-width: none;
-    padding: 1.1rem 1.25rem;
+    padding: 1.1rem 4.5rem 1.1rem 1.25rem;
 
 
     }
@@ -576,4 +580,9 @@ RESPONSIVE
         animation-duration: 2.4s;
     }
     }
+}
+
+@media (max-width: 30rem) {
+  .login__boton { width: 100%; }
+  .login__brand-subtitle { white-space: normal; }
 }

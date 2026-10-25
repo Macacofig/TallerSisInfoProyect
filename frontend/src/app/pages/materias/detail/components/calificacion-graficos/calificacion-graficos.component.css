@@ -1,5 +1,7 @@
 :host {
   display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
 
   --color-dificultad: #d97706;
   --color-carga: #165dab;
@@ -36,6 +38,7 @@
 
 .grafico-metrica__encabezado {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.5625rem;
@@ -98,4 +101,8 @@
     gap: 0.625rem;
   }
 
+}
+
+@media (max-width: 30rem) {
+  .graficos-calificacion { padding: 0.75rem; }
 }

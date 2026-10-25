@@ -3,6 +3,7 @@
   [attr.aria-label]="mensajes.ARIA_LABEL"
 >
   <div class="tree-toolbar">
+    <span class="tree-pan-hint" aria-hidden="true">&#8596; &#8597;</span>
     <div class="tree-toolbar__hint" *ngIf="selectedSigla()">
       <span class="tree-toolbar__dot" aria-hidden="true"></span>
       {{ selectedSigla() }}
@@ -44,7 +45,7 @@
     </div>
   </div>
 
-  <div class="tree-viewport">
+  <div class="tree-viewport" tabindex="0" role="region" [attr.aria-label]="mensajes.ARIA_LABEL">
     <div
       class="tree-stage"
       [style.width.px]="scaledWidth()"

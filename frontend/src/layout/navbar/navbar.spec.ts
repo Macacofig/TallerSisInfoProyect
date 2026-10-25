@@ -26,6 +26,29 @@ describe('Navbar', () => {
     expect(component).toBeTruthy();
   });
 
+  it('exposes the profile trigger as a named button and keeps menu state in sync', async () => {
+    const trigger = fixture.nativeElement.querySelector('.navbar__user') as HTMLButtonElement;
+
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger.type).toBe('button');
+    expect(trigger.getAttribute('aria-label')).toBeTruthy();
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+
+    trigger.focus();
+    expect(document.activeElement).toBe(trigger);
+    trigger.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(fixture.nativeElement.querySelectorAll('.navbar__user-menu-item').length).toBe(2);
+
+    trigger.click();
+    fixture.detectChanges();
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    expect(fixture.nativeElement.querySelector('.navbar__user-menu')).toBeNull();
+  });
+
   it('switches visible labels from Spanish to English and back', async () => {
     const toggle = fixture.nativeElement.querySelector(
       '.navbar__language-toggle'

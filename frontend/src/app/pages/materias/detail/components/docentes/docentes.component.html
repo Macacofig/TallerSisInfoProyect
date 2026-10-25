@@ -443,7 +443,7 @@
                 <circle class="docentes__grafico-punto docentes__grafico-punto--relacion" [attr.cx]="obtenerXHistorial(indice)" [attr.cy]="obtenerYHistorial(dato.relacion)" r="5">
                   <title>{{ formatearGestionDocente(dato.gestion) }} · {{ mensajes.RELATION_LABEL }}: {{ obtenerPromedioFormateado(dato.relacion) }}/10</title>
                 </circle>
-                <text class="docentes__grafico-etiqueta-x" [attr.x]="obtenerXHistorial(indice)" [attr.y]="altoGrafico - 18" text-anchor="middle">
+                <text class="docentes__grafico-etiqueta-x" [attr.x]="obtenerXHistorial(indice)" [attr.y]="altoGrafico - 18" [attr.text-anchor]="indice === 0 ? 'start' : indice === historialDocente.length - 1 ? 'end' : 'middle'">
                   {{ formatearGestionDocente(dato.gestion) }}
                 </text>
               }
