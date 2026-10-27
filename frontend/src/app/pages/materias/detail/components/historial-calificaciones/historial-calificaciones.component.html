@@ -201,7 +201,7 @@
             [attr.y]="
               altoGrafico - 18
             "
-            text-anchor="middle"
+            [attr.text-anchor]="indice === 0 ? 'start' : indice === datos.length - 1 ? 'end' : 'middle'"
           >
             {{ formatearGestion(dato.gestion) }}
           </text>

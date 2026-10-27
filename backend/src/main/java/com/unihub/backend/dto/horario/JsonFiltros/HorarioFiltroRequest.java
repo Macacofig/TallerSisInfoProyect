@@ -9,7 +9,6 @@ public record HorarioFiltroRequest(
         List<Long> materiasObligatorias,
         List<Long> materiasExcluidas,
         Map<Long, List<Long>> docentes,
-        List<HorarioBloqueFiltroRequest> horariosNoDisponibles,
         Boolean evitarHuecos
 ) {
     public HorarioFiltroRequest {
@@ -24,9 +23,6 @@ public record HorarioFiltroRequest(
         }
         if (docentes == null) {
             docentes = Collections.emptyMap();
-        }
-        if (horariosNoDisponibles == null) {
-            horariosNoDisponibles = Collections.emptyList();
         }
         if (evitarHuecos == null) {
             evitarHuecos = false;

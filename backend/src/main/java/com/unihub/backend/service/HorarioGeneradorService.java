@@ -3,11 +3,9 @@ package com.unihub.backend.service;
 import com.unihub.backend.ClassHelpers.Horario.HorarioTrabajo;
 import com.unihub.backend.ClassHelpers.Horario.Oferta;
 import com.unihub.backend.ClassHelpers.Horario.SolucionHorario;
-import com.unihub.backend.dto.horario.HorarioBloqueFiltroRequest;
 import com.unihub.backend.dto.horario.HorarioFiltroRequest;
 import com.unihub.backend.mapper.horario.MapeoGeneracion;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -59,7 +57,7 @@ public class HorarioGeneradorService {
             HorarioFiltroRequest filtros,
             MapeoGeneracion mapeo
     ) {
-        HorarioFiltroRequest filtroFinal = filtros == null ? new HorarioFiltroRequest(null, null, null, null, null, false) : filtros;
+        HorarioFiltroRequest filtroFinal = filtros == null ? new HorarioFiltroRequest(null, null, null, null, false) : filtros;
 
         Set<Long> materiasExcluidas = new HashSet<>(filtroFinal.materiasExcluidas());
         Map<Long, List<Oferta>> ofertasDisponibles = new HashMap<>();
@@ -70,7 +68,6 @@ public class HorarioGeneradorService {
 
             List<Oferta> validas = entry.getValue().stream()
                     .filter(oferta -> cumpleRestriccionDocente(oferta, filtroFinal.docentes()))
-                    .filter(oferta -> cumpleDisponibilidad(oferta, filtroFinal.horariosNoDisponibles()))
                     .toList();
 
             if (!validas.isEmpty()) {
@@ -372,31 +369,6 @@ public class HorarioGeneradorService {
             }
         }
 
-        return true;
-    }
-
-    private boolean cumpleDisponibilidad(Oferta oferta, List<HorarioBloqueFiltroRequest> noDisponibles) {
-        if (noDisponibles == null || noDisponibles.isEmpty()) {
-            return true;
-        }
-
-        for (HorarioTrabajo horario : oferta.horarios()) {
-            for (HorarioBloqueFiltroRequest bloque : noDisponibles) {
-                if (bloque == null || horario.dia() != bloque.dia()) {
-                    continue;
-                }
-                try {
-                    LocalTime inicio = LocalTime.parse(bloque.horaInicio());
-                    LocalTime fin = LocalTime.parse(bloque.horaFin());
-                    if (!inicio.isBefore(fin)
-                            || horario.horaInicio().isBefore(fin) && horario.horaFin().isAfter(inicio)) {
-                        return false;
-                    }
-                } catch (RuntimeException ignored) {
-                    return false;
-                }
-            }
-        }
         return true;
     }
 }
