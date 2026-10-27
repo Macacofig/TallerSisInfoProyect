@@ -1,31 +1,32 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { APP_CONFIG } from '../config/app-config';
 import {
   HorarioMateriaRequest,
-  HorarioNormalizacionResponse
+  HorarioNormalizacionResponse,
+  HorarioGeneracionRequest,
+  HorarioResponse2
 } from '../models/horario';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HorariosService {
+  private readonly http = inject(HttpClient);
+  private readonly api = APP_CONFIG.API;
 
-  private readonly urlObtenerDatos =
-    `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.HORARIOS_OBTENER_DATOS}`;
-
-  constructor(
-    private readonly http: HttpClient
-  ) {}
-
-  obtenerDatos(
-    materias: HorarioMateriaRequest[]
-  ): Observable<HorarioNormalizacionResponse> {
+  obtenerDatos(materias: HorarioMateriaRequest[]): Observable<HorarioNormalizacionResponse> {
     return this.http.post<HorarioNormalizacionResponse>(
-      this.urlObtenerDatos,
+      `${this.api.BASE_URL}${this.api.ENDPOINTS.HORARIOS_OBTENER_DATOS}`,
       materias
+    );
+  }
+
+  generarHorarios(request: HorarioGeneracionRequest): Observable<HorarioResponse2[]> {
+    return this.http.post<HorarioResponse2[]>(
+      `${this.api.BASE_URL}${this.api.ENDPOINTS.HORARIOS_GENERAR}`,
+      request
     );
   }
 }

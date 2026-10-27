@@ -7,8 +7,10 @@ import { LanguageService } from '../../services/language.service';
 import { HorariosService } from '../../services/horarios.service';
 import {
   HorarioFiltroRequest,
+  HorarioGeneracionRequest,
   HorarioMateriaRequest,
-  HorarioNormalizacionResponse
+  HorarioNormalizacionResponse,
+  HorarioResponse2
 } from '../../models/horario';
 import { APP_CONFIG } from '../../config/app-config';
 import { HORARIOS_MESSAGES } from '../../strings/horarios/horarios.messages';
@@ -137,6 +139,13 @@ export class HorariosComponent {
   cantidadMax = 6;
   evitarHuecos = false;
 
+  sessionId = '';
+
+  soluciones: HorarioResponse2[] = [];
+  solucionSeleccionadaIndex = 0;
+  generandoHorarios = false;
+  errorGeneracion = '';
+
 
   constructor() {
     this.render();
@@ -196,6 +205,9 @@ export class HorariosComponent {
     respuesta: HorarioNormalizacionResponse,
     orden: { codigo: string; nombre: string }[]
   ): void {
+    if (respuesta?.sessionId) {
+      this.sessionId = respuesta.sessionId;
+    }
     const porId = new Map<number, { codigo: string; nombre: string }>();
     orden.forEach((materia, indice) => porId.set(indice + 1, materia));
 
@@ -499,6 +511,224 @@ export class HorariosComponent {
       ),
       evitarHuecos: this.evitarHuecos
     };
+  }
+
+  generarHorarios(): void {
+    if (this.generandoHorarios) {
+      return;
+    }
+
+    if (!this.sessionId) {
+      this.errorGeneracion = this.textos.GENERATE_ERROR ?? '';
+      this.changeDetector.markForCheck();
+      return;
+    }
+
+    this.generandoHorarios = true;
+    this.errorGeneracion = '';
+
+    const filtros = this.construirFiltros();
+    const solicitud: HorarioGeneracionRequest = {
+      sessionId: this.sessionId,
+      filtros
+    };
+
+    this.horariosService
+      .generarHorarios(solicitud)
+      .pipe(
+        timeout(HorariosComponent.TIEMPO_ESPERA),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: soluciones => {
+          this.generandoHorarios = false;
+
+          if (!soluciones || soluciones.length === 0) {
+            this.soluciones = [];
+            this.solucionSeleccionadaIndex = 0;
+            this.materiasSeleccionadas = [];
+            this.paginaActual = 1;
+            this.sessionId = '';
+            this.errorGeneracion = this.textos.NO_SOLUTIONS ?? '';
+            this.render();
+            this.changeDetector.markForCheck();
+            this.refrescarSesionTrasGeneracionVacia();
+            return;
+          }
+
+          const ordenadas = [...soluciones].sort((a, b) => {
+            const puntuacionA = a.puntuacion ?? 0;
+            const puntuacionB = b.puntuacion ?? 0;
+            return puntuacionB - puntuacionA;
+          });
+
+          this.soluciones = ordenadas;
+          this.solucionSeleccionadaIndex = 0;
+          this.errorGeneracion = '';
+          this.aplicarSolucionSeleccionada();
+          this.render();
+          this.changeDetector.markForCheck();
+        },
+        error: () => {
+          this.generandoHorarios = false;
+          this.soluciones = [];
+          this.solucionSeleccionadaIndex = 0;
+          this.materiasSeleccionadas = [];
+          this.errorGeneracion = this.textos.GENERATE_ERROR ?? '';
+          this.sessionId = '';
+          this.render();
+          this.changeDetector.markForCheck();
+          this.refrescarSesionTrasGeneracionVacia();
+        }
+      });
+  }
+
+  private refrescarSesionTrasGeneracionVacia(): void {
+    if (this.materiasCrudas.length === 0) {
+      return;
+    }
+
+    this.cargarDatos();
+  }
+
+  seleccionarSolucion(indice: number): void {
+    if (indice < 0 || indice >= this.soluciones.length) {
+      return;
+    }
+
+    this.solucionSeleccionadaIndex = indice;
+    this.aplicarSolucionSeleccionada();
+    this.paginaActual = 1;
+    this.render();
+    this.changeDetector.markForCheck();
+  }
+
+  private aplicarSolucionSeleccionada(): void {
+    const solucion = this.soluciones[this.solucionSeleccionadaIndex];
+    if (!solucion) {
+      this.materiasSeleccionadas = [];
+      return;
+    }
+
+    const materias: MateriaHorario[] = [];
+
+    for (const horario of solucion.horarios ?? []) {
+      const codigo = this.extraerCodigoMateria(horario.materia);
+      const nombre = this.extraerNombreMateria(horario.materia);
+
+      materias.push({
+        codigo,
+        nombre,
+        seleccionada: true,
+        idMateria: this.obtenerIdMateriaPorNombreOCodigo(nombre, codigo),
+        estadoFiltro: 'normal',
+        opciones: [
+          {
+            idDocente: this.obtenerIdDocentePorNombre(horario.docente),
+            docente: horario.docente ?? '',
+            paralelo: 0,
+            horario: this.formatearHorarioGenerado(horario.horarios ?? []),
+            obligatorio: false
+          }
+        ]
+      });
+    }
+
+    this.materiasSeleccionadas = materias;
+  }
+
+  private extraerCodigoMateria(texto: string): string {
+    if (!texto) {
+      return '';
+    }
+
+    const coincidencia = texto.match(/^([A-Z]{2,4}-?\d{3,4})/i);
+    if (coincidencia) {
+      return coincidencia[1].toUpperCase();
+    }
+
+    return texto.trim();
+  }
+
+  private extraerNombreMateria(texto: string): string {
+    if (!texto) {
+      return '';
+    }
+
+    const codigo = this.extraerCodigoMateria(texto);
+    if (codigo && texto.toUpperCase().includes(codigo)) {
+      const restante = texto.replace(new RegExp(codigo, 'i'), '').trim();
+      if (restante) {
+        return restante.replace(/^[\-\s:]+|[\-\s:]+$/g, '').trim();
+      }
+    }
+
+    return texto.trim();
+  }
+
+  private obtenerIdMateriaPorNombreOCodigo(nombre: string, codigo: string): number {
+    const normalizadoCodigo = this.normalizarTexto(codigo);
+    const normalizadoNombre = this.normalizarTexto(nombre);
+
+    for (const materia of this.materias) {
+      if (this.normalizarTexto(materia.codigo) === normalizadoCodigo && materia.idMateria > 0) {
+        return materia.idMateria;
+      }
+      if (normalizadoNombre && this.normalizarTexto(materia.nombre) === normalizadoNombre && materia.idMateria > 0) {
+        return materia.idMateria;
+      }
+    }
+
+    for (let indice = 0; indice < this.materiasCrudas.length; indice++) {
+      const cruda = this.materiasCrudas[indice];
+      if (this.normalizarTexto(cruda.siglaMateria) === normalizadoCodigo) {
+        const materia = this.materias[indice];
+        if (materia?.idMateria) {
+          return materia.idMateria;
+        }
+      }
+      if (normalizadoNombre && this.normalizarTexto(cruda.nombreMateria) === normalizadoNombre) {
+        const materia = this.materias[indice];
+        if (materia?.idMateria) {
+          return materia.idMateria;
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  private obtenerIdDocentePorNombre(docente: string): number {
+    if (!docente) {
+      return 0;
+    }
+
+    const normalizado = this.normalizarTexto(docente);
+
+    for (const materia of this.materias) {
+      for (const oferta of materia.opciones) {
+        if (this.normalizarTexto(oferta.docente) === normalizado) {
+          return oferta.idDocente;
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  private formatearHorarioGenerado(bloques: { dia: string; horaInicio: string; horaFin: string }[]): string {
+    if (!bloques || bloques.length === 0) {
+      return '';
+    }
+
+    return bloques
+      .map(bloque => {
+        const dia = bloque.dia ?? '';
+        const inicio = bloque.horaInicio ?? '';
+        const fin = bloque.horaFin ?? '';
+        return `${dia} ${inicio}-${fin}`;
+      })
+      .join(' · ');
   }
 
   private normalizarCantidad(valor: number, minimo: number): number {

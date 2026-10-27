@@ -46,3 +46,40 @@ export interface HorarioFiltroRequest {
   docentes: Record<number, number[]>;
   evitarHuecos: boolean;
 }
+
+export interface HorarioGeneracionRequest {
+  sessionId: string;
+  filtros: HorarioFiltroRequest;
+}
+
+export interface HorarioGeneradoBloque {
+  dia: string;
+  horaInicio: string;
+  horaFin: string;
+}
+
+export interface HorarioGeneradoMateria {
+  materia: string;
+  docente: string;
+  horarios: HorarioGeneradoBloque[];
+}
+
+export interface HorarioResponse2 {
+  cantidadMaterias: number;
+  puntuacion: number;
+  horarios: HorarioGeneradoMateria[];
+}
+
+
+export interface HorarioCantidadRequest {
+  min: number;
+  max: number;
+}
+
+export interface HorarioFiltroRequest {
+  cantidadMaterias: HorarioCantidadRequest;
+  materiasObligatorias: number[];
+  materiasExcluidas: number[];
+  docentes: Record<number, number[]>;
+  evitarHuecos: boolean;
+}
