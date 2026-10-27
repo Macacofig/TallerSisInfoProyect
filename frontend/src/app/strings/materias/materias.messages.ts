@@ -487,4 +487,13 @@ export const MESSAGES = {
     'Solicitar contacto',
   ASSISTANT_PRIVACY_NOTE:
     'Los datos de contacto no se muestran públicamente.',
+  ASSISTANTS_LOADING: 'Cargando ayudantes...',
+  ASSISTANTS_LOAD_ERROR: 'No se pudieron cargar los ayudantes.',
+  ASSISTANTS_EMPTY: 'Esta materia no tiene ayudantes aprobados.',
+  ASSISTANT_NO_RATING: 'Calificación no disponible',
+  ASSISTANT_REQUEST_PROMPT: 'Describe brevemente en qué necesitas ayuda:',
+  ASSISTANT_REQUEST_SUCCESS: 'Tu solicitud de ayuda fue enviada.',
+  ASSISTANT_REQUEST_ERROR: 'No se pudo enviar la solicitud de ayuda.',
+  ASSISTANT_REQUEST_SENDING: 'Enviando solicitud...',
+  ASSISTANT_LOGIN_REQUIRED: 'Inicia sesión para solicitar ayuda.',
 } as const;

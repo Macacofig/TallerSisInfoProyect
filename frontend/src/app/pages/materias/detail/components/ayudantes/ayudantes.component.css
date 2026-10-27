@@ -214,6 +214,11 @@
   box-shadow: 0 3px 9px rgb(22 93 171 / 18%);
 }
 
+.ayudante-contacto:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .ayudante-contacto:focus-visible,
 .ayudantes-info-boton:focus-visible {
   outline: 3px solid #91bff0;

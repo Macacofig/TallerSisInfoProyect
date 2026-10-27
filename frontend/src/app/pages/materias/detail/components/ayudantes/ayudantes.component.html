@@ -16,6 +16,14 @@
     </button>
   </div>
 
+  @if (cargando) {
+    <p role="status">{{ mensajes.ASSISTANTS_LOADING }}</p>
+  } @else if (errorCarga) {
+    <p role="alert">{{ mensajes.ASSISTANTS_LOAD_ERROR }}</p>
+  } @else if (ayudantes.length === 0) {
+    <p>{{ mensajes.ASSISTANTS_EMPTY }}</p>
+  }
+
   <div class="ayudantes-lista">
     @for (ayudante of ayudantes; track ayudante.id) {
       <article class="ayudante-card">
@@ -63,34 +71,18 @@
           class="ayudante-calificacion"
           [attr.aria-label]="mensajes.ASSISTANT_RATING_LABEL"
         >
-          <svg
-            class="icono-estrella"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.7"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3z"></path>
-          </svg>
-
-          <span class="calificacion-valor">
-            {{ ayudante.calificacion.toFixed(1) }}/5
-          </span>
-
           <span class="calificacion-etiqueta">
-            {{ mensajes.ASSISTANT_RATING_LABEL }}
+            {{ mensajes.ASSISTANT_NO_RATING }}
           </span>
         </div>
 
         <button
           type="button"
           class="ayudante-contacto"
+          [disabled]="solicitudEnviando"
+          (click)="solicitarContacto(ayudante)"
         >
-          {{ mensajes.ASSISTANT_CONTACT_BUTTON }}
+          {{ solicitudEnviando ? mensajes.ASSISTANT_REQUEST_SENDING : mensajes.ASSISTANT_CONTACT_BUTTON }}
         </button>
 
         <p class="ayudante-privacidad">
@@ -100,5 +92,9 @@
       </article>
     }
   </div>
+
+  @if (mensajeSolicitud) {
+    <p role="status">{{ mensajeSolicitud }}</p>
+  }
 
 </section>
