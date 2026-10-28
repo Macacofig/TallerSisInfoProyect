@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { Subscription, finalize } from 'rxjs';
 
 import { AyudanteMateriaResponse } from '../../../../../models/ayudante-materia.model';
@@ -18,7 +18,7 @@ interface AyudanteVista {
 }
 
 @Component({
-  selector: 'app-ayudantes.component',
+  selector: 'app-ayudantes',
   standalone: true,
   templateUrl: './ayudantes.component.html',
   styleUrl: './ayudantes.component.css',
@@ -28,6 +28,7 @@ export class AyudantesComponent implements OnChanges {
   private readonly languageService = inject(LanguageService);
   private readonly authService = inject(AuthService);
   private readonly ayudantesService = inject(AyudantesService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private cargaAyudantes?: Subscription;
 
   @Input() idMateria: number | null = null;
@@ -93,6 +94,7 @@ export class AyudantesComponent implements OnChanges {
       .obtenerAprobadosPorMateria(idMateria)
       .pipe(finalize(() => {
         this.cargando = false;
+        this.changeDetectorRef.markForCheck();
       }))
       .subscribe({
         next: (respuesta) => {
@@ -104,9 +106,11 @@ export class AyudantesComponent implements OnChanges {
             verificado: ayudante.estado === 'APROBADO',
             horario: ayudante.horario
           }));
+          this.changeDetectorRef.markForCheck();
         },
         error: () => {
           this.errorCarga = true;
+          this.changeDetectorRef.markForCheck();
         }
       });
   }
