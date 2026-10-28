@@ -112,8 +112,11 @@ Idea general de lo que ofrece el backend, agrupado por recurso:
 * **Estudiante:** Registrarse, iniciar sesión (genera token JWT), actualizar su perfil.
 * **Calificación Materia:** Calificar materias (crear, editar y eliminar la calificación propia), ver la calificación hecha en una materia, y obtener estadísticas y promedios de una materia o de todas las materias, con filtros por gestión y rango de gestiones.
 * **Calificación Docente:** Calificar docentes (crear, editar y eliminar la calificación propia), ver la calificación hecha a un docente en una materia, y obtener promedios por docente de una materia, con filtros por gestión y rango de gestiones.
-* **Horario:** Normalizar materias crudas del usuario y generar combinaciones de horarios posibles.
+* **Horario:** Normalizar materias crudas del usuario y generar combinaciones de horarios posibles a partir de algoritmo de seleccion, filtros proporcionados.
 * **Ayudante:** Solicitar ser ayudante de una materia (con motivo, calificación y horarios), listar ayudantes aprobados por materia, dejar de ser ayudante, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
 * **Solicitud de Ayuda:** Solicitar ayuda a un ayudante aprobado, listar solicitudes recibidas por ayudante, resolver solicitudes (ayudante), cancelar solicitudes (estudiante), ver solicitudes pendientes por ayudante.
 * **Solicitud de Ayudante:** Solicitar ser ayudante con motivo, calificación y horarios, listar solicitudes por estudiante/materia, aprobar/rechazar solicitudes (admin), ver solicitudes pendientes (admin).
 * **Test:** Comprobar el estado de la API.
+
+
+* **Futura Funcionalidad:** Peticion de Materias por medio de credenciales por medio de scraper

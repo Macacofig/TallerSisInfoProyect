@@ -98,6 +98,18 @@
           <span>{{ textos.NO_GAPS }}</span>
         </label>
 
+        <button
+          type="button"
+          class="btn-generar"
+          [disabled]="generandoHorarios || !sessionId"
+          (click)="generarHorarios()">
+          {{ generandoHorarios ? (textos.GENERATING ?? 'Generando...') : (textos.GENERATE_SCHEDULES ?? 'Generar horarios') }}
+        </button>
+
+        @if (errorGeneracion) {
+          <p class="panel-filtros__error" role="alert">{{ errorGeneracion }}</p>
+        }
+
       </div>
 
       <div class="panel-list">
@@ -220,9 +232,66 @@
 
     <section class="resultados">
 
+      <!-- SELECTOR DE SOLUCIONES GENERADAS -->
+      @if (soluciones.length > 0) {
+
+        <div class="resultados__barra resultados__barra--soluciones">
+
+          <div class="resultados__info">
+
+            <svg
+              class="resultados__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true">
+              <path
+                d="M5 12.5L9.5 17L19 7"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span>
+              {{ textos.GENERATED_SOLUTIONS ?? 'Soluciones generadas' }}: {{ soluciones.length }}
+            </span>
+
+          </div>
+
+          <div class="resultados__solucion-selector">
+
+            <button
+              type="button"
+              [disabled]="solucionSeleccionadaIndex === 0"
+              (click)="seleccionarSolucion(solucionSeleccionadaIndex - 1)">
+              {{ textos.PREVIOUS }}
+            </button>
+
+            <span>
+              {{ (textos.SOLUTION ?? 'Solución') }} {{ solucionSeleccionadaIndex + 1 }} / {{ soluciones.length }}
+              @if (soluciones[solucionSeleccionadaIndex].puntuacion !== undefined) {
+                · {{ textos.SCORE ?? 'Puntuación' }}: {{ soluciones[solucionSeleccionadaIndex].puntuacion }}
+              }
+            </span>
+
+            <button
+              type="button"
+              [disabled]="solucionSeleccionadaIndex === soluciones.length - 1"
+              (click)="seleccionarSolucion(solucionSeleccionadaIndex + 1)">
+              {{ textos.NEXT }}
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
       <!-- BARRA DE PAGINACIÓN DE HORARIOS -->
 
-      @if (hayHorarios) {
+      @if (soluciones.length === 0 && hayHorarios) {
 
         <div class="resultados__barra">
 
@@ -273,7 +342,7 @@
 
         </div>
 
-      } @else {
+      } @else if (soluciones.length === 0) {
 
         <div class="resultados__barra resultados__barra--vacia">
 
