@@ -78,6 +78,14 @@ export const HORARIOS_MESSAGES = {
   TEACHER_REQUIRED: 'Required',
   TEACHER_FREE: 'Free',
 
+  GENERATE_SCHEDULES: 'Generate schedules',
+  GENERATING: 'Generating...',
+  GENERATED_SOLUTIONS: 'Generated solutions',
+  SOLUTION: 'Solution',
+  SCORE: 'Score',
+  NO_SOLUTIONS: 'No solutions found with the selected filters.',
+  GENERATE_ERROR: 'Could not generate schedules. Please try again.',
+
   DAYS: [
     'Monday',
     'Tuesday',
