@@ -25,6 +25,8 @@ export const APP_CONFIG = {
       TEST: '/test',
       AUTH_REGISTER: '/estudiantes',
       AUTH_LOGIN: '/estudiantes/login',
+      AYUDANTE_MATERIA: '/ayudante-materia',
+      SOLICITUD_AYUDA: '/solicitud-ayuda',
     },
   },
 
