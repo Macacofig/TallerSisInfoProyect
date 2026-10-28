@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Subscription, finalize } from 'rxjs';
 
 import { AyudanteMateriaResponse } from '../../../../../models/ayudante-materia.model';
 import { AuthService } from '../../../../../services/auth.service';
@@ -27,6 +28,7 @@ export class AyudantesComponent implements OnChanges {
   private readonly languageService = inject(LanguageService);
   private readonly authService = inject(AuthService);
   private readonly ayudantesService = inject(AyudantesService);
+  private cargaAyudantes?: Subscription;
 
   @Input() idMateria: number | null = null;
 
@@ -41,8 +43,15 @@ export class AyudantesComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['idMateria'] && this.idMateria !== null) {
-      this.cargarAyudantes(this.idMateria);
+    if (changes['idMateria']) {
+      this.cargaAyudantes?.unsubscribe();
+      this.ayudantes = [];
+      this.cargando = false;
+      this.errorCarga = false;
+
+      if (this.idMateria !== null) {
+        this.cargarAyudantes(this.idMateria);
+      }
     }
   }
 
@@ -80,23 +89,26 @@ export class AyudantesComponent implements OnChanges {
   private cargarAyudantes(idMateria: number): void {
     this.cargando = true;
     this.errorCarga = false;
-    this.ayudantesService.obtenerAprobadosPorMateria(idMateria).subscribe({
-      next: (respuesta) => {
-        this.ayudantes = respuesta.map((ayudante) => ({
-          id: ayudante.id,
-          idEstudiante: ayudante.idEstudiante,
-          nombre: ayudante.nombreEstudiante,
-          iniciales: this.obtenerIniciales(ayudante.nombreEstudiante),
-          verificado: ayudante.estado === 'APROBADO',
-          horario: ayudante.horario
-        }));
+    this.cargaAyudantes = this.ayudantesService
+      .obtenerAprobadosPorMateria(idMateria)
+      .pipe(finalize(() => {
         this.cargando = false;
-      },
-      error: () => {
-        this.cargando = false;
-        this.errorCarga = true;
-      }
-    });
+      }))
+      .subscribe({
+        next: (respuesta) => {
+          this.ayudantes = respuesta.map((ayudante) => ({
+            id: ayudante.id,
+            idEstudiante: ayudante.idEstudiante,
+            nombre: ayudante.nombreEstudiante,
+            iniciales: this.obtenerIniciales(ayudante.nombreEstudiante),
+            verificado: ayudante.estado === 'APROBADO',
+            horario: ayudante.horario
+          }));
+        },
+        error: () => {
+          this.errorCarga = true;
+        }
+      });
   }
 
   private obtenerIniciales(nombre: string): string {
