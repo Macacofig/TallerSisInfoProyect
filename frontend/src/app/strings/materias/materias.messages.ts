@@ -490,6 +490,8 @@ export const MESSAGES = {
   ASSISTANTS_LOADING: 'Cargando ayudantes...',
   ASSISTANTS_LOAD_ERROR: 'No se pudieron cargar los ayudantes.',
   ASSISTANTS_EMPTY: 'Esta materia no tiene ayudantes aprobados.',
+  ASSISTANTS_EMPTY_TITLE: 'Aún no hay ayudantes verificados',
+  ASSISTANTS_EMPTY_DESCRIPTION: 'Puedes postularte para ser el primero.',
   ASSISTANT_NO_RATING: 'Calificación no disponible',
   ASSISTANT_REQUEST_PROMPT: 'Describe brevemente en qué necesitas ayuda:',
   ASSISTANT_REQUEST_SUCCESS: 'Tu solicitud de ayuda fue enviada.',

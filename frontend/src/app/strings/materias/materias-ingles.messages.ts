@@ -490,6 +490,8 @@ export const MESSAGES_EN = {
   ASSISTANTS_LOADING: 'Loading teaching assistants...',
   ASSISTANTS_LOAD_ERROR: 'Teaching assistants could not be loaded.',
   ASSISTANTS_EMPTY: 'This subject has no approved teaching assistants.',
+  ASSISTANTS_EMPTY_TITLE: 'No verified teaching assistants yet',
+  ASSISTANTS_EMPTY_DESCRIPTION: 'You can apply to be the first.',
   ASSISTANT_NO_RATING: 'Rating unavailable',
   ASSISTANT_REQUEST_PROMPT: 'Briefly describe what you need help with:',
   ASSISTANT_REQUEST_SUCCESS: 'Your help request was sent.',
