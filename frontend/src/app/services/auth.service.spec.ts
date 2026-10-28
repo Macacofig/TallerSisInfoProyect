@@ -33,6 +33,43 @@ describe('AuthService', () => {
 
   afterEach(() => http.verify());
 
+  it('envia POST de login con credenciales y JSON', () => {
+    const credenciales = {
+      correoElectronico: 'ana@ucb.edu.bo',
+      contrasena: 'secreta1'
+    };
+
+    const siguiente = vi.fn();
+
+    service.loginUser(credenciales).subscribe(siguiente);
+
+    const urlLogin =
+      `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_LOGIN}`;
+
+    const peticion = http.expectOne({
+      method: 'POST',
+      url: urlLogin
+    });
+
+    expect(peticion.request.headers.get('Content-Type'))
+      .toBe('application/json');
+
+    expect(peticion.request.body).toEqual(credenciales);
+
+    const respuesta = {
+      id: 1,
+      nombre: 'Ana',
+      telefono: '71234567',
+      correoElectronico: 'ana@ucb.edu.bo',
+      carrera: 'Medicina',
+      accessToken: 'token-ejemplo'
+    };
+
+    peticion.flush(respuesta);
+
+    expect(siguiente).toHaveBeenCalledWith(respuesta);
+  });
+
   it('accepts only a token with an unexpired JWT payload as a valid session', () => {
     const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 60 }));
     service.guardarUsuario({
@@ -152,6 +189,30 @@ describe('AuthService', () => {
     http.expectOne(url).error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
     expect(error).toHaveBeenCalledWith({ codigo: 'SIN_CONEXION', estado: 0 } satisfies ErrorAuth);
   });
+  it('login convierte un error HTTP 500 en SERVIDOR', () => {
+    const error = vi.fn();
+
+    service.loginUser({
+      correoElectronico: 'ana@ucb.edu.bo',
+      contrasena: 'secreta1'
+    }).subscribe({ error });
+
+    const peticion = http.expectOne({
+      method: 'POST',
+      url: `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_LOGIN}`
+    });
+
+    peticion.flush('Error', {
+      status: 500,
+      statusText: 'Internal Server Error'
+    });
+
+    expect(error).toHaveBeenCalledWith({
+      codigo: 'SERVIDOR',
+      estado: 500
+    });
+  });
+
 });
 
 // La traducción de errores HTTP está probada por separado, de forma unitaria.
