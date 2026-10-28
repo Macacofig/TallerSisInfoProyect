@@ -320,15 +320,6 @@ flex-direction: column;
 gap: 0.4rem;
 }
 
-.login__mostrar-contrasena {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  padding: 0.25rem;
-  cursor: pointer;
-}
 
 .login__icono-contrasena {
   width: 1.25rem;

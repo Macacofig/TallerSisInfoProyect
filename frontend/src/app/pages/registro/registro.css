@@ -418,10 +418,6 @@
 .registro-modal__texto { margin: 0.75rem 0 1.5rem; color: var(--texto-suave); font-size: 0.95rem; line-height: 1.6; }
 .registro-modal__texto strong { color: var(--texto); overflow-wrap: anywhere; }
 
-.registro__boton:focus-visible {
-  outline: 0.19rem solid var(--dorado-claro);
-  outline-offset: 0.19rem;
-}
 
 @keyframes registro-giro { to { transform: rotate(360deg); } }
 @keyframes registro-aparecer { from { opacity: 0; transform: translateY(0.5rem); } }
