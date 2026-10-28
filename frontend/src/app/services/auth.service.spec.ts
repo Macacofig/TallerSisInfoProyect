@@ -189,6 +189,30 @@ describe('AuthService', () => {
     http.expectOne(url).error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
     expect(error).toHaveBeenCalledWith({ codigo: 'SIN_CONEXION', estado: 0 } satisfies ErrorAuth);
   });
+  it('login convierte un error HTTP 500 en SERVIDOR', () => {
+    const error = vi.fn();
+
+    service.loginUser({
+      correoElectronico: 'ana@ucb.edu.bo',
+      contrasena: 'secreta1'
+    }).subscribe({ error });
+
+    const peticion = http.expectOne({
+      method: 'POST',
+      url: `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_LOGIN}`
+    });
+
+    peticion.flush('Error', {
+      status: 500,
+      statusText: 'Internal Server Error'
+    });
+
+    expect(error).toHaveBeenCalledWith({
+      codigo: 'SERVIDOR',
+      estado: 500
+    });
+  });
+
 });
 
 // La traducción de errores HTTP está probada por separado, de forma unitaria.
