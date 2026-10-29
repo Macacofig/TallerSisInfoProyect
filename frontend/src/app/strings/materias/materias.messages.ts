@@ -502,14 +502,20 @@ export const MESSAGES = {
   ASSISTANT_APPLICATION_DESCRIPTION:
     'El administrador validará los requisitos académicos antes de aprobarte.',
   ASSISTANT_APPLICATION_CLOSE: 'Cerrar',
-  ASSISTANT_APPLICATION_SEMESTER: 'Semestre en que aprobó',
-  ASSISTANT_APPLICATION_SEMESTER_UNAVAILABLE:
-    'No disponible: el backend aún no recibe este dato.',
   ASSISTANT_APPLICATION_GRADE: 'Nota obtenida',
   ASSISTANT_APPLICATION_GRADE_INVALID: 'La nota debe ser mayor que 0.',
   ASSISTANT_APPLICATION_SCHEDULE: 'Horarios disponibles',
-  ASSISTANT_APPLICATION_SCHEDULE_PLACEHOLDER:
-    'Ej. Lun 16:00-18:00, Mié 16:00-18:00',
+  ASSISTANT_APPLICATION_MONDAY: 'Lunes',
+  ASSISTANT_APPLICATION_TUESDAY: 'Martes',
+  ASSISTANT_APPLICATION_WEDNESDAY: 'Miércoles',
+  ASSISTANT_APPLICATION_THURSDAY: 'Jueves',
+  ASSISTANT_APPLICATION_FRIDAY: 'Viernes',
+  ASSISTANT_APPLICATION_SATURDAY: 'Sábado',
+  ASSISTANT_APPLICATION_SUNDAY: 'Domingo',
+  ASSISTANT_APPLICATION_FROM: 'Desde',
+  ASSISTANT_APPLICATION_TO: 'Hasta',
+  ASSISTANT_APPLICATION_SCHEDULE_INVALID:
+    'Selecciona al menos un día e indica un rango de horas válido para cada uno.',
   ASSISTANT_APPLICATION_ADDITIONAL_INFO: 'Información adicional',
   ASSISTANT_APPLICATION_ADDITIONAL_INFO_PLACEHOLDER:
     'Experiencia previa, modalidad…',

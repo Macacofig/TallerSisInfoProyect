@@ -502,14 +502,20 @@ export const MESSAGES_EN = {
   ASSISTANT_APPLICATION_DESCRIPTION:
     'The administrator will verify the academic requirements before approving you.',
   ASSISTANT_APPLICATION_CLOSE: 'Close',
-  ASSISTANT_APPLICATION_SEMESTER: 'Semester passed',
-  ASSISTANT_APPLICATION_SEMESTER_UNAVAILABLE:
-    'Unavailable: the backend does not currently accept this information.',
   ASSISTANT_APPLICATION_GRADE: 'Grade received',
   ASSISTANT_APPLICATION_GRADE_INVALID: 'The grade must be greater than 0.',
   ASSISTANT_APPLICATION_SCHEDULE: 'Available hours',
-  ASSISTANT_APPLICATION_SCHEDULE_PLACEHOLDER:
-    'E.g. Mon 16:00-18:00, Wed 16:00-18:00',
+  ASSISTANT_APPLICATION_MONDAY: 'Monday',
+  ASSISTANT_APPLICATION_TUESDAY: 'Tuesday',
+  ASSISTANT_APPLICATION_WEDNESDAY: 'Wednesday',
+  ASSISTANT_APPLICATION_THURSDAY: 'Thursday',
+  ASSISTANT_APPLICATION_FRIDAY: 'Friday',
+  ASSISTANT_APPLICATION_SATURDAY: 'Saturday',
+  ASSISTANT_APPLICATION_SUNDAY: 'Sunday',
+  ASSISTANT_APPLICATION_FROM: 'From',
+  ASSISTANT_APPLICATION_TO: 'To',
+  ASSISTANT_APPLICATION_SCHEDULE_INVALID:
+    'Select at least one day and a valid time range for each selected day.',
   ASSISTANT_APPLICATION_ADDITIONAL_INFO: 'Additional information',
   ASSISTANT_APPLICATION_ADDITIONAL_INFO_PLACEHOLDER:
     'Previous experience, preferred format…',

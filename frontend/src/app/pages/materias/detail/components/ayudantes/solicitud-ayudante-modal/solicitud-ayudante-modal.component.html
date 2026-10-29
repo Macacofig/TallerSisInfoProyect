@@ -24,43 +24,65 @@
     </header>
 
     <form #formulario="ngForm" novalidate (ngSubmit)="enviar(formulario)">
-      <div class="solicitud-fila">
-        <div class="solicitud-campo">
-          <label for="semestre-aprobado">{{ mensajes.ASSISTANT_APPLICATION_SEMESTER }}</label>
-          <select id="semestre-aprobado" disabled>
-            <option value="">{{ mensajes.ASSISTANT_APPLICATION_SEMESTER_UNAVAILABLE }}</option>
-          </select>
-        </div>
-
-        <div class="solicitud-campo">
-          <label for="calificacion-obtenida">{{ mensajes.ASSISTANT_APPLICATION_GRADE }}</label>
-          <input
-            id="calificacion-obtenida"
-            name="calificacion"
-            type="number"
-            min="0"
-            step="any"
-            required
-            [(ngModel)]="calificacion"
-            #calificacionControl="ngModel"
-            [attr.aria-invalid]="(calificacionControl.touched || envioIntentado) && calificacion <= 0"
-          >
-          @if ((calificacionControl.touched || envioIntentado) && calificacion <= 0) {
-            <span class="solicitud-error-campo">{{ mensajes.ASSISTANT_APPLICATION_GRADE_INVALID }}</span>
-          }
-        </div>
+      <div class="solicitud-campo">
+        <label for="calificacion-obtenida">{{ mensajes.ASSISTANT_APPLICATION_GRADE }}</label>
+        <input
+          id="calificacion-obtenida"
+          name="calificacion"
+          type="number"
+          min="0"
+          step="any"
+          required
+          [(ngModel)]="calificacion"
+          #calificacionControl="ngModel"
+          [attr.aria-invalid]="(calificacionControl.touched || envioIntentado) && calificacion <= 0"
+        >
+        @if ((calificacionControl.touched || envioIntentado) && calificacion <= 0) {
+          <span class="solicitud-error-campo">{{ mensajes.ASSISTANT_APPLICATION_GRADE_INVALID }}</span>
+        }
       </div>
 
       <div class="solicitud-campo">
-        <label for="horarios-disponibles">{{ mensajes.ASSISTANT_APPLICATION_SCHEDULE }}</label>
-        <input
-          id="horarios-disponibles"
-          name="horarios"
-          type="text"
-          required
-          [placeholder]="mensajes.ASSISTANT_APPLICATION_SCHEDULE_PLACEHOLDER"
-          [(ngModel)]="horarios"
-        >
+        <span class="solicitud-label">{{ mensajes.ASSISTANT_APPLICATION_SCHEDULE }}</span>
+        <div class="horarios-dias">
+          @for (dia of diasDisponibles; track dia.dia) {
+            <div class="horario-dia" [class.horario-dia-seleccionado]="dia.seleccionado">
+              <label class="horario-dia-seleccion">
+                <input
+                  type="checkbox"
+                  [name]="'dia-' + dia.dia"
+                  [(ngModel)]="dia.seleccionado"
+                >
+                <span>{{ nombreDia(dia.dia) }}</span>
+              </label>
+              @if (dia.seleccionado) {
+                <div class="horario-horas">
+                  <label>
+                    <span>{{ mensajes.ASSISTANT_APPLICATION_FROM }}</span>
+                    <input
+                      type="time"
+                      [name]="'desde-' + dia.dia"
+                      required
+                      [(ngModel)]="dia.desde"
+                    >
+                  </label>
+                  <label>
+                    <span>{{ mensajes.ASSISTANT_APPLICATION_TO }}</span>
+                    <input
+                      type="time"
+                      [name]="'hasta-' + dia.dia"
+                      required
+                      [(ngModel)]="dia.hasta"
+                    >
+                  </label>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        @if (envioIntentado && !horariosValidos()) {
+          <span class="solicitud-error-campo">{{ mensajes.ASSISTANT_APPLICATION_SCHEDULE_INVALID }}</span>
+        }
       </div>
 
       <div class="solicitud-campo">

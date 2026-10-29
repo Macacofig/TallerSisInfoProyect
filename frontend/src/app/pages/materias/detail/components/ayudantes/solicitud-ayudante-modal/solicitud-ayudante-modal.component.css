@@ -69,12 +69,6 @@
   line-height: 1.55;
 }
 
-.solicitud-fila {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  gap: 1rem;
-}
-
 .solicitud-campo {
   display: flex;
   min-width: 0;
@@ -84,6 +78,13 @@
 }
 
 .solicitud-campo label {
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.solicitud-label {
   color: #344054;
   font-size: 0.875rem;
   font-weight: 600;
@@ -106,12 +107,6 @@
   line-height: 1.45;
 }
 
-.solicitud-campo select:disabled {
-  color: #7b8798;
-  background: #f2f4f7;
-  cursor: not-allowed;
-}
-
 .solicitud-campo textarea {
   min-height: 7rem;
   resize: vertical;
@@ -127,6 +122,68 @@
 .solicitud-campo input::placeholder,
 .solicitud-campo textarea::placeholder {
   color: #98a2b3;
+}
+
+.horarios-dias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.625rem;
+}
+
+.horario-dia {
+  min-width: 0;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #dce3ed;
+  border-radius: 0.625rem;
+}
+
+.horario-dia-seleccionado {
+  background: #f4f8fd;
+  border-color: #9ab8d9;
+}
+
+.horario-dia-seleccion {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+}
+
+.horario-dia-seleccion input {
+  width: 1rem;
+  min-height: 1rem;
+  margin: 0;
+  accent-color: #165dab;
+}
+
+.horario-dia-seleccion span {
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.horario-horas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  margin-top: 0.75rem;
+}
+
+.horario-horas label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.375rem;
+  color: #667085;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.horario-horas input {
+  min-height: 2.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
 }
 
 .solicitud-error-campo,
@@ -184,11 +241,6 @@
   .solicitud-modal {
     width: min(100%, 40rem);
     max-height: 94vh;
-  }
-
-  .solicitud-fila {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
   }
 
   .solicitud-acciones {
