@@ -2,6 +2,7 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.ayudante.SolicitudAyudaResponse;
 import com.unihub.backend.service.SolicitudAyudaService;
+import com.unihub.backend.service.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -27,6 +28,9 @@ class SolicitudAyudaControllerTest {
     @MockitoBean
     private SolicitudAyudaService solicitudAyudaService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
     private static int numeroPrueba;
 
     private SolicitudAyudaResponse response(Long id, Long idEstudiante, String nombreEstudiante, Long idAyudante, String nombreAyudante, Long idMateria, String codigoMateria, String nombreMateria, String peticion, String estado) {
@@ -49,6 +53,7 @@ class SolicitudAyudaControllerTest {
         when(solicitudAyudaService.solicitarAyuda(org.mockito.ArgumentMatchers.any())).thenReturn(expected);
 
         mockMvc.perform(post("/api/solicitud-ayuda")
+                        .requestAttr("authenticatedStudentId", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idEstudiante\":1,\"idAyudante\":1,\"idMateria\":1,\"peticion\":\"Necesito ayuda con el TP\"}"))
                 .andExpect(status().isCreated())
@@ -59,6 +64,7 @@ class SolicitudAyudaControllerTest {
                 .andExpect(jsonPath("$.estado").value("RESUELTA"));
 
         verify(solicitudAyudaService).solicitarAyuda(org.mockito.ArgumentMatchers.any());
+        verify(jwtService).verificarPropiedad(1L, 1L);
         mostrarResultado("Crear solicitud de ayuda");
     }
 

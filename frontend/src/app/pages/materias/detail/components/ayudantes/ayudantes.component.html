@@ -104,6 +104,14 @@
   @if (mensajeSolicitud && !contactoSeleccionado) {
     <p class="ayudante-aviso" role="status">{{ mensajeSolicitud }}</p>
   }
+  @if (enlaceWhatsAppRegistrado && !contactoSeleccionado) {
+    <div class="ayudante-aviso">
+      <p role="status">{{ mensajes.ASSISTANT_CONTACT_REGISTERED }}</p>
+      <a class="contacto-abrir" [href]="enlaceWhatsAppRegistrado" target="_blank" rel="noopener noreferrer">
+        {{ mensajes.ASSISTANT_CONTACT_OPEN }}
+      </a>
+    </div>
+  }
 
 </section>
 
@@ -139,6 +147,17 @@
         <dd>{{ contacto.nombreMateria }}</dd>
       </div>
     </dl>
+    @if (enlaceWhatsAppRegistrado) {
+      <p role="status">{{ mensajes.ASSISTANT_CONTACT_REGISTERED }}</p>
+      <a class="contacto-abrir" [href]="enlaceWhatsAppRegistrado" target="_blank" rel="noopener noreferrer">
+        {{ mensajes.ASSISTANT_CONTACT_OPEN }}
+      </a>
+      <footer class="contacto-acciones">
+        <button type="button" class="contacto-cancelar" (click)="cerrarContacto()">
+          {{ mensajes.ASSISTANT_APPLICATION_CLOSE }}
+        </button>
+      </footer>
+    } @else {
     <form novalidate (ngSubmit)="continuarContacto()" [attr.aria-busy]="solicitudEnviando">
       <label for="contacto-mensaje">{{ mensajes.ASSISTANT_CONTACT_MESSAGE }}</label>
       <textarea
@@ -174,6 +193,7 @@
         </button>
       </footer>
     </form>
+    }
   }
 </dialog>
 

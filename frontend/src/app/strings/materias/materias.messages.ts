@@ -507,6 +507,10 @@ export const MESSAGES = {
   ASSISTANT_CONTACT_MESSAGE_REQUIRED: 'Escribe un mensaje que no contenga solo espacios.',
   ASSISTANT_CONTACT_CANCEL: 'Cancelar',
   ASSISTANT_CONTACT_CONTINUE: 'Continuar a WhatsApp',
+  ASSISTANT_CONTACT_REGISTERED: 'Solicitud registrada. Esto no confirma el envío del mensaje dentro de WhatsApp.',
+  ASSISTANT_CONTACT_OPEN: 'Abrir o reabrir WhatsApp (nueva pestaña)',
+  ASSISTANT_CONTACT_SAVE_ERROR: 'No se pudo registrar la solicitud. Tu mensaje se conserva; puedes reintentar.',
+  ASSISTANT_CONTACT_SAVE_UNCERTAIN: 'No se pudo confirmar el registro. La solicitud podría haberse guardado; verifica antes de volver a intentarlo.',
   ASSISTANT_APPLICATION_TITLE: 'Solicitud para ser ayudante',
   ASSISTANT_APPLICATION_DESCRIPTION:
     'El administrador validará los requisitos académicos antes de aprobarte.',

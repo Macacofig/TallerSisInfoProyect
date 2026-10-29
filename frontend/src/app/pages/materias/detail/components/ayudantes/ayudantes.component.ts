@@ -1,7 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, DestroyRef, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Subscription, finalize, timeout } from 'rxjs';
+import { EMPTY, Subscription, TimeoutError, finalize, map, switchMap, take, timeout } from 'rxjs';
 
 import { APP_CONFIG } from '../../../../../config/app-config';
 import { AuthService } from '../../../../../services/auth.service';
@@ -38,12 +39,14 @@ export class AyudantesComponent implements OnChanges {
   private cargaAyudantes?: Subscription;
   private consultaContacto?: Subscription;
   private botonContacto?: HTMLButtonElement;
+  private pestanaContacto: Window | null = null;
   @ViewChild('dialogoContacto') private dialogoContacto!: ElementRef<HTMLDialogElement>;
   @ViewChild('mensajeContacto') private mensajeContacto?: ElementRef<HTMLTextAreaElement>;
 
   contactoSeleccionado: { ayudante: AyudanteVista; idMateria: number; nombreMateria: string } | null = null;
   mensajePersonalizado = '';
   contactoIntentado = false;
+  enlaceWhatsAppRegistrado = '';
 
   @Input() idMateria: number | null = null;
   @Input() nombreMateria = '';
@@ -100,7 +103,7 @@ export class AyudantesComponent implements OnChanges {
     }
 
     const usuario = this.authService.obtenerUsuario();
-    if (!usuario) {
+    if (!usuario || !this.authService.tieneSesionValida()) {
       this.mensajeSolicitud = this.mensajes.ASSISTANT_LOGIN_REQUIRED;
       return;
     }
@@ -112,6 +115,7 @@ export class AyudantesComponent implements OnChanges {
     this.contactoSeleccionado = { ayudante, idMateria: this.idMateria, nombreMateria: this.nombreMateria };
     this.botonContacto = origen;
     this.mensajePersonalizado = '';
+    this.enlaceWhatsAppRegistrado = '';
     this.contactoIntentado = false;
     this.mensajeSolicitud = '';
     this.changeDetectorRef.detectChanges();
@@ -141,7 +145,7 @@ export class AyudantesComponent implements OnChanges {
   }
 
   continuarContacto(): void {
-    if (this.solicitudEnviando || !this.contactoSeleccionado) {
+    if (this.solicitudEnviando || this.enlaceWhatsAppRegistrado || !this.contactoSeleccionado) {
       return;
     }
     this.contactoIntentado = true;
@@ -150,43 +154,103 @@ export class AyudantesComponent implements OnChanges {
       return;
     }
     const usuario = this.authService.obtenerUsuario();
-    if (!usuario) {
+    if (!usuario || !this.authService.tieneSesionValida()) {
       this.mensajeSolicitud = this.mensajes.ASSISTANT_LOGIN_REQUIRED;
       return;
     }
-    const { ayudante, nombreMateria } = this.contactoSeleccionado;
+    const { ayudante, idMateria, nombreMateria } = this.contactoSeleccionado;
     const mensajeCompleto = construirMensajeSolicitudAyuda(
       ayudante.nombre, usuario.nombre, nombreMateria, this.mensajePersonalizado
     );
-    let aperturaSolicitada = false;
+    let guardando = false;
     this.solicitudEnviando = true;
     this.mensajeSolicitud = '';
+    this.reservarPestanaContacto();
     this.consultaContacto = this.ayudantesService.obtenerTelefonoEstudiante(ayudante.idEstudiante).pipe(
       timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
+      take(1),
+      switchMap((respuesta) => {
+        const enlace = construirEnlaceWhatsApp(respuesta.telefono, mensajeCompleto);
+        if (!enlace) {
+          this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_PHONE_ERROR;
+          return EMPTY;
+        }
+        guardando = true;
+        return this.ayudantesService.solicitarAyuda({
+          idEstudiante: usuario.id,
+          idAyudante: ayudante.id,
+          idMateria,
+          peticion: mensajeCompleto
+        }).pipe(
+          timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
+          take(1),
+          map(() => enlace)
+        );
+      }),
       takeUntilDestroyed(this.destroyRef),
       finalize(() => {
         this.solicitudEnviando = false;
+        this.cerrarPestanaContacto();
         if (!this.destroyRef.destroyed) {
           this.changeDetectorRef.markForCheck();
-          if (aperturaSolicitada) {
-            this.cerrarContacto();
+          if (this.enlaceWhatsAppRegistrado) {
+            this.changeDetectorRef.detectChanges();
+            this.dialogoContacto.nativeElement.querySelector<HTMLAnchorElement>('a')?.focus();
           }
         }
       })
     ).subscribe({
-      next: (respuesta) => {
-        const enlace = construirEnlaceWhatsApp(respuesta.telefono, mensajeCompleto);
-        if (!enlace) {
-          this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_PHONE_ERROR;
-          return;
-        }
-        window.open(enlace, '_blank', 'noopener');
-        aperturaSolicitada = true;
+      next: (enlace) => {
+        this.enlaceWhatsAppRegistrado = enlace;
+        this.navegarPestanaContacto(enlace);
       },
-      error: () => {
-        this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_PHONE_ERROR;
+      error: (error: unknown) => {
+        if (!guardando) {
+          this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_PHONE_ERROR;
+        } else if (error instanceof TimeoutError || (error instanceof HttpErrorResponse && error.status === 0)) {
+          this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_SAVE_UNCERTAIN;
+        } else if (error instanceof HttpErrorResponse && error.status === 401) {
+          this.mensajeSolicitud = this.mensajes.ASSISTANT_LOGIN_REQUIRED;
+        } else {
+          this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_SAVE_ERROR;
+        }
       }
     });
+  }
+
+  private reservarPestanaContacto(): void {
+    try {
+      // noopener devuelve null incluso al abrir: conservamos la referencia de
+      // about:blank y quitamos el opener antes de hacer HTTP o navegar fuera.
+      this.pestanaContacto = window.open('about:blank', '_blank');
+      if (this.pestanaContacto) {
+        this.pestanaContacto.opener = null;
+      }
+    } catch {
+      this.cerrarPestanaContacto();
+    }
+  }
+
+  private navegarPestanaContacto(enlace: string): void {
+    try {
+      if (this.pestanaContacto && !this.pestanaContacto.closed) {
+        this.pestanaContacto.location.replace(enlace);
+        this.pestanaContacto = null;
+      }
+    } catch {
+      // El enlace explícito sigue disponible si el navegador impide navegar.
+      this.cerrarPestanaContacto();
+    }
+  }
+
+  private cerrarPestanaContacto(): void {
+    try {
+      this.pestanaContacto?.close();
+    } catch {
+      // La ventana puede haber sido cerrada o desvinculada por el navegador.
+    } finally {
+      this.pestanaContacto = null;
+    }
   }
 
   private cargarAyudantes(idMateria: number): void {

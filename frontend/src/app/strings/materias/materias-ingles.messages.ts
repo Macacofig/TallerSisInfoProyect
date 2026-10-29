@@ -507,6 +507,10 @@ export const MESSAGES_EN = {
   ASSISTANT_CONTACT_MESSAGE_REQUIRED: 'Enter a message that does not contain only whitespace.',
   ASSISTANT_CONTACT_CANCEL: 'Cancel',
   ASSISTANT_CONTACT_CONTINUE: 'Continue to WhatsApp',
+  ASSISTANT_CONTACT_REGISTERED: 'Request registered. This does not confirm that the message was sent in WhatsApp.',
+  ASSISTANT_CONTACT_OPEN: 'Open or reopen WhatsApp (new tab)',
+  ASSISTANT_CONTACT_SAVE_ERROR: 'The request could not be registered. Your message is kept; you can try again.',
+  ASSISTANT_CONTACT_SAVE_UNCERTAIN: 'Registration could not be confirmed. The request may have been saved; check before trying again.',
   ASSISTANT_APPLICATION_TITLE: 'Application to become a teaching assistant',
   ASSISTANT_APPLICATION_DESCRIPTION:
     'The administrator will verify the academic requirements before approving you.',
