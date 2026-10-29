@@ -498,4 +498,22 @@ export const MESSAGES = {
   ASSISTANT_REQUEST_ERROR: 'No se pudo enviar la solicitud de ayuda.',
   ASSISTANT_REQUEST_SENDING: 'Enviando solicitud...',
   ASSISTANT_LOGIN_REQUIRED: 'Inicia sesión para solicitar ayuda.',
+  ASSISTANT_APPLICATION_TITLE: 'Solicitud para ser ayudante',
+  ASSISTANT_APPLICATION_DESCRIPTION:
+    'El administrador validará los requisitos académicos antes de aprobarte.',
+  ASSISTANT_APPLICATION_CLOSE: 'Cerrar',
+  ASSISTANT_APPLICATION_SEMESTER: 'Semestre en que aprobó',
+  ASSISTANT_APPLICATION_SEMESTER_UNAVAILABLE:
+    'No disponible: el backend aún no recibe este dato.',
+  ASSISTANT_APPLICATION_GRADE: 'Nota obtenida',
+  ASSISTANT_APPLICATION_GRADE_INVALID: 'La nota debe ser mayor que 0.',
+  ASSISTANT_APPLICATION_SCHEDULE: 'Horarios disponibles',
+  ASSISTANT_APPLICATION_SCHEDULE_PLACEHOLDER:
+    'Ej. Lun 16:00-18:00, Mié 16:00-18:00',
+  ASSISTANT_APPLICATION_ADDITIONAL_INFO: 'Información adicional',
+  ASSISTANT_APPLICATION_ADDITIONAL_INFO_PLACEHOLDER:
+    'Experiencia previa, modalidad…',
+  ASSISTANT_APPLICATION_SUBMIT: 'Enviar solicitud',
+  ASSISTANT_APPLICATION_SENDING: 'Enviando solicitud...',
+  ASSISTANT_APPLICATION_ERROR: 'No se pudo enviar la solicitud para ser ayudante.',
 } as const;
