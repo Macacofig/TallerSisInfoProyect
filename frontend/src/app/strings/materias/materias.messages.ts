@@ -498,6 +498,7 @@ export const MESSAGES = {
   ASSISTANT_REQUEST_ERROR: 'No se pudo enviar la solicitud de ayuda.',
   ASSISTANT_REQUEST_SENDING: 'Enviando solicitud...',
   ASSISTANT_LOGIN_REQUIRED: 'Inicia sesión para solicitar ayuda.',
+  ASSISTANT_CONTACT_PHONE_ERROR: 'No hay un teléfono válido disponible para WhatsApp.',
   ASSISTANT_APPLICATION_TITLE: 'Solicitud para ser ayudante',
   ASSISTANT_APPLICATION_DESCRIPTION:
     'El administrador validará los requisitos académicos antes de aprobarte.',
