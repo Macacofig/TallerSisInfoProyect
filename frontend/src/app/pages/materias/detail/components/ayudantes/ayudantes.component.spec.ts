@@ -1,7 +1,9 @@
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject, of, throwError } from 'rxjs';
 
+import { APP_CONFIG } from '../../../../../config/app-config';
 import { AyudantesService } from '../../../../../services/ayudantes.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { LanguageService } from '../../../../../services/language.service';
@@ -221,24 +223,24 @@ describe('AyudantesComponent', () => {
         '.ayudante-contacto'
       ) as HTMLButtonElement;
       boton.click();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
-      expect(component.solicitudEnviando).toBe(true);
       expect(boton.disabled).toBe(true);
+      expect(boton.textContent).toContain('Enviando solicitud...');
 
       pendiente.next({ telefono: '71234567' });
       pendiente.complete();
-      fixture.detectChanges();
       await fixture.whenStable();
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
 
       expect(component.solicitudEnviando).toBe(false);
+      expect(boton.disabled).toBe(false);
+      expect(boton.textContent).toContain('Solicitar contacto');
+      expect(fixture.nativeElement.textContent).not.toContain('Enviando solicitud...');
       expect(abrir).toHaveBeenCalledOnce();
     });
 
     it('debe rehabilitar el botón al fallar la petición', async () => {
-      vi.spyOn(window, 'open').mockImplementation(() => null);
+      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
       const pendiente = new Subject<{ telefono: string }>();
       ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
 
@@ -246,16 +248,125 @@ describe('AyudantesComponent', () => {
         '.ayudante-contacto'
       ) as HTMLButtonElement;
       boton.click();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(boton.disabled).toBe(true);
-      pendiente.error(new Error('Fallo del servidor'));
-      fixture.detectChanges();
+      pendiente.error(new HttpErrorResponse({ status: 500, statusText: 'Server Error' }));
       await fixture.whenStable();
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
 
       expect(component.solicitudEnviando).toBe(false);
+      expect(boton.disabled).toBe(false);
+      expect(boton.textContent).toContain('Solicitar contacto');
+      expect(fixture.nativeElement.textContent).not.toContain('Enviando solicitud...');
+      expect(fixture.nativeElement.querySelector('[role="status"]')?.textContent)
+        .toContain('No hay un teléfono válido disponible para WhatsApp.');
+      expect(abrir).not.toHaveBeenCalled();
+    });
+
+    it('debe liberar la carga al cumplirse el timeout configurado', async () => {
+      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const pendiente = new Subject<{ telefono: string }>();
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
+      const boton = fixture.nativeElement.querySelector(
+        '.ayudante-contacto'
+      ) as HTMLButtonElement;
+
+      vi.useFakeTimers();
+      try {
+        boton.click();
+        await vi.advanceTimersByTimeAsync(APP_CONFIG.TIMEOUTS.API_REQUEST - 1);
+        await fixture.whenStable();
+
+        expect(boton.disabled).toBe(true);
+        expect(boton.textContent).toContain('Enviando solicitud...');
+
+        await vi.advanceTimersByTimeAsync(1);
+        // Permite ejecutar la actualización de Angular programada por el timeout.
+        await vi.advanceTimersByTimeAsync(1);
+        await fixture.whenStable();
+
+        expect(component.solicitudEnviando).toBe(false);
+        expect(boton.disabled).toBe(false);
+        expect(boton.textContent).toContain('Solicitar contacto');
+        expect(fixture.nativeElement.textContent).not.toContain('Enviando solicitud...');
+        expect(fixture.nativeElement.querySelector('[role="status"]')?.textContent)
+          .toContain('No hay un teléfono válido disponible para WhatsApp.');
+        expect(pendiente.observed).toBe(false);
+        pendiente.next({ telefono: '71234567' });
+        expect(abrir).not.toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('no debe duplicar la petición con dos clics antes de actualizar el DOM', async () => {
+      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const pendiente = new Subject<{ telefono: string }>();
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
+      const boton = fixture.nativeElement.querySelector(
+        '.ayudante-contacto'
+      ) as HTMLButtonElement;
+
+      boton.click();
+      boton.click();
+      component.solicitarContacto(component.ayudantes[0]);
+      await fixture.whenStable();
+
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante)
+        .toHaveBeenCalledExactlyOnceWith(2);
+      expect(boton.disabled).toBe(true);
+
+      pendiente.next({ telefono: '71234567' });
+      pendiente.complete();
+      await fixture.whenStable();
+
+      expect(boton.disabled).toBe(false);
+      expect(abrir).toHaveBeenCalledOnce();
+
+      boton.click();
+      await fixture.whenStable();
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).toHaveBeenCalledTimes(2);
+      expect(boton.disabled).toBe(false);
+    });
+
+    it('debe cancelar la consulta al destruir el componente sin abrir WhatsApp después', async () => {
+      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const pendiente = new Subject<{ telefono: string }>();
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
+      const boton = fixture.nativeElement.querySelector(
+        '.ayudante-contacto'
+      ) as HTMLButtonElement;
+      boton.click();
+      await fixture.whenStable();
+      expect(pendiente.observed).toBe(true);
+
+      fixture.destroy();
+
+      expect(pendiente.observed).toBe(false);
+      expect(component.solicitudEnviando).toBe(false);
+      pendiente.next({ telefono: '71234567' });
+      pendiente.error(new HttpErrorResponse({ status: 500 }));
+      expect(abrir).not.toHaveBeenCalled();
+      expect(component.mensajeSolicitud).toBe('');
+    });
+
+    it('debe liberar la carga si la consulta termina sin respuesta', async () => {
+      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const pendiente = new Subject<{ telefono: string }>();
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
+      const boton = fixture.nativeElement.querySelector(
+        '.ayudante-contacto'
+      ) as HTMLButtonElement;
+      boton.click();
+      await fixture.whenStable();
+      expect(boton.disabled).toBe(true);
+
+      pendiente.complete();
+      await fixture.whenStable();
+
+      expect(boton.disabled).toBe(false);
+      expect(boton.textContent).toContain('Solicitar contacto');
+      expect(abrir).not.toHaveBeenCalled();
     });
 
     it('no debe mostrar el botón en la tarjeta del ayudante propio', async () => {
@@ -273,8 +384,6 @@ describe('AyudantesComponent', () => {
       fixture.componentRef.setInput('nombreMateria', 'Álgebra Lineal');
       fixture.detectChanges();
       await fixture.whenStable();
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
       expect(component.esAyudantePropio(component.ayudantes[0])).toBe(true);
 
       const boton = fixture.nativeElement.querySelector(

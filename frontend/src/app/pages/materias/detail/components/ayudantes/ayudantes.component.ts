@@ -1,6 +1,8 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
-import { Subscription, finalize } from 'rxjs';
+import { ChangeDetectorRef, Component, DestroyRef, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subscription, finalize, timeout } from 'rxjs';
 
+import { APP_CONFIG } from '../../../../../config/app-config';
 import { AyudanteMateriaResponse } from '../../../../../models/ayudante-materia.model';
 import { AuthService } from '../../../../../services/auth.service';
 import { AyudantesService } from '../../../../../services/ayudantes.service';
@@ -32,6 +34,7 @@ export class AyudantesComponent implements OnChanges {
   private readonly authService = inject(AuthService);
   private readonly ayudantesService = inject(AyudantesService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
   private cargaAyudantes?: Subscription;
 
   @Input() idMateria: number | null = null;
@@ -82,6 +85,10 @@ export class AyudantesComponent implements OnChanges {
   }
 
   solicitarContacto(ayudante: AyudanteVista): void {
+    if (this.solicitudEnviando) {
+      return;
+    }
+
     const usuario = this.authService.obtenerUsuario();
     if (!usuario) {
       this.mensajeSolicitud = this.mensajes.ASSISTANT_LOGIN_REQUIRED;
@@ -90,9 +97,17 @@ export class AyudantesComponent implements OnChanges {
 
     this.solicitudEnviando = true;
     this.mensajeSolicitud = '';
-    this.ayudantesService.obtenerTelefonoEstudiante(ayudante.idEstudiante).subscribe({
-      next: (respuesta) => {
+    this.ayudantesService.obtenerTelefonoEstudiante(ayudante.idEstudiante).pipe(
+      timeout(APP_CONFIG.TIMEOUTS.API_REQUEST),
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => {
         this.solicitudEnviando = false;
+        if (!this.destroyRef.destroyed) {
+          this.changeDetectorRef.markForCheck();
+        }
+      })
+    ).subscribe({
+      next: (respuesta) => {
         const mensaje = `Hola ${ayudante.nombre}, soy ${usuario.nombre}. Quisiera que me des ayudantía en la materia ${this.nombreMateria}.`;
         const enlace = construirEnlaceWhatsApp(respuesta.telefono, mensaje);
         if (!enlace) {
@@ -102,7 +117,6 @@ export class AyudantesComponent implements OnChanges {
         window.open(enlace, '_blank', 'noopener');
       },
       error: () => {
-        this.solicitudEnviando = false;
         this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_PHONE_ERROR;
       }
     });
