@@ -7,6 +7,7 @@ import { AyudantesService } from '../../../../../services/ayudantes.service';
 import { LanguageService } from '../../../../../services/language.service';
 import { MESSAGES } from '../../../../../strings/materias/materias.messages';
 import { MESSAGES_EN } from '../../../../../strings/materias/materias-ingles.messages';
+import { SolicitudAyudanteModalComponent } from './solicitud-ayudante-modal/solicitud-ayudante-modal.component';
 
 interface AyudanteVista {
   id: number;
@@ -22,6 +23,7 @@ interface AyudanteVista {
   standalone: true,
   templateUrl: './ayudantes.component.html',
   styleUrl: './ayudantes.component.css',
+  imports: [SolicitudAyudanteModalComponent],
 })
 
 export class AyudantesComponent implements OnChanges {
@@ -38,6 +40,7 @@ export class AyudantesComponent implements OnChanges {
   errorCarga = false;
   solicitudEnviando = false;
   mensajeSolicitud = '';
+  solicitudModalAbierta = false;
 
   get mensajes() {
     return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
@@ -53,6 +56,22 @@ export class AyudantesComponent implements OnChanges {
       if (this.idMateria !== null) {
         this.cargarAyudantes(this.idMateria);
       }
+    }
+  }
+
+  abrirSolicitud(): void {
+    if (this.idMateria !== null) {
+      this.solicitudModalAbierta = true;
+    }
+  }
+
+  cerrarSolicitud(): void {
+    this.solicitudModalAbierta = false;
+  }
+
+  refrescarAyudantes(): void {
+    if (this.idMateria !== null) {
+      this.cargarAyudantes(this.idMateria);
     }
   }
 

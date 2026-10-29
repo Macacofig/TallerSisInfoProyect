@@ -11,6 +11,7 @@
     <button
       type="button"
       class="ayudantes-info-boton"
+      (click)="abrirSolicitud()"
     >
       {{ mensajes.ASSISTANTS_INFO_BUTTON }}
     </button>
@@ -101,3 +102,11 @@
   }
 
 </section>
+
+@if (solicitudModalAbierta && idMateria !== null) {
+  <app-solicitud-ayudante-modal
+    [idMateria]="idMateria"
+    (cerrarModal)="cerrarSolicitud()"
+    (solicitudEnviada)="refrescarAyudantes()"
+  ></app-solicitud-ayudante-modal>
+}
