@@ -1,0 +1,88 @@
+<div class="solicitud-overlay" (click)="cerrarDesdeOverlay($event)">
+  <section
+    class="solicitud-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="solicitud-ayudante-titulo"
+    aria-describedby="solicitud-ayudante-descripcion"
+  >
+    <button
+      type="button"
+      class="solicitud-cerrar"
+      [attr.aria-label]="mensajes.ASSISTANT_APPLICATION_CLOSE"
+      [disabled]="enviando"
+      (click)="solicitarCierre()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <header class="solicitud-encabezado">
+      <h2 id="solicitud-ayudante-titulo">{{ mensajes.ASSISTANT_APPLICATION_TITLE }}</h2>
+      <p id="solicitud-ayudante-descripcion">
+        {{ mensajes.ASSISTANT_APPLICATION_DESCRIPTION }}
+      </p>
+    </header>
+
+    <form #formulario="ngForm" novalidate (ngSubmit)="enviar(formulario)">
+      <div class="solicitud-fila">
+        <div class="solicitud-campo">
+          <label for="semestre-aprobado">{{ mensajes.ASSISTANT_APPLICATION_SEMESTER }}</label>
+          <select id="semestre-aprobado" disabled>
+            <option value="">{{ mensajes.ASSISTANT_APPLICATION_SEMESTER_UNAVAILABLE }}</option>
+          </select>
+        </div>
+
+        <div class="solicitud-campo">
+          <label for="calificacion-obtenida">{{ mensajes.ASSISTANT_APPLICATION_GRADE }}</label>
+          <input
+            id="calificacion-obtenida"
+            name="calificacion"
+            type="number"
+            min="0"
+            step="any"
+            required
+            [(ngModel)]="calificacion"
+            #calificacionControl="ngModel"
+            [attr.aria-invalid]="(calificacionControl.touched || envioIntentado) && calificacion <= 0"
+          >
+          @if ((calificacionControl.touched || envioIntentado) && calificacion <= 0) {
+            <span class="solicitud-error-campo">{{ mensajes.ASSISTANT_APPLICATION_GRADE_INVALID }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="solicitud-campo">
+        <label for="horarios-disponibles">{{ mensajes.ASSISTANT_APPLICATION_SCHEDULE }}</label>
+        <input
+          id="horarios-disponibles"
+          name="horarios"
+          type="text"
+          required
+          [placeholder]="mensajes.ASSISTANT_APPLICATION_SCHEDULE_PLACEHOLDER"
+          [(ngModel)]="horarios"
+        >
+      </div>
+
+      <div class="solicitud-campo">
+        <label for="informacion-adicional">{{ mensajes.ASSISTANT_APPLICATION_ADDITIONAL_INFO }}</label>
+        <textarea
+          id="informacion-adicional"
+          name="motivo"
+          required
+          [placeholder]="mensajes.ASSISTANT_APPLICATION_ADDITIONAL_INFO_PLACEHOLDER"
+          [(ngModel)]="motivo"
+        ></textarea>
+      </div>
+
+      @if (errorEnvio) {
+        <p class="solicitud-error" role="alert">{{ errorEnvio }}</p>
+      }
+
+      <footer class="solicitud-acciones">
+        <button type="submit" class="solicitud-enviar" [disabled]="enviando">
+          {{ enviando ? mensajes.ASSISTANT_APPLICATION_SENDING : mensajes.ASSISTANT_APPLICATION_SUBMIT }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>
