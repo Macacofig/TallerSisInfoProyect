@@ -49,3 +49,7 @@ export interface SolicitudAyudanteResponse {
   horarios: string;
   estado: string;
 }
+
+export interface EstudianteTelefonoResponse {
+  telefono: string;
+}

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { APP_CONFIG } from '../config/app-config';
 import {
   AyudanteMateriaResponse,
+  EstudianteTelefonoResponse,
   SolicitudAyudaRequest,
   SolicitudAyudaResponse,
   SolicitudAyudanteRequest,
@@ -33,6 +34,14 @@ export class AyudantesService {
   ): Observable<AyudanteMateriaResponse[]> {
     return this.http.get<AyudanteMateriaResponse[]>(
       `${this.ayudanteMateriaUrl}/materia/${idMateria}/aprobados`
+    );
+  }
+
+  obtenerTelefonoEstudiante(
+    idEstudiante: number
+  ): Observable<EstudianteTelefonoResponse> {
+    return this.http.get<EstudianteTelefonoResponse>(
+      `${APP_CONFIG.API.BASE_URL}/estudiantes/${idEstudiante}/telefono`
     );
   }
 

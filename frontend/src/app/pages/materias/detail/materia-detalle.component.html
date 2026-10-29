@@ -245,7 +245,11 @@
     } @else if (seccionActiva === 'docentes') {
         <app-docentes [materia]="materia" />
       } @else if (seccionActiva === 'ayudantes') {
-        <app-ayudantes class="component" [idMateria]="materia?.id ?? null"></app-ayudantes>
+        <app-ayudantes
+          class="component"
+          [idMateria]="materia?.id ?? null"
+          [nombreMateria]="materia?.nombre ?? ''"
+        ></app-ayudantes>
       } @else {
       <section class="resumen-calificaciones">
         <p>{{ mensajes.MATERIA_DETAIL_SECTION_PENDING }}</p>
