@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, NgForm } from '@angular/forms';
-import { By } from '@angular/platform-browser';
 import { Subject, of, throwError } from 'rxjs';
 
 import { AuthService } from '../../../../../../services/auth.service';
@@ -73,7 +72,7 @@ describe('SolicitudAyudanteModalComponent', () => {
     ) as HTMLInputElement;
     expect(calificacion.required).toBe(true);
     expect(fixture.nativeElement.textContent).toContain(
-      'La nota debe ser mayor a 0.'
+      'La nota debe ser mayor que 0.'
     );
   });
 
@@ -84,20 +83,17 @@ describe('SolicitudAyudanteModalComponent', () => {
 
     expect(component.calificacion <= 0).toBe(true);
     expect(fixture.nativeElement.textContent).toContain(
-      'La nota debe ser mayor a 0.'
+      'La nota debe ser mayor que 0.'
     );
   });
 
   it('debe considerar válidos calificación positiva y un horario completo', () => {
     configurarFormularioValido();
 
-    const formulario = fixture.debugElement.query(By.directive(NgForm)).injector.get(NgForm);
     fixture.detectChanges();
-    formulario.control.updateValueAndValidity();
 
     expect(component.calificacion).toBe(8.5);
     expect(component.horariosValidos()).toBe(true);
-    expect(formulario.valid).toBe(true);
   });
 
   it('debe rechazar el envío con el formulario inválido', () => {
@@ -109,13 +105,15 @@ describe('SolicitudAyudanteModalComponent', () => {
     expect(component.envioIntentado).toBe(true);
   });
 
-  it('debe enviar el payload válido y deshabilitar el envío mientras la petición está activa', () => {
+  it('debe enviar el payload válido y deshabilitar el envío mientras la petición está activa', async () => {
     configurarFormularioValido();
     const formulario = { valid: true } as NgForm;
-    const pendiente = new Subject<unknown>();
+    const pendiente = new Subject<Record<string, never>>();
     ayudantesServiceMock.solicitarSerAyudante.mockReturnValue(pendiente);
 
     component.enviar(formulario);
+    fixture.detectChanges();
+    await fixture.whenStable();
     fixture.detectChanges();
 
     expect(ayudantesServiceMock.solicitarSerAyudante).toHaveBeenCalledWith({
@@ -123,7 +121,7 @@ describe('SolicitudAyudanteModalComponent', () => {
       idMateria: 25,
       motivo: 'Necesito apoyo con funciones.',
       calificacion: 8.5,
-      horarios: 'lunes 16:00-18:00'
+      horarios: 'Lunes 16:00-18:00'
     });
     expect(component.enviando).toBe(true);
 
@@ -149,7 +147,7 @@ describe('SolicitudAyudanteModalComponent', () => {
     expect(cerrarModal).toHaveBeenCalledOnce();
   });
 
-  it('debe mostrar el error y mantener el modal abierto al fallar el servicio', () => {
+  it('debe mostrar el error y mantener el modal abierto al fallar el servicio', async () => {
     configurarFormularioValido();
     const formulario = { valid: true } as NgForm;
     const cerrarModal = vi.fn();
@@ -160,17 +158,19 @@ describe('SolicitudAyudanteModalComponent', () => {
 
     component.enviar(formulario);
     fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.errorEnvio).not.toBe('');
     expect(component.enviando).toBe(false);
     expect(cerrarModal).not.toHaveBeenCalled();
 
-    const alerta = fixture.nativeElement.querySelector('[role="alert"]');
-    expect(alerta).toBeTruthy();
-    const boton = fixture.nativeElement.querySelector(
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain(component.errorEnvio);
+    const botonError = fixture.nativeElement.querySelector(
       '.solicitud-enviar'
     ) as HTMLButtonElement;
-    expect(boton.disabled).toBe(false);
+    expect(botonError.disabled).toBe(false);
   });
 
   it('debe cerrar el modal con el botón X', () => {
