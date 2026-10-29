@@ -33,7 +33,7 @@ public class AyudanteMateria {
         this.estudiante = estudiante;
         this.materia = materia;
         this.horario = horario;
-        this.estado = EstadoAyudante.PENDIENTE;
+        this.estado = EstadoAyudante.APROBADO;
     }
 
     public Long getId() {

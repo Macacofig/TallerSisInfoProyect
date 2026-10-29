@@ -26,6 +26,7 @@ export const APP_CONFIG = {
       AUTH_REGISTER: '/estudiantes',
       AUTH_LOGIN: '/estudiantes/login',
       AYUDANTE_MATERIA: '/ayudante-materia',
+      SOLICITUD_AYUDANTE: '/solicitud-ayudante',
       SOLICITUD_AYUDA: '/solicitud-ayuda',
     },
   },

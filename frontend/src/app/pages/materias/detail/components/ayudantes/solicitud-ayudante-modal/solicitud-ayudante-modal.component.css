@@ -1,0 +1,259 @@
+:host {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+}
+
+.solicitud-overlay {
+  box-sizing: border-box;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem;
+  overflow-y: auto;
+  place-items: center;
+  background: rgb(16 33 63 / 58%);
+}
+
+.solicitud-modal {
+  position: relative;
+  box-sizing: border-box;
+  width: min(90vw, 40rem);
+  max-height: 90vh;
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  overflow-y: auto;
+  color: #10213f;
+  background: #ffffff;
+  border: 1px solid #dce3ed;
+  border-radius: 1rem;
+  box-shadow: 0 1.25rem 3.75rem rgb(0 0 0 / 22%);
+}
+
+.solicitud-cerrar {
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  place-items: center;
+  color: #475467;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.solicitud-encabezado {
+  padding-right: 2rem;
+  margin-bottom: 1.75rem;
+}
+
+.solicitud-encabezado h2 {
+  margin: 0 0 0.625rem;
+  color: #10213f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.solicitud-encabezado p {
+  margin: 0;
+  color: #667085;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.solicitud-campo {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.125rem;
+}
+
+.solicitud-campo label {
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.solicitud-label {
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.solicitud-campo input,
+.solicitud-campo select,
+.solicitud-campo textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.875rem;
+  padding: 0.75rem 0.875rem;
+  color: #10213f;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5625rem;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.solicitud-campo textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.solicitud-campo input:focus,
+.solicitud-campo select:focus,
+.solicitud-campo textarea:focus {
+  border-color: #165dab;
+  outline: 0.1875rem solid rgb(22 93 171 / 16%);
+}
+
+.solicitud-campo input::placeholder,
+.solicitud-campo textarea::placeholder {
+  color: #98a2b3;
+}
+
+.horarios-dias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.625rem;
+}
+
+.horario-dia {
+  min-width: 0;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #dce3ed;
+  border-radius: 0.625rem;
+}
+
+.horario-dia-seleccionado {
+  background: #f4f8fd;
+  border-color: #9ab8d9;
+}
+
+.horario-dia-seleccion {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+}
+
+.horario-dia-seleccion input {
+  width: 1rem;
+  min-height: 1rem;
+  margin: 0;
+  accent-color: #165dab;
+}
+
+.horario-dia-seleccion span {
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.horario-horas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  margin-top: 0.75rem;
+}
+
+.horario-horas label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.375rem;
+  color: #667085;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.horario-horas input {
+  min-height: 2.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.solicitud-error-campo,
+.solicitud-error {
+  color: #b42318;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.solicitud-error {
+  margin: 0 0 1rem;
+}
+
+.solicitud-acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.solicitud-enviar {
+  min-height: 2.875rem;
+  padding: 0.75rem 1.25rem;
+  color: #ffffff;
+  background: #102f59;
+  border: 1px solid #102f59;
+  border-radius: 0.5625rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.solicitud-enviar:hover:not(:disabled) {
+  background: #0b2342;
+}
+
+.solicitud-enviar:disabled,
+.solicitud-cerrar:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.solicitud-enviar:focus-visible,
+.solicitud-cerrar:focus-visible {
+  outline: 0.1875rem solid #91bff0;
+  outline-offset: 0.1875rem;
+}
+
+@media (max-width: 40rem) {
+  .solicitud-overlay {
+    padding: 0.75rem;
+  }
+
+  .solicitud-modal {
+    width: min(100%, 40rem);
+    max-height: 94vh;
+  }
+
+  .solicitud-acciones {
+    justify-content: stretch;
+  }
+
+  .solicitud-enviar {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solicitud-enviar {
+    transition: none;
+  }
+}

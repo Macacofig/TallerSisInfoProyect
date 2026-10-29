@@ -6,7 +6,9 @@ import { APP_CONFIG } from '../config/app-config';
 import {
   AyudanteMateriaResponse,
   SolicitudAyudaRequest,
-  SolicitudAyudaResponse
+  SolicitudAyudaResponse,
+  SolicitudAyudanteRequest,
+  SolicitudAyudanteResponse
 } from '../models/ayudante-materia.model';
 import { AuthService } from './auth.service';
 
@@ -18,6 +20,8 @@ export class AyudantesService {
     `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AYUDANTE_MATERIA}`;
   private readonly solicitudAyudaUrl =
     `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.SOLICITUD_AYUDA}`;
+  private readonly solicitudAyudanteUrl =
+    `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.SOLICITUD_AYUDANTE}`;
 
   constructor(
     private readonly http: HttpClient,
@@ -37,6 +41,16 @@ export class AyudantesService {
   ): Observable<SolicitudAyudaResponse> {
     return this.http.post<SolicitudAyudaResponse>(
       this.solicitudAyudaUrl,
+      solicitud,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
+    );
+  }
+
+  solicitarSerAyudante(
+    solicitud: SolicitudAyudanteRequest
+  ): Observable<SolicitudAyudanteResponse> {
+    return this.http.post<SolicitudAyudanteResponse>(
+      this.solicitudAyudanteUrl,
       solicitud,
       { headers: this.authService.obtenerHeadersAutenticacion() }
     );

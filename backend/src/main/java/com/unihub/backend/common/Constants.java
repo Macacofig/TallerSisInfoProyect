@@ -170,6 +170,11 @@ public final class Constants {
 	// Que necesita: id y body EstudianteActualizacionRequest
 	// Que devuelve: EstudianteResponse actualizado
 
+	// Obtener el telefono de un estudiante
+	public static final String TELEFONO_URL = BASE + "/{id}/telefono";
+	// Que necesita: id del estudiante
+	// Que devuelve: EstudianteTelefonoResponse con el telefono
+
 	// Iniciar sesion de un estudiante
 	public static final String LOGIN_URL = BASE + "/login";
 	// Que necesita: body EstudianteLoginRequest (correo, ...)

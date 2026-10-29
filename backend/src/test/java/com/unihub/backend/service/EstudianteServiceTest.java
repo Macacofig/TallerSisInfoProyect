@@ -5,6 +5,7 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
+import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CorreoDuplicadoException;
@@ -140,6 +141,29 @@ class EstudianteServiceTest {
         System.out.println("Test 1");
         System.out.println("Actualizar todos los campos");
         System.out.println("Respuesta OK");
+    }
+
+    @Test
+    void deberiaObtenerTelefonoPorId() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+
+        EstudianteTelefonoResponse resultado = estudianteService.obtenerTelefono(1L);
+
+        assertEquals("71234567", resultado.telefono());
+        verify(estudianteRepository).findById(1L);
+    }
+
+    @Test
+    void deberiaLanzar404SiNoExisteEstudianteAlObtenerTelefono() {
+        when(estudianteRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(
+                com.unihub.backend.exception.ResourceNotFoundException.class,
+                () -> estudianteService.obtenerTelefono(99L)
+        );
     }
 
     @Test
