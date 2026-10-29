@@ -1,5 +1,14 @@
 export const BOLIVIA_COUNTRY_CODE = '591';
 
+export function construirMensajeSolicitudAyuda(
+  nombreAyudante: string,
+  nombreEstudiante: string,
+  nombreMateria: string,
+  mensajePersonalizado: string
+): string {
+  return `Hola ${nombreAyudante}, soy ${nombreEstudiante}. Quisiera que me des ayudantía en la materia ${nombreMateria}.\n\n${mensajePersonalizado}`;
+}
+
 export function normalizarTelefonoWhatsApp(telefono: string | null | undefined): string | null {
   const digitos = (telefono ?? '').replace(/\D/g, '');
 

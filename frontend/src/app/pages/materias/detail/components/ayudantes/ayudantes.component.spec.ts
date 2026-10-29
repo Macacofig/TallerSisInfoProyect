@@ -1,9 +1,9 @@
-
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Subject, of, throwError } from 'rxjs';
+import { Subject, of } from 'rxjs';
 
 import { APP_CONFIG } from '../../../../../config/app-config';
+import { LoginResponse } from '../../../../../models/login';
 import { AyudantesService } from '../../../../../services/ayudantes.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { LanguageService } from '../../../../../services/language.service';
@@ -12,45 +12,33 @@ import { AyudantesComponent } from './ayudantes.component';
 describe('AyudantesComponent', () => {
   let component: AyudantesComponent;
   let fixture: ComponentFixture<AyudantesComponent>;
+  let dialogo: HTMLDialogElement;
+  let abrirWhatsApp: ReturnType<typeof vi.spyOn>;
 
+  const usuario: LoginResponse = {
+    id: 99, nombre: 'Luis Estudiante', telefono: '70000000',
+    correoElectronico: 'luis@ucb.edu.bo', carrera: 'Ingeniería de Sistemas'
+  };
   const authServiceMock = {
-    obtenerUsuario: vi.fn(() => ({
-      id: 99,
-      nombre: 'Luis Estudiante',
-      telefono: '70000000',
-      correoElectronico: 'luis@ucb.edu.bo',
-      carrera: 'Ingeniería de Sistemas'
-    }))
+    obtenerUsuario: vi.fn((): LoginResponse | null => usuario)
   };
-
   const ayudantesServiceMock = {
-    obtenerAprobadosPorMateria: vi.fn(() => of([
-      {
-        id: 8,
-        idEstudiante: 2,
-        nombreEstudiante: 'Ana Torres',
-        idMateria: 25,
-        codigoMateria: 'SIS-111',
-        nombreMateria: 'Introducción a la programación',
-        horario: 'Lun 16:00-18:00 · Mié 16:00-18:00',
-        estado: 'APROBADO'
-      }
-    ])),
-    obtenerTelefonoEstudiante: vi.fn(() => of({ telefono: '71234567' }))
+    obtenerAprobadosPorMateria: vi.fn(() => of([{
+      id: 8, idEstudiante: 2, nombreEstudiante: 'Ana Torres', idMateria: 25,
+      codigoMateria: 'SIS-111', nombreMateria: 'Introducción a la programación',
+      horario: 'Lun 16:00-18:00 · Mié 16:00-18:00', estado: 'APROBADO'
+    }])),
+    obtenerTelefonoEstudiante: vi.fn(() => of({ telefono: '71234567' })),
+    solicitarAyuda: vi.fn()
   };
+  const predeterminado =
+    'Hola Ana Torres, soy Luis Estudiante. Quisiera que me des ayudantía en la materia Álgebra Lineal.';
+  const personalizado = 'Necesito ayuda con límites y matrices.\n¿Podemos revisar el ejercicio 5?';
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    authServiceMock.obtenerUsuario.mockReturnValue({
-      id: 99,
-      nombre: 'Luis Estudiante',
-      telefono: '70000000',
-      correoElectronico: 'luis@ucb.edu.bo',
-      carrera: 'Ingeniería de Sistemas'
-    });
-    ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-      of({ telefono: '71234567' })
-    );
+    authServiceMock.obtenerUsuario.mockReturnValue(usuario);
+    ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(of({ telefono: '71234567' }));
     await TestBed.configureTestingModule({
       imports: [AyudantesComponent],
       providers: [
@@ -66,277 +54,304 @@ describe('AyudantesComponent', () => {
     fixture.componentRef.setInput('nombreMateria', 'Álgebra Lineal');
     fixture.detectChanges();
     await fixture.whenStable();
+    prepararDialogo();
+    abrirWhatsApp = vi.spyOn(window, 'open').mockImplementation(() => null);
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    expect(ayudantesServiceMock.solicitarAyuda).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
   });
+
+  function prepararDialogo(): void {
+    dialogo = fixture.nativeElement.querySelector('dialog');
+    // jsdom no implementa la modalidad, la contención nativa del foco ni Escape.
+    dialogo.showModal = vi.fn(() => dialogo.setAttribute('open', ''));
+    dialogo.close = vi.fn(() => {
+      dialogo.removeAttribute('open');
+      dialogo.dispatchEvent(new Event('close'));
+    });
+  }
+
+  function campoMensaje(): HTMLTextAreaElement {
+    return dialogo.querySelector('textarea')!;
+  }
+
+  function continuar(): HTMLButtonElement {
+    return dialogo.querySelector('button[type="submit"]')!;
+  }
+
+  async function abrirContacto(): Promise<HTMLButtonElement> {
+    const origen = fixture.nativeElement.querySelector('.ayudante-contacto') as HTMLButtonElement;
+    origen.focus();
+    origen.click();
+    await fixture.whenStable();
+    return origen;
+  }
+
+  async function escribirMensaje(texto: string): Promise<void> {
+    campoMensaje().value = texto;
+    campoMensaje().dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+  }
+
+  async function prepararContacto(texto = personalizado): Promise<HTMLButtonElement> {
+    const origen = await abrirContacto();
+    await escribirMensaje(texto);
+    return origen;
+  }
+
+  it('should create', () => expect(component).toBeTruthy());
 
   it('loads the approved assistants for the selected subject', () => {
-    expect(ayudantesServiceMock.obtenerAprobadosPorMateria)
-      .toHaveBeenCalledExactlyOnceWith(25);
+    expect(ayudantesServiceMock.obtenerAprobadosPorMateria).toHaveBeenCalledExactlyOnceWith(25);
     expect(component.ayudantes).toHaveLength(1);
   });
 
   it('displays the assistant name and schedule returned by the API', () => {
-    const compiled: HTMLElement = fixture.nativeElement;
-
-    expect(compiled.textContent).toContain('Ana Torres');
-    expect(compiled.textContent).toContain(
-      'Lun 16:00-18:00 · Mié 16:00-18:00'
-    );
+    expect(fixture.nativeElement.textContent).toContain('Ana Torres');
+    expect(fixture.nativeElement.textContent).toContain('Lun 16:00-18:00 · Mié 16:00-18:00');
   });
 
   it('shows that the rating is unavailable because the endpoint does not provide it', () => {
-    const compiled: HTMLElement = fixture.nativeElement;
-
-    expect(compiled.textContent).toContain('Calificación no disponible');
+    expect(fixture.nativeElement.textContent).toContain('Calificación no disponible');
   });
 
   describe('Solicitar contacto por WhatsApp', () => {
-    it('debe abrir WhatsApp con el prefijo 591 y el texto solicitado', () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-        of({ telefono: '71234567' })
-      );
+    it('abre un diálogo modal con el ayudante, materia y foco inicial correctos, sin consultar el teléfono', async () => {
+      const origen = await abrirContacto();
 
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
-      fixture.detectChanges();
-
-      expect(ayudantesServiceMock.obtenerTelefonoEstudiante)
-        .toHaveBeenCalledExactlyOnceWith(2);
-      expect(abrir).toHaveBeenCalledOnce();
-      const [url, destino, opciones] = abrir.mock.calls[0];
-      const urlTexto = String(url ?? '');
-      expect(urlTexto.startsWith('https://wa.me/59171234567?text='))
-        .toBe(true);
-      expect(destino).toBe('_blank');
-      expect(opciones).toBe('noopener');
-
-      const texto = decodeURIComponent(urlTexto.split('?text=')[1]);
-      expect(texto).toBe(
-        'Hola Ana Torres, soy Luis Estudiante. Quisiera que me des ayudantía en la materia Álgebra Lineal.'
-      );
+      expect(origen.getAttribute('aria-haspopup')).toBe('dialog');
+      expect(dialogo.showModal).toHaveBeenCalledOnce();
+      expect(dialogo.open).toBe(true);
+      expect(dialogo.querySelector('h2')?.id).toBe(dialogo.getAttribute('aria-labelledby'));
+      expect(dialogo.querySelector('#contacto-descripcion')).not.toBeNull();
+      expect(dialogo.textContent).toContain('Ana Torres');
+      expect(dialogo.textContent).toContain('Álgebra Lineal');
+      expect(component.contactoSeleccionado?.ayudante.id).toBe(8);
+      expect(component.contactoSeleccionado?.idMateria).toBe(25);
+      expect(dialogo.querySelector('label')?.htmlFor).toBe(campoMensaje().id);
+      expect(document.activeElement).toBe(campoMensaje());
+      expect(campoMensaje().hasAttribute('maxlength')).toBe(false);
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
     });
 
-    it('debe abrir WhatsApp sin duplicar un prefijo 591 ya incluido', () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-        of({ telefono: '59171234567' })
-      );
+    it('exige sesión antes de abrir el modal', async () => {
+      authServiceMock.obtenerUsuario.mockReturnValue(null);
+      await abrirContacto();
 
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
-      fixture.detectChanges();
-
-      expect(
-        String(abrir.mock.calls[0]?.[0] ?? '').startsWith(
-          'https://wa.me/59171234567?text='
-        )
-      ).toBe(true);
+      expect(dialogo.showModal).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toContain('Inicia sesión para solicitar ayuda.');
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
     });
 
-    it('debe normalizar espacios y guiones del teléfono', () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-        of({ telefono: '71 234-567' })
-      );
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
-      fixture.detectChanges();
-
-      expect(
-        String(abrir.mock.calls[0]?.[0] ?? '').startsWith(
-          'https://wa.me/59171234567?text='
-        )
-      ).toBe(true);
-    });
-
-    it('debe mostrar el aviso y no abrir WhatsApp cuando el teléfono está vacío', () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-        of({ telefono: '' })
-      );
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
-      fixture.detectChanges();
-
-      expect(abrir).not.toHaveBeenCalled();
-      expect(fixture.nativeElement.textContent).toContain(
-        'No hay un teléfono válido disponible para WhatsApp.'
-      );
-    });
-
-    it('debe mostrar el aviso y no abrir WhatsApp cuando el teléfono es inválido', () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-        of({ telefono: '12345' })
-      );
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
-      fixture.detectChanges();
-
-      expect(abrir).not.toHaveBeenCalled();
-      expect(fixture.nativeElement.textContent).toContain(
-        'No hay un teléfono válido disponible para WhatsApp.'
-      );
-    });
-
-    it('debe mostrar el aviso y no abrir WhatsApp al fallar el servicio', () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-        throwError(() => new Error('Fallo del servidor'))
-      );
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
-      fixture.detectChanges();
-
-      expect(abrir).not.toHaveBeenCalled();
-      expect(fixture.nativeElement.textContent).toContain(
-        'No hay un teléfono válido disponible para WhatsApp.'
-      );
-    });
-
-    it('debe deshabilitar el botón durante la petición y rehabilitarlo al terminar', async () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      const pendiente = new Subject<{ telefono: string }>();
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
+    it('cancelar descarta el mensaje, devuelve el foco y no produce efectos externos', async () => {
+      const origen = await prepararContacto();
+      (dialogo.querySelector('.contacto-cancelar') as HTMLButtonElement).click();
       await fixture.whenStable();
 
-      expect(boton.disabled).toBe(true);
-      expect(boton.textContent).toContain('Enviando solicitud...');
+      expect(dialogo.open).toBe(false);
+      expect(component.contactoSeleccionado).toBeNull();
+      expect(document.activeElement).toBe(origen);
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
+
+      await abrirContacto();
+      expect(campoMensaje().value).toBe('');
+    });
+
+    it('cierra con el evento cancel de Escape y devuelve el foco al origen', async () => {
+      const origen = await abrirContacto();
+      const escape = new Event('cancel', { cancelable: true });
+      dialogo.dispatchEvent(escape);
+      await fixture.whenStable();
+
+      expect(escape.defaultPrevented).toBe(true);
+      expect(dialogo.open).toBe(false);
+      expect(document.activeElement).toBe(origen);
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
+    });
+
+    it.each(['', '  \n\t '])('rechaza un mensaje vacío o de espacios: %j', async texto => {
+      await prepararContacto(texto);
+      continuar().click();
+      await fixture.whenStable();
+
+      expect(campoMensaje().getAttribute('aria-invalid')).toBe('true');
+      expect(campoMensaje().getAttribute('aria-describedby')).toBe('contacto-error-mensaje');
+      expect(dialogo.querySelector('[role="alert"]')?.textContent)
+        .toContain('Escribe un mensaje que no contenga solo espacios.');
+      expect(document.activeElement).toBe(campoMensaje());
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
+    });
+
+    it('conserva el predeterminado y agrega el texto exacto con dos saltos, codificando acentos y caracteres especiales', async () => {
+      const texto = '  ¿Límites & álgebra?\nEjercicio #5: 50% + matrices.  ';
+      await prepararContacto(texto);
+      continuar().click();
+      await fixture.whenStable();
+
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).toHaveBeenCalledExactlyOnceWith(2);
+      expect(abrirWhatsApp).toHaveBeenCalledExactlyOnceWith(
+        'https://wa.me/59171234567?text=' + encodeURIComponent(predeterminado + '\n\n' + texto),
+        '_blank', 'noopener'
+      );
+      expect(fixture.nativeElement.textContent).not.toContain('71234567');
+    });
+
+    it('no trunca mensajes de más de 2000 caracteres', async () => {
+      const texto = 'á'.repeat(2500) + '\nFin del mensaje.';
+      await prepararContacto(texto);
+      continuar().click();
+      await fixture.whenStable();
+
+      const enlace = new URL(String(abrirWhatsApp.mock.calls[0][0]));
+      expect(enlace.searchParams.get('text')).toBe(predeterminado + '\n\n' + texto);
+    });
+
+    it.each(['59171234567', '71 234-567'])('normaliza el teléfono %s sin duplicar el prefijo', async telefono => {
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(of({ telefono }));
+      await prepararContacto();
+      continuar().click();
+      await fixture.whenStable();
+
+      expect(String(abrirWhatsApp.mock.calls[0][0])).toContain('https://wa.me/59171234567?text=');
+    });
+
+    it.each(['', '12345'])('conserva el texto y permite reintentar con teléfono inválido: %j', async telefono => {
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(of({ telefono }));
+      await prepararContacto();
+      continuar().click();
+      await fixture.whenStable();
+
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
+      expect(dialogo.querySelector('[role="alert"]')?.textContent)
+        .toContain('No hay un teléfono válido disponible para WhatsApp.');
+      expect(campoMensaje().value).toBe(personalizado);
+      expect(continuar().disabled).toBe(false);
+      expect(dialogo.open).toBe(true);
+    });
+
+    it('libera la carga y restaura el foco tras una respuesta asíncrona correcta', async () => {
+      const pendiente = new Subject<{ telefono: string }>();
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
+      const origen = await prepararContacto();
+      const confirmar = continuar();
+      confirmar.click();
+      await fixture.whenStable();
+
+      expect(origen.disabled).toBe(true);
+      expect(confirmar.disabled).toBe(true);
+      expect(confirmar.textContent).toContain('Enviando solicitud...');
+      expect(campoMensaje().readOnly).toBe(true);
+      const cancelar = dialogo.querySelector('.contacto-cancelar') as HTMLButtonElement;
+      expect(cancelar.disabled).toBe(true);
+      dialogo.dispatchEvent(new Event('cancel', { cancelable: true }));
+      await fixture.whenStable();
+      expect(dialogo.open).toBe(true);
 
       pendiente.next({ telefono: '71234567' });
       pendiente.complete();
       await fixture.whenStable();
 
       expect(component.solicitudEnviando).toBe(false);
-      expect(boton.disabled).toBe(false);
-      expect(boton.textContent).toContain('Solicitar contacto');
+      expect(origen.disabled).toBe(false);
+      expect(origen.textContent).toContain('Solicitar contacto');
       expect(fixture.nativeElement.textContent).not.toContain('Enviando solicitud...');
-      expect(abrir).toHaveBeenCalledOnce();
+      expect(dialogo.open).toBe(false);
+      expect(document.activeElement).toBe(origen);
+      expect(abrirWhatsApp).toHaveBeenCalledOnce();
     });
 
-    it('debe rehabilitar el botón al fallar la petición', async () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+    it('libera la carga, conserva el texto tras error HTTP y permite reintentar', async () => {
       const pendiente = new Subject<{ telefono: string }>();
       ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
+      const origen = await prepararContacto();
+      continuar().click();
       await fixture.whenStable();
+      expect(origen.disabled).toBe(true);
 
-      expect(boton.disabled).toBe(true);
       pendiente.error(new HttpErrorResponse({ status: 500, statusText: 'Server Error' }));
       await fixture.whenStable();
 
       expect(component.solicitudEnviando).toBe(false);
-      expect(boton.disabled).toBe(false);
-      expect(boton.textContent).toContain('Solicitar contacto');
-      expect(fixture.nativeElement.textContent).not.toContain('Enviando solicitud...');
-      expect(fixture.nativeElement.querySelector('[role="status"]')?.textContent)
+      expect(origen.disabled).toBe(false);
+      expect(continuar().disabled).toBe(false);
+      expect(campoMensaje().readOnly).toBe(false);
+      expect(campoMensaje().value).toBe(personalizado);
+      expect(dialogo.querySelector('[role="alert"]')?.textContent)
         .toContain('No hay un teléfono válido disponible para WhatsApp.');
-      expect(abrir).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
+
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(of({ telefono: '71234567' }));
+      continuar().click();
+      await fixture.whenStable();
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).toHaveBeenCalledTimes(2);
+      expect(new URL(String(abrirWhatsApp.mock.calls[0][0])).searchParams.get('text'))
+        .toBe(predeterminado + '\n\n' + personalizado);
+      expect(dialogo.open).toBe(false);
     });
 
-    it('debe liberar la carga al cumplirse el timeout configurado', async () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+    it('libera la carga al cumplirse el timeout configurado y conserva el mensaje', async () => {
       const pendiente = new Subject<{ telefono: string }>();
       ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-
+      const origen = await prepararContacto();
       vi.useFakeTimers();
       try {
-        boton.click();
+        continuar().click();
         await vi.advanceTimersByTimeAsync(APP_CONFIG.TIMEOUTS.API_REQUEST - 1);
         await fixture.whenStable();
-
-        expect(boton.disabled).toBe(true);
-        expect(boton.textContent).toContain('Enviando solicitud...');
+        expect(origen.disabled).toBe(true);
 
         await vi.advanceTimersByTimeAsync(1);
-        // Permite ejecutar la actualización de Angular programada por el timeout.
+        // Ejecuta también la actualización de Angular programada por el timeout.
         await vi.advanceTimersByTimeAsync(1);
         await fixture.whenStable();
 
         expect(component.solicitudEnviando).toBe(false);
-        expect(boton.disabled).toBe(false);
-        expect(boton.textContent).toContain('Solicitar contacto');
-        expect(fixture.nativeElement.textContent).not.toContain('Enviando solicitud...');
-        expect(fixture.nativeElement.querySelector('[role="status"]')?.textContent)
+        expect(origen.disabled).toBe(false);
+        expect(continuar().disabled).toBe(false);
+        expect(campoMensaje().value).toBe(personalizado);
+        expect(dialogo.textContent).not.toContain('Enviando solicitud...');
+        expect(dialogo.querySelector('[role="alert"]')?.textContent)
           .toContain('No hay un teléfono válido disponible para WhatsApp.');
         expect(pendiente.observed).toBe(false);
         pendiente.next({ telefono: '71234567' });
-        expect(abrir).not.toHaveBeenCalled();
+        expect(abrirWhatsApp).not.toHaveBeenCalled();
       } finally {
         vi.useRealTimers();
       }
     });
 
-    it('no debe duplicar la petición con dos clics antes de actualizar el DOM', async () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+    it('impide confirmaciones simultáneas incluso antes de actualizar el DOM', async () => {
       const pendiente = new Subject<{ telefono: string }>();
       ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-
-      boton.click();
-      boton.click();
-      component.solicitarContacto(component.ayudantes[0]);
+      const origen = await prepararContacto();
+      const confirmar = continuar();
+      confirmar.click();
+      confirmar.click();
+      component.continuarContacto();
+      component.solicitarContacto(component.ayudantes[0], origen);
       await fixture.whenStable();
 
-      expect(ayudantesServiceMock.obtenerTelefonoEstudiante)
-        .toHaveBeenCalledExactlyOnceWith(2);
-      expect(boton.disabled).toBe(true);
-
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).toHaveBeenCalledExactlyOnceWith(2);
+      expect(confirmar.disabled).toBe(true);
       pendiente.next({ telefono: '71234567' });
       pendiente.complete();
       await fixture.whenStable();
-
-      expect(boton.disabled).toBe(false);
-      expect(abrir).toHaveBeenCalledOnce();
-
-      boton.click();
-      await fixture.whenStable();
-      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).toHaveBeenCalledTimes(2);
-      expect(boton.disabled).toBe(false);
+      expect(origen.disabled).toBe(false);
+      expect(abrirWhatsApp).toHaveBeenCalledOnce();
     });
 
-    it('debe cancelar la consulta al destruir el componente sin abrir WhatsApp después', async () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+    it('cancela la consulta al destruir el componente sin abrir WhatsApp después', async () => {
       const pendiente = new Subject<{ telefono: string }>();
       ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
+      await prepararContacto();
+      continuar().click();
       await fixture.whenStable();
       expect(pendiente.observed).toBe(true);
 
@@ -346,37 +361,74 @@ describe('AyudantesComponent', () => {
       expect(component.solicitudEnviando).toBe(false);
       pendiente.next({ telefono: '71234567' });
       pendiente.error(new HttpErrorResponse({ status: 500 }));
-      expect(abrir).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
       expect(component.mensajeSolicitud).toBe('');
     });
 
-    it('debe liberar la carga si la consulta termina sin respuesta', async () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
+    it('libera la carga si la consulta termina sin respuesta', async () => {
       const pendiente = new Subject<{ telefono: string }>();
       ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
+      const origen = await prepararContacto();
+      continuar().click();
       await fixture.whenStable();
-      expect(boton.disabled).toBe(true);
+      expect(origen.disabled).toBe(true);
 
       pendiente.complete();
       await fixture.whenStable();
 
-      expect(boton.disabled).toBe(false);
-      expect(boton.textContent).toContain('Solicitar contacto');
-      expect(abrir).not.toHaveBeenCalled();
+      expect(origen.disabled).toBe(false);
+      expect(continuar().disabled).toBe(false);
+      expect(campoMensaje().value).toBe(personalizado);
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
     });
 
-    it('no debe mostrar el botón en la tarjeta del ayudante propio', async () => {
-      authServiceMock.obtenerUsuario.mockReturnValue({
-        id: 2,
-        nombre: 'Ana Torres',
-        telefono: '71234567',
-        correoElectronico: 'ana@ucb.edu.bo',
-        carrera: 'Ingeniería de Sistemas'
-      });
+    it('vuelve a comprobar la sesión al confirmar y conserva el mensaje', async () => {
+      await prepararContacto();
+      authServiceMock.obtenerUsuario.mockReturnValue(null);
+      continuar().click();
+      await fixture.whenStable();
+
+      expect(campoMensaje().value).toBe(personalizado);
+      expect(dialogo.querySelector('[role="alert"]')?.textContent)
+        .toContain('Inicia sesión para solicitar ayuda.');
+      expect(ayudantesServiceMock.obtenerTelefonoEstudiante).not.toHaveBeenCalled();
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
+    });
+
+    it('traduce el modal al inglés conservando el texto predeterminado de WhatsApp', async () => {
+      await prepararContacto();
+      TestBed.inject(LanguageService).setLanguage('en');
+      await fixture.whenStable();
+
+      expect(dialogo.querySelector('h2')?.textContent).toBe('Request help');
+      expect(dialogo.querySelector('label')?.textContent).toBe('What do you need help with?');
+      expect(continuar().textContent).toContain('Continue to WhatsApp');
+      expect(dialogo.querySelector('.contacto-cancelar')?.textContent).toContain('Cancel');
+      continuar().click();
+      await fixture.whenStable();
+      expect(new URL(String(abrirWhatsApp.mock.calls[0][0])).searchParams.get('text'))
+        .toBe(predeterminado + '\n\n' + personalizado);
+    });
+
+    it('cierra y cancela una consulta pendiente si cambia la materia', async () => {
+      const pendiente = new Subject<{ telefono: string }>();
+      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(pendiente);
+      await prepararContacto();
+      continuar().click();
+      await fixture.whenStable();
+
+      fixture.componentRef.setInput('idMateria', 42);
+      await fixture.whenStable();
+
+      expect(pendiente.observed).toBe(false);
+      expect(component.contactoSeleccionado).toBeNull();
+      expect(dialogo.open).toBe(false);
+      pendiente.next({ telefono: '71234567' });
+      expect(abrirWhatsApp).not.toHaveBeenCalled();
+    });
+
+    it('no muestra el botón en la tarjeta del ayudante propio', async () => {
+      authServiceMock.obtenerUsuario.mockReturnValue({ ...usuario, id: 2 });
       fixture.destroy();
       fixture = TestBed.createComponent(AyudantesComponent);
       component = fixture.componentInstance;
@@ -384,28 +436,9 @@ describe('AyudantesComponent', () => {
       fixture.componentRef.setInput('nombreMateria', 'Álgebra Lineal');
       fixture.detectChanges();
       await fixture.whenStable();
+
       expect(component.esAyudantePropio(component.ayudantes[0])).toBe(true);
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      );
-      expect(boton).toBeNull();
-    });
-
-    it('no debe mostrar el teléfono como texto en el DOM', () => {
-      const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
-      ayudantesServiceMock.obtenerTelefonoEstudiante.mockReturnValue(
-        of({ telefono: '71234567' })
-      );
-
-      const boton = fixture.nativeElement.querySelector(
-        '.ayudante-contacto'
-      ) as HTMLButtonElement;
-      boton.click();
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).not.toContain('71234567');
-      expect(abrir).toHaveBeenCalledOnce();
+      expect(fixture.nativeElement.querySelector('.ayudante-contacto')).toBeNull();
     });
   });
 });

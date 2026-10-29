@@ -318,3 +318,142 @@
     padding: 0.75rem;
   }
 }
+.contacto-modal {
+  box-sizing: border-box;
+  position: fixed;
+  width: min(90vw, 40rem);
+  max-height: calc(100dvh - 3rem);
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  overflow-y: auto;
+  color: #10213f;
+  background: #fff;
+  border: 1px solid #dce3ed;
+  border-radius: 1rem;
+  box-shadow: 0 1.25rem 3.75rem rgb(0 0 0 / 22%);
+}
+
+.contacto-modal::backdrop {
+  background: rgb(16 33 63 / 58%);
+}
+
+.contacto-cerrar {
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  color: #475467;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 1.75rem;
+  cursor: pointer;
+}
+
+.contacto-encabezado {
+  padding-right: 2rem;
+}
+
+.contacto-encabezado h2 {
+  margin: 0 0 0.625rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  line-height: 1.25;
+}
+
+.contacto-encabezado p {
+  color: #667085;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.contacto-destino {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.contacto-destino dt,
+.contacto-modal label {
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.contacto-destino dd {
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.contacto-modal textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 7rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  color: #10213f;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5625rem;
+  font: inherit;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.contacto-error {
+  color: #b42318;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.contacto-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.contacto-acciones button {
+  min-height: 2.875rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid #102f59;
+  border-radius: 0.5625rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contacto-continuar {
+  color: #fff;
+  background: #102f59;
+}
+
+.contacto-cancelar {
+  color: #102f59;
+  background: #fff;
+}
+
+.contacto-modal button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.contacto-modal :focus-visible {
+  outline: 0.1875rem solid #91bff0;
+  outline-offset: 0.1875rem;
+}
+
+@media (max-width: 40rem) {
+  .contacto-modal {
+    width: calc(100% - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
+  }
+
+  .contacto-acciones button {
+    width: 100%;
+  }
+}
