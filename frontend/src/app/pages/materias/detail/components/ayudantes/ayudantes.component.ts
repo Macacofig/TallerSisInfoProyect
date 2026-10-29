@@ -8,6 +8,7 @@ import { LanguageService } from '../../../../../services/language.service';
 import { MESSAGES } from '../../../../../strings/materias/materias.messages';
 import { MESSAGES_EN } from '../../../../../strings/materias/materias-ingles.messages';
 import { SolicitudAyudanteModalComponent } from './solicitud-ayudante-modal/solicitud-ayudante-modal.component';
+import { construirEnlaceWhatsApp } from '../../../../../utils/whatsapp.utils';
 
 interface AyudanteVista {
   id: number;
@@ -34,6 +35,7 @@ export class AyudantesComponent implements OnChanges {
   private cargaAyudantes?: Subscription;
 
   @Input() idMateria: number | null = null;
+  @Input() nombreMateria = '';
 
   ayudantes: AyudanteVista[] = [];
   cargando = false;
@@ -65,6 +67,10 @@ export class AyudantesComponent implements OnChanges {
     }
   }
 
+  esAyudantePropio(ayudante: AyudanteVista): boolean {
+    return ayudante.idEstudiante === this.authService.obtenerUsuario()?.id;
+  }
+
   cerrarSolicitud(): void {
     this.solicitudModalAbierta = false;
   }
@@ -76,32 +82,28 @@ export class AyudantesComponent implements OnChanges {
   }
 
   solicitarContacto(ayudante: AyudanteVista): void {
-    const idEstudiante = this.authService.obtenerUsuario()?.id;
-    if (!idEstudiante) {
+    const usuario = this.authService.obtenerUsuario();
+    if (!usuario) {
       this.mensajeSolicitud = this.mensajes.ASSISTANT_LOGIN_REQUIRED;
-      return;
-    }
-
-    const peticion = window.prompt(this.mensajes.ASSISTANT_REQUEST_PROMPT)?.trim();
-    if (!peticion || this.idMateria === null) {
       return;
     }
 
     this.solicitudEnviando = true;
     this.mensajeSolicitud = '';
-    this.ayudantesService.solicitarAyuda({
-      idEstudiante,
-      idAyudante: ayudante.idEstudiante,
-      idMateria: this.idMateria,
-      peticion
-    }).subscribe({
-      next: () => {
+    this.ayudantesService.obtenerTelefonoEstudiante(ayudante.idEstudiante).subscribe({
+      next: (respuesta) => {
         this.solicitudEnviando = false;
-        this.mensajeSolicitud = this.mensajes.ASSISTANT_REQUEST_SUCCESS;
+        const mensaje = `Hola ${ayudante.nombre}, soy ${usuario.nombre}. Quisiera que me des ayudantía en la materia ${this.nombreMateria}.`;
+        const enlace = construirEnlaceWhatsApp(respuesta.telefono, mensaje);
+        if (!enlace) {
+          this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_PHONE_ERROR;
+          return;
+        }
+        window.open(enlace, '_blank', 'noopener');
       },
       error: () => {
         this.solicitudEnviando = false;
-        this.mensajeSolicitud = this.mensajes.ASSISTANT_REQUEST_ERROR;
+        this.mensajeSolicitud = this.mensajes.ASSISTANT_CONTACT_PHONE_ERROR;
       }
     });
   }

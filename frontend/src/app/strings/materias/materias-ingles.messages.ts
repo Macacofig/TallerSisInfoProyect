@@ -498,6 +498,7 @@ export const MESSAGES_EN = {
   ASSISTANT_REQUEST_ERROR: 'The help request could not be sent.',
   ASSISTANT_REQUEST_SENDING: 'Sending request...',
   ASSISTANT_LOGIN_REQUIRED: 'Sign in to request help.',
+  ASSISTANT_CONTACT_PHONE_ERROR: 'No valid phone number is available for WhatsApp.',
   ASSISTANT_APPLICATION_TITLE: 'Application to become a teaching assistant',
   ASSISTANT_APPLICATION_DESCRIPTION:
     'The administrator will verify the academic requirements before approving you.',

@@ -29,6 +29,7 @@
   } @else {
     <div class="ayudantes-lista">
       @for (ayudante of ayudantes; track ayudante.id) {
+        @if (!esAyudantePropio(ayudante)) {
         <article class="ayudante-card">
 
           <div class="ayudante-identidad">
@@ -93,12 +94,13 @@
           </p>
 
         </article>
+        }
       }
     </div>
   }
 
   @if (mensajeSolicitud) {
-    <p role="status">{{ mensajeSolicitud }}</p>
+    <p class="ayudante-aviso" role="status">{{ mensajeSolicitud }}</p>
   }
 
 </section>
