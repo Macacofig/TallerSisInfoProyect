@@ -2,10 +2,12 @@ package com.unihub.backend.service;
 
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteRequest;
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteResponse;
+import com.unihub.backend.entity.AyudanteMateria;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.entity.SolicitudAyudante;
 import com.unihub.backend.mapper.SolicitudAyudanteMapper;
+import com.unihub.backend.repository.AyudanteMateriaRepository;
 import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.repository.MateriaRepository;
 import com.unihub.backend.repository.SolicitudAyudanteRepository;
@@ -30,6 +32,9 @@ class SolicitudAyudanteServiceTest {
     private SolicitudAyudanteRepository solicitudAyudanteRepository;
 
     @Mock
+    private AyudanteMateriaRepository ayudanteMateriaRepository;
+
+    @Mock
     private EstudianteRepository estudianteRepository;
 
     @Mock
@@ -40,7 +45,8 @@ class SolicitudAyudanteServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new SolicitudAyudanteService(solicitudAyudanteRepository, estudianteRepository, materiaRepository, mapper);
+        service = new SolicitudAyudanteService(
+                solicitudAyudanteRepository, ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper);
     }
 
     private Estudiante estudiante(Long id) {
@@ -96,8 +102,16 @@ class SolicitudAyudanteServiceTest {
         assertEquals("Me gusta enseñar", response.motivo());
         assertEquals(9.5, response.calificacion());
         assertEquals("Lunes 10-12, Miércoles 10-12", response.horarios());
-        assertEquals("PENDIENTE", response.estado());
+        assertEquals("APROBADA", response.estado());
         verify(solicitudAyudanteRepository).save(any(SolicitudAyudante.class));
+        org.mockito.ArgumentCaptor<AyudanteMateria> ayudanteCaptor =
+                org.mockito.ArgumentCaptor.forClass(AyudanteMateria.class);
+        verify(ayudanteMateriaRepository).save(ayudanteCaptor.capture());
+        AyudanteMateria ayudanteMateria = ayudanteCaptor.getValue();
+        assertEquals(estudianteId, ayudanteMateria.getEstudiante().getId());
+        assertEquals(materiaId, ayudanteMateria.getMateria().getId());
+        assertEquals("Lunes 10-12, Miércoles 10-12", ayudanteMateria.getHorario());
+        assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, ayudanteMateria.getEstado());
     }
 
     @Test
@@ -164,6 +178,8 @@ class SolicitudAyudanteServiceTest {
     void deberiaObtenerPendientes() {
         SolicitudAyudante s1 = solicitudAyudante(1L, estudiante(1L), materia(1L), "Motivo 1", 9.0, "Lunes 10-12");
         SolicitudAyudante s2 = solicitudAyudante(2L, estudiante(2L), materia(2L), "Motivo 2", 8.5, "Martes 10-12");
+        s1.setEstado(SolicitudAyudante.EstadoSolicitud.PENDIENTE);
+        s2.setEstado(SolicitudAyudante.EstadoSolicitud.PENDIENTE);
 
         when(solicitudAyudanteRepository.findByEstado(SolicitudAyudante.EstadoSolicitud.PENDIENTE))
                 .thenReturn(List.of(s1, s2));
@@ -181,11 +197,20 @@ class SolicitudAyudanteServiceTest {
 
         when(solicitudAyudanteRepository.findById(idSolicitud)).thenReturn(Optional.of(s));
         when(solicitudAyudanteRepository.save(any(SolicitudAyudante.class))).thenAnswer(inv -> inv.getArgument(0));
+        AyudanteMateria relacion = new AyudanteMateria(
+                s.getEstudiante(), s.getMateria(), s.getHorarios());
+        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
+                1L, 1L, AyudanteMateria.EstadoAyudante.PENDIENTE)).thenReturn(null);
+        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
+                1L, 1L, AyudanteMateria.EstadoAyudante.APROBADO)).thenReturn(relacion);
+        when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
 
         SolicitudAyudanteResponse response = service.aprobar(idSolicitud);
 
         assertEquals("APROBADA", response.estado());
+        assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, relacion.getEstado());
         verify(solicitudAyudanteRepository).save(s);
+        verify(ayudanteMateriaRepository).save(relacion);
     }
 
     @Test
@@ -195,10 +220,19 @@ class SolicitudAyudanteServiceTest {
 
         when(solicitudAyudanteRepository.findById(idSolicitud)).thenReturn(Optional.of(s));
         when(solicitudAyudanteRepository.save(any(SolicitudAyudante.class))).thenAnswer(inv -> inv.getArgument(0));
+        AyudanteMateria relacion = new AyudanteMateria(
+                s.getEstudiante(), s.getMateria(), s.getHorarios());
+        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
+                1L, 1L, AyudanteMateria.EstadoAyudante.PENDIENTE)).thenReturn(null);
+        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
+                1L, 1L, AyudanteMateria.EstadoAyudante.APROBADO)).thenReturn(relacion);
+        when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
 
         SolicitudAyudanteResponse response = service.rechazar(idSolicitud);
 
         assertEquals("RECHAZADA", response.estado());
+        assertEquals(AyudanteMateria.EstadoAyudante.RECHAZADO, relacion.getEstado());
         verify(solicitudAyudanteRepository).save(s);
+        verify(ayudanteMateriaRepository).save(relacion);
     }
 }

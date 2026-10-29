@@ -30,7 +30,7 @@ public class SolicitudAyudante {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
-    private EstadoSolicitud estado = EstadoSolicitud.PENDIENTE;
+    private EstadoSolicitud estado = EstadoSolicitud.APROBADA;
 
     protected SolicitudAyudante() {
     }
@@ -41,7 +41,7 @@ public class SolicitudAyudante {
         this.motivo = motivo;
         this.calificacion = calificacion;
         this.horarios = horarios;
-        this.estado = EstadoSolicitud.PENDIENTE;
+        this.estado = EstadoSolicitud.APROBADA;
     }
 
     public Long getId() {

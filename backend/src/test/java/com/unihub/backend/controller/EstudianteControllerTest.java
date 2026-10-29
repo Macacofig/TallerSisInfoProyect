@@ -2,6 +2,7 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
+import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CredencialesInvalidasException;
 import com.unihub.backend.exception.CorreoDuplicadoException;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -70,6 +72,17 @@ class EstudianteControllerTest {
                 .andExpect(jsonPath("$.contrasena").doesNotExist());
 
         verify(estudianteService).registrar(any());
+    }
+
+    @Test
+    void deberiaObtenerTelefonoDeEstudiante() throws Exception {
+        when(estudianteService.obtenerTelefono(1L)).thenReturn(new EstudianteTelefonoResponse("71234567"));
+
+        mockMvc.perform(get("/api/estudiantes/1/telefono"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.telefono").value("71234567"));
+
+        verify(estudianteService).obtenerTelefono(1L);
     }
 
     @Test

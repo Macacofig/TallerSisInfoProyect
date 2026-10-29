@@ -6,6 +6,7 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
+import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CorreoDuplicadoException;
@@ -68,6 +69,12 @@ public class EstudianteService {
         EstudianteResponse response = estudianteMapper.toResponse(estudianteRepository.save(estudiante));
         LogHelper.info(EstudianteService.class, "Estudiante actualizado correctamente");
         return response;
+    }
+
+    public EstudianteTelefonoResponse obtenerTelefono(Long id) {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
+        return new EstudianteTelefonoResponse(estudiante.getTelefono());
     }
 
     public EstudianteLoginResponse iniciarSesion(EstudianteLoginRequest request) {
