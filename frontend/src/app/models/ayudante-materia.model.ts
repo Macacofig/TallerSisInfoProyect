@@ -28,3 +28,24 @@ export interface SolicitudAyudaResponse {
   peticion: string;
   estado: string;
 }
+
+export interface SolicitudAyudanteRequest {
+  idEstudiante: number;
+  idMateria: number;
+  motivo: string;
+  calificacion: number;
+  horarios: string;
+}
+
+export interface SolicitudAyudanteResponse {
+  id: number;
+  idEstudiante: number;
+  nombreEstudiante: string;
+  idMateria: number;
+  codigoMateria: string;
+  nombreMateria: string;
+  motivo: string;
+  calificacion: number;
+  horarios: string;
+  estado: string;
+}
