@@ -233,5 +233,5 @@ CREATE TABLE solicitudes_ayuda (
     id_ayudante        BIGINT NOT NULL REFERENCES ayudante_materia (id),
     id_materia         BIGINT NOT NULL REFERENCES materias (id),
     peticion           TEXT NOT NULL,
-    estado             VARCHAR(50) NOT NULL DEFAULT 'PENDIENTE'
+    estado             VARCHAR(50) NOT NULL DEFAULT 'RESUELTA'
 );

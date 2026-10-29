@@ -14,6 +14,9 @@ import com.unihub.backend.repository.SolicitudAyudaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -85,12 +88,15 @@ class SolicitudAyudaServiceTest {
 
     @Test
     void deberiaCrearSolicitudAyuda() {
-        Long estudianteId = 1L;
-        Long ayudanteId = 2L;
-        Long materiaId = 1L;
+        Long estudianteId = 11L;
+        Long ayudanteId = 22L;
+        Long estudianteAyudanteId = 33L;
+        Long materiaId = 44L;
+        String peticion = "Hola Test 33, soy Test 11. Quisiera que me des ayudantía en la materia Álgebra.\n\n"
+                + "  Necesito ayuda con matrices, límites y el ejercicio 5. ¿Podemos revisarlo?  ";
 
         Estudiante estudiante = estudiante(estudianteId);
-        Estudiante ayudanteEst = estudiante(ayudanteId);
+        Estudiante ayudanteEst = estudiante(estudianteAyudanteId);
         Materia materia = materia(materiaId);
         AyudanteMateria ayudante = ayudanteMateria(ayudanteId, ayudanteEst, materia);
 
@@ -103,7 +109,7 @@ class SolicitudAyudaServiceTest {
             return s;
         });
 
-        SolicitudAyudaRequest request = new SolicitudAyudaRequest(estudianteId, ayudanteId, materiaId, "Necesito ayuda con el TP");
+        SolicitudAyudaRequest request = new SolicitudAyudaRequest(estudianteId, ayudanteId, materiaId, peticion);
         SolicitudAyudaResponse response = service.solicitarAyuda(request);
 
         assertNotNull(response);
@@ -111,9 +117,22 @@ class SolicitudAyudaServiceTest {
         assertEquals(estudianteId, response.idEstudiante());
         assertEquals(ayudanteId, response.idAyudante());
         assertEquals(materiaId, response.idMateria());
-        assertEquals("Necesito ayuda con el TP", response.peticion());
-        assertEquals("PENDIENTE", response.estado());
-        verify(solicitudAyudaRepository).save(any(SolicitudAyuda.class));
+        assertEquals(peticion, response.peticion());
+        assertEquals("RESUELTA", response.estado());
+        ArgumentCaptor<SolicitudAyuda> captor = ArgumentCaptor.forClass(SolicitudAyuda.class);
+        verify(solicitudAyudaRepository, times(1)).save(captor.capture());
+        SolicitudAyuda guardada = captor.getValue();
+        assertEquals(SolicitudAyuda.EstadoSolicitudAyuda.RESUELTA, guardada.getEstado());
+        assertEquals(peticion, guardada.getPeticion());
+        assertSame(estudiante, guardada.getEstudiante());
+        assertSame(ayudante, guardada.getAyudante());
+        assertSame(ayudanteEst, guardada.getAyudante().getEstudiante());
+        assertSame(materia, guardada.getMateria());
+        assertSame(materia, guardada.getAyudante().getMateria());
+        verify(estudianteRepository).findById(estudianteId);
+        verify(ayudanteMateriaRepository).findById(ayudanteId);
+        verify(materiaRepository).findById(materiaId);
+        verifyNoMoreInteractions(solicitudAyudaRepository);
     }
 
     @Test
@@ -122,6 +141,7 @@ class SolicitudAyudaServiceTest {
 
         SolicitudAyudaRequest request = new SolicitudAyudaRequest(1L, 1L, 1L, "Petición");
         assertThrows(IllegalArgumentException.class, () -> service.solicitarAyuda(request));
+        verifyNoInteractions(solicitudAyudaRepository);
     }
 
     @Test
@@ -131,6 +151,7 @@ class SolicitudAyudaServiceTest {
 
         SolicitudAyudaRequest request = new SolicitudAyudaRequest(1L, 1L, 1L, "Petición");
         assertThrows(IllegalArgumentException.class, () -> service.solicitarAyuda(request));
+        verifyNoInteractions(solicitudAyudaRepository);
     }
 
     @Test
@@ -141,6 +162,7 @@ class SolicitudAyudaServiceTest {
 
         SolicitudAyudaRequest request = new SolicitudAyudaRequest(1L, 1L, 1L, "Petición");
         assertThrows(IllegalArgumentException.class, () -> service.solicitarAyuda(request));
+        verifyNoInteractions(solicitudAyudaRepository);
     }
 
     @Test
@@ -157,14 +179,17 @@ class SolicitudAyudaServiceTest {
 
         SolicitudAyudaRequest request = new SolicitudAyudaRequest(1L, 1L, 1L, "Petición");
         assertThrows(IllegalArgumentException.class, () -> service.solicitarAyuda(request));
+        verifyNoInteractions(solicitudAyudaRepository);
     }
 
-    @Test
-    void deberiaLanzarExcepcionSiAyudanteNoEstaAprobado() {
+    @ParameterizedTest
+    @EnumSource(value = AyudanteMateria.EstadoAyudante.class, names = {"PENDIENTE", "RECHAZADO", "INACTIVO"})
+    void deberiaLanzarExcepcionSiAyudanteNoEstaAprobado(AyudanteMateria.EstadoAyudante estado) {
         Materia materia = materia(1L);
         Estudiante estudiante = estudiante(1L);
         Estudiante ayudanteEst = estudiante(2L);
         AyudanteMateria ayudante = new AyudanteMateria(ayudanteEst, materia, "Lunes 10-12");
+        ayudante.setEstado(estado);
         setId(ayudante, 1L);
 
         when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
@@ -173,6 +198,7 @@ class SolicitudAyudaServiceTest {
 
         SolicitudAyudaRequest request = new SolicitudAyudaRequest(1L, 1L, 1L, "Petición");
         assertThrows(IllegalArgumentException.class, () -> service.solicitarAyuda(request));
+        verifyNoInteractions(solicitudAyudaRepository);
     }
 
     @Test
@@ -211,6 +237,8 @@ class SolicitudAyudaServiceTest {
         AyudanteMateria ayudante = ayudanteMateria(ayudanteId, estudiante(2L), materia(1L));
 
         SolicitudAyuda s1 = solicitudAyuda(1L, estudiante(1L), ayudante, materia(1L), "Petición pendiente");
+        // Simula una solicitud anterior al cambio de estado inicial.
+        s1.setEstado(SolicitudAyuda.EstadoSolicitudAyuda.PENDIENTE);
         SolicitudAyuda s2 = solicitudAyuda(2L, estudiante(3L), ayudante, materia(1L), "Petición resuelta");
         s2.resolver();
 
@@ -227,6 +255,7 @@ class SolicitudAyudaServiceTest {
     void deberiaResolverSolicitud() {
         Long idSolicitud = 1L;
         SolicitudAyuda s = solicitudAyuda(idSolicitud, estudiante(1L), ayudanteMateria(1L, estudiante(2L), materia(1L)), materia(1L), "Petición");
+        s.setEstado(SolicitudAyuda.EstadoSolicitudAyuda.PENDIENTE);
 
         when(solicitudAyudaRepository.findById(idSolicitud)).thenReturn(Optional.of(s));
         when(solicitudAyudaRepository.save(any(SolicitudAyuda.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -261,5 +290,6 @@ class SolicitudAyudaServiceTest {
         when(solicitudAyudaRepository.findById(idSolicitud)).thenReturn(Optional.of(s));
 
         assertThrows(IllegalArgumentException.class, () -> service.cancelar(idSolicitud, idEstudiante));
+        verify(solicitudAyudaRepository, never()).save(any(SolicitudAyuda.class));
     }
 }

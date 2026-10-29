@@ -90,6 +90,8 @@ class SolicitudAyudaRepositoryTest {
         ayudante.aprobar();
 
         SolicitudAyuda s1 = new SolicitudAyuda(estudiante, ayudante, materia, "Ayuda pendiente");
+        // Simula una solicitud anterior al cambio de estado inicial.
+        s1.setEstado(SolicitudAyuda.EstadoSolicitudAyuda.PENDIENTE);
         SolicitudAyuda s2 = new SolicitudAyuda(estudiante, ayudante, materia, "Ayuda resuelta");
         s2.resolver();
 
@@ -111,6 +113,8 @@ class SolicitudAyudaRepositoryTest {
         ayudante.aprobar();
 
         SolicitudAyuda s1 = new SolicitudAyuda(estudiante, ayudante, materia, "Ayuda pendiente");
+        // Simula una solicitud anterior al cambio de estado inicial.
+        s1.setEstado(SolicitudAyuda.EstadoSolicitudAyuda.PENDIENTE);
         SolicitudAyuda s2 = new SolicitudAyuda(estudiante, ayudante, materia, "Ayuda resuelta");
         s2.resolver();
 

@@ -45,7 +45,7 @@ class SolicitudAyudaControllerTest {
 
     @Test
     void deberiaCrearSolicitudAyuda() throws Exception {
-        SolicitudAyudaResponse expected = response(1L, 1L, "Juan Pérez", 1L, "Carlos Ayudante", 1L, "INF101", "Programación I", "Necesito ayuda con el TP", "PENDIENTE");
+        SolicitudAyudaResponse expected = response(1L, 1L, "Juan Pérez", 1L, "Carlos Ayudante", 1L, "INF101", "Programación I", "Necesito ayuda con el TP", "RESUELTA");
         when(solicitudAyudaService.solicitarAyuda(org.mockito.ArgumentMatchers.any())).thenReturn(expected);
 
         mockMvc.perform(post("/api/solicitud-ayuda")
@@ -56,7 +56,7 @@ class SolicitudAyudaControllerTest {
                 .andExpect(jsonPath("$.nombreEstudiante").value("Juan Pérez"))
                 .andExpect(jsonPath("$.nombreAyudante").value("Carlos Ayudante"))
                 .andExpect(jsonPath("$.peticion").value("Necesito ayuda con el TP"))
-                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
+                .andExpect(jsonPath("$.estado").value("RESUELTA"));
 
         verify(solicitudAyudaService).solicitarAyuda(org.mockito.ArgumentMatchers.any());
         mostrarResultado("Crear solicitud de ayuda");

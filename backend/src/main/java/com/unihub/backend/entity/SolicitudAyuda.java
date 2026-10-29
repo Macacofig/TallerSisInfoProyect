@@ -28,7 +28,7 @@ public class SolicitudAyuda {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
-    private EstadoSolicitudAyuda estado = EstadoSolicitudAyuda.PENDIENTE;
+    private EstadoSolicitudAyuda estado = EstadoSolicitudAyuda.RESUELTA;
 
     protected SolicitudAyuda() {
     }
@@ -38,7 +38,7 @@ public class SolicitudAyuda {
         this.ayudante = ayudante;
         this.materia = materia;
         this.peticion = peticion;
-        this.estado = EstadoSolicitudAyuda.PENDIENTE;
+        this.estado = EstadoSolicitudAyuda.RESUELTA;
     }
 
     public Long getId() {
