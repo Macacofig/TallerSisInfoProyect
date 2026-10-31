@@ -3,6 +3,8 @@ package com.unihub.backend.controller;
 import com.unihub.backend.dto.ayudante.SolicitudAyudaRequest;
 import com.unihub.backend.dto.ayudante.SolicitudAyudaResponse;
 import com.unihub.backend.service.SolicitudAyudaService;
+import com.unihub.backend.service.JwtService;
+import com.unihub.backend.config.JwtAuthenticationInterceptor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +19,18 @@ import static com.unihub.backend.common.Constants.SolicitudAyuda.*;
 public class SolicitudAyudaController {
 
     private final SolicitudAyudaService solicitudAyudaService;
+    private final JwtService jwtService;
 
-    public SolicitudAyudaController(SolicitudAyudaService solicitudAyudaService) {
+    public SolicitudAyudaController(SolicitudAyudaService solicitudAyudaService, JwtService jwtService) {
         this.solicitudAyudaService = solicitudAyudaService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping(CREAR_URL)
-    public ResponseEntity<SolicitudAyudaResponse> solicitarAyuda(@Valid @RequestBody SolicitudAyudaRequest request) {
+    public ResponseEntity<SolicitudAyudaResponse> solicitarAyuda(
+            @RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId,
+            @Valid @RequestBody SolicitudAyudaRequest request) {
+        jwtService.verificarPropiedad(authenticatedStudentId, request.idEstudiante());
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitudAyudaService.solicitarAyuda(request));
     }
 

@@ -81,10 +81,12 @@
           </div>
 
           <button
+            #botonContacto
             type="button"
             class="ayudante-contacto"
+            aria-haspopup="dialog"
             [disabled]="solicitudEnviando"
-            (click)="solicitarContacto(ayudante)"
+            (click)="solicitarContacto(ayudante, botonContacto)"
           >
             {{ solicitudEnviando ? mensajes.ASSISTANT_REQUEST_SENDING : mensajes.ASSISTANT_CONTACT_BUTTON }}
           </button>
@@ -99,11 +101,101 @@
     </div>
   }
 
-  @if (mensajeSolicitud) {
+  @if (mensajeSolicitud && !contactoSeleccionado) {
     <p class="ayudante-aviso" role="status">{{ mensajeSolicitud }}</p>
+  }
+  @if (enlaceWhatsAppRegistrado && !contactoSeleccionado) {
+    <div class="ayudante-aviso">
+      <p role="status">{{ mensajes.ASSISTANT_CONTACT_REGISTERED }}</p>
+      <a class="contacto-abrir" [href]="enlaceWhatsAppRegistrado" target="_blank" rel="noopener noreferrer">
+        {{ mensajes.ASSISTANT_CONTACT_OPEN }}
+      </a>
+    </div>
   }
 
 </section>
+
+<dialog
+  #dialogoContacto
+  class="contacto-modal"
+  aria-labelledby="contacto-titulo"
+  aria-describedby="contacto-descripcion"
+  (cancel)="cancelarContacto($event)"
+  (close)="limpiarContacto()"
+>
+  @if (contactoSeleccionado; as contacto) {
+    <button
+      type="button"
+      class="contacto-cerrar"
+      [attr.aria-label]="mensajes.ASSISTANT_APPLICATION_CLOSE"
+      [disabled]="solicitudEnviando"
+      (click)="cerrarContacto()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <header class="contacto-encabezado">
+      <h2 id="contacto-titulo">{{ mensajes.ASSISTANT_CONTACT_TITLE }}</h2>
+      <p id="contacto-descripcion">{{ mensajes.ASSISTANT_CONTACT_DESCRIPTION }}</p>
+    </header>
+    <dl class="contacto-destino">
+      <div>
+        <dt>{{ mensajes.ASSISTANT_CONTACT_ASSISTANT }}</dt>
+        <dd>{{ contacto.ayudante.nombre }}</dd>
+      </div>
+      <div>
+        <dt>{{ mensajes.ASSISTANT_CONTACT_SUBJECT }}</dt>
+        <dd>{{ contacto.nombreMateria }}</dd>
+      </div>
+    </dl>
+    @if (enlaceWhatsAppRegistrado) {
+      <p role="status">{{ mensajes.ASSISTANT_CONTACT_REGISTERED }}</p>
+      <a class="contacto-abrir" [href]="enlaceWhatsAppRegistrado" target="_blank" rel="noopener noreferrer">
+        {{ mensajes.ASSISTANT_CONTACT_OPEN }}
+      </a>
+      <footer class="contacto-acciones">
+        <button type="button" class="contacto-cancelar" (click)="cerrarContacto()">
+          {{ mensajes.ASSISTANT_APPLICATION_CLOSE }}
+        </button>
+      </footer>
+    } @else {
+    <form novalidate (ngSubmit)="continuarContacto()" [attr.aria-busy]="solicitudEnviando">
+      <label for="contacto-mensaje">{{ mensajes.ASSISTANT_CONTACT_MESSAGE }}</label>
+      <textarea
+        #mensajeContacto
+        id="contacto-mensaje"
+        name="mensajePersonalizado"
+        required
+        rows="5"
+        [(ngModel)]="mensajePersonalizado"
+        [readOnly]="solicitudEnviando"
+        [attr.aria-invalid]="contactoIntentado && !mensajePersonalizado.trim()"
+        [attr.aria-describedby]="contactoIntentado && !mensajePersonalizado.trim() ? 'contacto-error-mensaje' : null"
+      ></textarea>
+      @if (contactoIntentado && !mensajePersonalizado.trim()) {
+        <p id="contacto-error-mensaje" class="contacto-error" role="alert">
+          {{ mensajes.ASSISTANT_CONTACT_MESSAGE_REQUIRED }}
+        </p>
+      }
+      @if (mensajeSolicitud) {
+        <p class="contacto-error" role="alert">{{ mensajeSolicitud }}</p>
+      }
+      <footer class="contacto-acciones">
+        <button
+          type="button"
+          class="contacto-cancelar"
+          [disabled]="solicitudEnviando"
+          (click)="cerrarContacto()"
+        >
+          {{ mensajes.ASSISTANT_CONTACT_CANCEL }}
+        </button>
+        <button type="submit" class="contacto-continuar" [disabled]="solicitudEnviando">
+          {{ solicitudEnviando ? mensajes.ASSISTANT_REQUEST_SENDING : mensajes.ASSISTANT_CONTACT_CONTINUE }}
+        </button>
+      </footer>
+    </form>
+    }
+  }
+</dialog>
 
 @if (solicitudModalAbierta && idMateria !== null) {
   <app-solicitud-ayudante-modal

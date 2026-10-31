@@ -2,6 +2,7 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.ayudante.SolicitudAyudaResponse;
 import com.unihub.backend.service.SolicitudAyudaService;
+import com.unihub.backend.service.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -27,6 +28,9 @@ class SolicitudAyudaControllerTest {
     @MockitoBean
     private SolicitudAyudaService solicitudAyudaService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
     private static int numeroPrueba;
 
     private SolicitudAyudaResponse response(Long id, Long idEstudiante, String nombreEstudiante, Long idAyudante, String nombreAyudante, Long idMateria, String codigoMateria, String nombreMateria, String peticion, String estado) {
@@ -45,10 +49,11 @@ class SolicitudAyudaControllerTest {
 
     @Test
     void deberiaCrearSolicitudAyuda() throws Exception {
-        SolicitudAyudaResponse expected = response(1L, 1L, "Juan Pérez", 1L, "Carlos Ayudante", 1L, "INF101", "Programación I", "Necesito ayuda con el TP", "PENDIENTE");
+        SolicitudAyudaResponse expected = response(1L, 1L, "Juan Pérez", 1L, "Carlos Ayudante", 1L, "INF101", "Programación I", "Necesito ayuda con el TP", "RESUELTA");
         when(solicitudAyudaService.solicitarAyuda(org.mockito.ArgumentMatchers.any())).thenReturn(expected);
 
         mockMvc.perform(post("/api/solicitud-ayuda")
+                        .requestAttr("authenticatedStudentId", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idEstudiante\":1,\"idAyudante\":1,\"idMateria\":1,\"peticion\":\"Necesito ayuda con el TP\"}"))
                 .andExpect(status().isCreated())
@@ -56,9 +61,10 @@ class SolicitudAyudaControllerTest {
                 .andExpect(jsonPath("$.nombreEstudiante").value("Juan Pérez"))
                 .andExpect(jsonPath("$.nombreAyudante").value("Carlos Ayudante"))
                 .andExpect(jsonPath("$.peticion").value("Necesito ayuda con el TP"))
-                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
+                .andExpect(jsonPath("$.estado").value("RESUELTA"));
 
         verify(solicitudAyudaService).solicitarAyuda(org.mockito.ArgumentMatchers.any());
+        verify(jwtService).verificarPropiedad(1L, 1L);
         mostrarResultado("Crear solicitud de ayuda");
     }
 
