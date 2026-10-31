@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ErrorAuth } from '../../models/registrar';
 import { LoginRequest, LoginResponse } from '../../models/login';
 import { LanguageService } from '../../services/language.service';
+import { FeatureToggleService } from '../../services/feature-toggle.service';
 import { LOGIN_MESSAGES } from '../../strings/login/login.messages';
 import { LOGIN_MESSAGES_EN } from '../../strings/login/login-ingles.messages';
 
@@ -23,6 +24,7 @@ export class Login {
 
   private readonly authService = inject(AuthService);
   private readonly languageService = inject(LanguageService);
+  readonly featureToggleService = inject(FeatureToggleService);
 
   get MESSAGES() {
     return this.languageService.getMessages(LOGIN_MESSAGES, LOGIN_MESSAGES_EN);

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../app/services/auth.service';
 import { LanguageService } from '../../app/services/language.service';
+import { FeatureToggleService } from '../../app/services/feature-toggle.service';
 import { NAVBAR_MESSAGES } from '../../app/strings/layout/navbar.messages';
 import { NAVBAR_MESSAGES_EN } from '../../app/strings/layout/navbar-ingles.messages';
 
@@ -14,6 +15,7 @@ import { NAVBAR_MESSAGES_EN } from '../../app/strings/layout/navbar-ingles.messa
 export class Navbar {
   private readonly authService = inject(AuthService);
   private readonly languageService = inject(LanguageService);
+  readonly featureToggleService = inject(FeatureToggleService);
   private readonly router = inject(Router);
 
   get NAVBAR_MESSAGES() {

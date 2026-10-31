@@ -1,4 +1,5 @@
 <div class="registro">
+  @if (featureToggleService.cambioIdioma()) {
   <button
     type="button"
     class="registro__language-toggle"
@@ -7,6 +8,7 @@
   >
     {{ idiomaBoton }}
   </button>
+  }
 
   <!-- ===== Panel izquierdo: marca ===== -->
   <aside class="registro__marca">

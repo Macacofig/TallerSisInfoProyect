@@ -1,6 +1,7 @@
 <header class="navbar">
   <img class="navbar__mobile-logo" src="/logo.png" alt="UniHub">
   <div class="navbar__actions">
+    @if (featureToggleService.cambioIdioma()) {
     <button
       type="button"
       class="navbar__language-toggle"
@@ -9,6 +10,7 @@
     >
       {{ idiomaBoton }}
     </button>
+    }
 
     <button
       type="button"

@@ -8,6 +8,7 @@ import { APP_CONFIG } from '../../config/app-config';
 import { ErrorAuth, RegistroRequest } from '../../models/registrar';
 import { AuthService } from '../../services/auth.service';
 import { LanguageService } from '../../services/language.service';
+import { FeatureToggleService } from '../../services/feature-toggle.service';
 import { REGISTRO_MESSAGES } from '../../strings/registro/registro.messages';
 import { REGISTRO_MESSAGES as REGISTRO_MESSAGES_EN } from '../../strings/registro/registro-ingles.messages';
 
@@ -51,6 +52,7 @@ export class Registro {
   private readonly destroyRef = inject(DestroyRef);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly languageService = inject(LanguageService);
+  readonly featureToggleService = inject(FeatureToggleService);
   private readonly router = inject(Router);
 
   get MESSAGES() {
