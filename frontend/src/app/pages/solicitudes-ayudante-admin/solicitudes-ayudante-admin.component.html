@@ -1,0 +1,49 @@
+<section class="solicitudes-admin" aria-labelledby="solicitudes-admin-title" [attr.aria-busy]="cargando || idEnProceso !== null">
+  <header class="solicitudes-admin__header">
+    <div>
+      <h1 id="solicitudes-admin-title">{{ mensajes.ASSISTANT_ADMIN_TITLE }}</h1>
+      <p>{{ mensajes.ASSISTANT_ADMIN_DESCRIPTION }}</p>
+    </div>
+    <button type="button" class="solicitudes-admin__refresh" [disabled]="cargando || idEnProceso !== null" (click)="cargarSolicitudes()">
+      {{ mensajes.ASSISTANT_ADMIN_RETRY }}
+    </button>
+  </header>
+
+  @if (cargando) {
+    <p class="solicitudes-admin__notice" role="status">{{ mensajes.ASSISTANT_ADMIN_LOADING }}</p>
+  } @else if (errorCarga) {
+    <div class="solicitudes-admin__notice solicitudes-admin__notice--error" role="alert">
+      <p>{{ errorCarga }}</p>
+      <button type="button" class="solicitudes-admin__secondary" (click)="cargarSolicitudes()">{{ mensajes.ASSISTANT_ADMIN_RETRY }}</button>
+    </div>
+  } @else if (solicitudes.length === 0) {
+    <p class="solicitudes-admin__notice">{{ mensajes.ASSISTANT_ADMIN_EMPTY }}</p>
+  } @else {
+    <div class="solicitudes-admin__list">
+      @for (solicitud of solicitudes; track solicitud.id) {
+        <article class="solicitud-card">
+          <dl class="solicitud-card__details">
+            <div><dt>{{ mensajes.ASSISTANT_ADMIN_STUDENT }}</dt><dd>{{ solicitud.nombreEstudiante }}</dd></div>
+            <div><dt>{{ mensajes.ASSISTANT_ADMIN_SUBJECT }}</dt><dd>{{ solicitud.codigoMateria }} · {{ solicitud.nombreMateria }}</dd></div>
+            <div><dt>{{ mensajes.ASSISTANT_ADMIN_MOTIVATION }}</dt><dd>{{ solicitud.motivo }}</dd></div>
+            <div><dt>{{ mensajes.ASSISTANT_ADMIN_GRADE }}</dt><dd>{{ solicitud.calificacion }}</dd></div>
+            <div><dt>{{ mensajes.ASSISTANT_ADMIN_SCHEDULES }}</dt><dd>{{ solicitud.horarios }}</dd></div>
+            <div><dt>{{ mensajes.ASSISTANT_ADMIN_STATUS }}</dt><dd>{{ solicitud.estado }}</dd></div>
+          </dl>
+          <div class="solicitud-card__actions">
+            <button type="button" class="solicitud-card__approve" [disabled]="idEnProceso !== null || cargando || solicitud.estado !== 'PENDIENTE'" (click)="decidir(solicitud, 'aprobar')">
+              {{ idEnProceso === solicitud.id ? mensajes.ASSISTANT_ADMIN_BUSY : mensajes.ASSISTANT_ADMIN_APPROVE }}
+            </button>
+            <button type="button" class="solicitud-card__reject" [disabled]="idEnProceso !== null || cargando || solicitud.estado !== 'PENDIENTE'" (click)="decidir(solicitud, 'rechazar')">
+              {{ idEnProceso === solicitud.id ? mensajes.ASSISTANT_ADMIN_BUSY : mensajes.ASSISTANT_ADMIN_REJECT }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  @if (mensajeAccion) {
+    <p class="solicitudes-admin__feedback" role="status" aria-live="polite">{{ mensajeAccion }}</p>
+  }
+</section>
