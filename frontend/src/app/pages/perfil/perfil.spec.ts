@@ -4,6 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { Perfil } from './perfil';
 import { AuthService } from '../../services/auth.service';
+import { FeatureToggleService, FEATURE_TOGGLE_STORAGE_KEYS } from '../../services/feature-toggle.service';
 
 describe('Perfil', () => {
   let component: Perfil;
@@ -19,6 +20,8 @@ describe('Perfil', () => {
   };
 
   beforeEach(async () => {
+    localStorage.removeItem(FEATURE_TOGGLE_STORAGE_KEYS.cambioIdioma);
+    localStorage.removeItem(FEATURE_TOGGLE_STORAGE_KEYS.arbolMaterias);
     await TestBed.configureTestingModule({
       imports: [Perfil],
       providers: [
@@ -32,6 +35,7 @@ describe('Perfil', () => {
 
     fixture = TestBed.createComponent(Perfil);
     component = fixture.componentInstance;
+    fixture.detectChanges();
 
     await fixture.whenStable();
   });
@@ -66,5 +70,49 @@ describe('Perfil', () => {
     component.cerrarModal();
 
     expect(component.modalVisible()).toBe(false);
+  });
+
+  it('muestra los dos switches de funcionalidades', () => {
+    const switches = fixture.nativeElement.querySelectorAll('[role="switch"]');
+
+    expect(switches.length).toBe(2);
+  });
+
+  it('refleja el estado activo de los dos switches', () => {
+    const featureToggleService = TestBed.inject(FeatureToggleService);
+    featureToggleService.setCambioIdioma(true);
+    featureToggleService.setArbolMaterias(true);
+    fixture.detectChanges();
+
+    const switches = fixture.nativeElement.querySelectorAll('[role="switch"]');
+
+    expect(switches[0].getAttribute('aria-checked')).toBe('true');
+    expect(switches[1].getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('actualiza cambio de idioma al hacer click en su switch', () => {
+    const featureToggleService = TestBed.inject(FeatureToggleService);
+    featureToggleService.setCambioIdioma(true);
+    fixture.detectChanges();
+
+    const languageSwitch = fixture.nativeElement.querySelectorAll('[role="switch"]')[0] as HTMLButtonElement;
+    languageSwitch.click();
+    fixture.detectChanges();
+
+    expect(featureToggleService.cambioIdioma()).toBe(false);
+    expect(languageSwitch.getAttribute('aria-checked')).toBe('false');
+  });
+
+  it('actualiza árbol de materias al hacer click en su switch', () => {
+    const featureToggleService = TestBed.inject(FeatureToggleService);
+    featureToggleService.setArbolMaterias(true);
+    fixture.detectChanges();
+
+    const treeSwitch = fixture.nativeElement.querySelectorAll('[role="switch"]')[1] as HTMLButtonElement;
+    treeSwitch.click();
+    fixture.detectChanges();
+
+    expect(featureToggleService.arbolMaterias()).toBe(false);
+    expect(treeSwitch.getAttribute('aria-checked')).toBe('false');
   });
 });

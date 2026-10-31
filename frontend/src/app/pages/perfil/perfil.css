@@ -115,6 +115,65 @@
   margin-top: 1.75rem;
 }
 
+.perfil__features {
+  margin-top: 1.5rem;
+  padding: 1.5rem 2rem;
+  box-sizing: border-box;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+.perfil__features h2 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  color: #1f2937;
+}
+
+.perfil__feature {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.perfil__switch {
+  width: 2.75rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  padding: 0.125rem;
+  border: 1px solid #9ca3af;
+  border-radius: 9999px;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.perfil__switch-thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+  display: block;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.perfil__switch--active {
+  border-color: #2563eb;
+  background: #2563eb;
+}
+
+.perfil__switch--active .perfil__switch-thumb {
+  transform: translateX(1.125rem);
+}
+
 .perfil__save-button {
   min-height: 2.75rem;
   max-width: 100%;
@@ -278,6 +337,7 @@
 
   .perfil { padding: 1.5rem 0.75rem; }
   .perfil__card { padding: 1rem; }
+  .perfil__features { padding: 1rem; }
   .perfil__save-button { width: 100%; }
 
   .perfil-modal {

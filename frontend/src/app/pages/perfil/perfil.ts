@@ -5,6 +5,7 @@ import {
 } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
+import { FeatureToggleService } from '../../services/feature-toggle.service';
 import { LanguageService } from '../../services/language.service';
 import { PERFIL_MESSAGES } from '../../strings/perfil/perfil.messages';
 import { PERFIL_MESSAGES_EN } from '../../strings/perfil/perfil-ingles.messages';
@@ -20,6 +21,7 @@ type PerfilMessageKey = keyof typeof PERFIL_MESSAGES;
 export class Perfil {
 
   private readonly languageService = inject(LanguageService);
+  readonly featureToggleService = inject(FeatureToggleService);
 
   get MESSAGES() {
     return this.languageService.getMessages(PERFIL_MESSAGES, PERFIL_MESSAGES_EN);

@@ -73,6 +73,40 @@
 
     </form>
 
+    <section class="perfil__features" [attr.aria-labelledby]="'perfil-features-title'">
+      <h2 id="perfil-features-title">{{ MESSAGES.FEATURES_TITLE }}</h2>
+
+      <div class="perfil__feature">
+        <span>{{ MESSAGES.LANGUAGE_FEATURE_LABEL }}</span>
+        <button
+          type="button"
+          role="switch"
+          class="perfil__switch"
+          [class.perfil__switch--active]="featureToggleService.cambioIdioma()"
+          [attr.aria-checked]="featureToggleService.cambioIdioma()"
+          [attr.aria-label]="MESSAGES.LANGUAGE_FEATURE_LABEL"
+          (click)="featureToggleService.toggleCambioIdioma()"
+        >
+          <span class="perfil__switch-thumb"></span>
+        </button>
+      </div>
+
+      <div class="perfil__feature">
+        <span>{{ MESSAGES.TREE_FEATURE_LABEL }}</span>
+        <button
+          type="button"
+          role="switch"
+          class="perfil__switch"
+          [class.perfil__switch--active]="featureToggleService.arbolMaterias()"
+          [attr.aria-checked]="featureToggleService.arbolMaterias()"
+          [attr.aria-label]="MESSAGES.TREE_FEATURE_LABEL"
+          (click)="featureToggleService.toggleArbolMaterias()"
+        >
+          <span class="perfil__switch-thumb"></span>
+        </button>
+      </div>
+    </section>
+
   </div>
 
 </section>

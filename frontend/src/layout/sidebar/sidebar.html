@@ -26,6 +26,7 @@
     [attr.aria-label]="SIDEBAR_MESSAGES.NAVIGATION_LABEL"
   >
 
+    @if (featureToggleService.arbolMaterias()) {
     <a
       routerLink="/home"
       routerLinkActive="sidebar__item--active"
@@ -62,6 +63,7 @@
       </span>
 
     </a>
+    }
 
     <a
       routerLink="/materias"

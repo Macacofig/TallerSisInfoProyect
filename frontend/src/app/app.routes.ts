@@ -10,6 +10,7 @@ import { Login } from './pages/login/login';
 import { Perfil } from './pages/perfil/perfil';
 import { HorariosComponent } from './pages/horarios/horarios.component';
 import { authGuard } from './guards/auth.guard';
+import { materiasTreeGuard } from './guards/materias-tree.guard';
 
 export const routes: Routes = [
 
@@ -30,7 +31,8 @@ export const routes: Routes = [
 
   {
     path: 'home',
-    component: HomeComponent
+    component: HomeComponent,
+    canActivate: [materiasTreeGuard]
   },
 
   {
