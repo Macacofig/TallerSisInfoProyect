@@ -15,6 +15,7 @@
   import { REGISTRO_MESSAGES as M } from '../../strings/registro/registro.messages';
   import { REGISTRO_MESSAGES as M_EN } from '../../strings/registro/registro-ingles.messages';
   import { Registro } from './registro';
+  import { FeatureToggleService, FEATURE_TOGGLE_STORAGE_KEYS } from '../../services/feature-toggle.service';
 
   describe('Pantalla de registro', () => {
 
@@ -96,6 +97,7 @@
     }
 
     beforeEach(async () => {
+      localStorage.removeItem(FEATURE_TOGGLE_STORAGE_KEYS.cambioIdioma);
 
       await TestBed.configureTestingModule({
         imports: [Registro],
@@ -121,6 +123,20 @@
     });
 
     describe('renderizado', () => {
+
+      it('muestra el botón de idioma con el flag activo', () => {
+        TestBed.inject(FeatureToggleService).setCambioIdioma(true);
+        fixture.detectChanges();
+
+        expect(raiz.querySelector('.registro__language-toggle')).toBeTruthy();
+      });
+
+      it('oculta el botón de idioma con el flag desactivado', () => {
+        TestBed.inject(FeatureToggleService).setCambioIdioma(false);
+        fixture.detectChanges();
+
+        expect(raiz.querySelector('.registro__language-toggle')).toBeNull();
+      });
 
       it('shows and switches the language selector in both directions', () => {
         const selector = raiz.querySelector<HTMLButtonElement>('.registro__language-toggle');

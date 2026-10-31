@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LanguageService } from '../../app/services/language.service';
+import { FeatureToggleService, FEATURE_TOGGLE_STORAGE_KEYS } from '../../app/services/feature-toggle.service';
 import { Navbar } from './navbar';
 
 describe('Navbar', () => {
@@ -10,6 +11,7 @@ describe('Navbar', () => {
 
   beforeEach(async () => {
     localStorage.removeItem('unihub-language');
+    localStorage.removeItem(FEATURE_TOGGLE_STORAGE_KEYS.cambioIdioma);
 
     await TestBed.configureTestingModule({
       imports: [Navbar],
@@ -20,6 +22,20 @@ describe('Navbar', () => {
     languageService = TestBed.inject(LanguageService);
     fixture.detectChanges();
     await fixture.whenStable();
+  });
+
+  it('muestra el botón de idioma con el flag activo', () => {
+    TestBed.inject(FeatureToggleService).setCambioIdioma(true);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.navbar__language-toggle')).toBeTruthy();
+  });
+
+  it('no muestra el botón de idioma con el flag desactivado', () => {
+    TestBed.inject(FeatureToggleService).setCambioIdioma(false);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.navbar__language-toggle')).toBeNull();
   });
 
   it('should create', () => {

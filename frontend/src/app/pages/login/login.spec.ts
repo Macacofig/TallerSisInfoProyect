@@ -11,6 +11,7 @@ import { ErrorAuth } from '../../models/registrar';
 import { LoginRequest } from '../../models/login';
 import { LOGIN_MESSAGES as M } from '../../strings/login/login.messages';
 import { LOGIN_MESSAGES_EN as M_EN } from '../../strings/login/login-ingles.messages';
+import { FeatureToggleService, FEATURE_TOGGLE_STORAGE_KEYS } from '../../services/feature-toggle.service';
 
 describe('Pantalla de login', () => {
 
@@ -85,6 +86,7 @@ describe('Pantalla de login', () => {
   }
 
   beforeEach(async () => {
+    localStorage.removeItem(FEATURE_TOGGLE_STORAGE_KEYS.cambioIdioma);
 
     await TestBed.configureTestingModule({
       imports: [Login],
@@ -112,6 +114,20 @@ describe('Pantalla de login', () => {
 
 
   describe('renderizado', () => {
+
+    it('muestra el botón de idioma con el flag activo', () => {
+      TestBed.inject(FeatureToggleService).setCambioIdioma(true);
+      fixture.detectChanges();
+
+      expect(raiz.querySelector('.login__language-toggle')).toBeTruthy();
+    });
+
+    it('oculta el botón de idioma con el flag desactivado', () => {
+      TestBed.inject(FeatureToggleService).setCambioIdioma(false);
+      fixture.detectChanges();
+
+      expect(raiz.querySelector('.login__language-toggle')).toBeNull();
+    });
 
     it('shows and switches the language selector in both directions', () => {
       const selector = raiz.querySelector<HTMLButtonElement>('.login__language-toggle');
