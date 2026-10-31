@@ -9,6 +9,12 @@ export const PERFIL_MESSAGES = {
 
   CAREER_LABEL: 'Carrera',
 
+  FEATURES_TITLE: 'Funcionalidades',
+
+  LANGUAGE_FEATURE_LABEL: 'Cambio de idioma',
+
+  TREE_FEATURE_LABEL: 'Árbol de materias',
+
   SAVE_BUTTON: 'Guardar cambios',
 
   SUCCESS_TITLE: 'Cambios guardados',
