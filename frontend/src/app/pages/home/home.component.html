@@ -1,4 +1,6 @@
 <main class="home-page">
   <h1>{{ mensajes.CURRICULUM_TITLE }}</h1>
-  <app-materias-tree></app-materias-tree>
+  @if (featureToggleService.arbolMaterias()) {
+    <app-materias-tree></app-materias-tree>
+  }
 </main>
