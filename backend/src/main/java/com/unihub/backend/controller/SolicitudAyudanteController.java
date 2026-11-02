@@ -39,16 +39,21 @@ public class SolicitudAyudanteController {
 
     @GetMapping(PENDIENTES_URL)
     public ResponseEntity<List<SolicitudAyudanteResponse>> obtenerPendientes() {
-        return ResponseEntity.ok(solicitudAyudanteService.obtenerPendientes());
+        return administracionNoConfigurada();
     }
 
     @PostMapping(APROBAR_URL)
     public ResponseEntity<SolicitudAyudanteResponse> aprobar(@PathVariable Long idSolicitud) {
-        return ResponseEntity.ok(solicitudAyudanteService.aprobar(idSolicitud));
+        return administracionNoConfigurada();
     }
 
     @PostMapping(RECHAZAR_URL)
     public ResponseEntity<SolicitudAyudanteResponse> rechazar(@PathVariable Long idSolicitud) {
-        return ResponseEntity.ok(solicitudAyudanteService.rechazar(idSolicitud));
+        return administracionNoConfigurada();
+    }
+
+    /** Falla de forma cerrada hasta integrar un rol de administrador verificable. */
+    private static <T> ResponseEntity<T> administracionNoConfigurada() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

@@ -94,8 +94,31 @@ class AyudanteMateriaServiceTest {
         assertEquals(estudianteId, response.idEstudiante());
         assertEquals(materiaId, response.idMateria());
         assertEquals("Lunes 10-12", response.horario());
-        assertEquals("PENDIENTE", response.estado());
+        assertEquals("APROBADO", response.estado());
         verify(ayudanteMateriaRepository).save(any(AyudanteMateria.class));
+    }
+
+    @Test
+    void asignacionCreadaIndependientementeApareceEnListadoAprobado() {
+        Estudiante estudiante = estudiante(1L);
+        Materia materia = materia(1L);
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(materiaRepository.findById(1L)).thenReturn(Optional.of(materia));
+        when(ayudanteMateriaRepository.existsByEstudianteIdAndMateriaIdAndEstadoIn(anyLong(), anyLong(), anyList()))
+                .thenReturn(false);
+        when(ayudanteMateriaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        AyudanteMateriaResponse creada = service.crear(new AyudanteMateriaRequest(1L, 1L, "Lunes 10-12"));
+        AyudanteMateria entidad = new AyudanteMateria(estudiante, materia, "Lunes 10-12");
+        assertEquals("APROBADO", creada.estado());
+        assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, entidad.getEstado());
+        when(ayudanteMateriaRepository.findByMateriaIdAndEstado(1L, AyudanteMateria.EstadoAyudante.APROBADO))
+                .thenReturn(List.of(entidad));
+
+        List<AyudanteMateriaResponse> aprobados = service.obtenerAyudantesAprobadosPorMateria(1L);
+
+        assertEquals(1, aprobados.size());
+        assertEquals("APROBADO", aprobados.get(0).estado());
     }
 
     @Test
@@ -183,6 +206,7 @@ class AyudanteMateriaServiceTest {
         Long idEstudiante = 1L;
 
         AyudanteMateria am = ayudanteMateria(idAyudanteMateria, estudiante(idEstudiante), materia(1L), "Lunes 10-12");
+        am.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
 
         when(ayudanteMateriaRepository.findById(idAyudanteMateria)).thenReturn(Optional.of(am));
 
@@ -219,8 +243,8 @@ class AyudanteMateriaServiceTest {
 
     @Test
     void deberiaObtenerSolicitudesPendientes() {
-        AyudanteMateria am1 = ayudanteMateria(1L, estudiante(1L), materia(1L), "Lunes 10-12");
-        AyudanteMateria am2 = ayudanteMateria(2L, estudiante(2L), materia(2L), "Martes 10-12");
+        AyudanteMateria am1 = AyudanteMateria.pendientePorSolicitud(estudiante(1L), materia(1L), "Lunes 10-12");
+        AyudanteMateria am2 = AyudanteMateria.pendientePorSolicitud(estudiante(2L), materia(2L), "Martes 10-12");
 
         when(ayudanteMateriaRepository.findByEstado(AyudanteMateria.EstadoAyudante.PENDIENTE))
                 .thenReturn(List.of(am1, am2));

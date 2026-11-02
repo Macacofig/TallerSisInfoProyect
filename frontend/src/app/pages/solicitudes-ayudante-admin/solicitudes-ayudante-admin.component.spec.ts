@@ -52,7 +52,8 @@ describe('SolicitudesAyudanteAdminComponent', () => {
     expect(texto).toContain('Me interesa apoyar');
     expect(texto).toContain('8.5');
     expect(texto).toContain('Lunes 10:00-12:00');
-    expect(texto).toContain('PENDIENTE');
+    expect(texto).toContain('Pendiente');
+
   });
 
   it('muestra el estado vacío sin registros', () => {

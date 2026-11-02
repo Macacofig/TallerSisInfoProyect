@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -101,11 +102,9 @@ class SolicitudAyudanteControllerTest {
         ));
 
         mockMvc.perform(get("/api/solicitud-ayudante/pendientes"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].estado").value("PENDIENTE"));
+                .andExpect(status().isForbidden());
 
-        verify(solicitudAyudanteService).obtenerPendientes();
+        verifyNoInteractions(solicitudAyudanteService);
         mostrarResultado("Obtener solicitudes pendientes");
     }
 
@@ -115,10 +114,9 @@ class SolicitudAyudanteControllerTest {
         when(solicitudAyudanteService.aprobar(1L)).thenReturn(expected);
 
         mockMvc.perform(post("/api/solicitud-ayudante/1/aprobar"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.estado").value("APROBADA"));
+                .andExpect(status().isForbidden());
 
-        verify(solicitudAyudanteService).aprobar(1L);
+        verifyNoInteractions(solicitudAyudanteService);
         mostrarResultado("Aprobar solicitud");
     }
 
@@ -128,10 +126,9 @@ class SolicitudAyudanteControllerTest {
         when(solicitudAyudanteService.rechazar(1L)).thenReturn(expected);
 
         mockMvc.perform(post("/api/solicitud-ayudante/1/rechazar"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.estado").value("RECHAZADA"));
+                .andExpect(status().isForbidden());
 
-        verify(solicitudAyudanteService).rechazar(1L);
+        verifyNoInteractions(solicitudAyudanteService);
         mostrarResultado("Rechazar solicitud");
     }
 }

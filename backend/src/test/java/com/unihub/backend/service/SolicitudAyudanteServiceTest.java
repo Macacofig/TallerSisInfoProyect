@@ -86,6 +86,9 @@ class SolicitudAyudanteServiceTest {
         when(materiaRepository.findById(materiaId)).thenReturn(Optional.of(materia(materiaId)));
         when(solicitudAyudanteRepository.existsByEstudianteIdAndMateriaIdAndEstadoIn(anyLong(), anyLong(), anyList()))
                 .thenReturn(false);
+        when(ayudanteMateriaRepository.existsByEstudianteIdAndMateriaIdAndEstadoIn(anyLong(), anyLong(), anyList()))
+                .thenReturn(false);
+        when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
         when(solicitudAyudanteRepository.save(any(SolicitudAyudante.class))).thenAnswer(inv -> {
             SolicitudAyudante s = inv.getArgument(0);
             setId(s, 1L);
@@ -102,7 +105,7 @@ class SolicitudAyudanteServiceTest {
         assertEquals("Me gusta enseñar", response.motivo());
         assertEquals(9.5, response.calificacion());
         assertEquals("Lunes 10-12, Miércoles 10-12", response.horarios());
-        assertEquals("APROBADA", response.estado());
+        assertEquals("PENDIENTE", response.estado());
         verify(solicitudAyudanteRepository).save(any(SolicitudAyudante.class));
         org.mockito.ArgumentCaptor<AyudanteMateria> ayudanteCaptor =
                 org.mockito.ArgumentCaptor.forClass(AyudanteMateria.class);
@@ -111,7 +114,11 @@ class SolicitudAyudanteServiceTest {
         assertEquals(estudianteId, ayudanteMateria.getEstudiante().getId());
         assertEquals(materiaId, ayudanteMateria.getMateria().getId());
         assertEquals("Lunes 10-12, Miércoles 10-12", ayudanteMateria.getHorario());
-        assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, ayudanteMateria.getEstado());
+        assertEquals(AyudanteMateria.EstadoAyudante.PENDIENTE, ayudanteMateria.getEstado());
+        org.mockito.ArgumentCaptor<SolicitudAyudante> solicitudCaptor =
+                org.mockito.ArgumentCaptor.forClass(SolicitudAyudante.class);
+        verify(solicitudAyudanteRepository).save(solicitudCaptor.capture());
+        assertSame(ayudanteMateria, solicitudCaptor.getValue().getAyudanteMateria());
     }
 
     @Test
@@ -195,20 +202,18 @@ class SolicitudAyudanteServiceTest {
         Long idSolicitud = 1L;
         SolicitudAyudante s = solicitudAyudante(idSolicitud, estudiante(1L), materia(1L), "Motivo", 9.0, "Lunes 10-12");
 
-        when(solicitudAyudanteRepository.findById(idSolicitud)).thenReturn(Optional.of(s));
+        when(solicitudAyudanteRepository.findByIdForUpdate(idSolicitud)).thenReturn(Optional.of(s));
         when(solicitudAyudanteRepository.save(any(SolicitudAyudante.class))).thenAnswer(inv -> inv.getArgument(0));
-        AyudanteMateria relacion = new AyudanteMateria(
+        AyudanteMateria relacion = AyudanteMateria.pendientePorSolicitud(
                 s.getEstudiante(), s.getMateria(), s.getHorarios());
-        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
-                1L, 1L, AyudanteMateria.EstadoAyudante.PENDIENTE)).thenReturn(null);
-        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
-                1L, 1L, AyudanteMateria.EstadoAyudante.APROBADO)).thenReturn(relacion);
+        s.asociarAyudanteMateria(relacion);
         when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
 
         SolicitudAyudanteResponse response = service.aprobar(idSolicitud);
 
         assertEquals("APROBADA", response.estado());
         assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, relacion.getEstado());
+        verify(solicitudAyudanteRepository).findByIdForUpdate(idSolicitud);
         verify(solicitudAyudanteRepository).save(s);
         verify(ayudanteMateriaRepository).save(relacion);
     }
@@ -218,21 +223,117 @@ class SolicitudAyudanteServiceTest {
         Long idSolicitud = 1L;
         SolicitudAyudante s = solicitudAyudante(idSolicitud, estudiante(1L), materia(1L), "Motivo", 9.0, "Lunes 10-12");
 
-        when(solicitudAyudanteRepository.findById(idSolicitud)).thenReturn(Optional.of(s));
+        when(solicitudAyudanteRepository.findByIdForUpdate(idSolicitud)).thenReturn(Optional.of(s));
         when(solicitudAyudanteRepository.save(any(SolicitudAyudante.class))).thenAnswer(inv -> inv.getArgument(0));
-        AyudanteMateria relacion = new AyudanteMateria(
+        AyudanteMateria relacion = AyudanteMateria.pendientePorSolicitud(
                 s.getEstudiante(), s.getMateria(), s.getHorarios());
-        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
-                1L, 1L, AyudanteMateria.EstadoAyudante.PENDIENTE)).thenReturn(null);
-        when(ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
-                1L, 1L, AyudanteMateria.EstadoAyudante.APROBADO)).thenReturn(relacion);
+        s.asociarAyudanteMateria(relacion);
         when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
 
         SolicitudAyudanteResponse response = service.rechazar(idSolicitud);
 
         assertEquals("RECHAZADA", response.estado());
         assertEquals(AyudanteMateria.EstadoAyudante.RECHAZADO, relacion.getEstado());
+        verify(solicitudAyudanteRepository).findByIdForUpdate(idSolicitud);
         verify(solicitudAyudanteRepository).save(s);
         verify(ayudanteMateriaRepository).save(relacion);
+    }
+
+    @Test
+    void decisionesSoloModificanAsignacionAsociadaYNoBuscanPorEstudianteMateriaEstado() {
+        SolicitudAyudante s = solicitudAyudante(11L, estudiante(1L), materia(1L), "Motivo", 9.0, "Lunes");
+        AyudanteMateria asociada = AyudanteMateria.pendientePorSolicitud(s.getEstudiante(), s.getMateria(), "Lunes");
+        AyudanteMateria independiente = AyudanteMateria.pendientePorSolicitud(s.getEstudiante(), s.getMateria(), "Martes");
+        s.asociarAyudanteMateria(asociada);
+        when(solicitudAyudanteRepository.findByIdForUpdate(11L)).thenReturn(Optional.of(s));
+        when(solicitudAyudanteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(ayudanteMateriaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        service.aprobar(11L);
+
+        assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, asociada.getEstado());
+        assertEquals(AyudanteMateria.EstadoAyudante.PENDIENTE, independiente.getEstado());
+        verify(ayudanteMateriaRepository).save(asociada);
+        verify(ayudanteMateriaRepository, never()).findByEstudianteIdAndMateriaIdAndEstado(anyLong(), anyLong(), any());
+    }
+
+    @Test
+    void solicitudHistoricaSinAsociacionFallaAntesDeCambiarEstado() {
+        SolicitudAyudante s = solicitudAyudante(12L, estudiante(1L), materia(1L), "Motivo", 9.0, "Lunes");
+        when(solicitudAyudanteRepository.findByIdForUpdate(12L)).thenReturn(Optional.of(s));
+
+        IllegalStateException error = assertThrows(IllegalStateException.class, () -> service.aprobar(12L));
+
+        assertTrue(error.getMessage().contains("reconciliación"));
+        assertEquals(SolicitudAyudante.EstadoSolicitud.PENDIENTE, s.getEstado());
+        verify(solicitudAyudanteRepository, never()).save(any());
+        verify(ayudanteMateriaRepository, never()).save(any());
+        verify(ayudanteMateriaRepository, never()).findByEstudianteIdAndMateriaIdAndEstado(anyLong(), anyLong(), any());
+    }
+
+    @Test
+    void estadoCruzadoFallaAntesDeCambiarLaSolicitud() {
+        SolicitudAyudante s = solicitudAyudante(13L, estudiante(1L), materia(1L), "Motivo", 9.0, "Lunes");
+        AyudanteMateria relacion = AyudanteMateria.pendientePorSolicitud(s.getEstudiante(), s.getMateria(), "Lunes");
+        relacion.rechazar();
+        s.asociarAyudanteMateria(relacion);
+        when(solicitudAyudanteRepository.findByIdForUpdate(13L)).thenReturn(Optional.of(s));
+
+        assertThrows(IllegalStateException.class, () -> service.aprobar(13L));
+
+        assertEquals(SolicitudAyudante.EstadoSolicitud.PENDIENTE, s.getEstado());
+        assertEquals(AyudanteMateria.EstadoAyudante.RECHAZADO, relacion.getEstado());
+        verify(solicitudAyudanteRepository, never()).save(any());
+        verify(ayudanteMateriaRepository, never()).save(any());
+    }
+
+    @Test
+    void decisionesDuplicadasFallaSinModificarLaAsignacion() {
+        SolicitudAyudante s = solicitudAyudante(14L, estudiante(1L), materia(1L), "Motivo", 9.0, "Lunes");
+        s.aprobar();
+        AyudanteMateria relacion = AyudanteMateria.pendientePorSolicitud(s.getEstudiante(), s.getMateria(), "Lunes");
+        relacion.aprobar();
+        s.asociarAyudanteMateria(relacion);
+        when(solicitudAyudanteRepository.findByIdForUpdate(14L)).thenReturn(Optional.of(s));
+
+        assertThrows(IllegalStateException.class, () -> service.aprobar(14L));
+        assertThrows(IllegalStateException.class, () -> service.rechazar(14L));
+
+        assertEquals(SolicitudAyudante.EstadoSolicitud.APROBADA, s.getEstado());
+        assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, relacion.getEstado());
+        verify(solicitudAyudanteRepository, never()).save(any());
+        verify(ayudanteMateriaRepository, never()).save(any());
+    }
+
+    @Test
+    void solicitudIniciaPendienteYAsignacionDeSolicitudUsaEstadoPendiente() {
+        SolicitudAyudante solicitud = new SolicitudAyudante(
+                estudiante(3L), materia(3L), "Motivo", 8.0, "Viernes 10-12");
+        AyudanteMateria relacion = AyudanteMateria.pendientePorSolicitud(
+                estudiante(3L), materia(3L), "Viernes 10-12");
+
+        assertEquals(SolicitudAyudante.EstadoSolicitud.PENDIENTE, solicitud.getEstado());
+        assertEquals(AyudanteMateria.EstadoAyudante.PENDIENTE, relacion.getEstado());
+
+        solicitud.aprobar();
+        relacion.aprobar();
+        assertThrows(IllegalStateException.class, solicitud::aprobar);
+        assertThrows(IllegalStateException.class, solicitud::rechazar);
+
+        SolicitudAyudante solicitudRechazada = new SolicitudAyudante(
+                estudiante(4L), materia(4L), "Motivo", 8.0, "Viernes 10-12");
+        AyudanteMateria relacionRechazada = AyudanteMateria.pendientePorSolicitud(
+                estudiante(4L), materia(4L), "Viernes 10-12");
+        solicitudRechazada.rechazar();
+        relacionRechazada.rechazar();
+        assertThrows(IllegalStateException.class, solicitudRechazada::aprobar);
+        assertThrows(IllegalStateException.class, solicitudRechazada::rechazar);
+        assertEquals(AyudanteMateria.EstadoAyudante.RECHAZADO, relacionRechazada.getEstado());
+    }
+
+    @Test
+    void asignacionIndependienteIniciaAprobada() {
+        assertEquals(AyudanteMateria.EstadoAyudante.APROBADO,
+                new AyudanteMateria(estudiante(5L), materia(5L), "Lunes").getEstado());
     }
 }

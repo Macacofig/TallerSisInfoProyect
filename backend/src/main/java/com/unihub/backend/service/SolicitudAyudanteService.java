@@ -63,11 +63,13 @@ public class SolicitudAyudanteService {
             throw new IllegalArgumentException("El estudiante ya tiene una solicitud pendiente o aprobada para esta materia");
         }
 
+        AyudanteMateria ayudanteMateria = AyudanteMateria.pendientePorSolicitud(
+                estudiante, materia, request.horarios());
+        ayudanteMateria = ayudanteMateriaRepository.save(ayudanteMateria);
         SolicitudAyudante solicitud = new SolicitudAyudante(
                 estudiante, materia, request.motivo(), request.calificacion(), request.horarios());
+        solicitud.asociarAyudanteMateria(ayudanteMateria);
         solicitud = solicitudAyudanteRepository.save(solicitud);
-        AyudanteMateria ayudanteMateria = new AyudanteMateria(estudiante, materia, request.horarios());
-        ayudanteMateriaRepository.save(ayudanteMateria);
         LogHelper.info(SolicitudAyudanteService.class, "Solicitud de ayudante creada por estudiante " + request.idEstudiante() + " para materia " + request.idMateria());
         return solicitudAyudanteMapper.toResponse(solicitud);
     }
@@ -95,11 +97,13 @@ public class SolicitudAyudanteService {
 
     @Transactional
     public SolicitudAyudanteResponse aprobar(Long idSolicitud) {
-        SolicitudAyudante solicitud = solicitudAyudanteRepository.findById(idSolicitud)
+        SolicitudAyudante solicitud = solicitudAyudanteRepository.findByIdForUpdate(idSolicitud)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
 
+        AyudanteMateria relacion = exigirRelacionPendiente(solicitud);
+        relacion.aprobar();
         solicitud.aprobar();
-        actualizarEstadoRelacion(solicitud, AyudanteMateria.EstadoAyudante.APROBADO);
+        ayudanteMateriaRepository.save(relacion);
         solicitud = solicitudAyudanteRepository.save(solicitud);
         LogHelper.info(SolicitudAyudanteService.class, "Solicitud de ayudante " + idSolicitud + " aprobada");
         return solicitudAyudanteMapper.toResponse(solicitud);
@@ -107,35 +111,28 @@ public class SolicitudAyudanteService {
 
     @Transactional
     public SolicitudAyudanteResponse rechazar(Long idSolicitud) {
-        SolicitudAyudante solicitud = solicitudAyudanteRepository.findById(idSolicitud)
+        SolicitudAyudante solicitud = solicitudAyudanteRepository.findByIdForUpdate(idSolicitud)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
 
+        AyudanteMateria relacion = exigirRelacionPendiente(solicitud);
+        relacion.rechazar();
         solicitud.rechazar();
-        actualizarEstadoRelacion(solicitud, AyudanteMateria.EstadoAyudante.RECHAZADO);
+        ayudanteMateriaRepository.save(relacion);
         solicitud = solicitudAyudanteRepository.save(solicitud);
         LogHelper.info(SolicitudAyudanteService.class, "Solicitud de ayudante " + idSolicitud + " rechazada");
         return solicitudAyudanteMapper.toResponse(solicitud);
     }
 
-    private void actualizarEstadoRelacion(
-            SolicitudAyudante solicitud,
-            AyudanteMateria.EstadoAyudante nuevoEstado
-    ) {
-        AyudanteMateria relacion = ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
-                solicitud.getEstudiante().getId(),
-                solicitud.getMateria().getId(),
-                AyudanteMateria.EstadoAyudante.PENDIENTE
-        );
+    private AyudanteMateria exigirRelacionPendiente(SolicitudAyudante solicitud) {
+        AyudanteMateria relacion = solicitud.getAyudanteMateria();
         if (relacion == null) {
-            relacion = ayudanteMateriaRepository.findByEstudianteIdAndMateriaIdAndEstado(
-                    solicitud.getEstudiante().getId(),
-                    solicitud.getMateria().getId(),
-                    AyudanteMateria.EstadoAyudante.APROBADO
-            );
+            throw new IllegalStateException(
+                    "La solicitud histórica no tiene una asignación asociada; requiere reconciliación manual");
         }
-        if (relacion != null) {
-            relacion.setEstado(nuevoEstado);
-            ayudanteMateriaRepository.save(relacion);
+        if (solicitud.getEstado() != SolicitudAyudante.EstadoSolicitud.PENDIENTE
+                || relacion.getEstado() != AyudanteMateria.EstadoAyudante.PENDIENTE) {
+            throw new IllegalStateException("La solicitud y su asignación deben estar pendientes para decidirse");
         }
+        return relacion;
     }
 }

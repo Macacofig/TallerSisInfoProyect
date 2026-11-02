@@ -36,6 +36,13 @@ public class AyudanteMateria {
         this.estado = EstadoAyudante.APROBADO;
     }
 
+    /** Crea la asignación provisional asociada a una solicitud HU-17. */
+    public static AyudanteMateria pendientePorSolicitud(Estudiante estudiante, Materia materia, String horario) {
+        AyudanteMateria asignacion = new AyudanteMateria(estudiante, materia, horario);
+        asignacion.estado = EstadoAyudante.PENDIENTE;
+        return asignacion;
+    }
+
     public Long getId() {
         return id;
     }

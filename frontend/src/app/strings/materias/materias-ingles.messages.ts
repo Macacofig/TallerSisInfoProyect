@@ -557,4 +557,8 @@ export const MESSAGES_EN = {
   ASSISTANT_ADMIN_STATUS: 'Status',
   ASSISTANT_ADMIN_BUSY: 'Updating...',
   ASSISTANT_ADMIN_RETRY: 'Try again',
+  ASSISTANT_ADMIN_TAB_MATERIAL: 'Pending material',
+  ASSISTANT_ADMIN_TAB_APPLICATIONS: 'Assistant applications',
+  ASSISTANT_ADMIN_TAB_REPORTS: 'Reports',
+  ASSISTANT_ADMIN_STATUS_PENDING: 'Pending',
 } as const;
