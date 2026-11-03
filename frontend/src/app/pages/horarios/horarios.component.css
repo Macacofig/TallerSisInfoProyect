@@ -296,17 +296,20 @@
   overflow-y: auto;
   max-height: 45rem;
   overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #9bb0c9 transparent;
 }
 
 .calendario {
-  min-width: 60.9375rem;
+  width: 100%;
+  min-width: max(42rem, 100%);
   position: relative;
 }
 
 .calendario__encabezado {
   display: grid;
-  grid-template-columns: 4.6875rem repeat(6, minmax(9.375rem, 1fr));
-  min-width: 60.9375rem;
+  grid-template-columns: 4rem repeat(6, minmax(5rem, 1fr));
+  min-width: max(42rem, 100%);
   background: #f8fbff;
   border-bottom: 0.0625rem solid #d5e0f0;
 }
@@ -340,8 +343,8 @@
 
 .calendario__cuerpo {
   display: grid;
-  grid-template-columns: 4.6875rem 1fr;
-  min-width: 60.9375rem;
+  grid-template-columns: 4rem minmax(38rem, 1fr);
+  min-width: max(42rem, 100%);
   position: relative;
 }
 
@@ -368,8 +371,8 @@
 
 .calendario__dias {
   display: grid;
-  grid-template-columns: repeat(6, minmax(9.375rem, 1fr));
-  min-width: 56.25rem;
+  grid-template-columns: repeat(6, minmax(5rem, 1fr));
+  min-width: 38rem;
   position: relative;
 }
 
@@ -1340,7 +1343,13 @@
 .calendario__encabezado { position: sticky; top: 0; z-index: 12; }
 .calendario__horas { position: sticky; left: 0; z-index: 11; }
 .calendario__espacio-hora { position: sticky; left: 0; z-index: 13; background: #f8fbff; }
-.calendario__scroll { scrollbar-color: #537696 #e5ecf3; }
+.calendario__scroll { scrollbar-color: #9bb0c9 transparent; }
+.calendario__scroll::-webkit-scrollbar { width: 0.375rem; height: 0.375rem; }
+.calendario__scroll::-webkit-scrollbar-track { background: transparent; }
+.calendario__scroll::-webkit-scrollbar-thumb {
+  background: #9bb0c9;
+  border-radius: var(--radius-lg);
+}
 @media (min-width: 48.001rem) and (max-width: 64rem) {
   .panel-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .panel-filtros { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 1rem; }
