@@ -555,6 +555,7 @@
 }
 
 .modal {
+  position: relative;
   width: 100%;
   min-width: 0;
   max-width: min(35rem, calc(100vw - 2.5rem));
@@ -574,7 +575,8 @@
 }
 
 .modal-agregar__cuerpo {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   align-items: flex-start;
   gap: 1.75rem;
 }
@@ -585,6 +587,7 @@
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  padding-right: 3.25rem;
 }
 
 .modal-header > div { min-width: 0; }
@@ -613,6 +616,9 @@
 }
 
 .modal-cerrar {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -657,7 +663,6 @@
 
 .modal-materias {
   display: flex;
-  flex: 0 0 17rem;
   flex-direction: column;
   gap: 0.65rem;
   max-height: 18.75rem;
@@ -727,8 +732,13 @@
 
 .formulario__campos {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(4rem, 0.45fr) minmax(8rem, 1fr);
   gap: 0.75rem;
+}
+
+.formulario__campo--sigla,
+.formulario__campo--paralelo {
+  min-width: 4rem;
 }
 
 .formulario__campo {
@@ -761,6 +771,11 @@
   font: inherit;
 }
 
+.formulario__campo input,
+.formulario__campo select {
+  min-height: 2.75rem;
+}
+
 .formulario__campo input:focus,
 .formulario__campo select:focus {
   outline: 0.125rem solid #e3a82b;
@@ -781,7 +796,7 @@
 
 .bloque {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 0.5rem;
   padding: 0.75rem;
@@ -847,7 +862,10 @@
 }
 
 .formulario__anadir:disabled {
-  opacity: 0.45;
+  border-color: #b7c4d6;
+  background-color: #dfe7f2;
+  color: #718096;
+  opacity: 1;
   cursor: not-allowed;
 }
 
