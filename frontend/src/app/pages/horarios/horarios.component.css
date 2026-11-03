@@ -1,6 +1,21 @@
 ﻿
 :host {
   display: block;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.125rem;
+  --color-navy: #0b2447;
+  --color-blue: #0b3c8c;
+  --color-gold: #e3a82b;
+  --color-border: #d5e0f0;
+  --color-muted: #4f5d73;
 }
 
 * {
@@ -57,19 +72,19 @@
 
 .horarios-layout {
   display: grid;
-  grid-template-columns: 15.625rem minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  gap: var(--space-5);
   align-items: start;
-  margin-top: 1.25rem;
+  margin-top: var(--space-5);
 }
 
 .materias-panel {
   min-width: 0;
   width: 100%;
-  padding: 1.625rem 1.1rem;
+  padding: var(--space-5) var(--space-4);
   background: #f8fbff;
   border: 0.0625rem solid #d5e0f0;
-  border-radius: 1.125rem;
+  border-radius: var(--radius-xl);
   box-shadow: 0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
 }
 
@@ -79,6 +94,7 @@
   font-size: 1.25rem;
   font-weight: 550;
   color: #0b2447;
+  white-space: nowrap;
 }
 
 .panel-list {
@@ -440,7 +456,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: var(--space-5);
   flex-wrap: wrap;
 }
 
@@ -451,7 +467,7 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
@@ -462,7 +478,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-4);
   border: 0.0625rem solid transparent;
   border-radius: 0.625rem;
   font-family: inherit;
