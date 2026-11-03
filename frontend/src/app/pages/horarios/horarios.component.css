@@ -1289,7 +1289,28 @@
   gap: 0.5rem;
 }
 
-@media (max-width: 64rem) {
+button,
+input,
+select {
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 0.125rem solid rgba(11, 60, 140, 0.35);
+  outline-offset: 0.125rem;
+  border-color: var(--color-blue);
+}
+
+.panel-filtros__huecos input:focus-visible,
+.materia-horario__header input:focus-visible {
+  outline: 0.125rem solid rgba(11, 60, 140, 0.35);
+  outline-offset: 0.125rem;
+}
+
+@media (max-width: 64em) {
   .bloque { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .page-title-row {
     align-items: flex-start;
@@ -1328,7 +1349,7 @@
   }
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 30em) {
   .formulario__campos,
   .bloque { grid-template-columns: minmax(0, 1fr); }
   .modal-materia { flex-wrap: wrap; }
@@ -1411,7 +1432,7 @@
   background: #9bb0c9;
   border-radius: var(--radius-lg);
 }
-@media (min-width: 48.001rem) and (max-width: 64rem) {
+@media (min-width: 48em) and (max-width: 64em) {
   .panel-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .panel-filtros { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 1rem; }
 }
