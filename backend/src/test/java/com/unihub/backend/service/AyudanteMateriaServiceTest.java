@@ -35,12 +35,15 @@ class AyudanteMateriaServiceTest {
     @Mock
     private MateriaRepository materiaRepository;
 
+    @Mock
+    private SolicitudAyudanteService solicitudAyudanteService;
+
     private AyudanteMateriaService service;
     private AyudanteMateriaMapper mapper = new AyudanteMateriaMapper();
 
     @BeforeEach
     void setUp() {
-        service = new AyudanteMateriaService(ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper);
+        service = new AyudanteMateriaService(ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper, solicitudAyudanteService);
     }
 
     private Estudiante estudiante(Long id) {
@@ -214,9 +217,20 @@ class AyudanteMateriaServiceTest {
     }
 
     @Test
+    void decisionesDeRelacionVinculadaDeleganEnSolicitudCanonica() {
+        AyudanteMateria relation = ayudanteMateria(1L, estudiante(1L), materia(1L), "Lunes 10-12");
+        when(solicitudAyudanteService.obtenerIdPorAyudanteMateria(1L)).thenReturn(Optional.of(71L));
+        when(ayudanteMateriaRepository.findById(1L)).thenReturn(Optional.of(relation));
+        service.aprobarSolicitud(1L);
+        verify(solicitudAyudanteService).aprobar(71L);
+        verify(ayudanteMateriaRepository, never()).save(any(AyudanteMateria.class));
+    }
+
+    @Test
     void deberiaAprobarSolicitud() {
         Long idAyudanteMateria = 1L;
         AyudanteMateria am = ayudanteMateria(idAyudanteMateria, estudiante(1L), materia(1L), "Lunes 10-12");
+        am.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
 
         when(ayudanteMateriaRepository.findById(idAyudanteMateria)).thenReturn(Optional.of(am));
         when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -231,6 +245,7 @@ class AyudanteMateriaServiceTest {
     void deberiaRechazarSolicitud() {
         Long idAyudanteMateria = 1L;
         AyudanteMateria am = ayudanteMateria(idAyudanteMateria, estudiante(1L), materia(1L), "Lunes 10-12");
+        am.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
 
         when(ayudanteMateriaRepository.findById(idAyudanteMateria)).thenReturn(Optional.of(am));
         when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -239,6 +254,21 @@ class AyudanteMateriaServiceTest {
 
         assertEquals("RECHAZADO", response.estado());
         verify(ayudanteMateriaRepository).save(am);
+    }
+
+    @Test
+    void noPermiteDecidirDosVecesUnaSolicitudLegacy() {
+        AyudanteMateria aprobada = ayudanteMateria(1L, estudiante(1L), materia(1L), "Lunes 10-12");
+        aprobada.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
+        AyudanteMateria rechazada = ayudanteMateria(2L, estudiante(2L), materia(2L), "Martes 10-12");
+        rechazada.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
+        when(ayudanteMateriaRepository.findById(1L)).thenReturn(Optional.of(aprobada));
+        when(ayudanteMateriaRepository.findById(2L)).thenReturn(Optional.of(rechazada));
+        when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
+        service.aprobarSolicitud(1L);
+        service.rechazarSolicitud(2L);
+        assertThrows(IllegalStateException.class, () -> service.aprobarSolicitud(1L));
+        assertThrows(IllegalStateException.class, () -> service.rechazarSolicitud(2L));
     }
 
     @Test

@@ -22,5 +22,8 @@ public interface SolicitudAyudanteRepository extends JpaRepository<SolicitudAyud
 
     List<SolicitudAyudante> findByEstado(SolicitudAyudante.EstadoSolicitud estado);
 
+    @Query("SELECT s.id FROM SolicitudAyudante s WHERE s.ayudanteMateria.id = :ayudanteMateriaId ORDER BY s.id DESC")
+    List<Long> findIdsByAyudanteMateriaId(@Param("ayudanteMateriaId") Long ayudanteMateriaId);
+
     boolean existsByEstudianteIdAndMateriaIdAndEstadoIn(Long estudianteId, Long materiaId, List<SolicitudAyudante.EstadoSolicitud> estados);
 }

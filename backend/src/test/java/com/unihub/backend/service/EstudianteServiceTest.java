@@ -92,6 +92,7 @@ class EstudianteServiceTest {
 
         ArgumentCaptor<Estudiante> captor = ArgumentCaptor.forClass(Estudiante.class);
         verify(estudianteRepository).save(captor.capture());
+        assertEquals(Estudiante.Rol.STUDENT, captor.getValue().getRol());
         org.junit.jupiter.api.Assertions.assertTrue(
                 passwordEncoder.matches("ClaveSegura1!", captor.getValue().getContrasena())
         );

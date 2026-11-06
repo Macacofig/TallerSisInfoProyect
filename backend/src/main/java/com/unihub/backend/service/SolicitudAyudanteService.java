@@ -42,7 +42,12 @@ public class SolicitudAyudanteService {
 
     @Transactional
     public SolicitudAyudanteResponse solicitar(SolicitudAyudanteRequest request) {
-        Estudiante estudiante = estudianteRepository.findById(request.idEstudiante())
+        return solicitar(request, request.idEstudiante());
+    }
+
+    @Transactional
+    public SolicitudAyudanteResponse solicitar(SolicitudAyudanteRequest request, Long estudianteId) {
+        Estudiante estudiante = estudianteRepository.findById(estudianteId)
                 .orElseThrow(() -> new IllegalArgumentException("El estudiante no existe"));
         Materia materia = materiaRepository.findById(request.idMateria())
                 .orElseThrow(() -> new IllegalArgumentException("La materia no existe"));
@@ -57,9 +62,9 @@ public class SolicitudAyudanteService {
         );
 
         if (solicitudAyudanteRepository.existsByEstudianteIdAndMateriaIdAndEstadoIn(
-                request.idEstudiante(), request.idMateria(), estadosActivos)
+                estudianteId, request.idMateria(), estadosActivos)
                 || ayudanteMateriaRepository.existsByEstudianteIdAndMateriaIdAndEstadoIn(
-                request.idEstudiante(), request.idMateria(), estadosAyudanteActivos)) {
+                estudianteId, request.idMateria(), estadosAyudanteActivos)) {
             throw new IllegalArgumentException("El estudiante ya tiene una solicitud pendiente o aprobada para esta materia");
         }
 
@@ -86,6 +91,14 @@ public class SolicitudAyudanteService {
                 .stream()
                 .map(solicitudAyudanteMapper::toResponse)
                 .toList();
+    }
+
+    public java.util.Optional<Long> obtenerIdPorAyudanteMateria(Long idAyudanteMateria) {
+        List<Long> ids = solicitudAyudanteRepository.findIdsByAyudanteMateriaId(idAyudanteMateria);
+        if (ids.size() > 1) {
+            throw new IllegalStateException("Una asignación está vinculada a más de una solicitud; requiere reconciliación");
+        }
+        return ids.stream().findFirst();
     }
 
     public List<SolicitudAyudanteResponse> obtenerPendientes() {

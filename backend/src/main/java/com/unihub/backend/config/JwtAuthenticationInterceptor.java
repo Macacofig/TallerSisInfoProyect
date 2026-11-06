@@ -1,6 +1,8 @@
 package com.unihub.backend.config;
 
 import com.unihub.backend.service.JwtService;
+import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.repository.EstudianteRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,9 +20,11 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     public static final String STUDENT_ID_ATTRIBUTE = "authenticatedStudentId";
 
     private final JwtService jwtService;
+    private final EstudianteRepository estudianteRepository;
 
-    public JwtAuthenticationInterceptor(JwtService jwtService) {
+    public JwtAuthenticationInterceptor(JwtService jwtService, EstudianteRepository estudianteRepository) {
         this.jwtService = jwtService;
+        this.estudianteRepository = estudianteRepository;
     }
 
     @Override
@@ -53,7 +57,21 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         }
 
         request.setAttribute(STUDENT_ID_ATTRIBUTE, studentId.get());
+        if (requiereAdministrador(request) && estudianteRepository.findByIdAndRol(studentId.get(), Estudiante.Rol.ADMIN).isEmpty()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Se requiere rol de administrador");
+            return false;
+        }
         return true;
+    }
+
+    private boolean requiereAdministrador(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+        return (HttpMethod.POST.matches(method) && path.equals("/api/ayudante-materia"))
+                || (HttpMethod.GET.matches(method) && path.equals("/api/solicitud-ayudante/pendientes"))
+                || (HttpMethod.POST.matches(method) && path.matches("/api/solicitud-ayudante/\\d+/(aprobar|rechazar)"))
+                || (HttpMethod.GET.matches(method) && path.equals("/api/ayudante-materia/pendientes"))
+                || (HttpMethod.POST.matches(method) && path.matches("/api/ayudante-materia/\\d+/(aprobar|rechazar)"));
     }
 
     private boolean esPublica(HttpServletRequest request) {
@@ -70,7 +88,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
         if (HttpMethod.GET.matches(method)) {
             return !path.matches("/api/estudiantes/\\d+")
-                    && !path.matches("/api/calificacion-(materia|docente)/estudiante/.*");
+                    && !path.matches("/api/calificacion-(materia|docente)/estudiante/.*")
+                    && !path.startsWith("/api/solicitud-ayudante")
+                    && !path.equals("/api/ayudante-materia/pendientes");
         }
         return false;
     }

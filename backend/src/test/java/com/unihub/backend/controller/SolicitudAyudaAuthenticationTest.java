@@ -5,6 +5,7 @@ import com.unihub.backend.config.JwtAuthenticationInterceptor;
 import com.unihub.backend.dto.ayudante.SolicitudAyudaRequest;
 import com.unihub.backend.dto.ayudante.SolicitudAyudaResponse;
 import com.unihub.backend.entity.Estudiante;
+import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.service.JwtService;
 import com.unihub.backend.service.SolicitudAyudaService;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SolicitudAyudaAuthenticationTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private JwtService jwtService;
+    @MockitoBean private EstudianteRepository estudianteRepository;
     @MockitoBean private SolicitudAyudaService solicitudAyudaService;
 
     @DynamicPropertySource

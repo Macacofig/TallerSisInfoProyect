@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AyudanteMateriaService {
@@ -22,17 +23,20 @@ public class AyudanteMateriaService {
     private final EstudianteRepository estudianteRepository;
     private final MateriaRepository materiaRepository;
     private final AyudanteMateriaMapper ayudanteMateriaMapper;
+    private final SolicitudAyudanteService solicitudAyudanteService;
 
     public AyudanteMateriaService(
             AyudanteMateriaRepository ayudanteMateriaRepository,
             EstudianteRepository estudianteRepository,
             MateriaRepository materiaRepository,
-            AyudanteMateriaMapper ayudanteMateriaMapper
+            AyudanteMateriaMapper ayudanteMateriaMapper,
+            SolicitudAyudanteService solicitudAyudanteService
     ) {
         this.ayudanteMateriaRepository = ayudanteMateriaRepository;
         this.estudianteRepository = estudianteRepository;
         this.materiaRepository = materiaRepository;
         this.ayudanteMateriaMapper = ayudanteMateriaMapper;
+        this.solicitudAyudanteService = solicitudAyudanteService;
     }
 
     @Transactional
@@ -88,8 +92,14 @@ public class AyudanteMateriaService {
 
     @Transactional
     public AyudanteMateriaResponse aprobarSolicitud(Long idAyudanteMateria) {
+        Optional<Long> idSolicitud = solicitudAyudanteService.obtenerIdPorAyudanteMateria(idAyudanteMateria);
+        if (idSolicitud.isPresent()) {
+            solicitudAyudanteService.aprobar(idSolicitud.get());
+            return obtenerPorId(idAyudanteMateria);
+        }
         AyudanteMateria ayudanteMateria = ayudanteMateriaRepository.findById(idAyudanteMateria)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
+        exigirPendiente(ayudanteMateria);
 
         ayudanteMateria.aprobar();
         ayudanteMateria = ayudanteMateriaRepository.save(ayudanteMateria);
@@ -99,13 +109,31 @@ public class AyudanteMateriaService {
 
     @Transactional
     public AyudanteMateriaResponse rechazarSolicitud(Long idAyudanteMateria) {
+        Optional<Long> idSolicitud = solicitudAyudanteService.obtenerIdPorAyudanteMateria(idAyudanteMateria);
+        if (idSolicitud.isPresent()) {
+            solicitudAyudanteService.rechazar(idSolicitud.get());
+            return obtenerPorId(idAyudanteMateria);
+        }
         AyudanteMateria ayudanteMateria = ayudanteMateriaRepository.findById(idAyudanteMateria)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
+        exigirPendiente(ayudanteMateria);
 
         ayudanteMateria.rechazar();
         ayudanteMateria = ayudanteMateriaRepository.save(ayudanteMateria);
         LogHelper.info(AyudanteMateriaService.class, "Solicitud de ayudante " + idAyudanteMateria + " rechazada");
         return ayudanteMateriaMapper.toResponse(ayudanteMateria);
+    }
+
+    private void exigirPendiente(AyudanteMateria ayudanteMateria) {
+        if (ayudanteMateria.getEstado() != AyudanteMateria.EstadoAyudante.PENDIENTE) {
+            throw new IllegalStateException("Solo se puede decidir una asignación pendiente");
+        }
+    }
+
+    private AyudanteMateriaResponse obtenerPorId(Long id) {
+        AyudanteMateria entity = ayudanteMateriaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La relación ayudante-materia no existe"));
+        return ayudanteMateriaMapper.toResponse(entity);
     }
 
     public List<AyudanteMateriaResponse> obtenerSolicitudesPendientes() {
