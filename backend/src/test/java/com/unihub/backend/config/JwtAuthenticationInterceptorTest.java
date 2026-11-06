@@ -3,6 +3,7 @@ package com.unihub.backend.config;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.service.EstudianteService;
+import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.service.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ class JwtAuthenticationInterceptorTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean private EstudianteRepository estudianteRepository;
     @MockitoBean
     private EstudianteService estudianteService;
 

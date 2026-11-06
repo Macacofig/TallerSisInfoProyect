@@ -11,6 +11,8 @@ import { Perfil } from './pages/perfil/perfil';
 import { HorariosComponent } from './pages/horarios/horarios.component';
 import { authGuard } from './guards/auth.guard';
 import { materiasTreeGuard } from './guards/materias-tree.guard';
+import { adminGuard } from './guards/admin.guard';
+import { SolicitudesAyudanteAdminComponent } from './pages/solicitudes-ayudante-admin/solicitudes-ayudante-admin.component';
 
 export const routes: Routes = [
 
@@ -48,6 +50,12 @@ export const routes: Routes = [
   {
     path: 'materias/:materiaId',
     component: MateriaDetalleComponent
+  },
+
+  {
+    path: 'administracion/solicitudes-ayudante',
+    component: SolicitudesAyudanteAdminComponent,
+    canActivate: [adminGuard]
   },
 
   {

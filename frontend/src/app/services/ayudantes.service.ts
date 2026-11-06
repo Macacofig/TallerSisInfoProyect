@@ -64,4 +64,27 @@ export class AyudantesService {
       { headers: this.authService.obtenerHeadersAutenticacion() }
     );
   }
+
+  obtenerSolicitudesAyudantePendientes(): Observable<SolicitudAyudanteResponse[]> {
+    return this.http.get<SolicitudAyudanteResponse[]>(
+      `${this.solicitudAyudanteUrl}/pendientes`,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
+    );
+  }
+
+  aprobarSolicitudAyudante(idSolicitud: number): Observable<SolicitudAyudanteResponse> {
+    return this.http.post<SolicitudAyudanteResponse>(
+      `${this.solicitudAyudanteUrl}/${idSolicitud}/aprobar`,
+      null,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
+    );
+  }
+
+  rechazarSolicitudAyudante(idSolicitud: number): Observable<SolicitudAyudanteResponse> {
+    return this.http.post<SolicitudAyudanteResponse>(
+      `${this.solicitudAyudanteUrl}/${idSolicitud}/rechazar`,
+      null,
+      { headers: this.authService.obtenerHeadersAutenticacion() }
+    );
+  }
 }

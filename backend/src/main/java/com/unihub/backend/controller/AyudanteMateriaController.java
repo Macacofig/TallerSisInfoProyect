@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.ayudante.AyudanteMateriaRequest;
+import com.unihub.backend.config.JwtAuthenticationInterceptor;
 import com.unihub.backend.dto.ayudante.AyudanteMateriaResponse;
 import com.unihub.backend.service.AyudanteMateriaService;
 import jakarta.validation.Valid;
@@ -33,8 +34,9 @@ public class AyudanteMateriaController {
     }
 
     @DeleteMapping(DEJAR_URL)
-    public ResponseEntity<Void> dejarDeSerAyudante(@PathVariable Long idAyudanteMateria, @PathVariable Long idEstudiante) {
-        ayudanteMateriaService.dejarDeSerAyudante(idAyudanteMateria, idEstudiante);
+    public ResponseEntity<Void> dejarDeSerAyudante(@PathVariable Long idAyudanteMateria, @PathVariable Long idEstudiante, @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado) {
+        if (!idEstudiante.equals(estudianteAutenticado)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        ayudanteMateriaService.dejarDeSerAyudante(idAyudanteMateria, estudianteAutenticado);
         return ResponseEntity.noContent().build();
     }
 

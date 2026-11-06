@@ -19,6 +19,10 @@ public class SolicitudAyudante {
     @JoinColumn(name = "id_materia", nullable = false)
     private Materia materia;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "id_ayudante_materia", nullable = true)
+    private AyudanteMateria ayudanteMateria;
+
     @Column(name = "motivo", nullable = false, columnDefinition = "TEXT")
     private String motivo;
 
@@ -30,7 +34,7 @@ public class SolicitudAyudante {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
-    private EstadoSolicitud estado = EstadoSolicitud.APROBADA;
+    private EstadoSolicitud estado = EstadoSolicitud.PENDIENTE;
 
     protected SolicitudAyudante() {
     }
@@ -41,7 +45,7 @@ public class SolicitudAyudante {
         this.motivo = motivo;
         this.calificacion = calificacion;
         this.horarios = horarios;
-        this.estado = EstadoSolicitud.APROBADA;
+        this.estado = EstadoSolicitud.PENDIENTE;
     }
 
     public Long getId() {
@@ -54,6 +58,14 @@ public class SolicitudAyudante {
 
     public Materia getMateria() {
         return materia;
+    }
+
+    public AyudanteMateria getAyudanteMateria() {
+        return ayudanteMateria;
+    }
+
+    public void asociarAyudanteMateria(AyudanteMateria ayudanteMateria) {
+        this.ayudanteMateria = ayudanteMateria;
     }
 
     public String getMotivo() {
@@ -77,11 +89,19 @@ public class SolicitudAyudante {
     }
 
     public void aprobar() {
+        exigirPendiente();
         this.estado = EstadoSolicitud.APROBADA;
     }
 
     public void rechazar() {
+        exigirPendiente();
         this.estado = EstadoSolicitud.RECHAZADA;
+    }
+
+    private void exigirPendiente() {
+        if (estado != EstadoSolicitud.PENDIENTE) {
+            throw new IllegalStateException("Solo se puede decidir una solicitud pendiente");
+        }
     }
 
     public enum EstadoSolicitud {

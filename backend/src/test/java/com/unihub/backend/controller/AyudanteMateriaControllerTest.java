@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -80,11 +81,18 @@ class AyudanteMateriaControllerTest {
 
     @Test
     void deberiaDejarDeSerAyudante() throws Exception {
-        mockMvc.perform(delete("/api/ayudante-materia/1/estudiante/1"))
+        mockMvc.perform(delete("/api/ayudante-materia/1/estudiante/1").requestAttr("authenticatedStudentId", 1L))
                 .andExpect(status().isNoContent());
 
         verify(ayudanteMateriaService).dejarDeSerAyudante(1L, 1L);
         mostrarResultado("Dejar de ser ayudante");
+    }
+
+    @Test
+    void noPermiteDejarDeSerAyudanteDeOtraIdentidad() throws Exception {
+        mockMvc.perform(delete("/api/ayudante-materia/1/estudiante/1").requestAttr("authenticatedStudentId", 2L))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(ayudanteMateriaService);
     }
 
     @Test

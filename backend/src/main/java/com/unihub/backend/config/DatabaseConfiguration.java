@@ -1,5 +1,6 @@
 package com.unihub.backend.config;
 
+import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
@@ -15,13 +16,22 @@ public class DatabaseConfiguration {
 
 	@Bean(destroyMethod = "close")
 	@Primary
-	public FallbackDataSource dataSource(Environment environment) {
+	public DataSource dataSource(Environment environment) {
 		HikariDataSource primary = createPool(
 				"supabase-pool",
 				environment.getRequiredProperty("SUPABASE_DATASOURCE_URL"),
 				environment.getRequiredProperty("SUPABASE_USER"),
 				environment.getProperty("SUPABASE_PASSWORD", ""));
-		HikariDataSource fallback = createPool(
+
+                if (environment.getProperty(
+                                "unihub.admin.provision.enabled",
+                                Boolean.class,
+                                false)) {
+                        logger.info("Admin provisioning: Supabase only; fallback disabled");
+                        return primary;
+                }
+
+                HikariDataSource fallback = createPool(
 				"aiven-pool",
 				environment.getRequiredProperty("SPRING_DATASOURCE_URL"),
 				environment.getRequiredProperty("POSTGRES_USER"),

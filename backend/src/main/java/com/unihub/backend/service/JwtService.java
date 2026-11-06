@@ -41,6 +41,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(estudiante.getCorreoElectronico())
                 .claim("studentId", estudiante.getId())
+                .claim("role", estudiante.getRol() == null ? "STUDENT" : estudiante.getRol().name())
                 .issuedAt(Date.from(ahora))
                 .expiration(Date.from(ahora.plusSeconds(expirationSeconds)))
                 .signWith(signingKey)

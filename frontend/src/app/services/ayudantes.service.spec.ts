@@ -6,6 +6,60 @@ import { APP_CONFIG } from '../config/app-config';
 import { AuthService } from './auth.service';
 import { AyudantesService } from './ayudantes.service';
 
+describe('AyudantesService: gestión de postulaciones HU-17', () => {
+  let http: HttpTestingController;
+  let service: AyudantesService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), {
+        provide: AuthService,
+        useValue: { obtenerHeadersAutenticacion: () => new HttpHeaders({ Authorization: 'Bearer token-de-prueba' }) }
+      }]
+    });
+    http = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(AyudantesService);
+  });
+
+  afterEach(() => http.verify());
+
+  it('consulta postulaciones pendientes con credenciales y devuelve la respuesta tipada', () => {
+    const respuesta = vi.fn();
+    service.obtenerSolicitudesAyudantePendientes().subscribe(respuesta);
+    const request = http.expectOne(`${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.SOLICITUD_AYUDANTE}/pendientes`);
+    expect(request.request.method).toBe('GET');
+    expect(request.request.headers.get('Authorization')).toBe('Bearer token-de-prueba');
+    request.flush([]);
+    expect(respuesta).toHaveBeenCalledWith([]);
+  });
+
+  it('aprueba usando POST, el ID real y el JWT', () => {
+    service.aprobarSolicitudAyudante(731).subscribe();
+    const request = http.expectOne(`${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.SOLICITUD_AYUDANTE}/731/aprobar`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toBeNull();
+    expect(request.request.headers.get('Authorization')).toBe('Bearer token-de-prueba');
+    request.flush({ id: 1, estado: 'PENDIENTE' });
+  });
+
+  it('rechaza usando POST, el ID real y el JWT', () => {
+    service.rechazarSolicitudAyudante(942).subscribe();
+    const request = http.expectOne(`${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.SOLICITUD_AYUDANTE}/942/rechazar`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toBeNull();
+    expect(request.request.headers.get('Authorization')).toBe('Bearer token-de-prueba');
+    request.flush({ id: 1, estado: 'PENDIENTE' });
+  });
+
+  it.each([401, 403, 500])('propaga el error HTTP %s sin ocultar el estado', status => {
+    let recibido = 0;
+    service.obtenerSolicitudesAyudantePendientes().subscribe({ error: error => recibido = error.status });
+    http.expectOne(`${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.SOLICITUD_AYUDANTE}/pendientes`)
+      .flush({}, { status, statusText: 'Error' });
+    expect(recibido).toBe(status);
+  });
+});
+
 describe('AyudantesService: registrar solicitud', () => {
   it('envía una única petición con JWT, IDs distintos y mensaje completo, sin estado', () => {
     TestBed.configureTestingModule({

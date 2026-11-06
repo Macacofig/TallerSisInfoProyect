@@ -115,7 +115,9 @@ CREATE TABLE estudiantes (
     contrasena         VARCHAR(255) NOT NULL,
     telefono           VARCHAR(255) NOT NULL,
     correo_electronico VARCHAR(255) NOT NULL UNIQUE,
-    carrera            VARCHAR(255) NOT NULL
+    carrera            VARCHAR(255) NOT NULL,
+    rol                VARCHAR(16) NOT NULL DEFAULT 'STUDENT',
+    CONSTRAINT estudiantes_rol_valido_check CHECK (rol IN ('STUDENT', 'ADMIN'))
 );
 
 INSERT INTO estudiantes (nombre, contrasena, telefono, correo_electronico, carrera) VALUES

@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,6 +31,9 @@ public class Estudiante {
 
     @Column(nullable = false)
     private String carrera;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 16)
+    private Rol rol = Rol.STUDENT;
 
     protected Estudiante() {
     }
@@ -47,6 +52,11 @@ public class Estudiante {
         this.carrera = carrera;
     }
 
+    public enum Rol { STUDENT, ADMIN }
+    public Rol getRol() { return rol == null ? Rol.STUDENT : rol; }
+    public void actualizarRol(Rol nuevoRol) {
+        this.rol = java.util.Objects.requireNonNull(nuevoRol);
+    }
     public Long getId() {
         return id;
     }

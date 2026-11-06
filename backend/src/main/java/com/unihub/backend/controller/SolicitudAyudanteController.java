@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteRequest;
+import com.unihub.backend.config.JwtAuthenticationInterceptor;
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteResponse;
 import com.unihub.backend.service.SolicitudAyudanteService;
 import jakarta.validation.Valid;
@@ -23,12 +24,16 @@ public class SolicitudAyudanteController {
     }
 
     @PostMapping(CREAR_URL)
-    public ResponseEntity<SolicitudAyudanteResponse> solicitar(@Valid @RequestBody SolicitudAyudanteRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitudAyudanteService.solicitar(request));
+    public ResponseEntity<SolicitudAyudanteResponse> solicitar(@Valid @RequestBody SolicitudAyudanteRequest request, @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado) {
+        if (!estudianteAutenticado.equals(request.idEstudiante())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(solicitudAyudanteService.solicitar(request, estudianteAutenticado));
     }
 
     @GetMapping(POR_ESTUDIANTE_URL)
-    public ResponseEntity<List<SolicitudAyudanteResponse>> obtenerPorEstudiante(@PathVariable Long idEstudiante) {
+    public ResponseEntity<List<SolicitudAyudanteResponse>> obtenerPorEstudiante(@PathVariable Long idEstudiante, @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado) {
+        if (!idEstudiante.equals(estudianteAutenticado)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         return ResponseEntity.ok(solicitudAyudanteService.obtenerPorEstudiante(idEstudiante));
     }
 
@@ -51,4 +56,5 @@ public class SolicitudAyudanteController {
     public ResponseEntity<SolicitudAyudanteResponse> rechazar(@PathVariable Long idSolicitud) {
         return ResponseEntity.ok(solicitudAyudanteService.rechazar(idSolicitud));
     }
+
 }

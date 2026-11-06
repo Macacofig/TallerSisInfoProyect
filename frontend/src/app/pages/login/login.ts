@@ -147,7 +147,11 @@ export class Login {
         next: (usuario: LoginResponse) => {
           this.enviando.set(false);
           this.authService.guardarUsuario(usuario);
-          this.router.navigate(['/home']);
+          this.router.navigate(
+            this.authService.tieneRolAdministrador()
+              ? ['/administracion/solicitudes-ayudante']
+              : ['/home']
+          );
         },
 
         error: (error: ErrorAuth) => {

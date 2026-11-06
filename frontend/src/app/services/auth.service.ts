@@ -60,6 +60,17 @@ export class AuthService {
     }
   }
 
+  tieneRolAdministrador(): boolean {
+    const token = this.usuarioActual()?.accessToken;
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+      return payload.role === "ADMIN";
+    } catch {
+      return false;
+    }
+  }
+
   obtenerHeadersAutenticacion(): HttpHeaders {
     const token = this.usuarioActual()?.accessToken;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
