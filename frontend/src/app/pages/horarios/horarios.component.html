@@ -533,7 +533,7 @@
 
           <div class="formulario__campos">
 
-            <label class="formulario__campo">
+            <label class="formulario__campo formulario__campo--sigla">
               <span>{{ textos.SIGLA }}</span>
               <input
                 type="text"
@@ -541,7 +541,7 @@
                 (input)="formulario.sigla = $any($event.target).value">
             </label>
 
-            <label class="formulario__campo formulario__campo--ancho">
+            <label class="formulario__campo formulario__campo--nombre">
               <span>{{ textos.SUBJECT_NAME }}</span>
               <input
                 type="text"
@@ -549,7 +549,7 @@
                 (input)="formulario.nombre = $any($event.target).value">
             </label>
 
-            <label class="formulario__campo">
+            <label class="formulario__campo formulario__campo--paralelo">
               <span>{{ textos.PARALLEL }}</span>
               <input
                 type="number"
@@ -558,7 +558,7 @@
                 (input)="formulario.paralelo = +$any($event.target).value">
             </label>
 
-            <label class="formulario__campo formulario__campo--ancho">
+            <label class="formulario__campo formulario__campo--docente">
               <span>{{ textos.TEACHER }}</span>
               <input
                 type="text"

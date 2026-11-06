@@ -1,6 +1,21 @@
 ﻿
 :host {
   display: block;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.125rem;
+  --color-navy: #0b2447;
+  --color-blue: #0b3c8c;
+  --color-gold: #e3a82b;
+  --color-border: #d5e0f0;
+  --color-muted: #4f5d73;
 }
 
 * {
@@ -57,19 +72,19 @@
 
 .horarios-layout {
   display: grid;
-  grid-template-columns: 15.625rem minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  gap: var(--space-5);
   align-items: start;
-  margin-top: 1.25rem;
+  margin-top: var(--space-5);
 }
 
 .materias-panel {
   min-width: 0;
   width: 100%;
-  padding: 1.625rem 1.1rem;
+  padding: var(--space-5) var(--space-4);
   background: #f8fbff;
   border: 0.0625rem solid #d5e0f0;
-  border-radius: 1.125rem;
+  border-radius: var(--radius-xl);
   box-shadow: 0 0.0625rem 0.125rem rgba(11, 36, 71, 0.04);
 }
 
@@ -79,6 +94,7 @@
   font-size: 1.25rem;
   font-weight: 550;
   color: #0b2447;
+  white-space: nowrap;
 }
 
 .panel-list {
@@ -250,14 +266,27 @@
 
 .resultados__barra--vacia {
   justify-content: flex-start;
+  padding-block: var(--space-3);
 }
 
 .resultados__info--warning {
   color: #0b2447;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 
 .resultados__info--warning .resultados__icon {
   color: #e3a82b;
+}
+
+.resultados__paginacion button {
+  min-width: 3rem;
+  width: 3rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  padding-inline: var(--space-2);
+  text-align: center;
 }
 
 .horario-grid {
@@ -280,17 +309,20 @@
   overflow-y: auto;
   max-height: 45rem;
   overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #9bb0c9 transparent;
 }
 
 .calendario {
-  min-width: 60.9375rem;
+  width: 100%;
+  min-width: max(42rem, 100%);
   position: relative;
 }
 
 .calendario__encabezado {
   display: grid;
-  grid-template-columns: 4.6875rem repeat(6, minmax(9.375rem, 1fr));
-  min-width: 60.9375rem;
+  grid-template-columns: 4rem repeat(6, minmax(5rem, 1fr));
+  min-width: max(42rem, 100%);
   background: #f8fbff;
   border-bottom: 0.0625rem solid #d5e0f0;
 }
@@ -324,8 +356,8 @@
 
 .calendario__cuerpo {
   display: grid;
-  grid-template-columns: 4.6875rem 1fr;
-  min-width: 60.9375rem;
+  grid-template-columns: 4rem minmax(38rem, 1fr);
+  min-width: max(42rem, 100%);
   position: relative;
 }
 
@@ -352,8 +384,8 @@
 
 .calendario__dias {
   display: grid;
-  grid-template-columns: repeat(6, minmax(9.375rem, 1fr));
-  min-width: 56.25rem;
+  grid-template-columns: repeat(6, minmax(5rem, 1fr));
+  min-width: 38rem;
   position: relative;
 }
 
@@ -440,7 +472,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: var(--space-5);
   flex-wrap: wrap;
 }
 
@@ -451,7 +483,7 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
@@ -462,7 +494,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-4);
   border: 0.0625rem solid transparent;
   border-radius: 0.625rem;
   font-family: inherit;
@@ -522,6 +555,7 @@
 }
 
 .modal {
+  position: relative;
   width: 100%;
   min-width: 0;
   max-width: min(35rem, calc(100vw - 2.5rem));
@@ -541,7 +575,8 @@
 }
 
 .modal-agregar__cuerpo {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   align-items: flex-start;
   gap: 1.75rem;
 }
@@ -552,6 +587,7 @@
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  padding-right: 3.25rem;
 }
 
 .modal-header > div { min-width: 0; }
@@ -580,6 +616,9 @@
 }
 
 .modal-cerrar {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -624,7 +663,6 @@
 
 .modal-materias {
   display: flex;
-  flex: 0 0 17rem;
   flex-direction: column;
   gap: 0.65rem;
   max-height: 18.75rem;
@@ -694,8 +732,13 @@
 
 .formulario__campos {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(4rem, 0.45fr) minmax(8rem, 1fr);
   gap: 0.75rem;
+}
+
+.formulario__campo--sigla,
+.formulario__campo--paralelo {
+  min-width: 4rem;
 }
 
 .formulario__campo {
@@ -728,6 +771,11 @@
   font: inherit;
 }
 
+.formulario__campo input,
+.formulario__campo select {
+  min-height: 2.75rem;
+}
+
 .formulario__campo input:focus,
 .formulario__campo select:focus {
   outline: 0.125rem solid #e3a82b;
@@ -748,7 +796,7 @@
 
 .bloque {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 0.5rem;
   padding: 0.75rem;
@@ -814,7 +862,10 @@
 }
 
 .formulario__anadir:disabled {
-  opacity: 0.45;
+  border-color: #b7c4d6;
+  background-color: #dfe7f2;
+  color: #718096;
+  opacity: 1;
   cursor: not-allowed;
 }
 
@@ -1106,13 +1157,14 @@
 }
 
 .panel-filtros__cantidad {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(3rem, 1fr) auto minmax(3rem, 1fr);
   align-items: center;
-  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .panel-filtros__label {
+  grid-column: 1 / -1;
   color: #0b2447;
   font-size: 0.78rem;
   font-weight: 600;
@@ -1120,7 +1172,7 @@
 
 .panel-filtros__numero {
   min-height: 2.75rem;
-  width: 3.5rem;
+  width: 100%;
   padding: 0.25rem 0.375rem;
   border: 0.0625rem solid #d5e0f0;
   border-radius: 0.375rem;
@@ -1143,6 +1195,7 @@
 .panel-filtros__separador {
   color: #4f5d73;
   font-size: 0.78rem;
+  text-align: center;
 }
 
 .panel-filtros__huecos {
@@ -1163,6 +1216,34 @@
   margin: 0;
   accent-color: #0b3c8c;
   cursor: pointer;
+}
+
+.btn-generar {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-4);
+  border: 0.0625rem solid var(--color-blue);
+  border-radius: var(--radius-sm);
+  background: var(--color-blue);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.btn-generar:hover:not(:disabled) {
+  background: #082d69;
+  border-color: #082d69;
+  transform: translateY(-0.0625rem);
+}
+
+.btn-generar:disabled {
+  border-color: #b7c4d6;
+  background: #dfe7f2;
+  color: #718096;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .materia-horario__filtros {
@@ -1208,7 +1289,28 @@
   gap: 0.5rem;
 }
 
-@media (max-width: 64rem) {
+button,
+input,
+select {
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 0.125rem solid rgba(11, 60, 140, 0.35);
+  outline-offset: 0.125rem;
+  border-color: var(--color-blue);
+}
+
+.panel-filtros__huecos input:focus-visible,
+.materia-horario__header input:focus-visible {
+  outline: 0.125rem solid rgba(11, 60, 140, 0.35);
+  outline-offset: 0.125rem;
+}
+
+@media (max-width: 64em) {
   .bloque { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .page-title-row {
     align-items: flex-start;
@@ -1247,7 +1349,7 @@
   }
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 30em) {
   .formulario__campos,
   .bloque { grid-template-columns: minmax(0, 1fr); }
   .modal-materia { flex-wrap: wrap; }
@@ -1323,8 +1425,14 @@
 .calendario__encabezado { position: sticky; top: 0; z-index: 12; }
 .calendario__horas { position: sticky; left: 0; z-index: 11; }
 .calendario__espacio-hora { position: sticky; left: 0; z-index: 13; background: #f8fbff; }
-.calendario__scroll { scrollbar-color: #537696 #e5ecf3; }
-@media (min-width: 48.001rem) and (max-width: 64rem) {
+.calendario__scroll { scrollbar-color: #9bb0c9 transparent; }
+.calendario__scroll::-webkit-scrollbar { width: 0.375rem; height: 0.375rem; }
+.calendario__scroll::-webkit-scrollbar-track { background: transparent; }
+.calendario__scroll::-webkit-scrollbar-thumb {
+  background: #9bb0c9;
+  border-radius: var(--radius-lg);
+}
+@media (min-width: 48em) and (max-width: 64em) {
   .panel-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .panel-filtros { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 1rem; }
 }
