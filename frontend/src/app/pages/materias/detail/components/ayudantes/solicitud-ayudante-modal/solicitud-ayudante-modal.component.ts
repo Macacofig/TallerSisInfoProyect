@@ -1,5 +1,6 @@
-import { Component, EventEmitter, HostListener, Input, Output, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, Output, inject } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../../../../services/auth.service';
@@ -21,6 +22,7 @@ export class SolicitudAyudanteModalComponent {
   private readonly authService = inject(AuthService);
   private readonly ayudantesService = inject(AyudantesService);
   private readonly languageService = inject(LanguageService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true }) idMateria!: number;
   @Output() cerrarModal = new EventEmitter<void>();
@@ -112,14 +114,23 @@ export class SolicitudAyudanteModalComponent {
       })
       .pipe(finalize(() => {
         this.enviando = false;
+        this.cdr.markForCheck();
       }))
       .subscribe({
         next: () => {
           this.solicitudEnviada.emit();
           this.cerrarModal.emit();
         },
-        error: () => {
-          this.errorEnvio = this.mensajes.ASSISTANT_APPLICATION_ERROR;
+        error: (error: unknown) => {
+          if (error instanceof HttpErrorResponse &&
+              error.status === 409 &&
+              typeof error.error === 'string' &&
+              error.error.trim()) {
+            this.errorEnvio = error.error;
+          } else {
+            this.errorEnvio = this.mensajes.ASSISTANT_APPLICATION_ERROR;
+          }
+          this.cdr.markForCheck();
         }
       });
   }

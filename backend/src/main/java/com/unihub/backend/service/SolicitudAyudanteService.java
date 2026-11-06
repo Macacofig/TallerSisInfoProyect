@@ -7,6 +7,7 @@ import com.unihub.backend.entity.AyudanteMateria;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.entity.SolicitudAyudante;
+import com.unihub.backend.exception.SolicitudAyudanteDuplicadaException;
 import com.unihub.backend.mapper.SolicitudAyudanteMapper;
 import com.unihub.backend.repository.AyudanteMateriaRepository;
 import com.unihub.backend.repository.EstudianteRepository;
@@ -65,7 +66,7 @@ public class SolicitudAyudanteService {
                 estudianteId, request.idMateria(), estadosActivos)
                 || ayudanteMateriaRepository.existsByEstudianteIdAndMateriaIdAndEstadoIn(
                 estudianteId, request.idMateria(), estadosAyudanteActivos)) {
-            throw new IllegalArgumentException("El estudiante ya tiene una solicitud pendiente o aprobada para esta materia");
+            throw new SolicitudAyudanteDuplicadaException("Ya tienes una solicitud pendiente o aprobada para esta materia.");
         }
 
         AyudanteMateria ayudanteMateria = AyudanteMateria.pendientePorSolicitud(

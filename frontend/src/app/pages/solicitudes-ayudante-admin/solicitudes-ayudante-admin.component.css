@@ -1,4 +1,4 @@
-﻿:host {
+:host {
   display: block;
   min-width: 0;
   color: #10213f;
@@ -160,7 +160,7 @@
 
 .solicitud-card__approve {
   background: #0751b4;
-  border-color: #0751b4 !important;
+  border-color: #0751b4;
   color: white;
 }
 

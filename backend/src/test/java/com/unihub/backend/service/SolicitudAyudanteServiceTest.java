@@ -146,7 +146,7 @@ class SolicitudAyudanteServiceTest {
                 .thenReturn(true);
 
         SolicitudAyudanteRequest request = new SolicitudAyudanteRequest(1L, 1L, "Motivo", 9.0, "Lunes 10-12");
-        assertThrows(IllegalArgumentException.class, () -> service.solicitar(request));
+        assertThrows(com.unihub.backend.exception.SolicitudAyudanteDuplicadaException.class, () -> service.solicitar(request));
     }
 
     @Test

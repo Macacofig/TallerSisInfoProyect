@@ -25,6 +25,9 @@ public class SolicitudAyudanteController {
 
     @PostMapping(CREAR_URL)
     public ResponseEntity<SolicitudAyudanteResponse> solicitar(@Valid @RequestBody SolicitudAyudanteRequest request, @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado) {
+        if (!estudianteAutenticado.equals(request.idEstudiante())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitudAyudanteService.solicitar(request, estudianteAutenticado));
     }
 

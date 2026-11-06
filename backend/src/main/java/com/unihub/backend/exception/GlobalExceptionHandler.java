@@ -10,7 +10,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(CorreoDuplicadoException.class)
+	@ExceptionHandler(SolicitudAyudanteDuplicadaException.class)
+        public ResponseEntity<String> manejarSolicitudAyudanteDuplicada(
+                SolicitudAyudanteDuplicadaException exception) {
+            LogHelper.warn(GlobalExceptionHandler.class, "Postulacion de ayudantia duplicada rechazada");
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(exception.getMessage());
+        }
+
+@ExceptionHandler(CorreoDuplicadoException.class)
 	public ResponseEntity<String> manejarCorreoDuplicado(CorreoDuplicadoException exception) {
 		LogHelper.warn(GlobalExceptionHandler.class, "Registro rechazado por correo duplicado");
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());

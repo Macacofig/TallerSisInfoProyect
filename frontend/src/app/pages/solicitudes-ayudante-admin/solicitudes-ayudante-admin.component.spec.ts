@@ -75,6 +75,26 @@ describe('SolicitudesAyudanteAdminComponent', () => {
     pendiente.complete();
   });
 
+  it('actualiza la vista cuando llega una respuesta HTTP asincrona', async () => {
+    fixture.destroy();
+
+    const respuesta = new Subject<SolicitudAyudanteResponse[]>();
+    service.obtenerSolicitudesAyudantePendientes.mockReturnValue(respuesta);
+
+    fixture = TestBed.createComponent(SolicitudesAyudanteAdminComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Cargando');
+
+    respuesta.next([solicitud]);
+    respuesta.complete();
+
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Estudiante Uno');
+    expect(fixture.nativeElement.textContent).not.toContain('Cargando postulaciones');
+    expect(fixture.nativeElement.querySelector('.solicitud-card__approve')).not.toBeNull();
+  });
   it('confirma antes de aprobar y recarga la lista tras éxito', () => {
     fixture.nativeElement.querySelector('.solicitud-card__approve').click();
     fixture.detectChanges();

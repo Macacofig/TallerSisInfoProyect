@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
@@ -19,6 +19,7 @@ export class SolicitudesAyudanteAdminComponent {
   private readonly ayudantesService = inject(AyudantesService);
   private readonly languageService = inject(LanguageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   solicitudes: SolicitudAyudanteResponse[] = [];
   cargando = false;
@@ -39,7 +40,13 @@ export class SolicitudesAyudanteAdminComponent {
     this.cargando = true;
     this.errorCarga = '';
     this.ayudantesService.obtenerSolicitudesAyudantePendientes()
-      .pipe(finalize(() => this.cargando = false), takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        finalize(() => {
+          this.cargando = false;
+          this.cdr.markForCheck();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: solicitudes => this.solicitudes = solicitudes,
         error: error => this.errorCarga = this.mensajeError(error, true),
@@ -61,7 +68,13 @@ export class SolicitudesAyudanteAdminComponent {
       : this.ayudantesService.rechazarSolicitudAyudante(solicitud.id);
 
     accion$
-      .pipe(finalize(() => this.idEnProceso = null), takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        finalize(() => {
+          this.idEnProceso = null;
+          this.cdr.markForCheck();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: () => {
           this.idEnProceso = null;

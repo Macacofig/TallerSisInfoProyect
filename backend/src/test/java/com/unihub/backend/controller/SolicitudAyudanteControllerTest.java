@@ -51,7 +51,7 @@ class SolicitudAyudanteControllerTest {
 
         mockMvc.perform(post("/api/solicitud-ayudante").requestAttr("authenticatedStudentId", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idEstudiante\":999,\"idMateria\":1,\"motivo\":\"Me gusta enseñar\",\"calificacion\":9.5,\"horarios\":\"Lunes 10-12\"}"))
+                        .content("{\"idEstudiante\":1,\"idMateria\":1,\"motivo\":\"Me gusta enseñar\",\"calificacion\":9.5,\"horarios\":\"Lunes 10-12\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombreEstudiante").value("Juan Pérez"))
@@ -63,6 +63,16 @@ class SolicitudAyudanteControllerTest {
         mostrarResultado("Crear solicitud de ayudante");
     }
 
+    @Test
+    void deberiaRechazarSolicitudEnNombreDeOtroEstudiante() throws Exception {
+        mockMvc.perform(post("/api/solicitud-ayudante")
+                        .requestAttr("authenticatedStudentId", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idEstudiante\":999,\"idMateria\":1,\"motivo\":\"Prueba de seguridad\",\"calificacion\":9.5,\"horarios\":\"Lunes 10-12\"}"))
+                .andExpect(status().isForbidden());
+
+        verifyNoInteractions(solicitudAyudanteService);
+    }
     @Test
     void deberiaObtenerPorEstudiante() throws Exception {
         when(solicitudAyudanteService.obtenerPorEstudiante(1L)).thenReturn(List.of(
