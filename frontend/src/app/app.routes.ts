@@ -62,5 +62,10 @@ export const routes: Routes = [
     path: 'perfil',
     component: Perfil,
     canActivate: [authGuard]
+  },
+
+  {
+    path: '**',
+    redirectTo: 'registro'
   }
 ];
