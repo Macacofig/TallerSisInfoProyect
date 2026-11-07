@@ -180,6 +180,11 @@ public final class Constants {
 	// Que necesita: body EstudianteLoginRequest (correo, ...)
 	// Que devuelve: EstudianteLoginResponse con sesion/token
 
+	// Recuperar la contrasena de un estudiante
+	public static final String RECUPERAR_CONTRASENA_URL = BASE + "/recuperar-contrasena";
+	// Que necesita: body EstudianteRecuperarContrasenaRequest (correoElectronico, nuevaContrasena, confirmarNuevaContrasena)
+	// Que devuelve: EstudianteResponse con los datos del estudiante actualizado
+
 	}
 
 	// MATERIAS
