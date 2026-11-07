@@ -94,6 +94,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             return !path.matches("/api/estudiantes/\\d+")
                     && !path.matches("/api/calificacion-(materia|docente)/estudiante/.*")
                     && !path.startsWith("/api/solicitud-ayudante")
+                    && !path.startsWith("/api/actividad-estudiante")
                     && !path.equals("/api/ayudante-materia/pendientes");
         }
         return false;

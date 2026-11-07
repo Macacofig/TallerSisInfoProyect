@@ -27,17 +27,20 @@ public class CalificacionMateriaService {
     private final MateriaRepository materiaRepository;
     private final CalificacionMateriaMapper calificacionMapper;
 	private final EstudianteRepository estudianteRepository;
+	private final ActividadEstudianteService actividadEstudianteService;
 
     public CalificacionMateriaService(
 	    CalificacionMateriaRepository calificacionRepository,
 	    MateriaRepository materiaRepository,
 	    CalificacionMateriaMapper calificacionMapper,
-	    EstudianteRepository estudianteRepository
+	    EstudianteRepository estudianteRepository,
+	    ActividadEstudianteService actividadEstudianteService
     ) {
 	this.calificacionRepository = calificacionRepository;
 	this.materiaRepository = materiaRepository;
 	this.calificacionMapper = calificacionMapper;
 	this.estudianteRepository = estudianteRepository;
+	this.actividadEstudianteService = actividadEstudianteService;
     }
 
     public CalificacionMateriaResponse crear(CalificacionMateriaRequest request) {
@@ -51,6 +54,7 @@ public class CalificacionMateriaService {
 	CalificacionMateria calificacion = calificacionMapper.toEntity(request, materia, estudiante);
 
 		CalificacionMateriaResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		actividadEstudianteService.registrarCalificacionMateria(estudiante);
 		LogHelper.info(CalificacionMateriaService.class, "Calificación de materia creada correctamente");
 		return response;
     }
