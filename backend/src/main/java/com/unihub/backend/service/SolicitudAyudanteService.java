@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
+import static com.unihub.backend.entity.Notificacion.TipoNotificacion.*;
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteRequest;
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteResponse;
 import com.unihub.backend.entity.AyudanteMateria;
@@ -27,18 +28,22 @@ public class SolicitudAyudanteService {
     private final MateriaRepository materiaRepository;
     private final SolicitudAyudanteMapper solicitudAyudanteMapper;
 
+    private final NotificacionService notificacionService;
+
     public SolicitudAyudanteService(
             SolicitudAyudanteRepository solicitudAyudanteRepository,
             AyudanteMateriaRepository ayudanteMateriaRepository,
             EstudianteRepository estudianteRepository,
             MateriaRepository materiaRepository,
-            SolicitudAyudanteMapper solicitudAyudanteMapper
+            SolicitudAyudanteMapper solicitudAyudanteMapper,
+            NotificacionService notificacionService
     ) {
         this.solicitudAyudanteRepository = solicitudAyudanteRepository;
         this.ayudanteMateriaRepository = ayudanteMateriaRepository;
         this.estudianteRepository = estudianteRepository;
         this.materiaRepository = materiaRepository;
         this.solicitudAyudanteMapper = solicitudAyudanteMapper;
+        this.notificacionService = notificacionService;
     }
 
     @Transactional
@@ -76,6 +81,8 @@ public class SolicitudAyudanteService {
                 estudiante, materia, request.motivo(), request.calificacion(), request.horarios());
         solicitud.asociarAyudanteMateria(ayudanteMateria);
         solicitud = solicitudAyudanteRepository.save(solicitud);
+        notificacionService.crear(solicitud.getEstudiante(), POSTULACION_CREADA, "Postulación registrada",
+                "Registramos tu postulación para " + solicitud.getMateria().getNombre(), "SOLICITUD_AYUDANTE", solicitud.getId());
         LogHelper.info(SolicitudAyudanteService.class, "Solicitud de ayudante creada por estudiante " + request.idEstudiante() + " para materia " + request.idMateria());
         return solicitudAyudanteMapper.toResponse(solicitud);
     }
@@ -119,6 +126,8 @@ public class SolicitudAyudanteService {
         solicitud.aprobar();
         ayudanteMateriaRepository.save(relacion);
         solicitud = solicitudAyudanteRepository.save(solicitud);
+        notificacionService.crear(solicitud.getEstudiante(), POSTULACION_APROBADA, "Postulación aprobada",
+                "Tu postulación fue aprobada para " + solicitud.getMateria().getNombre(), "SOLICITUD_AYUDANTE", solicitud.getId());
         LogHelper.info(SolicitudAyudanteService.class, "Solicitud de ayudante " + idSolicitud + " aprobada");
         return solicitudAyudanteMapper.toResponse(solicitud);
     }
@@ -133,6 +142,8 @@ public class SolicitudAyudanteService {
         solicitud.rechazar();
         ayudanteMateriaRepository.save(relacion);
         solicitud = solicitudAyudanteRepository.save(solicitud);
+        notificacionService.crear(solicitud.getEstudiante(), POSTULACION_RECHAZADA, "Postulación rechazada",
+                "Tu postulación fue rechazada para " + solicitud.getMateria().getNombre(), "SOLICITUD_AYUDANTE", solicitud.getId());
         LogHelper.info(SolicitudAyudanteService.class, "Solicitud de ayudante " + idSolicitud + " rechazada");
         return solicitudAyudanteMapper.toResponse(solicitud);
     }

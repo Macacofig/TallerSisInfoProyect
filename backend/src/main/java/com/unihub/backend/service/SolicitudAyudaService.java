@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
+import static com.unihub.backend.entity.Notificacion.TipoNotificacion.*;
 import com.unihub.backend.dto.ayudante.SolicitudAyudaRequest;
 import com.unihub.backend.dto.ayudante.SolicitudAyudaResponse;
 import com.unihub.backend.entity.AyudanteMateria;
@@ -26,18 +27,22 @@ public class SolicitudAyudaService {
     private final MateriaRepository materiaRepository;
     private final SolicitudAyudaMapper solicitudAyudaMapper;
 
+    private final NotificacionService notificacionService;
+
     public SolicitudAyudaService(
             SolicitudAyudaRepository solicitudAyudaRepository,
             EstudianteRepository estudianteRepository,
             AyudanteMateriaRepository ayudanteMateriaRepository,
             MateriaRepository materiaRepository,
-            SolicitudAyudaMapper solicitudAyudaMapper
+            SolicitudAyudaMapper solicitudAyudaMapper,
+            NotificacionService notificacionService
     ) {
         this.solicitudAyudaRepository = solicitudAyudaRepository;
         this.estudianteRepository = estudianteRepository;
         this.ayudanteMateriaRepository = ayudanteMateriaRepository;
         this.materiaRepository = materiaRepository;
         this.solicitudAyudaMapper = solicitudAyudaMapper;
+        this.notificacionService = notificacionService;
     }
 
     @Transactional
@@ -59,6 +64,9 @@ public class SolicitudAyudaService {
 
         SolicitudAyuda solicitud = new SolicitudAyuda(estudiante, ayudante, materia, request.peticion());
         solicitud = solicitudAyudaRepository.save(solicitud);
+        notificacionService.crear(solicitud.getAyudante().getEstudiante(), SOLICITUD_AYUDA_RECIBIDA,
+                "Nueva solicitud de ayuda", "Recibiste una solicitud de ayuda para " + materia.getNombre(),
+                "SOLICITUD_AYUDA", solicitud.getId());
         LogHelper.info(SolicitudAyudaService.class, "Solicitud de ayuda creada por estudiante " + request.idEstudiante() + " para ayudante " + request.idAyudante() + " en materia " + request.idMateria());
         return solicitudAyudaMapper.toResponse(solicitud);
     }

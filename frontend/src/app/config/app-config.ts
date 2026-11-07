@@ -28,6 +28,7 @@ export const APP_CONFIG = {
       AYUDANTE_MATERIA: '/ayudante-materia',
       SOLICITUD_AYUDANTE: '/solicitud-ayudante',
       SOLICITUD_AYUDA: '/solicitud-ayuda',
+      NOTIFICACIONES: '/notificaciones',
     },
   },
 
@@ -43,6 +44,7 @@ export const APP_CONFIG = {
   },
 
   TIMEOUTS: {
+    NOTIFICATIONS_POLLING_MS: 30000,
     API_REQUEST: 15000, // 15 segundos
     SEARCH_DEBOUNCE: 300,
   },
