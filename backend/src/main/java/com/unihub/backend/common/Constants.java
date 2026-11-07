@@ -180,6 +180,11 @@ public final class Constants {
 	// Que necesita: body EstudianteLoginRequest (correo, ...)
 	// Que devuelve: EstudianteLoginResponse con sesion/token
 
+	// Agregar materias cursadas/aprobadas a un estudiante
+	public static final String MATERIAS_APROBADAS_URL = BASE + "/{id}/materias-aprobadas";
+	// Que necesita: id del estudiante y body EstudianteMateriasAprobadasRequest (lista de materias)
+	// Que devuelve: EstudianteMateriasAprobadasResponse con la lista actualizada
+
 	}
 
 	// MATERIAS
@@ -357,7 +362,6 @@ public final class Constants {
 
 	// SOLICITUD AYUDA
 	public static final class SolicitudAyuda {
-
 	private SolicitudAyuda() {
 	}
 
@@ -393,6 +397,32 @@ public final class Constants {
 	public static final String CANCELAR_URL = BASE + "/{idSolicitud}/estudiante/{idEstudiante}/cancelar";
 	// Que necesita: idSolicitud, idEstudiante
 	// Que devuelve: SolicitudAyudaResponse actualizado
+
+	}
+
+	// ACTIVIDAD ESTUDIANTE
+	public static final class ActividadEstudiante {
+
+	private ActividadEstudiante() {
+	}
+
+	// Base = ACTIVIDAD ESTUDIANTE
+	public static final String BASE = "/api/actividad-estudiante";
+
+	// Insertar una actividad de estudiante
+	public static final String INSERTAR_URL = BASE;
+	// Que necesita: body ActividadEstudianteRequest (idEstudiante, titulo, descripcion, estado)
+	// Que devuelve: ActividadEstudianteResponse creada
+
+	// Actualizar una actividad de estudiante
+	public static final String ACTUALIZAR_URL = BASE + "/{id}";
+	// Que necesita: id y body ActividadEstudianteActualizacionRequest (titulo, descripcion, estado)
+	// Que devuelve: ActividadEstudianteResponse actualizada
+
+	// Mostrar las actividades de un estudiante
+	public static final String POR_ESTUDIANTE_URL = BASE + "/estudiante/{idEstudiante}";
+	// Que necesita: idEstudiante
+	// Que devuelve: Lista de ActividadEstudianteResponse ordenada por fecha descendente
 
 	}
 
