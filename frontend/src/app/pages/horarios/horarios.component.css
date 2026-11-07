@@ -292,15 +292,15 @@
 }
 
 .calendario {
+  --time-column-width: 4rem;
+  --day-columns: repeat(6, minmax(5rem, 1fr));
   min-width: max(42rem, 100%);
-  width: 100%;
   position: relative;
 }
 
 .calendario__encabezado {
   display: grid;
-  grid-template-columns: 4rem repeat(6, minmax(5rem, 1fr));
-  min-width: max(42rem, 100%);
+  grid-template-columns: var(--time-column-width) var(--day-columns);
   background: #f8fbff;
   border-bottom: 0.0625rem solid #d5e0f0;
 }
@@ -334,8 +334,7 @@
 
 .calendario__cuerpo {
   display: grid;
-  grid-template-columns: 4rem minmax(38rem, 1fr);
-  min-width: max(42rem, 100%);
+  grid-template-columns: var(--time-column-width) minmax(0, 1fr);
   position: relative;
 }
 
@@ -362,13 +361,13 @@
 
 .calendario__dias {
   display: grid;
-  grid-template-columns: repeat(6, minmax(5rem, 1fr));
-  min-width: 38rem;
+  grid-template-columns: var(--day-columns);
+  min-width: 0;
   position: relative;
 }
 
 .calendario__columna {
-  min-width: 9.375rem;
+  min-width: 0;
   position: relative;
   border-right: 0.0625rem solid #d5e0f0;
 }
@@ -387,6 +386,7 @@
 .materia-calendario {
   position: absolute;
   z-index: 5;
+  min-width: 0;
   left: 0.4375rem;
   right: 0.4375rem;
   margin-block: 0.3125rem;
@@ -400,7 +400,7 @@
   background: color-mix(in srgb, var(--color-materia) 15%, #fff);
   box-shadow: 0 0.1875rem 0.5rem rgba(11, 36, 71, 0.12), 0 0.0625rem 0.125rem rgba(11, 36, 71, 0.08);
   /* Keep calculated block geometry; short blocks can scroll to reveal text. */
-  overflow-y: auto;
+  overflow: hidden auto;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
