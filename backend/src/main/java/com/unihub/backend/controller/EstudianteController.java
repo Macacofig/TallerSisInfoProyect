@@ -3,6 +3,7 @@ package com.unihub.backend.controller;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
+import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.unihub.backend.common.Constants.Estudiante.ACTUALIZAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.LOGIN_URL;
+import static com.unihub.backend.common.Constants.Estudiante.RECUPERAR_CONTRASENA_URL;
 import static com.unihub.backend.common.Constants.Estudiante.REGISTRAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.TELEFONO_URL;
 
@@ -65,6 +67,13 @@ public class EstudianteController {
             @Valid @RequestBody EstudianteLoginRequest request
     ) {
         return ResponseEntity.ok(estudianteService.iniciarSesion(request));
+    }
+
+    @PostMapping(RECUPERAR_CONTRASENA_URL)
+    public ResponseEntity<EstudianteResponse> recuperarContrasena(
+            @Valid @RequestBody EstudianteRecuperarContrasenaRequest request
+    ) {
+        return ResponseEntity.ok(estudianteService.recuperarContrasena(request));
     }
 
 }
