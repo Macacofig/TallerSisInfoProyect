@@ -4,6 +4,7 @@ import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
+import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
@@ -109,6 +110,21 @@ public class EstudianteService {
             jwtService.obtenerDuracionSegundos(),
             estudianteMapper.toResponse(estudiante)
         );
+    }
+
+    public EstudianteResponse recuperarContrasena(EstudianteRecuperarContrasenaRequest request) {
+        if (!request.nuevaContrasena().equals(request.confirmarNuevaContrasena())) {
+            throw new BadRequestException("Las contraseñas no coinciden");
+        }
+
+        Estudiante estudiante = estudianteRepository
+                .findByCorreoElectronicoIgnoreCase(request.correoElectronico())
+                .orElseThrow(() -> new ResourceNotFoundException("El correo electrónico no está registrado"));
+
+        estudiante.actualizarContrasena(passwordEncoder.encode(request.nuevaContrasena()));
+        EstudianteResponse response = estudianteMapper.toResponse(estudianteRepository.save(estudiante));
+        LogHelper.info(EstudianteService.class, "Contraseña recuperada correctamente");
+        return response;
     }
 
 }
