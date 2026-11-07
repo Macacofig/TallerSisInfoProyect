@@ -100,7 +100,7 @@
 
         <button
           type="button"
-          class="btn-generar"
+          class="btn-agregar btn-generar"
           [disabled]="generandoHorarios || !sessionId"
           (click)="generarHorarios()">
           {{ generandoHorarios ? (textos.GENERATING ?? 'Generando...') : (textos.GENERATE_SCHEDULES ?? 'Generar horarios') }}
