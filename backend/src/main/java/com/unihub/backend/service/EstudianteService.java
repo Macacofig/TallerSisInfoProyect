@@ -4,6 +4,8 @@ import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
@@ -75,6 +77,22 @@ public class EstudianteService {
         Estudiante estudiante = estudianteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         return new EstudianteTelefonoResponse(estudiante.getTelefono());
+    }
+
+    public EstudianteMateriasAprobadasResponse agregarMateriasAprobadas(
+            Long id,
+            EstudianteMateriasAprobadasRequest request
+    ) {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
+
+        estudiante.agregarMateriasAprobadas(request.materias());
+        estudianteRepository.save(estudiante);
+        LogHelper.info(EstudianteService.class, "Materias aprobadas del estudiante actualizadas correctamente");
+        return new EstudianteMateriasAprobadasResponse(
+                estudiante.getId(),
+                estudiante.getMateriasAprobadas()
+        );
     }
 
     public EstudianteLoginResponse iniciarSesion(EstudianteLoginRequest request) {
