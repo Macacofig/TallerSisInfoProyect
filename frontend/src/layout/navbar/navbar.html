@@ -12,10 +12,14 @@
     </button>
     }
 
+    <div class="navbar__notifications-container">
     <button
       type="button"
       class="navbar__notification"
       [attr.aria-label]="NAVBAR_MESSAGES.NOTIFICATIONS_ARIA_LABEL"
+      [attr.aria-expanded]="notificacionesAbiertas()"
+      aria-controls="navbar-notifications"
+      (click)="alternarNotificaciones()"
     >
       <svg
         class="navbar__notification-icon"
@@ -39,7 +43,62 @@
           stroke-linecap="round"
         />
       </svg>
+      @if (noLeidas() > 0) {
+        <span class="navbar__notification-badge">{{ noLeidas() > 99 ? '99+' : noLeidas() }}</span>
+      }
     </button>
+    @if (notificacionesAbiertas()) {
+      <section id="navbar-notifications" class="navbar__notifications-panel"
+               aria-labelledby="navbar-notifications-title" [attr.aria-busy]="cargandoNotificaciones()">
+        <div class="navbar__notifications-heading">
+          <h2 id="navbar-notifications-title">{{ NAVBAR_MESSAGES.NOTIFICATIONS_TITLE }}</h2>
+          <button type="button" [disabled]="noLeidas() === 0 || guardandoLectura()"
+                  (click)="marcarTodasNotificaciones()">
+            {{ NAVBAR_MESSAGES.NOTIFICATIONS_READ_ALL }}
+          </button>
+        </div>
+        @if (errorLectura()) {
+          <p role="alert">{{ NAVBAR_MESSAGES.NOTIFICATIONS_READ_ERROR }}</p>
+        }
+        @if (errorNotificaciones()) {
+          <div role="alert" class="navbar__notifications-notice">
+            <p>{{ NAVBAR_MESSAGES.NOTIFICATIONS_ERROR }}</p>
+            <button type="button" (click)="refrescarNotificaciones()">{{ NAVBAR_MESSAGES.NOTIFICATIONS_RETRY }}</button>
+          </div>
+        }
+        @if (cargandoNotificaciones()) {
+          <p role="status" class="navbar__notifications-notice">{{ NAVBAR_MESSAGES.NOTIFICATIONS_LOADING }}</p>
+        }
+        @if (!cargandoNotificaciones() && !errorNotificaciones() && notificaciones().length === 0) {
+          <p class="navbar__notifications-notice">{{ NAVBAR_MESSAGES.NOTIFICATIONS_EMPTY }}</p>
+        }
+        <ul class="navbar__notifications-list">
+          @for (notificacion of notificaciones(); track notificacion.id) {
+            <li>
+              <button type="button" class="navbar__notification-item"
+                      [class.navbar__notification-item--unread]="!notificacion.leida"
+                      [disabled]="guardandoLectura()"
+                      [attr.aria-label]="textoNotificacion(notificacion).titulo + (!notificacion.leida ? ': ' + NAVBAR_MESSAGES.NOTIFICATIONS_READ : '')"
+                      (click)="marcarNotificacion(notificacion)">
+                <strong>{{ textoNotificacion(notificacion).titulo }}</strong>
+                <span>{{ textoNotificacion(notificacion).mensaje }}</span>
+                <time [attr.datetime]="notificacion.fechaCreacion">{{ tiempoRelativo(notificacion.fechaCreacion) }}</time>
+                @if (!notificacion.leida) {
+                  <span class="navbar__notification-unread">{{ NAVBAR_MESSAGES.NOTIFICATIONS_UNREAD }}</span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+        @if (hayMas()) {
+          <button type="button" class="navbar__notifications-more"
+                  [disabled]="cargandoNotificaciones() || guardandoLectura()" (click)="cargarMasNotificaciones()">
+            {{ NAVBAR_MESSAGES.NOTIFICATIONS_MORE }}
+          </button>
+        }
+      </section>
+    }
+    </div>
 
     <div class="navbar__user-container">
 

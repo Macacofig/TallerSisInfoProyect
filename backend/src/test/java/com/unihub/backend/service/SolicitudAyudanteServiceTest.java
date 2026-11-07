@@ -40,13 +40,14 @@ class SolicitudAyudanteServiceTest {
     @Mock
     private MateriaRepository materiaRepository;
 
+    @Mock private NotificacionService notificacionService;
     private SolicitudAyudanteService service;
     private SolicitudAyudanteMapper mapper = new SolicitudAyudanteMapper();
 
     @BeforeEach
     void setUp() {
         service = new SolicitudAyudanteService(
-                solicitudAyudanteRepository, ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper);
+                solicitudAyudanteRepository, ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper, notificacionService);
     }
 
     private Estudiante estudiante(Long id) {
@@ -119,6 +120,9 @@ class SolicitudAyudanteServiceTest {
                 org.mockito.ArgumentCaptor.forClass(SolicitudAyudante.class);
         verify(solicitudAyudanteRepository).save(solicitudCaptor.capture());
         assertSame(ayudanteMateria, solicitudCaptor.getValue().getAyudanteMateria());
+        verify(notificacionService, times(1)).crear(eq(solicitudCaptor.getValue().getEstudiante()),
+                eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.POSTULACION_CREADA),
+                anyString(), contains("Test Materia 1"), eq("SOLICITUD_AYUDANTE"), eq(response.id()));
     }
 
     @Test
@@ -212,6 +216,9 @@ class SolicitudAyudanteServiceTest {
         SolicitudAyudanteResponse response = service.aprobar(idSolicitud);
 
         assertEquals("APROBADA", response.estado());
+        verify(notificacionService, times(1)).crear(same(s.getEstudiante()),
+                eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.POSTULACION_APROBADA),
+                anyString(), contains(s.getMateria().getNombre()), eq("SOLICITUD_AYUDANTE"), eq(idSolicitud));
         assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, relacion.getEstado());
         verify(solicitudAyudanteRepository).findByIdForUpdate(idSolicitud);
         verify(solicitudAyudanteRepository).save(s);
@@ -233,6 +240,9 @@ class SolicitudAyudanteServiceTest {
         SolicitudAyudanteResponse response = service.rechazar(idSolicitud);
 
         assertEquals("RECHAZADA", response.estado());
+        verify(notificacionService, times(1)).crear(same(s.getEstudiante()),
+                eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.POSTULACION_RECHAZADA),
+                anyString(), contains(s.getMateria().getNombre()), eq("SOLICITUD_AYUDANTE"), eq(idSolicitud));
         assertEquals(AyudanteMateria.EstadoAyudante.RECHAZADO, relacion.getEstado());
         verify(solicitudAyudanteRepository).findByIdForUpdate(idSolicitud);
         verify(solicitudAyudanteRepository).save(s);

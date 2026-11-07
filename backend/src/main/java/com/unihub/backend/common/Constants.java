@@ -323,6 +323,38 @@ public final class Constants {
 
 	}
 
+	// NOTIFICACIONES
+	public static final class Notificacion {
+
+	private Notificacion() {
+	}
+
+	// Base = NOTIFICACIONES
+	public static final String BASE = "/api/notificaciones";
+
+	// Obtener notificaciones del usuario autenticado
+	public static final String LISTAR_URL = BASE;
+	// Que necesita: page, size
+	// Que devuelve: NotificacionesPageResponse
+
+	// Rutas relativas: el controller ya aplica BASE mediante @RequestMapping.
+	// Obtener cantidad de notificaciones no leídas
+	public static final String CONTAR_NO_LEIDAS_URL = "/no-leidas/count";
+	// Que necesita: nada
+	// Que devuelve: NotificacionesCountResponse
+
+	// Marcar una notificación como leída
+	public static final String LEER_URL = "/{id}/leer";
+	// Que necesita: id
+	// Que devuelve: 204 No Content
+
+	// Marcar todas como leídas
+	public static final String LEER_TODAS_URL = "/leer-todas";
+	// Que necesita: nada
+	// Que devuelve: 204 No Content
+
+	}
+
 	// SOLICITUD AYUDA
 	public static final class SolicitudAyuda {
 

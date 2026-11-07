@@ -43,12 +43,13 @@ class SolicitudAyudaServiceTest {
     @Mock
     private MateriaRepository materiaRepository;
 
+    @Mock private NotificacionService notificacionService;
     private SolicitudAyudaService service;
     private SolicitudAyudaMapper mapper = new SolicitudAyudaMapper();
 
     @BeforeEach
     void setUp() {
-        service = new SolicitudAyudaService(solicitudAyudaRepository, estudianteRepository, ayudanteMateriaRepository, materiaRepository, mapper);
+        service = new SolicitudAyudaService(solicitudAyudaRepository, estudianteRepository, ayudanteMateriaRepository, materiaRepository, mapper, notificacionService);
     }
 
     private Estudiante estudiante(Long id) {
@@ -127,6 +128,9 @@ class SolicitudAyudaServiceTest {
         assertSame(estudiante, guardada.getEstudiante());
         assertSame(ayudante, guardada.getAyudante());
         assertSame(ayudanteEst, guardada.getAyudante().getEstudiante());
+        verify(notificacionService, times(1)).crear(same(ayudanteEst),
+                eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.SOLICITUD_AYUDA_RECIBIDA),
+                anyString(), contains(materia.getNombre()), eq("SOLICITUD_AYUDA"), eq(guardada.getId()));
         assertSame(materia, guardada.getMateria());
         assertSame(materia, guardada.getAyudante().getMateria());
         verify(estudianteRepository).findById(estudianteId);

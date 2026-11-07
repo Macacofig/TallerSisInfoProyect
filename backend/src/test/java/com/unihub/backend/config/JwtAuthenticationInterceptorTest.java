@@ -38,6 +38,14 @@ class JwtAuthenticationInterceptorTest {
     private JwtService jwtService;
 
     @Test
+    void protegeGetsDelBuzonIncluidasSubrutas() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/notificaciones"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/notificaciones/no-leidas/count"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void rechazaEndpointProtegidoSinToken() throws Exception {
         mockMvc.perform(put("/api/estudiantes/1")
                         .contentType(MediaType.APPLICATION_JSON)
