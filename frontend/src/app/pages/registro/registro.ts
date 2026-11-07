@@ -295,6 +295,8 @@ export class Registro {
 
         error: (error: ErrorAuth) => {
           this.enviando.set(false);
+          this.formulario.controls.contrasena.reset('');
+          this.mostrarContrasena.set(false);
           this.manejarError(error);
         }
       });
@@ -321,10 +323,19 @@ export class Registro {
         break;
 
       case 'SIN_CONEXION':
+        this.errorGeneral.set('ERROR_CONNECTION');
+        break;
+
       case 'TIEMPO_AGOTADO':
+        this.errorGeneral.set('ERROR_TIMEOUT');
+        break;
+
       case 'SERVIDOR':
+        this.errorGeneral.set('ERROR_SERVER');
+        break;
+
       default:
-        this.errorGeneral.set('ERROR_EMAIL_TAKEN');
+        this.errorGeneral.set('ERROR_SERVER');
     }
   }
 

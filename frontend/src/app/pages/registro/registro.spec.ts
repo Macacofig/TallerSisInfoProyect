@@ -770,6 +770,19 @@
           );
 
           llenar();
+
+          raiz
+            .querySelector<HTMLButtonElement>(
+              '.registro__mostrar-contrasena'
+            )!
+            .click();
+
+          fixture.detectChanges();
+
+          expect(
+            campo('contrasena').type
+          ).toBe('text');
+
           enviar();
 
           expect(
@@ -795,6 +808,14 @@
           expect(
             boton().disabled
           ).toBe(false);
+
+          expect(
+            campo('contrasena').value
+          ).toBe('');
+
+          expect(
+            campo('contrasena').type
+          ).toBe('password');
 
           expect(
             campo('correo').value
@@ -859,21 +880,21 @@
             codigo: 'SIN_CONEXION',
             estado: 0
           },
-          M.ERROR_EMAIL_TAKEN
+          M.ERROR_CONNECTION
         ],
         [
           {
             codigo: 'TIEMPO_AGOTADO',
             estado: 0
           },
-          M.ERROR_EMAIL_TAKEN
+          M.ERROR_TIMEOUT
         ],
         [
           {
             codigo: 'SERVIDOR',
             estado: 500
           },
-          M.ERROR_EMAIL_TAKEN
+          M.ERROR_SERVER
         ],
         [
           {

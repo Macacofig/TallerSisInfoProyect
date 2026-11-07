@@ -71,6 +71,9 @@ export const REGISTRO_MESSAGES = {
 
   // Errores generales (encima del botón)
   ERROR_EMAIL_TAKEN: 'Este correo ya está registrado.',
+  ERROR_CONNECTION: 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo nuevamente.',
+  ERROR_TIMEOUT: 'El servidor tardó demasiado en responder. Inténtalo nuevamente.',
+  ERROR_SERVER: 'Ocurrió un error en el servidor. Inténtalo nuevamente más tarde.',
 
   // Modal de confirmación
   MODAL_TITLE: '¡Cuenta creada!',
