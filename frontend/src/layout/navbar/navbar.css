@@ -100,6 +100,49 @@
   height: 1.25rem;
 }
 
+.navbar__notifications-container { position: relative; }
+.navbar__notification-badge {
+  position: absolute; top: 0; right: 0; min-width: 1.125rem;
+  padding: 0.125rem; border-radius: 1rem; background: #c9a227; color: #082f59;
+  font-size: 0.6875rem; font-weight: 700; text-align: center;
+}
+.navbar__notifications-panel {
+  position: absolute; top: calc(100% + 0.625rem); right: 0;
+  width: 23rem; max-width: calc(100vw - 1.5rem);
+  max-height: calc(100dvh - 6rem); overflow-y: auto; overflow-wrap: anywhere;
+  box-sizing: border-box; background: white; color: #153555;
+  border: 1px solid #e5e7eb; border-radius: 0.625rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15); z-index: 1000;
+}
+.navbar__notifications-heading { padding: 1rem; border-bottom: 1px solid #e5e7eb; }
+.navbar__notifications-heading h2 { margin: 0 0 0.5rem; font-size: 1rem; }
+.navbar__notifications-panel button {
+  font: inherit; cursor: pointer; color: #063b78;
+  background: transparent; border: 0; min-height: 2.75rem;
+}
+.navbar__notifications-panel button:disabled { cursor: default; opacity: 0.65; }
+.navbar__notifications-panel button:focus-visible, .navbar__notification:focus-visible {
+  outline: 0.125rem solid #c9a227; outline-offset: -0.125rem;
+}
+.navbar__notifications-list { margin: 0; padding: 0; list-style: none; }
+.navbar__notifications-panel .navbar__notification-item {
+  display: flex; flex-direction: column; gap: 0.375rem; width: 100%;
+  padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb;
+}
+.navbar__notifications-panel .navbar__notification-item--unread { background: #edf4fc; border-left: 0.25rem solid #c9a227; }
+.navbar__notification-item span, .navbar__notification-item time { font-size: 0.8125rem; }
+.navbar__notification-item time { color: #526579; }
+.navbar__notification-unread { font-weight: 700; }
+.navbar__notifications-notice, .navbar__notifications-panel > p { padding: 0.75rem 1rem; }
+.navbar__notifications-more { width: 100%; padding: 0.5rem; }
+@media (max-width: 48rem) {
+  .navbar__notifications-panel {
+    position: fixed; top: 4.5rem; right: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    max-height: calc(100dvh - 10rem);
+  }
+}
+
 
 /* ========================================
    USER

@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
+import static com.unihub.backend.entity.Notificacion.TipoNotificacion.*;
 import com.unihub.backend.dto.ayudante.AyudanteMateriaRequest;
 import com.unihub.backend.dto.ayudante.AyudanteMateriaResponse;
 import com.unihub.backend.entity.AyudanteMateria;
@@ -25,18 +26,22 @@ public class AyudanteMateriaService {
     private final AyudanteMateriaMapper ayudanteMateriaMapper;
     private final SolicitudAyudanteService solicitudAyudanteService;
 
+    private final NotificacionService notificacionService;
+
     public AyudanteMateriaService(
             AyudanteMateriaRepository ayudanteMateriaRepository,
             EstudianteRepository estudianteRepository,
             MateriaRepository materiaRepository,
             AyudanteMateriaMapper ayudanteMateriaMapper,
-            SolicitudAyudanteService solicitudAyudanteService
+            SolicitudAyudanteService solicitudAyudanteService,
+            NotificacionService notificacionService
     ) {
         this.ayudanteMateriaRepository = ayudanteMateriaRepository;
         this.estudianteRepository = estudianteRepository;
         this.materiaRepository = materiaRepository;
         this.ayudanteMateriaMapper = ayudanteMateriaMapper;
         this.solicitudAyudanteService = solicitudAyudanteService;
+        this.notificacionService = notificacionService;
     }
 
     @Transactional
@@ -97,12 +102,15 @@ public class AyudanteMateriaService {
             solicitudAyudanteService.aprobar(idSolicitud.get());
             return obtenerPorId(idAyudanteMateria);
         }
-        AyudanteMateria ayudanteMateria = ayudanteMateriaRepository.findById(idAyudanteMateria)
+        AyudanteMateria ayudanteMateria = ayudanteMateriaRepository.findByIdForUpdate(idAyudanteMateria)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
         exigirPendiente(ayudanteMateria);
 
         ayudanteMateria.aprobar();
         ayudanteMateria = ayudanteMateriaRepository.save(ayudanteMateria);
+        notificacionService.crear(ayudanteMateria.getEstudiante(), POSTULACION_APROBADA, "Postulación aprobada",
+                "Tu postulación fue aprobada para " + ayudanteMateria.getMateria().getNombre(),
+                "AYUDANTE_MATERIA", ayudanteMateria.getId());
         LogHelper.info(AyudanteMateriaService.class, "Solicitud de ayudante " + idAyudanteMateria + " aprobada");
         return ayudanteMateriaMapper.toResponse(ayudanteMateria);
     }
@@ -114,12 +122,15 @@ public class AyudanteMateriaService {
             solicitudAyudanteService.rechazar(idSolicitud.get());
             return obtenerPorId(idAyudanteMateria);
         }
-        AyudanteMateria ayudanteMateria = ayudanteMateriaRepository.findById(idAyudanteMateria)
+        AyudanteMateria ayudanteMateria = ayudanteMateriaRepository.findByIdForUpdate(idAyudanteMateria)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
         exigirPendiente(ayudanteMateria);
 
         ayudanteMateria.rechazar();
         ayudanteMateria = ayudanteMateriaRepository.save(ayudanteMateria);
+        notificacionService.crear(ayudanteMateria.getEstudiante(), POSTULACION_RECHAZADA, "Postulación rechazada",
+                "Tu postulación fue rechazada para " + ayudanteMateria.getMateria().getNombre(),
+                "AYUDANTE_MATERIA", ayudanteMateria.getId());
         LogHelper.info(AyudanteMateriaService.class, "Solicitud de ayudante " + idAyudanteMateria + " rechazada");
         return ayudanteMateriaMapper.toResponse(ayudanteMateria);
     }

@@ -38,12 +38,13 @@ class AyudanteMateriaServiceTest {
     @Mock
     private SolicitudAyudanteService solicitudAyudanteService;
 
+    @Mock private NotificacionService notificacionService;
     private AyudanteMateriaService service;
     private AyudanteMateriaMapper mapper = new AyudanteMateriaMapper();
 
     @BeforeEach
     void setUp() {
-        service = new AyudanteMateriaService(ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper, solicitudAyudanteService);
+        service = new AyudanteMateriaService(ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper, solicitudAyudanteService, notificacionService);
     }
 
     private Estudiante estudiante(Long id) {
@@ -223,6 +224,7 @@ class AyudanteMateriaServiceTest {
         when(ayudanteMateriaRepository.findById(1L)).thenReturn(Optional.of(relation));
         service.aprobarSolicitud(1L);
         verify(solicitudAyudanteService).aprobar(71L);
+        verifyNoInteractions(notificacionService);
         verify(ayudanteMateriaRepository, never()).save(any(AyudanteMateria.class));
     }
 
@@ -232,12 +234,15 @@ class AyudanteMateriaServiceTest {
         AyudanteMateria am = ayudanteMateria(idAyudanteMateria, estudiante(1L), materia(1L), "Lunes 10-12");
         am.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
 
-        when(ayudanteMateriaRepository.findById(idAyudanteMateria)).thenReturn(Optional.of(am));
+        when(ayudanteMateriaRepository.findByIdForUpdate(idAyudanteMateria)).thenReturn(Optional.of(am));
         when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
 
         AyudanteMateriaResponse response = service.aprobarSolicitud(idAyudanteMateria);
 
         assertEquals("APROBADO", response.estado());
+        verify(notificacionService).crear(same(am.getEstudiante()),
+                eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.POSTULACION_APROBADA),
+                anyString(), contains(am.getMateria().getNombre()), eq("AYUDANTE_MATERIA"), eq(am.getId()));
         verify(ayudanteMateriaRepository).save(am);
     }
 
@@ -247,12 +252,15 @@ class AyudanteMateriaServiceTest {
         AyudanteMateria am = ayudanteMateria(idAyudanteMateria, estudiante(1L), materia(1L), "Lunes 10-12");
         am.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
 
-        when(ayudanteMateriaRepository.findById(idAyudanteMateria)).thenReturn(Optional.of(am));
+        when(ayudanteMateriaRepository.findByIdForUpdate(idAyudanteMateria)).thenReturn(Optional.of(am));
         when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
 
         AyudanteMateriaResponse response = service.rechazarSolicitud(idAyudanteMateria);
 
         assertEquals("RECHAZADO", response.estado());
+        verify(notificacionService).crear(same(am.getEstudiante()),
+                eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.POSTULACION_RECHAZADA),
+                anyString(), contains(am.getMateria().getNombre()), eq("AYUDANTE_MATERIA"), eq(am.getId()));
         verify(ayudanteMateriaRepository).save(am);
     }
 
@@ -262,8 +270,8 @@ class AyudanteMateriaServiceTest {
         aprobada.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
         AyudanteMateria rechazada = ayudanteMateria(2L, estudiante(2L), materia(2L), "Martes 10-12");
         rechazada.setEstado(AyudanteMateria.EstadoAyudante.PENDIENTE);
-        when(ayudanteMateriaRepository.findById(1L)).thenReturn(Optional.of(aprobada));
-        when(ayudanteMateriaRepository.findById(2L)).thenReturn(Optional.of(rechazada));
+        when(ayudanteMateriaRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(aprobada));
+        when(ayudanteMateriaRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(rechazada));
         when(ayudanteMateriaRepository.save(any(AyudanteMateria.class))).thenAnswer(inv -> inv.getArgument(0));
         service.aprobarSolicitud(1L);
         service.rechazarSolicitud(2L);

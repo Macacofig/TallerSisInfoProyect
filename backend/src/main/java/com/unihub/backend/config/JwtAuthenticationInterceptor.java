@@ -78,6 +78,10 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
+        if (path.equals("/api/notificaciones") || path.startsWith("/api/notificaciones/")) {
+            return false;
+        }
+
         if ("/api/test".equals(path)
                 || (HttpMethod.POST.matches(method)
                     && ("/api/estudiantes".equals(path) || "/api/estudiantes/login".equals(path)
