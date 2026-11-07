@@ -232,6 +232,66 @@ class EstudianteControllerTest {
         verify(estudianteService, never()).actualizar(anyLong(), any());
         }
 
+    @Test
+    void deberiaRecuperarContrasena() throws Exception {
+        when(estudianteService.recuperarContrasena(any())).thenReturn(new EstudianteResponse(
+                1L, "Ana Pérez", "71234567", "ana@ucb.edu.bo", "Ingeniería de Sistemas"
+        ));
+
+        mockMvc.perform(post("/api/estudiantes/recuperar-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRecuperacion("ana@ucb.edu.bo", "NuevaClave1!", "NuevaClave1!")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correoElectronico").value("ana@ucb.edu.bo"))
+                .andExpect(jsonPath("$.contrasena").doesNotExist());
+
+        verify(estudianteService).recuperarContrasena(any());
+    }
+
+    @Test
+    void deberiaResponder400CuandoLasContrasenasNoCoinciden() throws Exception {
+        doThrow(new BadRequestException("Las contraseñas no coinciden"))
+                .when(estudianteService).recuperarContrasena(any());
+
+        mockMvc.perform(post("/api/estudiantes/recuperar-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRecuperacion("ana@ucb.edu.bo", "NuevaClave1!", "OtraClave1!")))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Las contraseñas no coinciden"));
+    }
+
+    @Test
+    void deberiaResponder404CuandoElCorreoNoEstaRegistrado() throws Exception {
+        doThrow(new ResourceNotFoundException("El correo electrónico no está registrado"))
+                .when(estudianteService).recuperarContrasena(any());
+
+        mockMvc.perform(post("/api/estudiantes/recuperar-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRecuperacion("noexiste@ucb.edu.bo", "NuevaClave1!", "NuevaClave1!")))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("El correo electrónico no está registrado"));
+    }
+
+    @Test
+    void deberiaRechazarRecuperacionConContrasenaDebil() throws Exception {
+        mockMvc.perform(post("/api/estudiantes/recuperar-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRecuperacion("ana@ucb.edu.bo", "debil", "debil")))
+                .andExpect(status().isBadRequest());
+
+        verify(estudianteService, never()).recuperarContrasena(any());
+    }
+
+    private String cuerpoRecuperacion(String correo, String nuevaContrasena, String confirmarContrasena) {
+        return """
+                {
+                  "correoElectronico": "%s",
+                  "nuevaContrasena": "%s",
+                  "confirmarNuevaContrasena": "%s"
+                }
+                """.formatted(correo, nuevaContrasena, confirmarContrasena);
+    }
+
     private String cuerpo(String contrasena) {
         return cuerpo(contrasena, "71234567", "ana@ucb.edu.bo");
     }
