@@ -6,8 +6,10 @@ import com.unihub.backend.service.NotificacionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.unihub.backend.common.Constants.Notificacion.*;
+
 @RestController
-@RequestMapping("/api/notificaciones")
+@RequestMapping(BASE)
 public class NotificacionController {
     private final NotificacionService service;
 
@@ -20,13 +22,13 @@ public class NotificacionController {
         return service.listar(estudianteAutenticado, page, size);
     }
 
-    @GetMapping("/no-leidas/count")
+    @GetMapping(CONTAR_NO_LEIDAS_URL)
     public NotificacionesCountResponse contar(
             @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado) {
         return service.contarNoLeidas(estudianteAutenticado);
     }
 
-    @PostMapping("/{id}/leer")
+    @PostMapping(LEER_URL)
     public ResponseEntity<Void> leer(
             @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado,
             @PathVariable Long id) {
@@ -34,7 +36,7 @@ public class NotificacionController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/leer-todas")
+    @PostMapping(LEER_TODAS_URL)
     public ResponseEntity<Void> leerTodas(
             @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado) {
         service.marcarTodasComoLeidas(estudianteAutenticado);
