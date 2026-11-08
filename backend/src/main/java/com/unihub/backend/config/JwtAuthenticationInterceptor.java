@@ -85,6 +85,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         if ("/api/test".equals(path)
                 || (HttpMethod.POST.matches(method)
                     && ("/api/estudiantes".equals(path) || "/api/estudiantes/login".equals(path)
+                        || "/api/estudiantes/recuperar-contrasena".equals(path)
                         || path.startsWith("/api/horarios/")
                         || "/api/docentes".equals(path) || "/api/docente-materia".equals(path)))) {
             return true;
