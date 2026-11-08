@@ -20,6 +20,21 @@ min-height: 100dvh;
 font-family: var(--fuente-texto);
 }
 
+.login__recuperar {
+  align-self: flex-end;
+  min-height: 2.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--azul-boton);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.login__recuperar:focus-visible {
+  outline: 0.15rem solid var(--azul-boton);
+  outline-offset: 0.15rem;
+}
+
 /* =========================================================
 ESTRUCTURA PRINCIPAL
 Igual que Registro

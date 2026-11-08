@@ -21,6 +21,13 @@ describe('Pantalla de login', () => {
   let router: Router;
   let raiz: HTMLElement;
 
+  it('navega a recuperar contraseña desde el enlace del login', () => {
+    const enlace = raiz.querySelector<HTMLButtonElement>('.login__recuperar')!;
+    expect(enlace.textContent).toContain(M.FORGOT_PASSWORD);
+    enlace.click();
+    expect(router.navigate).toHaveBeenCalledWith(['/recuperar-contrasena']);
+  });
+
   const validos = {
     correo: 'juan.perez@ucb.edu.bo',
     contrasena: 'Password1!'

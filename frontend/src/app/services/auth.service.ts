@@ -5,6 +5,7 @@ import { Observable, TimeoutError, catchError, map, timeout, throwError } from '
 import { APP_CONFIG } from '../config/app-config';
 import { ErrorAuth, RegistroRequest, RegistroResponse } from '../models/registrar';
 import { LoginRequest, LoginResponse } from '../models/login';
+import { RecuperarContrasenaRequest } from '../models/recuperar-contrasena';
 
 @Injectable({
   providedIn: 'root'
@@ -113,6 +114,13 @@ export class AuthService {
   loginUser(datos: LoginRequest): Observable<LoginResponse> {
     return this.postAutenticacion<LoginResponse, LoginRequest>(
       this.urlLogin,
+      datos
+    );
+  }
+
+  recuperarContrasena(datos: RecuperarContrasenaRequest): Observable<unknown> {
+    return this.postAutenticacion<unknown, RecuperarContrasenaRequest>(
+      `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.AUTH_RECUPERAR_CONTRASENA}`,
       datos
     );
   }

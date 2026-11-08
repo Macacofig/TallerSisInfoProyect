@@ -70,6 +70,10 @@ export class Login {
     ]
   });
 
+  irARecuperarContrasena(): void {
+    this.router.navigate(['/recuperar-contrasena']);
+  }
+
   irARegistro(): void {
     this.router.navigate(['/registro']);
   }

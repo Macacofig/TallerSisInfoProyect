@@ -1,0 +1,7 @@
+.login__boton { width: 100%; gap: 0.5rem; padding: 0.75rem; }
+.login__marca { min-width: 0; }
+.login__brand-subtitle { white-space: normal; }
+.recuperar__ayuda { margin: 0; color: var(--texto-suave); font-size: 0.82rem; line-height: 1.5; }
+.recuperar__exito { padding: 1rem; border-radius: 0.5rem; background: #ecfdf3; color: #166534; line-height: 1.5; }
+.recuperar__volver { display: inline-flex; align-items: center; min-height: 2.75rem; margin-top: 1rem; color: var(--azul-boton); }
+.recuperar__volver:focus-visible { outline: 0.15rem solid var(--azul-boton); outline-offset: 0.15rem; }

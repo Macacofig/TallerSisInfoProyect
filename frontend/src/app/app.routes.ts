@@ -7,6 +7,7 @@ import { MateriaDetalleComponent } from './pages/materias/detail/materia-detalle
 
 import { Registro } from './pages/registro/registro';
 import { Login } from './pages/login/login';
+import { RecuperarContrasena } from './pages/recuperar-contrasena/recuperar-contrasena';
 import { Perfil } from './pages/perfil/perfil';
 import { HorariosComponent } from './pages/horarios/horarios.component';
 import { authGuard } from './guards/auth.guard';
@@ -29,6 +30,11 @@ export const routes: Routes = [
   {
     path: 'login',
     component: Login
+  },
+
+  {
+    path: 'recuperar-contrasena',
+    component: RecuperarContrasena
   },
 
   {

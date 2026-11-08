@@ -25,6 +25,7 @@ export const APP_CONFIG = {
       TEST: '/test',
       AUTH_REGISTER: '/estudiantes',
       AUTH_LOGIN: '/estudiantes/login',
+      AUTH_RECUPERAR_CONTRASENA: '/estudiantes/recuperar-contrasena',
       AYUDANTE_MATERIA: '/ayudante-materia',
       SOLICITUD_AYUDANTE: '/solicitud-ayudante',
       SOLICITUD_AYUDA: '/solicitud-ayuda',
@@ -35,7 +36,7 @@ export const APP_CONFIG = {
   ROUTES: {
     REGISTRO: '/registro',
     // Pantallas a pantalla completa: se oculta el sidebar y el navbar.
-    SIN_LAYOUT: ['/', '/registro', '/login'],
+    SIN_LAYOUT: ['/', '/registro', '/login', '/recuperar-contrasena'],
   },
 
   AUTH: {
