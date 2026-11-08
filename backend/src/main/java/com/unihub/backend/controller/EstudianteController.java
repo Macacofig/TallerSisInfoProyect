@@ -5,6 +5,7 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
+import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.unihub.backend.common.Constants.Estudiante.ACTUALIZAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.LOGIN_URL;
 import static com.unihub.backend.common.Constants.Estudiante.MATERIAS_APROBADAS_URL;
+import static com.unihub.backend.common.Constants.Estudiante.RECUPERAR_CONTRASENA_URL;
 import static com.unihub.backend.common.Constants.Estudiante.REGISTRAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.TELEFONO_URL;
 
@@ -78,6 +80,11 @@ public class EstudianteController {
     ) {
         jwtService.verificarPropiedad(authenticatedStudentId, id);
         return ResponseEntity.ok(estudianteService.agregarMateriasAprobadas(id, request));
+    @PostMapping(RECUPERAR_CONTRASENA_URL)
+    public ResponseEntity<EstudianteResponse> recuperarContrasena(
+            @Valid @RequestBody EstudianteRecuperarContrasenaRequest request
+    ) {
+        return ResponseEntity.ok(estudianteService.recuperarContrasena(request));
     }
 
 }

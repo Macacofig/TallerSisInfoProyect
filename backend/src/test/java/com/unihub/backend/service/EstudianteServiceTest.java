@@ -5,6 +5,7 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
+import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
@@ -12,6 +13,7 @@ import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CorreoDuplicadoException;
 import com.unihub.backend.exception.CredencialesInvalidasException;
+import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.exception.TooManyLoginAttemptsException;
 import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
@@ -316,5 +318,75 @@ class EstudianteServiceTest {
                 assertThrows(RuntimeException.class, () -> estudianteService.iniciarSesion(request)));
         verify(estudianteRepository, org.mockito.Mockito.times(5))
                 .findByCorreoElectronicoIgnoreCase("bloqueado@ucb.edu.bo");
+    }
+
+    @Test
+    void deberiaRecuperarContrasenaGuardandoElNuevoHash() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez",
+                passwordEncoder.encode("ClaveAnterior1!"),
+                "71234567",
+                "ana@ucb.edu.bo",
+                "Ingeniería"
+        );
+        EstudianteRecuperarContrasenaRequest request = new EstudianteRecuperarContrasenaRequest(
+                "  ana@ucb.edu.bo  ",
+                "  NuevaClave1!  ",
+                "  NuevaClave1!  "
+        );
+        when(estudianteRepository.findByCorreoElectronicoIgnoreCase("ana@ucb.edu.bo"))
+                .thenReturn(Optional.of(estudiante));
+        when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
+
+        EstudianteResponse resultado = estudianteService.recuperarContrasena(request);
+
+        assertEquals("ana@ucb.edu.bo", resultado.correoElectronico());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                passwordEncoder.matches("NuevaClave1!", estudiante.getContrasena())
+        );
+        org.junit.jupiter.api.Assertions.assertFalse(
+                passwordEncoder.matches("ClaveAnterior1!", estudiante.getContrasena())
+        );
+        verify(estudianteRepository).save(estudiante);
+        mostrarResultado("Recuperar contraseña guardando el nuevo valor hasheado");
+    }
+
+    @Test
+    void deberiaRechazarRecuperacionCuandoLasContrasenasNoCoinciden() {
+        EstudianteRecuperarContrasenaRequest request = new EstudianteRecuperarContrasenaRequest(
+                "ana@ucb.edu.bo",
+                "NuevaClave1!",
+                "OtraClave1!"
+        );
+
+        BadRequestException excepcion = assertThrows(
+                BadRequestException.class,
+                () -> estudianteService.recuperarContrasena(request)
+        );
+
+        assertEquals("Las contraseñas no coinciden", excepcion.getMessage());
+        verify(estudianteRepository, never()).findByCorreoElectronicoIgnoreCase(anyString());
+        verify(estudianteRepository, never()).save(any(Estudiante.class));
+        mostrarResultado("Rechazar recuperación cuando las contraseñas no coinciden");
+    }
+
+    @Test
+    void deberiaRechazarRecuperacionCuandoElCorreoNoEstaRegistrado() {
+        EstudianteRecuperarContrasenaRequest request = new EstudianteRecuperarContrasenaRequest(
+                "noexiste@ucb.edu.bo",
+                "NuevaClave1!",
+                "NuevaClave1!"
+        );
+        when(estudianteRepository.findByCorreoElectronicoIgnoreCase("noexiste@ucb.edu.bo"))
+                .thenReturn(Optional.empty());
+
+        ResourceNotFoundException excepcion = assertThrows(
+                ResourceNotFoundException.class,
+                () -> estudianteService.recuperarContrasena(request)
+        );
+
+        assertEquals("El correo electrónico no está registrado", excepcion.getMessage());
+        verify(estudianteRepository, never()).save(any(Estudiante.class));
+        mostrarResultado("Rechazar recuperación cuando el correo no está registrado");
     }
 }
