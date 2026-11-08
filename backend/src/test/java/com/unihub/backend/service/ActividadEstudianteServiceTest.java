@@ -119,6 +119,38 @@ class ActividadEstudianteServiceTest {
         assertEquals(ActividadEstudiante.EstadoActividad.PENDIENTE, actividad.getEstado());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Á", "📘"})
+    void deberiaConservarMateriaLargaSinExcederLimiteDelTitulo(String caracter) throws Exception {
+        String nombreMateria = caracter.repeat(255);
+
+        actividadService.registrarSolicitudAyuda(estudiante(11L), materia(44L, nombreMateria), estudiante(33L));
+
+        ActividadEstudiante actividad = capturarActividadGuardada();
+        int limite = ActividadEstudiante.class.getDeclaredField("titulo")
+                .getAnnotation(jakarta.persistence.Column.class).length();
+        assertTrue(actividad.getTitulo().codePointCount(0, actividad.getTitulo().length()) <= limite,
+                "Una materia válida no debe provocar un título que exceda la columna de actividad");
+        assertTrue(actividad.getTitulo().startsWith("Solicitaste ayuda en "));
+        assertTrue(actividad.getTitulo().endsWith("…"));
+        assertTrue(actividad.getDescripcion().contains(nombreMateria));
+        assertTrue(actividad.getDescripcion().contains("Estudiante 33"));
+        assertFalse(actividad.getTitulo().contains("\uFFFD"));
+        assertTrue(java.nio.charset.StandardCharsets.UTF_8.newEncoder().canEncode(actividad.getTitulo()));
+        assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, actividad.getEstado());
+    }
+
+    @Test
+    void deberiaConservarTituloQueCabeExactamenteEnLaColumna() {
+        String nombreMateria = "Á".repeat(255 - "Solicitaste ayuda en ".length());
+
+        actividadService.registrarSolicitudAyuda(estudiante(11L), materia(44L, nombreMateria), estudiante(33L));
+
+        ActividadEstudiante actividad = capturarActividadGuardada();
+        assertEquals("Solicitaste ayuda en " + nombreMateria, actividad.getTitulo());
+        assertEquals("Solicitud de ayuda enviada al ayudante Estudiante 33.", actividad.getDescripcion());
+    }
+
     @Test
     void deberiaActualizarEstadoDeLaSolicitudPendiente() {
         Estudiante estudiante = estudiante(4L);

@@ -22,6 +22,7 @@ import java.util.List;
 public class ActividadEstudianteService {
 
     private static final ZoneId ZONA_HORARIA_BOLIVIA = ZoneId.of("America/La_Paz");
+    private static final int LONGITUD_MAXIMA_TITULO = 255;
     private static final String TITULO_CALIFICAR_MATERIA = "Calificar materia";
     private static final String TITULO_CALIFICAR_DOCENTE = "Calificar docente";
     private static final String DESCRIPCION_CALIFICAR_MATERIA = "Calificación a materia";
@@ -115,10 +116,17 @@ public class ActividadEstudianteService {
 
     @Transactional
     public void registrarSolicitudAyuda(Estudiante estudiante, Materia materia, Estudiante ayudante) {
+        String titulo = "Solicitaste ayuda en " + materia.getNombre();
+        String descripcion = "Solicitud de ayuda enviada al ayudante " + ayudante.getNombre() + ".";
+        if (titulo.codePointCount(0, titulo.length()) > LONGITUD_MAXIMA_TITULO) {
+            int corte = titulo.offsetByCodePoints(0, LONGITUD_MAXIMA_TITULO - 1);
+            titulo = titulo.substring(0, corte) + "…";
+            descripcion += " Materia: " + materia.getNombre() + ".";
+        }
         registrarActividad(
                 estudiante,
-                "Solicitaste ayuda en " + materia.getNombre(),
-                "Solicitud de ayuda enviada al ayudante " + ayudante.getNombre() + ".",
+                titulo,
+                descripcion,
                 ActividadEstudiante.EstadoActividad.REALIZADO
         );
     }
