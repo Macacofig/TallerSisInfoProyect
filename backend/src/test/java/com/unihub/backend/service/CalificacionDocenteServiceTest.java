@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,13 +35,15 @@ class CalificacionDocenteServiceTest {
     @Mock private DocenteMateriaRepository docenteMateriaRepository;
     @Mock private MateriaRepository materiaRepository;
     @Mock private EstudianteRepository estudianteRepository;
+    @Mock private ActividadEstudianteService actividadEstudianteService;
 
     private CalificacionDocenteService calificacionService;
 
     @BeforeEach
     void setUp() {
         calificacionService = new CalificacionDocenteService(calificacionRepository, docenteRepository,
-            new CalificacionDocenteMapper(), docenteMateriaRepository, materiaRepository, estudianteRepository);
+            new CalificacionDocenteMapper(), docenteMateriaRepository, materiaRepository, estudianteRepository,
+            actividadEstudianteService);
     }
 
     @Test
@@ -59,6 +62,7 @@ class CalificacionDocenteServiceTest {
         when(calificacionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         assertEquals(10L, calificacionService.crear(request).idMateria());
+        verify(actividadEstudianteService).registrarCalificacionDocente(any(Estudiante.class));
         mostrarResultado("Crear una calificacion unica por estudiante, docente y materia");
     }
 

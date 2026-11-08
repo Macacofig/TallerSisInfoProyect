@@ -2,6 +2,7 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CredencialesInvalidasException;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
+import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -148,8 +150,7 @@ class EstudianteControllerTest {
         }
 
     @Test
-    void deberiaRechazarTelefonoInvalido() throws Exception {
-        mockMvc.perform(post("/api/estudiantes")
+    void deberiaRechazarTelefonoInvalido() throws Exception {        mockMvc.perform(post("/api/estudiantes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo("ClaveSegura1!", "51234567", "ana@ucb.edu.bo")))
                 .andExpect(status().isBadRequest());
@@ -233,6 +234,61 @@ class EstudianteControllerTest {
         }
 
     @Test
+    void deberiaAgregarMateriasAprobadas() throws Exception {
+        when(estudianteService.agregarMateriasAprobadas(eq(1L), any())).thenReturn(
+                new EstudianteMateriasAprobadasResponse(1L, List.of("SIS-111", "SIS-112")));
+
+        mockMvc.perform(post("/api/estudiantes/1/materias-aprobadas")
+                        .requestAttr("authenticatedStudentId", 1L)
+                        .header("Authorization", "Bearer jwt-valido")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "materias": ["SIS-111", "SIS-112"]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idEstudiante").value(1))
+                .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-111"))
+                .andExpect(jsonPath("$.materiasAprobadas[1]").value("SIS-112"));
+
+        verify(estudianteService).agregarMateriasAprobadas(eq(1L), any());
+    }
+
+    @Test
+    void deberiaResponder404AlAgregarMateriasSiElEstudianteNoExiste() throws Exception {
+        doThrow(new ResourceNotFoundException("Estudiante no encontrado"))
+                .when(estudianteService).agregarMateriasAprobadas(eq(99L), any());
+
+        mockMvc.perform(post("/api/estudiantes/99/materias-aprobadas")
+                        .requestAttr("authenticatedStudentId", 99L)
+                        .header("Authorization", "Bearer jwt-valido")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "materias": ["SIS-111"]
+                                }
+                                """))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deberiaImpedirAgregarMateriasAOtroEstudiante() throws Exception {
+        doThrow(new com.unihub.backend.exception.AccesoNoAutorizadoException())
+                .when(jwtService).verificarPropiedad(2L, 1L);
+
+        mockMvc.perform(post("/api/estudiantes/1/materias-aprobadas")
+                        .requestAttr("authenticatedStudentId", 2L)
+                        .header("Authorization", "Bearer jwt-ajeno")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "materias": ["SIS-111"]
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+
+        verify(estudianteService, never()).agregarMateriasAprobadas(anyLong(), any());
     void deberiaRecuperarContrasena() throws Exception {
         when(estudianteService.recuperarContrasena(any())).thenReturn(new EstudianteResponse(
                 1L, "Ana Pérez", "71234567", "ana@ucb.edu.bo", "Ingeniería de Sistemas"

@@ -3,6 +3,7 @@ package com.unihub.backend.service;
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteRequest;
 import com.unihub.backend.dto.ayudante.SolicitudAyudanteResponse;
 import com.unihub.backend.entity.AyudanteMateria;
+import com.unihub.backend.entity.ActividadEstudiante;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.entity.SolicitudAyudante;
@@ -41,13 +42,15 @@ class SolicitudAyudanteServiceTest {
     private MateriaRepository materiaRepository;
 
     @Mock private NotificacionService notificacionService;
+    @Mock private ActividadEstudianteService actividadEstudianteService;
     private SolicitudAyudanteService service;
     private SolicitudAyudanteMapper mapper = new SolicitudAyudanteMapper();
 
     @BeforeEach
     void setUp() {
         service = new SolicitudAyudanteService(
-                solicitudAyudanteRepository, ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper, notificacionService);
+                solicitudAyudanteRepository, ayudanteMateriaRepository, estudianteRepository, materiaRepository, mapper,
+                notificacionService, actividadEstudianteService);
     }
 
     private Estudiante estudiante(Long id) {
@@ -123,6 +126,7 @@ class SolicitudAyudanteServiceTest {
         verify(notificacionService, times(1)).crear(eq(solicitudCaptor.getValue().getEstudiante()),
                 eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.POSTULACION_CREADA),
                 anyString(), contains("Test Materia 1"), eq("SOLICITUD_AYUDANTE"), eq(response.id()));
+        verify(actividadEstudianteService).registrarSolicitudAyudante(any(Estudiante.class), any(Materia.class));
     }
 
     @Test
@@ -219,6 +223,8 @@ class SolicitudAyudanteServiceTest {
         verify(notificacionService, times(1)).crear(same(s.getEstudiante()),
                 eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.POSTULACION_APROBADA),
                 anyString(), contains(s.getMateria().getNombre()), eq("SOLICITUD_AYUDANTE"), eq(idSolicitud));
+        verify(actividadEstudianteService).actualizarEstadoSolicitudAyudante(
+                same(s.getEstudiante()), same(s.getMateria()), eq(ActividadEstudiante.EstadoActividad.APROBADA));
         assertEquals(AyudanteMateria.EstadoAyudante.APROBADO, relacion.getEstado());
         verify(solicitudAyudanteRepository).findByIdForUpdate(idSolicitud);
         verify(solicitudAyudanteRepository).save(s);

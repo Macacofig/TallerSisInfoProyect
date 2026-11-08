@@ -3,6 +3,8 @@ package com.unihub.backend.service;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
 import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
@@ -27,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -147,8 +150,7 @@ class EstudianteServiceTest {
     }
 
     @Test
-    void deberiaObtenerTelefonoPorId() {
-        Estudiante estudiante = new Estudiante(
+    void deberiaObtenerTelefonoPorId() {        Estudiante estudiante = new Estudiante(
                 "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
         );
         when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
@@ -167,6 +169,40 @@ class EstudianteServiceTest {
                 com.unihub.backend.exception.ResourceNotFoundException.class,
                 () -> estudianteService.obtenerTelefono(99L)
         );
+    }
+
+    @Test
+    void deberiaAgregarMateriasAprobadasSinDuplicados() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        estudiante.agregarMateriasAprobadas(List.of("SIS-111"));
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
+
+        EstudianteMateriasAprobadasResponse resultado = estudianteService.agregarMateriasAprobadas(
+                1L,
+                new EstudianteMateriasAprobadasRequest(List.of(" SIS-111 ", "SIS-112", " "))
+        );
+
+        assertEquals(List.of("SIS-111", "SIS-112"), resultado.materiasAprobadas());
+        verify(estudianteRepository).save(estudiante);
+        mostrarResultado("Agregar materias aprobadas evitando duplicados");
+    }
+
+    @Test
+    void deberiaRechazarMateriasAprobadasCuandoElEstudianteNoExiste() {
+        when(estudianteRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(
+                com.unihub.backend.exception.ResourceNotFoundException.class,
+                () -> estudianteService.agregarMateriasAprobadas(
+                        99L,
+                        new EstudianteMateriasAprobadasRequest(List.of("SIS-111"))
+                )
+        );
+        verify(estudianteRepository, never()).save(any(Estudiante.class));
+        mostrarResultado("Rechazar materias aprobadas cuando el estudiante no existe");
     }
 
     @Test

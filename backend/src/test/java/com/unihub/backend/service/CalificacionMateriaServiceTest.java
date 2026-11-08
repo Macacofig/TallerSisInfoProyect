@@ -39,6 +39,9 @@ class CalificacionMateriaServiceTest {
         @Mock
         private EstudianteRepository estudianteRepository;
 
+    @Mock
+    private ActividadEstudianteService actividadEstudianteService;
+
     private CalificacionMateriaService calificacionService;
 
     @BeforeEach
@@ -48,7 +51,8 @@ class CalificacionMateriaServiceTest {
                 calificacionRepository,
                 materiaRepository,
                 new CalificacionMateriaMapper(),
-                estudianteRepository
+                estudianteRepository,
+                actividadEstudianteService
         );
     }
 
@@ -84,6 +88,24 @@ class CalificacionMateriaServiceTest {
         verify(materiaRepository).findById(1L);
         verify(calificacionRepository).save(any(CalificacionMateria.class));
         mostrarResultado("Crear calificación de una materia con estudiante opcional");
+    }
+
+    @Test
+    void deberiaRegistrarActividadAlCalificarMateriaConEstudiante() {
+        Materia materia = new Materia("INF101", "Programacion I", "Ingenieria de Sistemas", 1);
+        Estudiante estudiante = new Estudiante(
+                "Estudiante", "pass", "71234567", "estudiante@ucb.edu.bo", "Ingenieria");
+        CalificacionMateriaRequest request = new CalificacionMateriaRequest(
+                1L, 25L, 8, 6, 5, List.of("Matematicas"), "Practico", "I-Año");
+        when(materiaRepository.findById(1L)).thenReturn(Optional.of(materia));
+        when(estudianteRepository.findById(25L)).thenReturn(Optional.of(estudiante));
+        when(calificacionRepository.save(any(CalificacionMateria.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        calificacionService.crear(request);
+
+        verify(actividadEstudianteService).registrarCalificacionMateria(estudiante);
+        mostrarResultado("Registrar actividad al calificar una materia con estudiante");
     }
 
     @Test
