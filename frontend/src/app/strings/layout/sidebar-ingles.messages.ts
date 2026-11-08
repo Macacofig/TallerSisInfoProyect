@@ -9,5 +9,6 @@ export const SIDEBAR_MESSAGES_EN = {
   MENU_MATERIAS: 'Subjects',
   MENU_ADMIN: 'Assistant applications',
   MENU_HORARIOS: 'Schedules',
+  MENU_ACTIVIDAD: 'My activity',
   DEMO_NOTICE: 'Demonstration data. The information shown is fictitious.',
 } as const;

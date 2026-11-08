@@ -8,6 +8,7 @@ import { MateriaDetalleComponent } from './pages/materias/detail/materia-detalle
 import { Registro } from './pages/registro/registro';
 import { Login } from './pages/login/login';
 import { Perfil } from './pages/perfil/perfil';
+import { MiActividadComponent } from './pages/mi-actividad/mi-actividad.component';
 import { HorariosComponent } from './pages/horarios/horarios.component';
 import { authGuard } from './guards/auth.guard';
 import { materiasTreeGuard } from './guards/materias-tree.guard';
@@ -61,6 +62,12 @@ export const routes: Routes = [
   {
     path: 'perfil',
     component: Perfil,
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'mi-actividad',
+    component: MiActividadComponent,
     canActivate: [authGuard]
   },
 
