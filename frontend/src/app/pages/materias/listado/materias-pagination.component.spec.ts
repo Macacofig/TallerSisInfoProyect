@@ -96,8 +96,8 @@ describe('catálogo: normalización, presentación y paginación', () => {
       .toMatch(/Página\s+2\s+de\s+2/);
   });
 
-  it('presenta nombres corregidos sin cambiar los datos originales', () => {
-    expect(tarjetas()[0].querySelector('h2')?.textContent?.trim()).toBe('Programación 1');
+  it('conserva el nombre recibido cuando no existe traducción sin cambiar los datos originales', () => {
+    expect(tarjetas()[0].querySelector('h2')?.textContent?.trim()).toBe('programacion 1');
     expect(fixture.componentInstance.materias()[0].nombre).toBe('programacion 1');
   });
 

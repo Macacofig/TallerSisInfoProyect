@@ -70,10 +70,37 @@ describe('HU-01: catálogo de materias', () => {
     http.expectOne(endpoint).flush([sinTraduccion]);
     await fixture.whenStable();
 
-    expect(fixture.nativeElement.textContent).toContain('Materia Nueva');
+    expect(fixture.nativeElement.querySelector('.materia-card h2').textContent)
+      .toContain(sinTraduccion.nombre);
     fixture.debugElement.injector.get(LanguageService).setLanguage('en');
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Materia Nueva');
+    expect(fixture.nativeElement.querySelector('.materia-card h2').textContent)
+      .toContain(sinTraduccion.nombre);
+  });
+
+  it('translates card names by API code and updates immediately when the language changes', async () => {
+    const algebra: Materia = {
+      id: 123,
+      codigo: 'mat-123',
+      nombre: 'Álgebra lineal',
+      carrera: 'Ingeniería Civil',
+      semestre: 1
+    };
+    http.expectOne(endpoint).flush([algebra]);
+    await fixture.whenStable();
+
+    const nombreTarjeta = () =>
+      fixture.nativeElement.querySelector('.materia-card h2').textContent.trim();
+    expect(nombreTarjeta()).toBe('Álgebra lineal');
+
+    languageService!.setLanguage('en');
+    fixture.detectChanges();
+    expect(nombreTarjeta()).toBe(MESSAGES_EN.SUBJECT_NAMES['MAT-123']);
+
+    languageService!.setLanguage('es');
+    fixture.detectChanges();
+    expect(nombreTarjeta()).toBe(MESSAGES.SUBJECT_NAMES['MAT-123']);
+    http.expectNone(endpoint);
   });
 
   it('muestra el estado vacío cuando la API devuelve una lista vacía', async () => {
