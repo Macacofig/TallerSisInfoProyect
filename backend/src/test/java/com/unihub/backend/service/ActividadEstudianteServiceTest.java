@@ -23,12 +23,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -77,6 +81,30 @@ class ActividadEstudianteServiceTest {
         assertEquals("Calificar docente", actividad.getTitulo());
         assertEquals("Calificación a docente", actividad.getDescripcion());
         assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, actividad.getEstado());
+    }
+
+    @Test
+    void deberiaRegistrarSolicitudDeAyudaConContextoRealSinDatosPrivados() {
+        Estudiante solicitante = estudiante(11L);
+        Estudiante ayudante = estudiante(33L);
+        Materia materia = materia(44L, "Álgebra lineal");
+        LocalDateTime antes = LocalDateTime.now(ZoneId.of("America/La_Paz"));
+
+        actividadService.registrarSolicitudAyuda(solicitante, materia, ayudante);
+
+        LocalDateTime despues = LocalDateTime.now(ZoneId.of("America/La_Paz"));
+        ActividadEstudiante actividad = capturarActividadGuardada();
+        assertSame(solicitante, actividad.getEstudiante());
+        assertEquals("Solicitaste ayuda en Álgebra lineal", actividad.getTitulo());
+        assertEquals("Solicitud de ayuda enviada al ayudante Estudiante 33.", actividad.getDescripcion());
+        assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, actividad.getEstado());
+        assertTrue(!actividad.getFechaHoraRegistro().isBefore(antes)
+                && !actividad.getFechaHoraRegistro().isAfter(despues));
+        String contenido = actividad.getTitulo() + actividad.getDescripcion();
+        assertFalse(contenido.contains(solicitante.getTelefono()));
+        assertFalse(contenido.contains(ayudante.getTelefono()));
+        assertFalse(contenido.contains(solicitante.getCorreoElectronico()));
+        assertFalse(contenido.contains(ayudante.getCorreoElectronico()));
     }
 
     @Test

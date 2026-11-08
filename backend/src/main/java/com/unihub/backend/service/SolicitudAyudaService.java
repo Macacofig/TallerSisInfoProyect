@@ -28,6 +28,7 @@ public class SolicitudAyudaService {
     private final SolicitudAyudaMapper solicitudAyudaMapper;
 
     private final NotificacionService notificacionService;
+    private final ActividadEstudianteService actividadEstudianteService;
 
     public SolicitudAyudaService(
             SolicitudAyudaRepository solicitudAyudaRepository,
@@ -35,7 +36,8 @@ public class SolicitudAyudaService {
             AyudanteMateriaRepository ayudanteMateriaRepository,
             MateriaRepository materiaRepository,
             SolicitudAyudaMapper solicitudAyudaMapper,
-            NotificacionService notificacionService
+            NotificacionService notificacionService,
+            ActividadEstudianteService actividadEstudianteService
     ) {
         this.solicitudAyudaRepository = solicitudAyudaRepository;
         this.estudianteRepository = estudianteRepository;
@@ -43,6 +45,7 @@ public class SolicitudAyudaService {
         this.materiaRepository = materiaRepository;
         this.solicitudAyudaMapper = solicitudAyudaMapper;
         this.notificacionService = notificacionService;
+        this.actividadEstudianteService = actividadEstudianteService;
     }
 
     @Transactional
@@ -67,6 +70,8 @@ public class SolicitudAyudaService {
         notificacionService.crear(solicitud.getAyudante().getEstudiante(), SOLICITUD_AYUDA_RECIBIDA,
                 "Nueva solicitud de ayuda", "Recibiste una solicitud de ayuda para " + materia.getNombre(),
                 "SOLICITUD_AYUDA", solicitud.getId());
+        actividadEstudianteService.registrarSolicitudAyuda(
+                solicitud.getEstudiante(), solicitud.getMateria(), solicitud.getAyudante().getEstudiante());
         LogHelper.info(SolicitudAyudaService.class, "Solicitud de ayuda creada por estudiante " + request.idEstudiante() + " para ayudante " + request.idAyudante() + " en materia " + request.idMateria());
         return solicitudAyudaMapper.toResponse(solicitud);
     }

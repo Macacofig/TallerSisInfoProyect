@@ -12,6 +12,7 @@ import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.repository.MateriaRepository;
 import com.unihub.backend.repository.SolicitudAyudaRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,12 +45,19 @@ class SolicitudAyudaServiceTest {
     private MateriaRepository materiaRepository;
 
     @Mock private NotificacionService notificacionService;
+    @Mock private ActividadEstudianteService actividadEstudianteService;
     private SolicitudAyudaService service;
     private SolicitudAyudaMapper mapper = new SolicitudAyudaMapper();
 
     @BeforeEach
     void setUp() {
-        service = new SolicitudAyudaService(solicitudAyudaRepository, estudianteRepository, ayudanteMateriaRepository, materiaRepository, mapper, notificacionService);
+        service = new SolicitudAyudaService(solicitudAyudaRepository, estudianteRepository, ayudanteMateriaRepository,
+                materiaRepository, mapper, notificacionService, actividadEstudianteService);
+    }
+
+    @AfterEach
+    void noDebeRegistrarActividadAdicionalEnNingunaOperacion() {
+        verifyNoMoreInteractions(actividadEstudianteService);
     }
 
     private Estudiante estudiante(Long id) {
@@ -131,6 +139,8 @@ class SolicitudAyudaServiceTest {
         verify(notificacionService, times(1)).crear(same(ayudanteEst),
                 eq(com.unihub.backend.entity.Notificacion.TipoNotificacion.SOLICITUD_AYUDA_RECIBIDA),
                 anyString(), contains(materia.getNombre()), eq("SOLICITUD_AYUDA"), eq(guardada.getId()));
+        verify(actividadEstudianteService, times(1)).registrarSolicitudAyuda(
+                same(estudiante), same(materia), same(ayudanteEst));
         assertSame(materia, guardada.getMateria());
         assertSame(materia, guardada.getAyudante().getMateria());
         verify(estudianteRepository).findById(estudianteId);

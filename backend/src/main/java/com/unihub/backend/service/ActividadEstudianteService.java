@@ -114,6 +114,16 @@ public class ActividadEstudianteService {
     }
 
     @Transactional
+    public void registrarSolicitudAyuda(Estudiante estudiante, Materia materia, Estudiante ayudante) {
+        registrarActividad(
+                estudiante,
+                "Solicitaste ayuda en " + materia.getNombre(),
+                "Solicitud de ayuda enviada al ayudante " + ayudante.getNombre() + ".",
+                ActividadEstudiante.EstadoActividad.REALIZADO
+        );
+    }
+
+    @Transactional
     public void registrarSolicitudAyudante(Estudiante estudiante, Materia materia) {
         if (estudiante == null || materia == null) {
             return;
