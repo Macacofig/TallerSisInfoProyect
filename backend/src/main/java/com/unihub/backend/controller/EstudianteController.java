@@ -80,6 +80,7 @@ public class EstudianteController {
     ) {
         jwtService.verificarPropiedad(authenticatedStudentId, id);
         return ResponseEntity.ok(estudianteService.agregarMateriasAprobadas(id, request));
+    }
     @PostMapping(RECUPERAR_CONTRASENA_URL)
     public ResponseEntity<EstudianteResponse> recuperarContrasena(
             @Valid @RequestBody EstudianteRecuperarContrasenaRequest request
