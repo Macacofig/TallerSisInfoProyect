@@ -6,6 +6,7 @@ import com.unihub.backend.dto.actividad.ActividadEstudianteResponse;
 import com.unihub.backend.entity.ActividadEstudiante;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
+import com.unihub.backend.exception.AccesoNoAutorizadoException;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.ActividadEstudianteMapper;
 import com.unihub.backend.repository.ActividadEstudianteRepository;
@@ -13,6 +14,9 @@ import com.unihub.backend.repository.EstudianteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,7 +50,8 @@ class ActividadEstudianteServiceTest {
         actividadService = new ActividadEstudianteService(
                 actividadRepository,
                 estudianteRepository,
-                new ActividadEstudianteMapper()
+                new ActividadEstudianteMapper(),
+                new JwtService(java.util.UUID.randomUUID().toString(), 3600)
         );
     }
 
@@ -139,13 +144,34 @@ class ActividadEstudianteServiceTest {
         when(actividadRepository.findById(20L)).thenReturn(Optional.of(actividad));
         when(actividadRepository.save(actividad)).thenReturn(actividad);
 
-        ActividadEstudianteResponse response = actividadService.actualizar(20L,
+        ActividadEstudianteResponse response = actividadService.actualizar(20L, 8L,
                 new ActividadEstudianteActualizacionRequest(
                         "Título nuevo", "Descripción nueva", ActividadEstudiante.EstadoActividad.APROBADA));
 
         assertEquals("Título nuevo", response.titulo());
         assertEquals("Descripción nueva", response.descripcion());
         assertEquals("APROBADA", response.estado());
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(longs = {99L})
+    void deberiaRechazarActualizacionSinPropiedadAntesDeMutar(Long authenticatedStudentId) {
+        LocalDateTime fecha = LocalDateTime.of(2026, 11, 7, 10, 30);
+        ActividadEstudiante actividad = new ActividadEstudiante(
+                estudiante(8L), "Título original", "Descripción original", fecha,
+                ActividadEstudiante.EstadoActividad.PENDIENTE);
+        when(actividadRepository.findById(20L)).thenReturn(Optional.of(actividad));
+
+        assertThrows(AccesoNoAutorizadoException.class, () -> actividadService.actualizar(
+                20L, authenticatedStudentId, new ActividadEstudianteActualizacionRequest(
+                        "Título modificado", "Descripción modificada", ActividadEstudiante.EstadoActividad.APROBADA)));
+
+        assertEquals("Título original", actividad.getTitulo());
+        assertEquals("Descripción original", actividad.getDescripcion());
+        assertEquals(ActividadEstudiante.EstadoActividad.PENDIENTE, actividad.getEstado());
+        assertEquals(fecha, actividad.getFechaHoraRegistro());
+        verify(actividadRepository, never()).save(any(ActividadEstudiante.class));
     }
 
     @Test

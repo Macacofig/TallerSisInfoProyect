@@ -31,15 +31,18 @@ public class ActividadEstudianteService {
     private final ActividadEstudianteRepository actividadRepository;
     private final EstudianteRepository estudianteRepository;
     private final ActividadEstudianteMapper actividadMapper;
+    private final JwtService jwtService;
 
     public ActividadEstudianteService(
             ActividadEstudianteRepository actividadRepository,
             EstudianteRepository estudianteRepository,
-            ActividadEstudianteMapper actividadMapper
+            ActividadEstudianteMapper actividadMapper,
+            JwtService jwtService
     ) {
         this.actividadRepository = actividadRepository;
         this.estudianteRepository = estudianteRepository;
         this.actividadMapper = actividadMapper;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -60,10 +63,13 @@ public class ActividadEstudianteService {
     }
 
     @Transactional
-    public ActividadEstudianteResponse actualizar(Long id, ActividadEstudianteActualizacionRequest request) {
+    public ActividadEstudianteResponse actualizar(
+            Long id, Long authenticatedStudentId, ActividadEstudianteActualizacionRequest request
+    ) {
         ActividadEstudiante actividad = actividadRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("La actividad no existe"));
 
+        jwtService.verificarPropiedad(authenticatedStudentId, actividad.getEstudiante().getId());
         actividad.actualizar(request.titulo(), request.descripcion(), request.estado());
         ActividadEstudianteResponse response = actividadMapper.toResponse(actividadRepository.save(actividad));
         LogHelper.info(ActividadEstudianteService.class, "Actividad de estudiante actualizada correctamente");
