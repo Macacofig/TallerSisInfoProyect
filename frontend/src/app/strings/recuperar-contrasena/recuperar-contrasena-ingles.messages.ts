@@ -1,0 +1,28 @@
+import { RECUPERAR_MESSAGES } from './recuperar-contrasena.messages';
+
+export const RECUPERAR_MESSAGES_EN: Record<keyof typeof RECUPERAR_MESSAGES, string> = {
+  TITLE: 'Reset password',
+  SUBTITLE: 'Enter your institutional email and choose a new password.',
+  EMAIL: 'Email address',
+  PASSWORD: 'New password',
+  CONFIRM: 'Confirm new password',
+  SUBMIT: 'Reset password',
+  LOADING: 'Updating password…',
+  BACK: 'Back to sign in',
+  SUCCESS: 'Password updated successfully.',
+  REQUIRED_EMAIL: 'Email is required.',
+  INVALID_EMAIL: 'Enter a valid email ending in @ucb.edu.bo.',
+  REQUIRED_PASSWORD: 'A new password is required.',
+  REQUIRED_CONFIRM: 'Confirm your new password.',
+  MIN_LENGTH: 'Use at least 8 characters.',
+  UPPERCASE: 'Include at least one uppercase letter.',
+  NUMBER: 'Include at least one number.',
+  SPECIAL: 'Include at least one special character.',
+  MISMATCH: 'Passwords must match.',
+  HINT: 'At least 8 characters, one uppercase letter, one number and one special character.',
+  VALIDATION: 'Check the information entered and try again.',
+  NOT_FOUND: 'No account was found with that email address.',
+  SERVER: 'Could not update your password. Please try again later.',
+  CONNECTION: 'Could not connect to the server. Check your connection and try again.',
+  TIMEOUT: 'The request took too long. Please try again.',
+};
