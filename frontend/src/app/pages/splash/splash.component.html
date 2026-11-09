@@ -21,6 +21,32 @@
 
     <p>{{ MESSAGES.TAGLINE }}</p>
 
+    <div
+      class="progress-track"
+      role="progressbar"
+      [attr.aria-label]="MESSAGES.PROGRESS_LABEL"
+      [attr.aria-valuenow]="progress()"
+      aria-valuemin="0"
+      aria-valuemax="100">
+      <div class="progress-fill" [style.width.%]="progress()"></div>
+    </div>
+
+    <p class="status-message" aria-live="polite">
+      @if (failedService() === 'backend') {
+        {{ MESSAGES.BACKEND_ERROR }}
+      } @else if (failedService() === 'database') {
+        {{ MESSAGES.DATABASE_ERROR }}
+      } @else {
+        {{ MESSAGES[stage()] }}
+      }
+    </p>
+
+    @if (failedService()) {
+      <button class="retry-button" type="button" (click)="retryConnection()">
+        {{ MESSAGES.RETRY }}
+      </button>
+    }
+
   </div>
 
 </div>

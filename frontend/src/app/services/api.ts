@@ -32,9 +32,13 @@ export class ApiService {
     );
   }
 
-  test() {
+  test(): Observable<string> {
     return this.http.get(`${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.TEST}`, {
       responseType: 'text'
     });
+  }
+
+  checkDatabase(): Observable<{ status: 'UP' }> {
+    return this.http.get<{ status: 'UP' }>(`${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.DATABASE_HEALTH}`);
   }
 }

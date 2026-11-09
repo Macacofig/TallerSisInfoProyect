@@ -143,7 +143,7 @@ docker compose ps
 docker compose logs --tail=100 backend frontend
 ```
 
-Abre `http://localhost:4200/materias`. Con `BACKEND_PORT=8081`, comprueba `http://localhost:8081/api/test`: debe responder `UniHub funcionando`. Esta ruta verifica la API; consulta además el catálogo para comprobar el acceso a datos.
+Abre `http://localhost:4200/` para visualizar el splash. Con `BACKEND_PORT=8081`, `http://localhost:8081/api/test` debe responder `UniHub funcionando`; `http://localhost:8081/api/health/database` devuelve `{"status":"UP"}` solo si hay una conexión válida con PostgreSQL (si no, responde HTTP 503). Luego abre `http://localhost:4200/materias` para consultar el catálogo.
 
 `depends_on` ordena el inicio, pero no garantiza que la API esté lista. Espera a que el backend termine de arrancar antes de probar el frontend.
 
