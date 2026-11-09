@@ -23,6 +23,7 @@ export const APP_CONFIG = {
       DOCENTES: '/docentes',
       CALIFICACION_DOCENTE: '/calificacion-docente',
       TEST: '/test',
+      DATABASE_HEALTH: '/health/database',
       AUTH_REGISTER: '/estudiantes',
       AUTH_LOGIN: '/estudiantes/login',
       AUTH_RECUPERAR_CONTRASENA: '/estudiantes/recuperar-contrasena',

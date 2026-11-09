@@ -89,4 +89,11 @@ describe('Api', () => {
       .expectOne({ method: 'GET', url: 'https://tallersisinfoproyect.onrender.com/api/materias/carreras' })
       .flush(carreras);
   });
+
+  it('comprueba la conexión real de la base de datos mediante el endpoint de salud', () => {
+    service.checkDatabase().subscribe(respuesta => expect(respuesta).toEqual({ status: 'UP' }));
+    TestBed.inject(HttpTestingController)
+      .expectOne({ method: 'GET', url: 'https://tallersisinfoproyect.onrender.com/api/health/database' })
+      .flush({ status: 'UP' });
+  });
 });
