@@ -215,7 +215,8 @@ export class MateriasComponent implements OnInit {
     return presentarNombreMateriaPorCodigo(
       materia.codigo,
       materia.nombre,
-      this.MESSAGES.SUBJECT_NAMES
+      this.MESSAGES.SUBJECT_NAMES,
+      true
     );
   }
 

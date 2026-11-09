@@ -1,4 +1,8 @@
-import { normalizarTexto, presentarNombreMateria } from './text.utils';
+import {
+  normalizarTexto,
+  presentarNombreMateria,
+  presentarNombreMateriaPorCodigo
+} from './text.utils';
 
 describe('utilidades de texto', () => {
   it.each([
@@ -21,5 +25,16 @@ describe('utilidades de texto', () => {
 
   it('conserva un nombre canónico proporcionado por el backend', () => {
     expect(presentarNombreMateria('Programación I')).toBe('Programación I');
+  });
+
+  it('resuelve las traducciones aunque el código varíe en mayúsculas y conserva el nombre original si falta', () => {
+    const traducciones = { 'MAT-123': 'Linear Algebra' };
+
+    expect(presentarNombreMateriaPorCodigo(' mat-123 ', 'Álgebra lineal', traducciones))
+      .toBe('Linear Algebra');
+    expect(presentarNombreMateriaPorCodigo('new-999', '  materia nueva  ', traducciones, true))
+      .toBe('  materia nueva  ');
+    expect(presentarNombreMateriaPorCodigo('new-999', 'programacion 1', traducciones))
+      .toBe('Programación 1');
   });
 });

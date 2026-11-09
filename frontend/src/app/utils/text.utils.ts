@@ -46,7 +46,9 @@ export function presentarNombreMateria(nombre: string): string {
 export function presentarNombreMateriaPorCodigo(
   codigo: string,
   nombre: string,
-  traducciones: Readonly<Record<string, string>>
+  traducciones: Readonly<Record<string, string>>,
+  conservarNombreOriginal = false
 ): string {
-  return traducciones[codigo] ?? presentarNombreMateria(nombre);
+  return traducciones[codigo.trim().toUpperCase()]
+    ?? (conservarNombreOriginal ? nombre : presentarNombreMateria(nombre));
 }
