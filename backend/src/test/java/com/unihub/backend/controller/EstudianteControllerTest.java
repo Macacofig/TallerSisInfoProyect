@@ -2,6 +2,7 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.exception.CredencialesInvalidasException;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
+import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -53,23 +55,23 @@ class EstudianteControllerTest {
         ));
 
         mockMvc.perform(post("/api/estudiantes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "nombre": "  Ana   Pérez  ",
-                                  "contrasena": "ClaveSegura1!",
-                                  "telefono": "71234567",
-                                  "correoElectronico": "ana@ucb.edu.bo",
-                                  "carrera": "Ingeniería   de Sistemas"
-                                }
-                                """))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nombre").value("Ana Pérez"))
-                .andExpect(jsonPath("$.telefono").value("71234567"))
-                .andExpect(jsonPath("$.correoElectronico").value("ana@ucb.edu.bo"))
-                .andExpect(jsonPath("$.carrera").value("Ingeniería de Sistemas"))
-                .andExpect(jsonPath("$.contrasena").doesNotExist());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "nombre": "  Ana   Pérez  ",
+                    "contrasena": "ClaveSegura1!",
+                    "telefono": "71234567",
+                    "correoElectronico": "ana@ucb.edu.bo",
+                    "carrera": "Ingeniería   de Sistemas"
+                }
+            """))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.nombre").value("Ana Pérez"))
+            .andExpect(jsonPath("$.telefono").value("71234567"))
+            .andExpect(jsonPath("$.correoElectronico").value("ana@ucb.edu.bo"))
+            .andExpect(jsonPath("$.carrera").value("Ingeniería de Sistemas"))
+            .andExpect(jsonPath("$.contrasena").doesNotExist());
 
         verify(estudianteService).registrar(any());
     }
@@ -107,52 +109,51 @@ class EstudianteControllerTest {
                 .andExpect(content().string("El correo ya ha sido registrado"));
     }
 
-        @Test
-        void deberiaResponder401CuandoLasCredencialesSonInvalidas() throws Exception {
-                doThrow(new CredencialesInvalidasException())
-                                .when(estudianteService).iniciarSesion(any());
+    @Test
+    void deberiaResponder401CuandoLasCredencialesSonInvalidas() throws Exception {
+        doThrow(new CredencialesInvalidasException())
+            .when(estudianteService).iniciarSesion(any());
 
-                mockMvc.perform(post("/api/estudiantes/login")
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .content("""
-                                                                {
-                                                                    "correoElectronico": "ana@ucb.edu.bo",
-                                                                    "contrasena": "incorrecta"
-                                                                }
-                                                                """))
-                                .andExpect(status().isUnauthorized());
-        }
-
-        @Test
-        void deberiaDevolverTokenYPerfilAlIniciarSesion() throws Exception {
-                when(estudianteService.iniciarSesion(any())).thenReturn(new EstudianteLoginResponse(
-                                "jwt-de-prueba",
-                                3600,
-                                new EstudianteResponse(1L, "Ana Pérez", "71234567", "ana@ucb.edu.bo", "Ingeniería")
-                ));
-
-                mockMvc.perform(post("/api/estudiantes/login")
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .content("""
-                                                                {
-                                                                    "correoElectronico": "ana@ucb.edu.bo",
-                                                                    "contrasena": "ClaveSegura1!"
-                                                                }
-                                                                """))
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.accessToken").value("jwt-de-prueba"))
-                                .andExpect(jsonPath("$.tokenType").value("Bearer"))
-                                .andExpect(jsonPath("$.expiresIn").value(3600))
-                                .andExpect(jsonPath("$.id").value(1))
-                                .andExpect(jsonPath("$.correoElectronico").value("ana@ucb.edu.bo"));
-        }
+        mockMvc.perform(post("/api/estudiantes/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "correoElectronico": "ana@ucb.edu.bo",
+                    "contrasena": "incorrecta"
+                }
+            """))
+        .andExpect(status().isUnauthorized());
+    }
 
     @Test
-    void deberiaRechazarTelefonoInvalido() throws Exception {
-        mockMvc.perform(post("/api/estudiantes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(cuerpo("ClaveSegura1!", "51234567", "ana@ucb.edu.bo")))
-                .andExpect(status().isBadRequest());
+    void deberiaDevolverTokenYPerfilAlIniciarSesion() throws Exception {
+        when(estudianteService.iniciarSesion(any())).thenReturn(new EstudianteLoginResponse(
+            "jwt-de-prueba",
+            3600,
+            new EstudianteResponse(1L, "Ana Pérez", "71234567", "ana@ucb.edu.bo", "Ingeniería")
+        ));
+
+        mockMvc.perform(post("/api/estudiantes/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "correoElectronico": "ana@ucb.edu.bo",
+                        "contrasena": "ClaveSegura1!"
+                    }
+                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("jwt-de-prueba"))
+                .andExpect(jsonPath("$.tokenType").value("Bearer"))
+                .andExpect(jsonPath("$.expiresIn").value(3600))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.correoElectronico").value("ana@ucb.edu.bo"));
+    }
+
+    @Test
+    void deberiaRechazarTelefonoInvalido() throws Exception {mockMvc.perform(post("/api/estudiantes")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(cuerpo("ClaveSegura1!", "51234567", "ana@ucb.edu.bo")))
+        .andExpect(status().isBadRequest());
 
         verify(estudianteService, never()).registrar(any());
     }
@@ -167,70 +168,128 @@ class EstudianteControllerTest {
         verify(estudianteService, never()).registrar(any());
     }
 
-        @Test
-        void deberiaActualizarTodosLosCampos() throws Exception {
-        when(estudianteService.actualizar(eq(1L), any()))
-            .thenReturn(new EstudianteResponse(
-                1L, "Ana María Pérez", "71234568", "ana.maria@ucb.edu.bo", "Medicina"
-            ));
+    @Test
+    void deberiaActualizarTodosLosCampos() throws Exception {
+    when(estudianteService.actualizar(eq(1L), any()))
+        .thenReturn(new EstudianteResponse(
+            1L, "Ana María Pérez", "71234568", "ana.maria@ucb.edu.bo", "Medicina"
+        ));
 
-        mockMvc.perform(put("/api/estudiantes/1")
+    mockMvc.perform(put("/api/estudiantes/1")
+            .requestAttr("authenticatedStudentId", 1L)
+            .header("Authorization", "Bearer jwt-valido")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "nombre": "Ana María Pérez",
+                    "telefono": "71234568",
+                    "carrera": "Medicina"
+                }
+                """))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.nombre").value("Ana María Pérez"))
+        .andExpect(jsonPath("$.telefono").value("71234568"))
+        .andExpect(jsonPath("$.correoElectronico").value("ana.maria@ucb.edu.bo"))
+        .andExpect(jsonPath("$.carrera").value("Medicina"))
+        .andExpect(jsonPath("$.contrasena").doesNotExist());
+
+    verify(estudianteService).actualizar(eq(1L), any());
+    }
+
+    @Test
+    void deberiaResponder404CuandoElEstudianteNoExiste() throws Exception {
+    doThrow(new ResourceNotFoundException("Estudiante no encontrado"))
+        .when(estudianteService).actualizar(eq(99L), any());
+
+    mockMvc.perform(put("/api/estudiantes/99")
+        .requestAttr("authenticatedStudentId", 99L)
+        .header("Authorization", "Bearer jwt-valido")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(cuerpoActualizacion("Ana Pérez", "71234567", "Ingeniería de Sistemas")))
+        .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deberiaRechazarActualizacionConNombreVacio() throws Exception {
+    mockMvc.perform(put("/api/estudiantes/1")
+            .requestAttr("authenticatedStudentId", 1L)
+            .header("Authorization", "Bearer jwt-valido")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(cuerpoActualizacion("", "71234567", "Ingeniería")))
+        .andExpect(status().isBadRequest());
+
+    verify(estudianteService, never()).actualizar(anyLong(), any());
+    }
+
+    @Test
+    void deberiaRechazarActualizacionConTelefonoInvalido() throws Exception {
+    mockMvc.perform(put("/api/estudiantes/1")
+            .requestAttr("authenticatedStudentId", 1L)
+            .header("Authorization", "Bearer jwt-valido")
+            .contentType(MediaType.APPLICATION_JSON)
+        .content(cuerpoActualizacion("Ana Pérez", "51234567", "Ingeniería")))
+        .andExpect(status().isBadRequest());
+
+    verify(estudianteService, never()).actualizar(anyLong(), any());
+    }
+
+    @Test
+    void deberiaAgregarMateriasAprobadas() throws Exception {
+        when(estudianteService.agregarMateriasAprobadas(eq(1L), any())).thenReturn(
+                new EstudianteMateriasAprobadasResponse(1L, List.of("SIS-111", "SIS-112")));
+
+        mockMvc.perform(post("/api/estudiantes/1/materias-aprobadas")
                 .requestAttr("authenticatedStudentId", 1L)
                 .header("Authorization", "Bearer jwt-valido")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "nombre": "Ana María Pérez",
-                      "telefono": "71234568",
-                      "carrera": "Medicina"
+                        "materias": ["SIS-111", "SIS-112"]
                     }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.nombre").value("Ana María Pérez"))
-            .andExpect(jsonPath("$.telefono").value("71234568"))
-            .andExpect(jsonPath("$.correoElectronico").value("ana.maria@ucb.edu.bo"))
-            .andExpect(jsonPath("$.carrera").value("Medicina"))
-            .andExpect(jsonPath("$.contrasena").doesNotExist());
+                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idEstudiante").value(1))
+                .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-111"))
+                .andExpect(jsonPath("$.materiasAprobadas[1]").value("SIS-112"));
 
-        verify(estudianteService).actualizar(eq(1L), any());
-        }
+        verify(estudianteService).agregarMateriasAprobadas(eq(1L), any());
+    }
 
-        @Test
-        void deberiaResponder404CuandoElEstudianteNoExiste() throws Exception {
+    @Test
+    void deberiaResponder404AlAgregarMateriasSiElEstudianteNoExiste() throws Exception {
         doThrow(new ResourceNotFoundException("Estudiante no encontrado"))
-            .when(estudianteService).actualizar(eq(99L), any());
+                .when(estudianteService).agregarMateriasAprobadas(eq(99L), any());
 
-        mockMvc.perform(put("/api/estudiantes/99")
-            .requestAttr("authenticatedStudentId", 99L)
-            .header("Authorization", "Bearer jwt-valido")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(cuerpoActualizacion("Ana Pérez", "71234567", "Ingeniería de Sistemas")))
-            .andExpect(status().isNotFound());
-        }
-
-        @Test
-        void deberiaRechazarActualizacionConNombreVacio() throws Exception {
-        mockMvc.perform(put("/api/estudiantes/1")
-                .requestAttr("authenticatedStudentId", 1L)
+        mockMvc.perform(post("/api/estudiantes/99/materias-aprobadas")
+                .requestAttr("authenticatedStudentId", 99L)
                 .header("Authorization", "Bearer jwt-valido")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(cuerpoActualizacion("", "71234567", "Ingeniería")))
-            .andExpect(status().isBadRequest());
+                .content("""
+                        {
+                            "materias": ["SIS-111"]
+                        }
+                """))
+                .andExpect(status().isNotFound());
+    }
 
-        verify(estudianteService, never()).actualizar(anyLong(), any());
-        }
+    @Test
+    void deberiaImpedirAgregarMateriasAOtroEstudiante() throws Exception {
+        doThrow(new com.unihub.backend.exception.AccesoNoAutorizadoException())
+                .when(jwtService).verificarPropiedad(2L, 1L);
 
-        @Test
-        void deberiaRechazarActualizacionConTelefonoInvalido() throws Exception {
-        mockMvc.perform(put("/api/estudiantes/1")
-                .requestAttr("authenticatedStudentId", 1L)
-                .header("Authorization", "Bearer jwt-valido")
+        mockMvc.perform(post("/api/estudiantes/1/materias-aprobadas")
+                .requestAttr("authenticatedStudentId", 2L)
+                .header("Authorization", "Bearer jwt-ajeno")
                 .contentType(MediaType.APPLICATION_JSON)
-            .content(cuerpoActualizacion("Ana Pérez", "51234567", "Ingeniería")))
-            .andExpect(status().isBadRequest());
+                .content("""
+                    {
+                        "materias": ["SIS-111"]
+                    }
+                """))
+                .andExpect(status().isForbidden());
 
-        verify(estudianteService, never()).actualizar(anyLong(), any());
-        }
+        verify(estudianteService, never()).agregarMateriasAprobadas(anyLong(), any());
+    }
 
     @Test
     void deberiaRecuperarContrasena() throws Exception {
@@ -284,12 +343,12 @@ class EstudianteControllerTest {
 
     private String cuerpoRecuperacion(String correo, String nuevaContrasena, String confirmarContrasena) {
         return """
-                {
-                  "correoElectronico": "%s",
-                  "nuevaContrasena": "%s",
-                  "confirmarNuevaContrasena": "%s"
-                }
-                """.formatted(correo, nuevaContrasena, confirmarContrasena);
+            {
+                "correoElectronico": "%s",
+                "nuevaContrasena": "%s",
+                "confirmarNuevaContrasena": "%s"
+            }
+        """.formatted(correo, nuevaContrasena, confirmarContrasena);
     }
 
     private String cuerpo(String contrasena) {
@@ -326,23 +385,23 @@ class EstudianteControllerTest {
 
     private String cuerpo(String contrasena, String telefono, String correo) {
         return """
-                {
-                  "nombre": "Ana Pérez",
-                  "contrasena": "%s",
-                  "telefono": "%s",
-                  "correoElectronico": "%s",
-                  "carrera": "Ingeniería de Sistemas"
-                }
-                """.formatted(contrasena, telefono, correo);
+            {
+                "nombre": "Ana Pérez",
+                "contrasena": "%s",
+                "telefono": "%s",
+                "correoElectronico": "%s",
+                "carrera": "Ingeniería de Sistemas"
+            }
+        """.formatted(contrasena, telefono, correo);
     }
 
-        private String cuerpoActualizacion(String nombre, String telefono, String carrera) {
-                return """
-                                {
-                                    "nombre": "%s",
-                                    "telefono": "%s",
-                                    "carrera": "%s"
-                                }
-                                """.formatted(nombre, telefono, carrera);
-        }
+    private String cuerpoActualizacion(String nombre, String telefono, String carrera) {
+        return """
+            {
+                "nombre": "%s",
+                "telefono": "%s",
+                "carrera": "%s"
+            }
+        """.formatted(nombre, telefono, carrera);
+    }
 }

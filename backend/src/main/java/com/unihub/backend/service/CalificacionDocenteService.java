@@ -33,6 +33,7 @@ public class CalificacionDocenteService {
 	private final DocenteMateriaRepository docenteMateriaRepository;
 	private final MateriaRepository materiaRepository;
 	private final EstudianteRepository estudianteRepository;
+	private final ActividadEstudianteService actividadEstudianteService;
 
 	public CalificacionDocenteService(
 			CalificacionDocenteRepository calificacionRepository,
@@ -40,7 +41,8 @@ public class CalificacionDocenteService {
 			CalificacionDocenteMapper calificacionMapper,
 			DocenteMateriaRepository docenteMateriaRepository,
 			MateriaRepository materiaRepository,
-			EstudianteRepository estudianteRepository
+			EstudianteRepository estudianteRepository,
+			ActividadEstudianteService actividadEstudianteService
 	) {
 		this.calificacionRepository = calificacionRepository;
 		this.docenteRepository = docenteRepository;
@@ -48,6 +50,7 @@ public class CalificacionDocenteService {
 		this.docenteMateriaRepository = docenteMateriaRepository;
 		this.materiaRepository = materiaRepository;
 		this.estudianteRepository = estudianteRepository;
+		this.actividadEstudianteService = actividadEstudianteService;
 	}
 
 	public CalificacionDocenteResponse crear(CalificacionDocenteRequest request) {
@@ -72,6 +75,7 @@ public class CalificacionDocenteService {
 
 		CalificacionDocente calificacion = calificacionMapper.toEntity(request, docente, materia, estudiante);
 		CalificacionDocenteResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
+		actividadEstudianteService.registrarCalificacionDocente(estudiante);
 		LogHelper.info(CalificacionDocenteService.class, "Calificación docente creada correctamente");
 		return response;
 	}

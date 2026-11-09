@@ -8,6 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "estudiantes")
@@ -34,6 +39,10 @@ public class Estudiante {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
     private Rol rol = Rol.STUDENT;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "materias_aprobadas", nullable = false, columnDefinition = "text[]")
+    private List<String> materiasAprobadas = new ArrayList<>();
 
     protected Estudiante() {
     }
@@ -83,6 +92,24 @@ public class Estudiante {
 
     public String getCarrera() {
         return carrera;
+    }
+
+    public List<String> getMateriasAprobadas() {
+        return materiasAprobadas;
+    }
+
+    public void agregarMateriasAprobadas(List<String> materias) {
+        if (materias == null) {
+            return;
+        }
+        if (this.materiasAprobadas == null) {
+            this.materiasAprobadas = new ArrayList<>();
+        }
+        for (String materia : materias) {
+            if (materia != null && !materia.isBlank() && !this.materiasAprobadas.contains(materia)) {
+                this.materiasAprobadas.add(materia);
+            }
+        }
     }
 
     public void actualizar(

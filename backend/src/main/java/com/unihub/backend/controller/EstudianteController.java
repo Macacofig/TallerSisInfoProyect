@@ -3,6 +3,8 @@ package com.unihub.backend.controller;
 import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
+import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
 import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.unihub.backend.common.Constants.Estudiante.ACTUALIZAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.LOGIN_URL;
+import static com.unihub.backend.common.Constants.Estudiante.MATERIAS_APROBADAS_URL;
 import static com.unihub.backend.common.Constants.Estudiante.RECUPERAR_CONTRASENA_URL;
 import static com.unihub.backend.common.Constants.Estudiante.REGISTRAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.TELEFONO_URL;
@@ -69,6 +72,15 @@ public class EstudianteController {
         return ResponseEntity.ok(estudianteService.iniciarSesion(request));
     }
 
+    @PostMapping(MATERIAS_APROBADAS_URL)
+    public ResponseEntity<EstudianteMateriasAprobadasResponse> agregarMateriasAprobadas(
+            @PathVariable Long id,
+            @RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId,
+            @Valid @RequestBody EstudianteMateriasAprobadasRequest request
+    ) {
+        jwtService.verificarPropiedad(authenticatedStudentId, id);
+        return ResponseEntity.ok(estudianteService.agregarMateriasAprobadas(id, request));
+    }
     @PostMapping(RECUPERAR_CONTRASENA_URL)
     public ResponseEntity<EstudianteResponse> recuperarContrasena(
             @Valid @RequestBody EstudianteRecuperarContrasenaRequest request
