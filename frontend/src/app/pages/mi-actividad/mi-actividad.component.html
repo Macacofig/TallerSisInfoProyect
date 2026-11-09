@@ -1,0 +1,65 @@
+<section class="actividad" aria-labelledby="actividad-title">
+  <header class="actividad__header">
+    <p class="actividad__eyebrow">{{ mensajes.EYEBROW }}</p>
+    <h1 id="actividad-title">{{ mensajes.PAGE_TITLE }}</h1>
+    @if (usuario(); as persona) {
+      <p class="actividad__nombre">{{ persona.nombre }}</p>
+      @if (persona.carrera) {
+        <p class="actividad__carrera">{{ persona.carrera }}</p>
+      }
+    }
+  </header>
+
+  <section class="actividad__card" aria-labelledby="bitacora-title"
+    [attr.aria-busy]="vista().estado === 'cargando'">
+    <h2 id="bitacora-title">{{ mensajes.LOG_TITLE }}</h2>
+
+    @switch (vista().estado) {
+      @case ('cargando') {
+        <p class="actividad__notice" role="status">{{ mensajes.LOADING }}</p>
+      }
+      @case ('sesion') {
+        <p class="actividad__notice" role="status">{{ mensajes.SESSION_REQUIRED }}</p>
+      }
+      @case ('error') {
+        <div class="actividad__notice">
+          <p role="alert">{{ mensajes.ERROR }}</p>
+          <button type="button" class="actividad__retry" (click)="reintentar()">{{ mensajes.RETRY }}</button>
+        </div>
+      }
+      @case ('listo') {
+        @if (vista().actividades.length === 0) {
+          <p class="actividad__notice" role="status">{{ mensajes.EMPTY }}</p>
+        } @else {
+          <ul class="actividad__list" [attr.aria-label]="mensajes.LIST_LABEL">
+            @for (actividad of vista().actividades; track actividad.id) {
+              <li class="actividad__row">
+                <span class="actividad__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <circle cx="12" cy="12" r="8.5" />
+                    <path d="M12 7v5l3 2" />
+                  </svg>
+                </span>
+                <div class="actividad__body">
+                  <h3>{{ actividad.titulo }}</h3>
+                  <p>{{ actividad.descripcion }}</p>
+                </div>
+                <div class="actividad__meta">
+                  @if (formatearFecha(actividad.fechaHoraRegistro); as fecha) {
+                    <time [attr.datetime]="actividad.fechaHoraRegistro">{{ fecha }}</time>
+                  } @else {
+                    <span>{{ mensajes.DATE_UNAVAILABLE }}</span>
+                  }
+                  <span class="actividad__badge" [attr.data-estado]="actividad.estado">
+                    {{ mensajes.ESTADOS[actividad.estado] }}
+                  </span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  </section>
+</section>

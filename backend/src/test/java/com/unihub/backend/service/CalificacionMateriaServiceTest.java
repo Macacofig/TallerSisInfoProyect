@@ -104,7 +104,7 @@ class CalificacionMateriaServiceTest {
 
         calificacionService.crear(request);
 
-        verify(actividadEstudianteService).registrarCalificacionMateria(estudiante);
+        verify(actividadEstudianteService).registrarCalificacionMateria(estudiante, materia);
         mostrarResultado("Registrar actividad al calificar una materia con estudiante");
     }
 

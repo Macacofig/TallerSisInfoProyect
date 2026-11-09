@@ -30,6 +30,7 @@ export const APP_CONFIG = {
       SOLICITUD_AYUDANTE: '/solicitud-ayudante',
       SOLICITUD_AYUDA: '/solicitud-ayuda',
       NOTIFICACIONES: '/notificaciones',
+      ACTIVIDAD_ESTUDIANTE: '/actividad-estudiante',
     },
   },
 

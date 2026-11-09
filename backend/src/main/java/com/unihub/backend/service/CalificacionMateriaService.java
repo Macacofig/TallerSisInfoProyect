@@ -13,6 +13,7 @@ import com.unihub.backend.repository.CalificacionMateriaRepository;
 import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.repository.MateriaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ public class CalificacionMateriaService {
 	this.actividadEstudianteService = actividadEstudianteService;
     }
 
+    @Transactional
     public CalificacionMateriaResponse crear(CalificacionMateriaRequest request) {
 	Materia materia = materiaRepository.findById(request.idMateria())
 		.orElseThrow(() -> new IllegalArgumentException("La materia no existe"));
@@ -54,7 +56,7 @@ public class CalificacionMateriaService {
 	CalificacionMateria calificacion = calificacionMapper.toEntity(request, materia, estudiante);
 
 		CalificacionMateriaResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
-		actividadEstudianteService.registrarCalificacionMateria(estudiante);
+		actividadEstudianteService.registrarCalificacionMateria(estudiante, materia);
 		LogHelper.info(CalificacionMateriaService.class, "Calificación de materia creada correctamente");
 		return response;
     }

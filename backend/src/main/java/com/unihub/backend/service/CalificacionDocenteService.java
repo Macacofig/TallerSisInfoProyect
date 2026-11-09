@@ -16,6 +16,7 @@ import com.unihub.backend.repository.DocenteMateriaRepository;
 import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.repository.MateriaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class CalificacionDocenteService {
 		this.actividadEstudianteService = actividadEstudianteService;
 	}
 
+	@Transactional
 	public CalificacionDocenteResponse crear(CalificacionDocenteRequest request) {
 		Docente docente = docenteRepository.findById(request.idDocente())
 				.orElseThrow(() -> new IllegalArgumentException("El docente no existe"));
@@ -75,7 +77,7 @@ public class CalificacionDocenteService {
 
 		CalificacionDocente calificacion = calificacionMapper.toEntity(request, docente, materia, estudiante);
 		CalificacionDocenteResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
-		actividadEstudianteService.registrarCalificacionDocente(estudiante);
+		actividadEstudianteService.registrarCalificacionDocente(estudiante, docente, materia);
 		LogHelper.info(CalificacionDocenteService.class, "Calificación docente creada correctamente");
 		return response;
 	}
