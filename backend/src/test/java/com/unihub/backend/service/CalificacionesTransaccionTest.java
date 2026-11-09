@@ -141,6 +141,23 @@ class CalificacionesTransaccionTest {
         verifyNoMoreInteractions(actividades);
         assertSame(estudiante, captor.getValue().getEstudiante());
         assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, captor.getValue().getEstado());
+        String contenido = captor.getValue().getTitulo() + captor.getValue().getDescripcion();
+        assertTrue(contenido.contains("Álgebra lineal"));
+        if (tipo == Tipo.DOCENTE) assertTrue(contenido.contains("Rocío Docente"));
+        assertFalse(contenido.contains(estudiante.getCorreoElectronico()));
+        assertFalse(contenido.contains(estudiante.getTelefono()));
+        assertFalse(contenido.contains("Lógica"));
+        assertFalse(contenido.contains("Practico"));
+        verify(materias).findById(22L);
+        verify(estudiantes).findById(11L);
+        verifyNoMoreInteractions(materias, estudiantes);
+        if (tipo == Tipo.DOCENTE) {
+            verify(docentes).findById(33L);
+            verify(docenteMaterias).existsByDocenteIdAndMateriaId(33L, 22L);
+            verifyNoMoreInteractions(docentes, docenteMaterias);
+        } else {
+            verifyNoInteractions(docentes, docenteMaterias);
+        }
         assertEquals(1, recursos.size());
         verify(dataSource, times(1)).getConnection();
         verify(connection, times(1)).commit();

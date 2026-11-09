@@ -23,6 +23,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,7 +63,8 @@ class CalificacionDocenteServiceTest {
         when(calificacionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         assertEquals(10L, calificacionService.crear(request).idMateria());
-        verify(actividadEstudianteService).registrarCalificacionDocente(any(Estudiante.class));
+        verify(actividadEstudianteService).registrarCalificacionDocente(
+                any(Estudiante.class), same(docente), same(materia));
         mostrarResultado("Crear una calificacion unica por estudiante, docente y materia");
     }
 

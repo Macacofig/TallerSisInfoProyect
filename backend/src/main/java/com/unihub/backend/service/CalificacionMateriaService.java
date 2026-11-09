@@ -56,7 +56,7 @@ public class CalificacionMateriaService {
 	CalificacionMateria calificacion = calificacionMapper.toEntity(request, materia, estudiante);
 
 		CalificacionMateriaResponse response = calificacionMapper.toResponse(calificacionRepository.save(calificacion));
-		actividadEstudianteService.registrarCalificacionMateria(estudiante);
+		actividadEstudianteService.registrarCalificacionMateria(estudiante, materia);
 		LogHelper.info(CalificacionMateriaService.class, "Calificación de materia creada correctamente");
 		return response;
     }

@@ -5,6 +5,7 @@ import com.unihub.backend.dto.actividad.ActividadEstudianteActualizacionRequest;
 import com.unihub.backend.dto.actividad.ActividadEstudianteRequest;
 import com.unihub.backend.dto.actividad.ActividadEstudianteResponse;
 import com.unihub.backend.entity.ActividadEstudiante;
+import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.exception.ResourceNotFoundException;
@@ -23,10 +24,6 @@ public class ActividadEstudianteService {
 
     private static final ZoneId ZONA_HORARIA_BOLIVIA = ZoneId.of("America/La_Paz");
     private static final int LONGITUD_MAXIMA_TITULO = 255;
-    private static final String TITULO_CALIFICAR_MATERIA = "Calificar materia";
-    private static final String TITULO_CALIFICAR_DOCENTE = "Calificar docente";
-    private static final String DESCRIPCION_CALIFICAR_MATERIA = "Calificación a materia";
-    private static final String DESCRIPCION_CALIFICAR_DOCENTE = "Calificación a docente";
     private static final String DESCRIPCION_SOLICITUD_AYUDANTE = "Solicitud enviada a ser probada";
 
     private final ActividadEstudianteRepository actividadRepository;
@@ -89,38 +86,38 @@ public class ActividadEstudianteService {
     }
 
     @Transactional
-    public void registrarCalificacionMateria(Estudiante estudiante) {
+    public void registrarCalificacionMateria(Estudiante estudiante, Materia materia) {
         if (estudiante == null) {
             return;
         }
         registrarActividad(
                 estudiante,
-                TITULO_CALIFICAR_MATERIA,
-                DESCRIPCION_CALIFICAR_MATERIA,
+                limitarTitulo("Calificaste la materia " + materia.getNombre()),
+                "Calificación registrada para la materia " + materia.getNombre() + ".",
                 ActividadEstudiante.EstadoActividad.REALIZADO
         );
     }
 
     @Transactional
-    public void registrarCalificacionDocente(Estudiante estudiante) {
+    public void registrarCalificacionDocente(Estudiante estudiante, Docente docente, Materia materia) {
         if (estudiante == null) {
             return;
         }
         registrarActividad(
                 estudiante,
-                TITULO_CALIFICAR_DOCENTE,
-                DESCRIPCION_CALIFICAR_DOCENTE,
+                limitarTitulo("Calificaste a " + docente.getNombre() + " en " + materia.getNombre()),
+                "Calificación registrada para el docente " + docente.getNombre()
+                        + " en la materia " + materia.getNombre() + ".",
                 ActividadEstudiante.EstadoActividad.REALIZADO
         );
     }
 
     @Transactional
     public void registrarSolicitudAyuda(Estudiante estudiante, Materia materia, Estudiante ayudante) {
-        String titulo = "Solicitaste ayuda en " + materia.getNombre();
+        String tituloCompleto = "Solicitaste ayuda en " + materia.getNombre();
+        String titulo = limitarTitulo(tituloCompleto);
         String descripcion = "Solicitud de ayuda enviada al ayudante " + ayudante.getNombre() + ".";
-        if (titulo.codePointCount(0, titulo.length()) > LONGITUD_MAXIMA_TITULO) {
-            int corte = titulo.offsetByCodePoints(0, LONGITUD_MAXIMA_TITULO - 1);
-            titulo = titulo.substring(0, corte) + "…";
+        if (!titulo.equals(tituloCompleto)) {
             descripcion += " Materia: " + materia.getNombre() + ".";
         }
         registrarActividad(
@@ -181,6 +178,14 @@ public class ActividadEstudianteService {
 
     private String tituloSolicitudAyudante(Materia materia) {
         return "Solicitar ser ayudante en " + materia.getNombre();
+    }
+
+    private String limitarTitulo(String titulo) {
+        if (titulo.codePointCount(0, titulo.length()) <= LONGITUD_MAXIMA_TITULO) {
+            return titulo;
+        }
+        int corte = titulo.offsetByCodePoints(0, LONGITUD_MAXIMA_TITULO - 1);
+        return titulo.substring(0, corte) + "…";
     }
 
     private LocalDateTime fechaActualBolivia() {

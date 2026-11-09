@@ -4,6 +4,7 @@ import com.unihub.backend.dto.actividad.ActividadEstudianteActualizacionRequest;
 import com.unihub.backend.dto.actividad.ActividadEstudianteRequest;
 import com.unihub.backend.dto.actividad.ActividadEstudianteResponse;
 import com.unihub.backend.entity.ActividadEstudiante;
+import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
 import com.unihub.backend.exception.AccesoNoAutorizadoException;
@@ -35,7 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,11 +67,11 @@ class ActividadEstudianteServiceTest {
     void deberiaRegistrarActividadAlCalificarMateria() {
         Estudiante estudiante = estudiante(1L);
 
-        actividadService.registrarCalificacionMateria(estudiante);
+        actividadService.registrarCalificacionMateria(estudiante, materia(44L, "Álgebra lineal"));
 
         ActividadEstudiante actividad = capturarActividadGuardada();
-        assertEquals("Calificar materia", actividad.getTitulo());
-        assertEquals("Calificación a materia", actividad.getDescripcion());
+        assertEquals("Calificaste la materia Álgebra lineal", actividad.getTitulo());
+        assertEquals("Calificación registrada para la materia Álgebra lineal.", actividad.getDescripcion());
         assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, actividad.getEstado());
         assertNotNull(actividad.getFechaHoraRegistro());
         assertEquals(estudiante, actividad.getEstudiante());
@@ -75,12 +79,109 @@ class ActividadEstudianteServiceTest {
 
     @Test
     void deberiaRegistrarActividadAlCalificarDocente() {
-        actividadService.registrarCalificacionDocente(estudiante(2L));
+        Estudiante estudiante = estudiante(11L);
+        // El docente puede tener otra materia como primera relación: usar la materia evaluada.
+        Docente docente = new Docente("Ana Docente", materia(77L, "Materia distinta"));
+        ReflectionTestUtils.setField(docente, "id", 33L);
+        actividadService.registrarCalificacionDocente(estudiante, docente, materia(44L, "Álgebra lineal"));
 
         ActividadEstudiante actividad = capturarActividadGuardada();
-        assertEquals("Calificar docente", actividad.getTitulo());
-        assertEquals("Calificación a docente", actividad.getDescripcion());
+        assertSame(estudiante, actividad.getEstudiante());
+        assertEquals("Calificaste a Ana Docente en Álgebra lineal", actividad.getTitulo());
+        assertEquals("Calificación registrada para el docente Ana Docente en la materia Álgebra lineal.",
+                actividad.getDescripcion());
+        assertFalse(actividad.getDescripcion().contains("Materia distinta"));
         assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, actividad.getEstado());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void cadaCalificacionConservaSusEntidadesSinConsultasAdicionales(boolean esDocente) {
+        Estudiante primero = estudiante(11L);
+        Estudiante segundo = estudiante(55L);
+        Materia primeraMateria = materia(22L, "Álgebra lineal");
+        Materia segundaMateria = materia(77L, "Física aplicada");
+        if (esDocente) {
+            actividadService.registrarCalificacionDocente(primero, docente(33L, "Ana Docente"), primeraMateria);
+            actividadService.registrarCalificacionDocente(segundo, docente(88L, "Luis Profesor"), segundaMateria);
+        } else {
+            actividadService.registrarCalificacionMateria(primero, primeraMateria);
+            actividadService.registrarCalificacionMateria(segundo, segundaMateria);
+        }
+
+        var captor = ArgumentCaptor.forClass(ActividadEstudiante.class);
+        verify(actividadRepository, times(2)).save(captor.capture());
+        var registros = captor.getAllValues();
+        assertSame(primero, registros.get(0).getEstudiante());
+        assertSame(segundo, registros.get(1).getEstudiante());
+        assertTrue(registros.get(0).getDescripcion().contains("Álgebra lineal"));
+        assertTrue(registros.get(1).getDescripcion().contains("Física aplicada"));
+        assertFalse(registros.get(1).getDescripcion().contains("Álgebra lineal"));
+        if (esDocente) {
+            assertTrue(registros.get(0).getDescripcion().contains("Ana Docente"));
+            assertTrue(registros.get(1).getDescripcion().contains("Luis Profesor"));
+            assertFalse(registros.get(1).getDescripcion().contains("Ana Docente"));
+        }
+        for (var registro : registros) {
+            assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, registro.getEstado());
+            assertFalse(registro.getDescripcion().contains(registro.getEstudiante().getTelefono()));
+            assertFalse(registro.getDescripcion().contains(registro.getEstudiante().getCorreoElectronico()));
+        }
+        verifyNoMoreInteractions(actividadRepository, estudianteRepository);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Á", "📘"})
+    void calificacionesConNombresLargosConservanContextoYLimiteUnicode(String caracter) throws Exception {
+        String nombreMateria = "Materia " + caracter.repeat(255 - "Materia ".length());
+        String nombreDocente = "Docente " + caracter.repeat(255 - "Docente ".length());
+        Estudiante estudiante = estudiante(11L);
+        Materia materia = materia(22L, nombreMateria);
+
+        actividadService.registrarCalificacionMateria(estudiante, materia);
+        actividadService.registrarCalificacionDocente(estudiante, docente(33L, nombreDocente), materia);
+
+        var captor = ArgumentCaptor.forClass(ActividadEstudiante.class);
+        verify(actividadRepository, times(2)).save(captor.capture());
+        var registros = captor.getAllValues();
+        int limite = ActividadEstudiante.class.getDeclaredField("titulo")
+                .getAnnotation(jakarta.persistence.Column.class).length();
+        for (var registro : registros) {
+            assertEquals(limite, registro.getTitulo().codePointCount(0, registro.getTitulo().length()));
+            assertTrue(registro.getTitulo().endsWith("…"));
+            assertTrue(java.nio.charset.StandardCharsets.UTF_8.newEncoder().canEncode(registro.getTitulo()));
+            assertTrue(registro.getDescripcion().contains(nombreMateria));
+            assertEquals(ActividadEstudiante.EstadoActividad.REALIZADO, registro.getEstado());
+        }
+        assertTrue(registros.get(1).getDescripcion().contains(nombreDocente));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void tituloDeCalificacionQueCabeExactamenteNoSeRecorta(boolean esDocente) {
+        Estudiante estudiante = estudiante(11L);
+        String titulo;
+        if (esDocente) {
+            String nombre = "Á".repeat(255 - "Calificaste a  en Álgebra".length());
+            titulo = "Calificaste a " + nombre + " en Álgebra";
+            actividadService.registrarCalificacionDocente(estudiante, docente(33L, nombre), materia(22L, "Álgebra"));
+        } else {
+            String nombre = "Á".repeat(255 - "Calificaste la materia ".length());
+            titulo = "Calificaste la materia " + nombre;
+            actividadService.registrarCalificacionMateria(estudiante, materia(22L, nombre));
+        }
+
+        assertEquals(titulo, capturarActividadGuardada().getTitulo());
+    }
+
+    @Test
+    void calificacionesSinEstudianteConservanLaReglaDeNoRegistrarActividad() {
+        Materia materia = materia(22L, "Álgebra");
+
+        actividadService.registrarCalificacionMateria(null, materia);
+        actividadService.registrarCalificacionDocente(null, docente(33L, "Ana Docente"), materia);
+
+        verifyNoInteractions(actividadRepository, estudianteRepository);
     }
 
     @Test
@@ -281,5 +382,11 @@ class ActividadEstudianteServiceTest {
         Materia materia = new Materia("MAT" + id, nombre, "Ingeniería", 1);
         ReflectionTestUtils.setField(materia, "id", id);
         return materia;
+    }
+
+    private Docente docente(Long id, String nombre) {
+        Docente docente = new Docente(nombre);
+        ReflectionTestUtils.setField(docente, "id", id);
+        return docente;
     }
 }
