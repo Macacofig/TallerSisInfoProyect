@@ -279,7 +279,7 @@ El backend crea las tablas `material` y `solicitudes_material` con `ddl-auto=upd
 
 Para habilitar las subidas en el backend define `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. La clave `service_role` se obtiene en **Project Settings > API** de Supabase; no debe publicarse en el frontend. El bucket indicado en `SUPABASE_STORAGE_BUCKET` se crea automáticamente como público la primera vez que se sube un archivo, para que `link_material` pueda abrirse sin autenticación.
 
-Endpoint (requiere JWT de estudiante):
+Endpoint (público, no requiere JWT):
 
 ```http
 POST /api/material/subir
@@ -290,8 +290,8 @@ titulo=Apunte de clase
 descripcion=Resumen del tema 1
 idMateria=3
 idDocente=9
+idEstudiante=5               # obligatorio
 semestreIngresado=2          # opcional
-idEstudiante=5               # opcional; debe coincidir con el JWT
 ```
 
 Formatos aceptados: imágenes (`jpg`, `jpeg`, `png`, `gif`, `webp`, `bmp`), PDF (`pdf`), Word (`doc`, `docx`) y PowerPoint (`ppt`, `pptx`). El límite predeterminado es 20 MB por archivo.
