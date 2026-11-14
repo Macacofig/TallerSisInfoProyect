@@ -416,8 +416,9 @@ public final class Constants {
 	// Subir material académico (multipart/form-data)
 	public static final String SUBIR_URL = "/subir";
 	// Que necesita: documento, titulo, descripcion, idMateria, idDocente,
-	//               semestreIngresado (opcional) e idEstudiante (opcional, debe coincidir con el JWT)
+	//               idEstudiante y semestreIngresado (opcional)
 	// Que devuelve: MaterialSubidoResponse con el material y su solicitud en estado PENDIENTE
+	// Es público: no requiere JWT.
 
 	}
 

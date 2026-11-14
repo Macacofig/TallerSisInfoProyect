@@ -1,13 +1,17 @@
 package com.unihub.backend.controller;
 
+import com.unihub.backend.config.JwtAuthenticationConfig;
 import com.unihub.backend.config.JwtAuthenticationInterceptor;
 import com.unihub.backend.dto.material.MaterialResponse;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
 import com.unihub.backend.dto.material.SolicitudMaterialResponse;
+import com.unihub.backend.repository.EstudianteRepository;
+import com.unihub.backend.service.JwtService;
 import com.unihub.backend.service.MaterialService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(MaterialController.class)
-@TestPropertySource(properties = "app.security.jwt-middleware.enabled=false")
+@Import({JwtAuthenticationConfig.class, JwtAuthenticationInterceptor.class})
+@TestPropertySource(properties = "app.security.jwt-middleware.enabled=true")
 class MaterialControllerTest {
 
     private static final long ESTUDIANTE_ID = 5L;
@@ -34,8 +39,14 @@ class MaterialControllerTest {
     @MockitoBean
     private MaterialService materialService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private EstudianteRepository estudianteRepository;
+
     @Test
-    void subeMaterialComoMultipartYDevuelveCreated() throws Exception {
+    void subeMaterialSinJwtYDevuelveCreated() throws Exception {
         MaterialResponse material = new MaterialResponse(
                 15L,
                 "https://proyecto.supabase.co/storage/v1/object/public/materiales/materias-3/apunte.pdf",
@@ -65,7 +76,7 @@ class MaterialControllerTest {
                         .param("idMateria", "3")
                         .param("idDocente", "9")
                         .param("semestreIngresado", "2")
-                        .requestAttr(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, ESTUDIANTE_ID))
+                        .param("idEstudiante", String.valueOf(ESTUDIANTE_ID)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.material.id").value(15))
                 .andExpect(jsonPath("$.material.tipo").value("PDF"))
@@ -76,7 +87,7 @@ class MaterialControllerTest {
     }
 
     @Test
-    void rechazaSubirMaterialANombreDeOtroEstudiante() throws Exception {
+    void exigeElIdentificadorDelEstudiante() throws Exception {
         MockMultipartFile documento = new MockMultipartFile(
                 "documento", "apunte.pdf", "application/pdf", "contenido".getBytes());
 
@@ -85,10 +96,8 @@ class MaterialControllerTest {
                         .param("titulo", "Apunte")
                         .param("descripcion", "Resumen")
                         .param("idMateria", "3")
-                        .param("idDocente", "9")
-                        .param("idEstudiante", "99")
-                        .requestAttr(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, ESTUDIANTE_ID))
-                .andExpect(status().isForbidden());
+                        .param("idDocente", "9"))
+                .andExpect(status().isBadRequest());
 
         verifyNoInteractions(materialService);
     }

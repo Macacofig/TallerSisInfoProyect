@@ -1,15 +1,13 @@
 package com.unihub.backend.controller;
 
-import com.unihub.backend.config.JwtAuthenticationInterceptor;
 import com.unihub.backend.dto.material.MaterialRequest;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
-import com.unihub.backend.exception.AccesoNoAutorizadoException;
+import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.service.MaterialService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -37,12 +35,10 @@ public class MaterialController {
             @RequestParam("idMateria") Long idMateria,
             @RequestParam("idDocente") Long idDocente,
             @RequestParam(value = "semestreIngresado", required = false) Integer semestreIngresado,
-            @RequestParam(value = "idEstudiante", required = false) Long idEstudiante,
-            @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado
+            @RequestParam(value = "idEstudiante", required = false) Long idEstudiante
     ) {
-        if (idEstudiante != null && !idEstudiante.equals(estudianteAutenticado)) {
-            throw new AccesoNoAutorizadoException(
-                    "No puedes subir material a nombre de otro estudiante");
+        if (idEstudiante == null) {
+            throw new BadRequestException("El estudiante es obligatorio");
         }
 
         MaterialRequest request = new MaterialRequest(
@@ -54,6 +50,6 @@ public class MaterialController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(materialService.subirMaterialAcademico(request, documento, estudianteAutenticado));
+                .body(materialService.subirMaterialAcademico(request, documento, idEstudiante));
     }
 }
