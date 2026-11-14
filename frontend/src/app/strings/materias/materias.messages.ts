@@ -179,6 +179,15 @@ export const MESSAGES = {
   MATERIA_DETAIL_SECTION_ASSISTANTS:
     'Ayudantes',
 
+  MATERIAL_TEACHER_FILTER: 'Docente',
+  MATERIAL_SEMESTER_FILTER: 'Semestre',
+  MATERIAL_TYPE_FILTER: 'Tipo',
+  MATERIAL_FILTER_ALL: 'Todos',
+  MATERIAL_ADD_BUTTON: 'Agregar material',
+  MATERIAL_EMPTY: 'No hay materiales para mostrar.',
+  MATERIAL_NO_MATCHES: 'No hay materiales que coincidan con estos filtros.',
+  MATERIAL_LIST_ARIA: 'Materiales de la materia',
+
   MATERIA_DETAIL_SECTION_PENDING:
     'Esta sección estará disponible próximamente.',
 

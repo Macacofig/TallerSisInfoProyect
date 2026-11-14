@@ -1,0 +1,55 @@
+<section class="materiales" [attr.aria-label]="MESSAGES.MATERIAL_LIST_ARIA">
+  <div class="materiales__filtros">
+    <div class="materiales__campo">
+      <label for="material-docente">{{ MESSAGES.MATERIAL_TEACHER_FILTER }}</label>
+      <select id="material-docente" [value]="docenteSeleccionado()" (change)="actualizarDocente($event)">
+        <option value="">{{ MESSAGES.MATERIAL_FILTER_ALL }}</option>
+        @for (docente of docentes(); track docente.id) {
+          <option [value]="docente.id">{{ docente.etiqueta }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="materiales__campo">
+      <label for="material-semestre">{{ MESSAGES.MATERIAL_SEMESTER_FILTER }}</label>
+      <select id="material-semestre" [value]="semestreSeleccionado()" (change)="actualizarSemestre($event)">
+        <option value="">{{ MESSAGES.MATERIAL_FILTER_ALL }}</option>
+        @for (semestre of semestres(); track semestre.id) {
+          <option [value]="semestre.id">{{ semestre.etiqueta }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="materiales__campo">
+      <label for="material-tipo">{{ MESSAGES.MATERIAL_TYPE_FILTER }}</label>
+      <select id="material-tipo" [value]="tipoSeleccionado()" (change)="actualizarTipo($event)">
+        <option value="">{{ MESSAGES.MATERIAL_FILTER_ALL }}</option>
+        @for (tipo of tipos(); track tipo.id) {
+          <option [value]="tipo.id">{{ tipo.etiqueta }}</option>
+        }
+      </select>
+    </div>
+
+    <button class="materiales__agregar" type="button" disabled>
+      <span aria-hidden="true">＋</span>
+      {{ MESSAGES.MATERIAL_ADD_BUTTON }}
+    </button>
+  </div>
+
+  @if (materiales().length === 0) {
+    <p class="materiales__estado">{{ MESSAGES.MATERIAL_EMPTY }}</p>
+  } @else if (materialesVisibles().length === 0) {
+    <p class="materiales__estado" role="status">{{ MESSAGES.MATERIAL_NO_MATCHES }}</p>
+  } @else {
+    <div class="materiales__lista">
+      @for (material of materialesVisibles(); track material.id) {
+        <article class="material-card">
+          <h2>{{ material.titulo }}</h2>
+          <p class="material-card__autor">{{ material.docente.nombre }} · {{ material.semestre.etiqueta }}</p>
+          <span class="material-card__tipo">{{ etiquetaTipo(material) }}</span>
+          <p class="material-card__descripcion">{{ material.descripcion }}</p>
+        </article>
+      }
+    </div>
+  }
+</section>

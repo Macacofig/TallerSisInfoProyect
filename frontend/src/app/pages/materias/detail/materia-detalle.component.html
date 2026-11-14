@@ -244,6 +244,8 @@
     </section>
     } @else if (seccionActiva === 'docentes') {
         <app-docentes [materia]="materia" />
+      } @else if (seccionActiva === 'material') {
+        <app-materiales />
       } @else if (seccionActiva === 'ayudantes') {
         <app-ayudantes
           class="component"
