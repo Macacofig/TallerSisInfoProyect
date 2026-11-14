@@ -38,10 +38,11 @@ Esta tabla describe lo presente en el código; el funcionamiento completo debe v
 | Calificaciones de docentes | Crear, editar y eliminar la calificación propia; consultas y promedios por docente y materia, con filtros de gestión. |
 | Horarios | Interfaz para cargar materias y bloques; endpoints para normalizar datos y generar combinaciones. |
 | Ayudantes (backend) | Postulación por materia, listado de aprobados, baja y resolución de postulaciones. Solicitudes de ayuda: creación, consulta por estudiante o ayudante, resolución y cancelación. |
+| Materiales académicos (HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`. |
 | Interfaz | Navegación principal, barra lateral y textos en español e inglés. |
 | Estado de la API | `GET /api/test` devuelve `UniHub funcionando`. |
 
-**Pendientes:** aunque existen clases antiguas vacías llamadas `Ayudante`, el backend de ayudantías se implementa en `AyudanteMateria` y `SolicitudAyuda`. La sección de ayudantes del frontend todavía utiliza datos estáticos de `frontend/src/app/data/ayudantes.data.ts`; no debe confundirse con una integración completa con esos endpoints. Las clases backend de materiales siguen vacías y no hay implementación de conversación privada en esta rama. `APP_CONFIG.DEMO_MODE` está declarado en `true`; no garantiza que toda la aplicación funcione sin API.
+**Pendientes:** aunque existen clases antiguas vacías llamadas `Ayudante`, el backend de ayudantías se implementa en `AyudanteMateria` y `SolicitudAyuda`. La sección de ayudantes del frontend todavía utiliza datos estáticos de `frontend/src/app/data/ayudantes.data.ts`; no debe confundirse con una integración completa con esos endpoints. La subida de materiales (HU-35) ya tiene backend, pero el frontend aún no incluye la pantalla de carga. No hay implementación de conversación privada en esta rama. `APP_CONFIG.DEMO_MODE` está declarado en `true`; no garantiza que toda la aplicación funcione sin API.
 
 ## Requisitos
 
@@ -79,6 +80,13 @@ Completa los valores con las credenciales de desarrollo facilitadas por el equip
 | `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Conexión alternativa: host, puerto, base, usuario y contraseña del proveedor. El puerto depende del proveedor. |
 | `SUPABASE_HOST`, `SUPABASE_PORT`, `SUPABASE_DB`, `SUPABASE_USER`, `SUPABASE_PASSWORD` | Conexión principal: ajusta todos los datos al proyecto de desarrollo autorizado. |
 | `BACKEND_PORT` | `8081` para acceder al backend en `http://localhost:8081`. |
+| `BACKEND_URL` | URL pública del backend **sin** `/api`, por ejemplo `https://api.example.com`. El frontend la usa al iniciar o compilar. |
+| `SUPABASE_URL` | URL del proyecto de Supabase (`https://<project-ref>.supabase.co`) para Storage. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clave `service_role` de Supabase (Project Settings > API). Solo backend; nunca en el frontend. |
+| `SUPABASE_STORAGE_BUCKET` | Bucket de Storage para materiales. Valor predeterminado: `materiales`. Se crea como público si no existe. |
+| `MATERIALES_MAX_FILE_SIZE` | Tamaño máximo por archivo aceptado por Spring. Valor predeterminado: `20MB`. |
+| `MATERIALES_MAX_REQUEST_SIZE` | Tamaño máximo de la petición multipart. Valor predeterminado: `25MB`. |
+| `MATERIALES_MAX_FILE_SIZE_BYTES` | Límite que valida la aplicación. Debe coincidir con `MATERIALES_MAX_FILE_SIZE`. Valor predeterminado: `20971520`. |
 | `JWT_SECRET` | Clave aleatoria privada de al menos 32 bytes. |
 | `JWT_EXPIRATION_SECONDS` | `3600` para una duración de una hora. |
 | `CATALOG_ADMIN_TOKEN` | Clave privada distinta del JWT, de al menos 32 bytes, para altas de docentes y asociaciones. Vacío mantiene esas operaciones deshabilitadas. |
@@ -120,17 +128,19 @@ Hibernate usa `spring.jpa.hibernate.ddl-auto=update`: puede crear o actualizar t
 
 ### 4. Elegir la API del frontend
 
-En [frontend/src/app/config/app-config.ts](frontend/src/app/config/app-config.ts), `APP_CONFIG.API.BASE_URL` apunta actualmente a `https://tallersisinfoproyect.onrender.com/api`.
+El frontend toma `APP_CONFIG.API.BASE_URL` de la variable de entorno `BACKEND_URL`. `frontend/scripts/generate-env.mjs` la lee al ejecutar `npm start`, `npm run build` o `npm test`, agrega `/api` si falta y genera `frontend/src/app/config/app-env.generated.ts` (archivo ignorado por Git).
 
-Para probar el backend de tu computadora cambia ese valor a:
+En la raíz define, por ejemplo:
 
-```typescript
-BASE_URL: 'http://localhost:8081/api',
+```dotenv
+BACKEND_URL=http://localhost:8081
 ```
 
-Si elegiste otro `BACKEND_PORT`, usa ese puerto. La URL la utiliza el navegador: debe contener `localhost`, no el nombre del servicio Docker `backend`. `.env` no modifica esta constante de Angular.
+Si elegiste otro `BACKEND_PORT`, usa ese puerto. La URL la utiliza el navegador: debe contener `localhost` o el host público, no el nombre del servicio Docker `backend`. El archivo `.env` se lee desde la raíz del repositorio o desde `frontend/`; la variable del entorno del proceso tiene prioridad.
 
-Conservar la URL de Render conecta el frontend al backend remoto aunque hayas iniciado uno local. Decide qué entorno vas a probar antes de registrar usuarios o calificaciones.
+Para un despliegue estático, `BACKEND_URL` **debe existir en el entorno de compilación**. `npm run build` termina con error si no está definida. En Netlify u otro proveedor agrégala en su panel de variables antes del build; cambiar la variable después de compilar no modifica los archivos publicados.
+
+Si no hay variable disponible al iniciar en desarrollo o al ejecutar pruebas, el script usa `https://tallersisinfoproyect.onrender.com/` como respaldo. Decide qué entorno vas a probar antes de registrar usuarios o calificaciones.
 
 ### 5. Construir e iniciar
 
@@ -185,7 +195,9 @@ Separa varios orígenes con comas. El esquema y el puerto forman parte del orige
 
 ## Ejecución sin Docker
 
-Para el backend exporta en la terminal `SUPABASE_DATASOURCE_URL`, `SUPABASE_USER`, `SUPABASE_PASSWORD`, `SPRING_DATASOURCE_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD` y `JWT_SECRET`. Puedes definir también `JWT_EXPIRATION_SECONDS`, `BACKEND_PORT` y `CORS_ALLOWED_ORIGINS`. Debes proporcionar las URLs JDBC completas con la configuración SSL del proveedor: Compose ya no las construye. Spring no carga automáticamente el `.env` de la raíz.
+Para el backend exporta en la terminal `SUPABASE_DATASOURCE_URL`, `SUPABASE_USER`, `SUPABASE_PASSWORD`, `SPRING_DATASOURCE_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD` y `JWT_SECRET`. Para las subidas de materiales agrega `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. Puedes definir también `JWT_EXPIRATION_SECONDS`, `BACKEND_PORT`, `CORS_ALLOWED_ORIGINS` y las variables `MATERIALES_*`. Debes proporcionar las URLs JDBC completas con la configuración SSL del proveedor: Compose ya no las construye. Spring no carga automáticamente el `.env` de la raíz.
+
+Para el frontend, `npm start`, `npm test` y `npm run build` ejecutan el generador de configuración. Exporta `BACKEND_URL` en la terminal o colócala en el `.env` de la raíz/`frontend`.
 
 Con JDK 25, desde `backend/` ejecuta `./mvnw spring-boot:run` (Bash; `bash mvnw spring-boot:run` si el wrapper no tiene permiso de ejecución) o `.\mvnw.cmd spring-boot:run` (PowerShell).
 
@@ -240,13 +252,60 @@ Fuera de Compose, incluye la configuración SSL requerida por cada proveedor en 
 
 ### Frontend en un alojamiento estático
 
-1. Ajusta `APP_CONFIG.API.BASE_URL` a la URL HTTPS pública del backend terminada en `/api` **antes** de compilar.
+1. Define `BACKEND_URL` con la URL HTTPS pública del backend, **sin** `/api`, en el entorno de compilación del proveedor (por ejemplo, Netlify). El build falla si la variable no existe.
 2. Con Node.js 24 y directorio de trabajo `frontend/`, ejecuta `npm ci` y `npm run build`.
 3. Publica `frontend/dist/frontend/browser/` (o `dist/frontend/browser/` si el proveedor tiene `frontend/` como raíz).
 4. Configura la reescritura de rutas Angular a `index.html`. Se incluye `frontend/public/_redirects` para proveedores que acepten ese formato; en otros configura la regla equivalente.
 5. Agrega el origen público del frontend a `CORS_ALLOWED_ORIGINS` del backend. Comprueba registro/login y la recarga directa de `/materias`.
 
-El Dockerfile de frontend y Compose ejecutan `ng serve`, un servidor de desarrollo. Para producción usa el build estático y un servidor apropiado para esos archivos. Cambiar variables del servidor estático después del build no modifica `APP_CONFIG`: debes recompilar.
+El Dockerfile de frontend y Compose ejecutan `npm start`, que genera la configuración y luego `ng serve`. Para producción usa el build estático y un servidor apropiado para esos archivos. La URL del backend queda incrustada en el bundle: cambiarla después del build exige recompilar y volver a desplegar.
+
+### Materiales académicos (HU-35)
+
+El backend crea las tablas `material` y `solicitudes_material` con `ddl-auto=update`. Cada fila de `material` guarda la URL pública del archivo en `link_material`, su tipo (`IMAGEN`, `WORD`, `PDF`, `POWERPOINT`) y el estado (`PENDIENTE`, `ACTIVO`, `RECHAZADO`). La solicitud asociada queda en `PENDIENTE` (`PENDIENTE`, `APROBADO`, `NEGADO`).
+
+Para habilitar las subidas en el backend define `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. La clave `service_role` se obtiene en **Project Settings > API** de Supabase; no debe publicarse en el frontend. El bucket indicado en `SUPABASE_STORAGE_BUCKET` se crea automáticamente como público la primera vez que se sube un archivo, para que `link_material` pueda abrirse sin autenticación.
+
+Endpoint (requiere JWT de estudiante):
+
+```http
+POST /api/material/subir
+Content-Type: multipart/form-data
+
+documento=<archivo>
+titulo=Apunte de clase
+descripcion=Resumen del tema 1
+idMateria=3
+idDocente=9
+semestreIngresado=2          # opcional
+idEstudiante=5               # opcional; debe coincidir con el JWT
+```
+
+Formatos aceptados: imágenes (`jpg`, `jpeg`, `png`, `gif`, `webp`, `bmp`), PDF (`pdf`), Word (`doc`, `docx`) y PowerPoint (`ppt`, `pptx`). El límite predeterminado es 20 MB por archivo.
+
+Respuesta `201 Created`:
+
+```json
+{
+  "material": {
+    "id": 15,
+    "linkMaterial": "https://<project-ref>.supabase.co/storage/v1/object/public/materiales/materias-3/...",
+    "titulo": "Apunte de clase",
+    "tipo": "PDF",
+    "idMateria": 3,
+    "idDocente": 9,
+    "semestreIngresado": 2,
+    "estado": "PENDIENTE"
+  },
+  "solicitud": {
+    "id": 22,
+    "titulo": "Apunte de clase",
+    "idEstudiante": 5,
+    "idMaterial": 15,
+    "estado": "PENDIENTE"
+  }
+}
+```
 
 ## Scraper opcional
 
@@ -270,7 +329,9 @@ El puerto predeterminado es 3000, configurable con `PORT`. Chromium usa `headles
 | Backend en `Restarting (1)` | El proceso termina con error y Docker lo reinicia. Ejecuta `docker compose logs --tail=150 backend` y revisa la causa del arranque; que el frontend abra no confirma que la API esté disponible. |
 | `JDBC URL invalid port number` o URL `jdbc:postgresql://:/...` | Faltan valores en `.env`, especialmente `POSTGRES_HOST`, `POSTGRES_PORT` y `POSTGRES_DB`. Solicita al equipo la configuración del entorno, completa ambos grupos de conexión y recrea el backend con `docker compose up -d --force-recreate backend`. |
 | Fallan ambos pools | Revisa hosts, puertos, SSL, credenciales y acceso de red; Compose no inicia PostgreSQL. |
-| El frontend usa datos remotos | Revisa `APP_CONFIG.API.BASE_URL`; `.env` no cambia esa constante. |
+| El frontend usa datos remotos | Revisa `BACKEND_URL` en el entorno o `.env` y reinicia `npm start`; el valor se genera en `app-env.generated.ts`. |
+| El build del frontend falla con `BACKEND_URL no está definida` | Define `BACKEND_URL` en el entorno de compilación antes de `npm run build`. |
+| `502` al subir un material | Revisa `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, el nombre del bucket y los logs del backend. |
 | Error CORS | Revisa el origen exacto y `CORS_ALLOWED_ORIGINS` plural en el proceso backend. |
 | Catálogo vacío | Comprueba que la base tenga datos; Hibernate no ejecuta el SQL de ejemplo. |
 | `401` en una operación propia | Inicia sesión otra vez y comprueba que se envíe un JWT válido. |
