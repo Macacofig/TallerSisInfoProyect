@@ -1,4 +1,4 @@
-import { BACKEND_URL } from './app-env.generated';
+import { ENV } from '../../environments/environment';
 
 /**
  * Configuración de la aplicación
@@ -12,9 +12,8 @@ export const APP_CONFIG = {
   },
 
   API: {
-    // URL del backend remoto. El interceptor elige el local cuando el
-    // frontend se abre desde localhost y el backend local responde.
-    BASE_URL: BACKEND_URL,
+    // BACKEND_URL del .env (backend remoto) + /api.
+    BASE_URL: `${ENV.BACKEND_URL}/api`,
 
     ENDPOINTS: {
       MATERIAS: '/materias',

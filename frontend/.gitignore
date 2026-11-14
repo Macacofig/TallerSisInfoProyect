@@ -43,6 +43,6 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-# Entorno local y configuración generada
+# Entorno local
 .env
-src/app/config/app-env.generated.ts
+.env.local

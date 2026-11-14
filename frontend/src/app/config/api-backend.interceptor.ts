@@ -1,10 +1,10 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { defer, from, switchMap } from 'rxjs';
 import { APP_CONFIG } from './app-config';
-import { LOCAL_BACKEND_URL } from './app-env.generated';
+import { ENV } from '../../environments/environment';
 
 const REMOTE_API: string = APP_CONFIG.API.BASE_URL;
-const LOCAL_API: string = LOCAL_BACKEND_URL;
+const LOCAL_API: string = `${ENV.LOCAL_BACKEND_URL}/api`;
 
 const HOSTS_LOCALES = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
 const ESPERA_MAXIMA_PROBE_MS = 2000;
