@@ -12,7 +12,8 @@ export const APP_CONFIG = {
   },
 
   API: {
-    // Se obtiene de la variable BACKEND_URL al iniciar o compilar el frontend.
+    // URL del backend remoto. El interceptor elige el local cuando el
+    // frontend se abre desde localhost y el backend local responde.
     BASE_URL: BACKEND_URL,
 
     ENDPOINTS: {
