@@ -84,7 +84,7 @@ Completa los valores con las credenciales de desarrollo facilitadas por el equip
 | `LOCAL_BACKEND_URL` | En `frontend/.env`: URL del backend local que se comprueba al abrir el frontend desde `localhost`. Valor predeterminado: `http://localhost:8081`. |
 | `SUPABASE_URL` | URL del proyecto de Supabase (`https://<project-ref>.supabase.co`) para Storage. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clave `service_role` de Supabase (Project Settings > API). Solo backend; nunca en el frontend. |
-| `SUPABASE_STORAGE_BUCKET` | Bucket de Storage para materiales. Valor predeterminado: `materiales`. Se crea como público si no existe. |
+| `SUPABASE_STORAGE_BUCKET` | Bucket de Storage para materiales. Valor predeterminado: `MaterialsTaller`. Se crea como público si no existe. Admite mayúsculas. |
 | `MATERIALES_MAX_FILE_SIZE` | Tamaño máximo por archivo aceptado por Spring. Valor predeterminado: `20MB`. |
 | `MATERIALES_MAX_REQUEST_SIZE` | Tamaño máximo de la petición multipart. Valor predeterminado: `25MB`. |
 | `MATERIALES_MAX_FILE_SIZE_BYTES` | Límite que valida la aplicación. Debe coincidir con `MATERIALES_MAX_FILE_SIZE`. Valor predeterminado: `20971520`. |
@@ -277,7 +277,9 @@ El Dockerfile de frontend y Compose ejecutan `npm start`, que lee `frontend/.env
 
 El backend crea las tablas `material` y `solicitudes_material` con `ddl-auto=update`. Cada fila de `material` guarda la URL pública del archivo en `link_material`, su tipo (`IMAGEN`, `WORD`, `PDF`, `POWERPOINT`) y el estado (`PENDIENTE`, `ACTIVO`, `RECHAZADO`). La solicitud asociada queda en `PENDIENTE` (`PENDIENTE`, `APROBADO`, `NEGADO`).
 
-Para habilitar las subidas en el backend define `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. La clave `service_role` se obtiene en **Project Settings > API** de Supabase; no debe publicarse en el frontend. El bucket indicado en `SUPABASE_STORAGE_BUCKET` se crea automáticamente como público la primera vez que se sube un archivo, para que `link_material` pueda abrirse sin autenticación.
+Para habilitar las subidas en el backend define `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. La clave `service_role` se obtiene en **Project Settings > API** de Supabase; no debe publicarse en el frontend. El bucket indicado en `SUPABASE_STORAGE_BUCKET` (por defecto `MaterialsTaller`) se crea automáticamente como público si no existe, para que `link_material` pueda abrirse sin autenticación.
+
+Cada archivo se guarda con la ruta `materias-<idMateria>/<uuid>-<nombreOriginal>`. Esa carpeta no hay que crearla a mano: en Supabase Storage los prefijos son virtuales y se crean solos al subir el primer archivo.
 
 Endpoint (público, no requiere JWT):
 
@@ -302,7 +304,7 @@ Respuesta `201 Created`:
 {
   "material": {
     "id": 15,
-    "linkMaterial": "https://<project-ref>.supabase.co/storage/v1/object/public/materiales/materias-3/...",
+    "linkMaterial": "https://<project-ref>.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/...",
     "titulo": "Apunte de clase",
     "tipo": "PDF",
     "idMateria": 3,
