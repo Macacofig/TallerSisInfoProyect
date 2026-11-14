@@ -80,8 +80,8 @@ Completa los valores con las credenciales de desarrollo facilitadas por el equip
 | `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Conexión alternativa: host, puerto, base, usuario y contraseña del proveedor. El puerto depende del proveedor. |
 | `SUPABASE_HOST`, `SUPABASE_PORT`, `SUPABASE_DB`, `SUPABASE_USER`, `SUPABASE_PASSWORD` | Conexión principal: ajusta todos los datos al proyecto de desarrollo autorizado. |
 | `BACKEND_PORT` | `8081` para acceder al backend en `http://localhost:8081`. |
-| `BACKEND_URL` | URL del backend **remoto** **sin** `/api`, por ejemplo `https://api.example.com`. El frontend la usa al compilar y como respaldo si el backend local no responde. |
-| `LOCAL_BACKEND_URL` | URL del backend local que se comprueba al abrir el frontend desde `localhost`. Valor predeterminado: `http://localhost:8081`. |
+| `BACKEND_URL` | En `frontend/.env`: URL del backend **remoto** **sin** `/api`, por ejemplo `https://api.example.com`. El frontend le agrega `/api` y la usa como respaldo si el backend local no responde. |
+| `LOCAL_BACKEND_URL` | En `frontend/.env`: URL del backend local que se comprueba al abrir el frontend desde `localhost`. Valor predeterminado: `http://localhost:8081`. |
 | `SUPABASE_URL` | URL del proyecto de Supabase (`https://<project-ref>.supabase.co`) para Storage. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clave `service_role` de Supabase (Project Settings > API). Solo backend; nunca en el frontend. |
 | `SUPABASE_STORAGE_BUCKET` | Bucket de Storage para materiales. Valor predeterminado: `materiales`. Se crea como público si no existe. |
@@ -129,25 +129,31 @@ Hibernate usa `spring.jpa.hibernate.ddl-auto=update`: puede crear o actualizar t
 
 ### 4. Elegir la API del frontend
 
-El frontend no exige elegir la API manualmente. `frontend/scripts/generate-env.mjs` lee `BACKEND_URL` y `LOCAL_BACKEND_URL` al ejecutar `npm start`, `npm run build` o `npm test`, agrega `/api` si falta y genera `frontend/src/app/config/app-env.generated.ts` (archivo ignorado por Git).
+El frontend no exige elegir la API manualmente. `frontend/src/app/config/app-config.ts` construye `BASE_URL` con la variable `BACKEND_URL` del archivo `frontend/.env`:
+
+```ts
+BASE_URL: `${ENV.BACKEND_URL}/api`
+```
+
+`frontend/src/environments/environment.ts` lee esas variables del `.env` mediante [@ngx-env/builder](https://github.com/chihab/ngx-env), integrado como builder de Angular. No hay scripts propios de generación.
 
 El comportamiento lo aplica `api-backend.interceptor.ts`:
 
 - **Frontend abierto desde `localhost` o `127.0.0.1`:** antes de la primera petición comprueba `GET {LOCAL_BACKEND_URL}/api/test` (2 segundos como máximo). Si el backend local responde, lo usa; si no, usa `BACKEND_URL`.
 - **Frontend desplegado:** usa siempre `BACKEND_URL`, sin comprobar el backend local.
 
-En la raíz define, por ejemplo:
+Crea `frontend/.env` a partir de `frontend/.env.example`:
 
 ```dotenv
-# Backend remoto (obligatorio para desplegar)
+# Backend remoto, sin /api (el frontend le agrega /api)
 BACKEND_URL=https://tallersisinfoproyect.onrender.com
 # Backend local (opcional; este es el valor predeterminado)
 LOCAL_BACKEND_URL=http://localhost:8081
 ```
 
-Usa en `LOCAL_BACKEND_URL` el puerto de `BACKEND_PORT` si no es `8081`. La URL la utiliza el navegador: debe contener `localhost` o el host público, no el nombre del servicio Docker `backend`. El archivo `.env` se lee desde la raíz del repositorio o desde `frontend/`; la variable del entorno del proceso tiene prioridad.
+Usa en `LOCAL_BACKEND_URL` el puerto de `BACKEND_PORT` si no es `8081`. La URL la utiliza el navegador: debe contener `localhost` o el host público, no el nombre del servicio Docker `backend`. El archivo `.env` se lee desde `frontend/`; una variable del entorno del proceso tiene prioridad sobre el archivo.
 
-`BACKEND_URL` se incrusta en el bundle al compilar. Para un despliegue estático (Netlify u otro proveedor) configúrala en el panel de variables **antes** del build; cambiarla después no modifica los archivos publicados. Si no está definida, el generador usa `https://tallersisinfoproyect.onrender.com/` como respaldo para desarrollo y lo advierte en consola; el build no falla.
+`BACKEND_URL` se incrusta en el bundle al compilar. Para un despliegue estático (Netlify u otro proveedor) configúrala en el panel de variables **antes** del build; cambiarla después no modifica los archivos publicados. Si no está definida, se usa `https://tallersisinfoproyect.onrender.com` como respaldo.
 
 ### 5. Construir e iniciar
 
@@ -204,7 +210,7 @@ Separa varios orígenes con comas. El esquema y el puerto forman parte del orige
 
 Para el backend exporta en la terminal `SUPABASE_DATASOURCE_URL`, `SUPABASE_USER`, `SUPABASE_PASSWORD`, `SPRING_DATASOURCE_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD` y `JWT_SECRET`. Para las subidas de materiales agrega `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. Puedes definir también `JWT_EXPIRATION_SECONDS`, `BACKEND_PORT`, `CORS_ALLOWED_ORIGINS` y las variables `MATERIALES_*`. Debes proporcionar las URLs JDBC completas con la configuración SSL del proveedor: Compose ya no las construye. Spring no carga automáticamente el `.env` de la raíz.
 
-Para el frontend, `npm start`, `npm test` y `npm run build` ejecutan el generador de configuración. Exporta `BACKEND_URL` y, si el backend local no usa el puerto `8081`, `LOCAL_BACKEND_URL`; también puedes colocar ambas en el `.env` de la raíz/`frontend`.
+Para el frontend, `npm start`, `npm test` y `npm run build` leen `frontend/.env`. Exporta `BACKEND_URL` y, si el backend local no usa el puerto `8081`, `LOCAL_BACKEND_URL`; también puedes colocar ambas en ese archivo (créalo desde `frontend/.env.example`).
 
 Con JDK 25, desde `backend/` ejecuta `./mvnw spring-boot:run` (Bash; `bash mvnw spring-boot:run` si el wrapper no tiene permiso de ejecución) o `.\mvnw.cmd spring-boot:run` (PowerShell).
 
@@ -265,7 +271,7 @@ Fuera de Compose, incluye la configuración SSL requerida por cada proveedor en 
 4. Configura la reescritura de rutas Angular a `index.html`. Se incluye `frontend/public/_redirects` para proveedores que acepten ese formato; en otros configura la regla equivalente.
 5. Agrega el origen público del frontend a `CORS_ALLOWED_ORIGINS` del backend. Comprueba registro/login y la recarga directa de `/materias`.
 
-El Dockerfile de frontend y Compose ejecutan `npm start`, que genera la configuración y luego `ng serve`. Para producción usa el build estático y un servidor apropiado para esos archivos. La URL del backend remoto queda incrustada en el bundle: cambiarla después del build exige recompilar y volver a desplegar. El sondeo del backend local solo ocurre cuando la aplicación se abre desde `localhost`; en un despliegue nunca se usa.
+El Dockerfile de frontend y Compose ejecutan `npm start`, que lee `frontend/.env` y luego `ng serve`. Para producción usa el build estático y un servidor apropiado para esos archivos. La URL del backend remoto queda incrustada en el bundle: cambiarla después del build exige recompilar y volver a desplegar. El sondeo del backend local solo ocurre cuando la aplicación se abre desde `localhost`; en un despliegue nunca se usa.
 
 ### Materiales académicos (HU-35)
 
