@@ -1,3 +1,5 @@
+import { BACKEND_URL } from './app-env.generated';
+
 /**
  * Configuración de la aplicación
  */
@@ -10,7 +12,8 @@ export const APP_CONFIG = {
   },
 
   API: {
-    BASE_URL: 'https://tallersisinfoproyect.onrender.com/api',
+    // Se obtiene de la variable BACKEND_URL al iniciar o compilar el frontend.
+    BASE_URL: BACKEND_URL,
 
     ENDPOINTS: {
       MATERIAS: '/materias',

@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "start": "node scripts/generate-env.mjs && ng serve",
+    "build": "node scripts/generate-env.mjs --required && ng build",
+    "watch": "node scripts/generate-env.mjs && ng build --watch --configuration development",
+    "test": "node scripts/generate-env.mjs && ng test"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
