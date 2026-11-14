@@ -37,14 +37,14 @@ public class SupabaseStorageService implements AlmacenamientoArchivos {
     public SupabaseStorageService(
             @Value("${app.supabase.url:}") String urlProyecto,
             @Value("${app.supabase.service-role-key:}") String claveServicio,
-            @Value("${app.supabase.storage.bucket:materiales}") String bucket
+            @Value("${app.supabase.storage.bucket:MaterialsTaller}") String bucket
     ) {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(TIEMPO_CONEXION)
                 .build();
         this.urlProyecto = normalizarUrlProyecto(urlProyecto);
         this.claveServicio = claveServicio == null ? "" : claveServicio.trim();
-        this.bucket = bucket == null ? "materiales" : bucket.trim();
+        this.bucket = bucket == null ? "MaterialsTaller" : bucket.trim();
     }
 
     @Override
@@ -179,7 +179,9 @@ public class SupabaseStorageService implements AlmacenamientoArchivos {
     }
 
     private void validarBucket() {
-        if (!bucket.matches("[a-z0-9][a-z0-9._-]{1,62}")) {
+        // El panel de Supabase permite mayúsculas (p. ej. MaterialsTaller),
+        // así que no se restringen a minúsculas.
+        if (!bucket.matches("[A-Za-z0-9][A-Za-z0-9._-]{1,62}")) {
             throw new AlmacenamientoException(
                     "El nombre del bucket de Supabase Storage no es válido: " + bucket);
         }
