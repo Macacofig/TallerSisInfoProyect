@@ -64,6 +64,13 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(exception.getMessage());
 	}
 
+	@ExceptionHandler(AlmacenamientoException.class)
+	public ResponseEntity<String> manejarErrorDeAlmacenamiento(AlmacenamientoException exception) {
+		LogHelper.error(GlobalExceptionHandler.class,
+				"Error al almacenar el archivo en Supabase Storage", exception);
+		return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exception.getMessage());
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<String> manejarValidacionInvalida(MethodArgumentNotValidException exception) {
 		return ResponseEntity.badRequest().body("La solicitud contiene datos inválidos");
