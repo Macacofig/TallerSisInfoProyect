@@ -1,102 +1,112 @@
-
 import { HttpInterceptorFn } from '@angular/common/http';
 import { defer, from, switchMap } from 'rxjs';
 import { APP_CONFIG } from './app-config';
+import { ENV } from '../../environments/environment';
 
-const REMOTE_API = APP_CONFIG.API.BASE_URL;
-const LOCAL_API = 'http://localhost:8081/api';
+const REMOTE_API: string = APP_CONFIG.API.BASE_URL;
+const LOCAL_API: string = `${ENV.LOCAL_BACKEND_URL}/api`;
 
-let selectedBackend: Promise<string> | null = null;
+const HOSTS_LOCALES = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
+const ESPERA_MAXIMA_PROBE_MS = 2000;
 
 /**
- * Comprueba si el backend local está disponible.
+ * Crea un interceptor que elige entre el backend local y el remoto.
+ *
+ * - Frontend abierto desde localhost: usa el backend local si responde;
+ *   de lo contrario, usa el backend remoto.
+ * - Frontend desplegado: usa siempre el backend remoto.
  */
-async function isLocalBackendAvailable(): Promise<boolean> {
-  const controller = new AbortController();
+export function crearApiBackendInterceptor(remoto: string, local: string): HttpInterceptorFn {
 
-  // Tiempo máximo de espera: 2 segundos.
-  const timeout = setTimeout(() => controller.abort(), 2000);
+  let backendSeleccionado: Promise<string> | null = null;
 
-  try {
-    const response = await fetch(
-      `${LOCAL_API}${APP_CONFIG.API.ENDPOINTS.TEST}`,
-      {
-        method: 'GET',
-        signal: controller.signal,
-      }
-    );
+  /**
+   * Comprueba si el backend local está disponible.
+   */
+  async function isLocalBackendAvailable(): Promise<boolean> {
+    const controller = new AbortController();
 
-    return response.ok;
+    // Tiempo máximo de espera: 2 segundos.
+    const timeout = setTimeout(() => controller.abort(), ESPERA_MAXIMA_PROBE_MS);
 
-  } catch (error) {
-    console.warn(
-      'Backend local no disponible. Se utilizará el backend remoto.',
-      error
-    );
+    try {
+      const response = await fetch(
+        `${local}${APP_CONFIG.API.ENDPOINTS.TEST}`,
+        {
+          method: 'GET',
+          cache: 'no-store',
+          signal: controller.signal,
+        }
+      );
 
-    return false;
+      return response.ok;
 
-  } finally {
-    clearTimeout(timeout);
+    } catch {
+      console.warn('Backend local no disponible. Se utilizará el backend remoto.');
+      return false;
+
+    } finally {
+      clearTimeout(timeout);
+    }
   }
+
+  async function selectBackend(): Promise<string> {
+
+    // En un entorno sin navegador (SSR o pruebas) no hay backend local.
+    if (typeof window === 'undefined') {
+      return remoto;
+    }
+
+    // Si ambos apuntan al mismo lugar no hace falta comprobar nada.
+    if (local === remoto) {
+      return remoto;
+    }
+
+    // Frontend desplegado: usar directamente el backend remoto.
+    if (!HOSTS_LOCALES.has(window.location.hostname)) {
+      return remoto;
+    }
+
+    console.log('Comprobando disponibilidad del backend local...');
+
+    if (await isLocalBackendAvailable()) {
+      console.log('Backend local disponible:', local);
+      return local;
+    }
+
+    console.warn('Backend local apagado. Utilizando backend remoto:', remoto);
+    return remoto;
+  }
+
+  return (request, next) => {
+
+    // Solo interceptar peticiones dirigidas a nuestra API.
+    if (!request.url.startsWith(remoto + '/')) {
+      return next(request);
+    }
+
+    return defer(() => {
+
+      // Seleccionar el backend una sola vez.
+      backendSeleccionado ??= selectBackend();
+
+      return from(backendSeleccionado).pipe(
+        switchMap((backend) => {
+
+          // Sustituir la URL del backend.
+          const url = backend + request.url.slice(remoto.length);
+
+          return next(request.clone({ url }));
+        })
+      );
+    });
+  };
 }
 
 /**
- * Selecciona automáticamente el backend.
+ * Interceptor HTTP de la aplicación.
+ *
+ * Las peticiones se crean con la URL del backend remoto y aquí se reemplaza
+ * por el backend elegido cuando corresponde.
  */
-async function selectBackend(): Promise<string> {
-
-  // Si no existe navegador, utilizar backend remoto.
-  if (typeof window === 'undefined') {
-    return REMOTE_API;
-  }
-
-  const hostname = window.location.hostname;
-
-  // Si el frontend NO es local, utilizar directamente el remoto.
-  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-    console.log('Utilizando backend remoto:', REMOTE_API);
-    return REMOTE_API;
-  }
-
-  // Si el frontend es local, comprobar el backend local.
-  console.log('Comprobando disponibilidad del backend local...');
-
-  const localAvailable = await isLocalBackendAvailable();
-
-  if (localAvailable) {
-    console.log('Backend local disponible:', LOCAL_API);
-    return LOCAL_API;
-  }
-
-  console.warn('Backend local apagado. Utilizando backend remoto.');
-
-  return REMOTE_API;
-}
-
-/**
- * Interceptor HTTP.
- */
-export const apiBackendInterceptor: HttpInterceptorFn = (request, next) => {
-
-  // Solo interceptar peticiones dirigidas a nuestra API.
-  if (!request.url.startsWith(REMOTE_API + '/')) {
-    return next(request);
-  }
-
-  return defer(() => {
-
-    // Seleccionar el backend una sola vez.
-    selectedBackend ??= selectBackend();
-
-    return from(selectedBackend).pipe(
-      switchMap((backend) => {
-
-        // Sustituir la URL del backend.
-        const url = backend + request.url.slice(REMOTE_API.length);
-
-        return next(request.clone({ url }));
-      })
-    );
-  });
-};
+export const apiBackendInterceptor = crearApiBackendInterceptor(REMOTE_API, LOCAL_API);

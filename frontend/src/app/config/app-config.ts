@@ -1,3 +1,5 @@
+import { ENV } from '../../environments/environment';
+
 /**
  * Configuración de la aplicación
  */
@@ -10,7 +12,8 @@ export const APP_CONFIG = {
   },
 
   API: {
-    BASE_URL: 'https://tallersisinfoproyect.onrender.com/api',
+    // BACKEND_URL del .env (backend remoto) + /api.
+    BASE_URL: `${ENV.BACKEND_URL}/api`,
 
     ENDPOINTS: {
       MATERIAS: '/materias',
