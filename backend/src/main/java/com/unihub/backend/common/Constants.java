@@ -420,6 +420,12 @@ public final class Constants {
 	// Que devuelve: MaterialSubidoResponse con el material y su solicitud en estado PENDIENTE
 	// Es público: no requiere JWT.
 
+	// Obtener materiales de una materia
+	public static final String POR_MATERIA_URL = "/materia/{idMateria}";
+	// Que necesita: idMateria
+	// Que devuelve: Lista de MaterialResponse con todos los campos, incluido linkMaterial
+	// Es público: no requiere JWT.
+
 	}
 
 	// ACTIVIDAD ESTUDIANTE

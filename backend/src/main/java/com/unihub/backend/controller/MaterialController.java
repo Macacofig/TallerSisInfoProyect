@@ -1,12 +1,15 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.material.MaterialRequest;
+import com.unihub.backend.dto.material.MaterialResponse;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
 import com.unihub.backend.exception.BadRequestException;
 import com.unihub.backend.service.MaterialService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 import static com.unihub.backend.common.Constants.Material.BASE;
+import static com.unihub.backend.common.Constants.Material.POR_MATERIA_URL;
 import static com.unihub.backend.common.Constants.Material.SUBIR_URL;
 
 @RestController
@@ -25,6 +31,11 @@ public class MaterialController {
 
     public MaterialController(MaterialService materialService) {
         this.materialService = materialService;
+    }
+
+    @GetMapping(POR_MATERIA_URL)
+    public ResponseEntity<List<MaterialResponse>> obtenerPorMateria(@PathVariable Long idMateria) {
+        return ResponseEntity.ok(materialService.obtenerPorMateria(idMateria));
     }
 
     @PostMapping(value = SUBIR_URL, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
