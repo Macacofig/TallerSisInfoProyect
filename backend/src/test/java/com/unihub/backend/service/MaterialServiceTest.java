@@ -271,7 +271,7 @@ class MaterialServiceTest {
         when(materialRepository.findByMateriaIdOrderByTituloAsc(MATERIA_ID))
                 .thenReturn(List.of(material));
 
-        List<MaterialResponse> respuesta = materialService.obtenerPorMateria(MATERIA_ID);
+        List<MaterialResponse> respuesta = materialService.obtenerPorMateria(MATERIA_ID, null, null, null);
 
         assertEquals(1, respuesta.size());
         MaterialResponse primero = respuesta.getFirst();
@@ -296,7 +296,7 @@ class MaterialServiceTest {
         when(materiaRepository.existsById(MATERIA_ID)).thenReturn(false);
 
         ResourceNotFoundException error = assertThrows(ResourceNotFoundException.class,
-                () -> materialService.obtenerPorMateria(MATERIA_ID));
+                () -> materialService.obtenerPorMateria(MATERIA_ID, null, null, null));
 
         assertTrue(error.getMessage().contains("materia"));
         verify(materialRepository, never()).findByMateriaIdOrderByTituloAsc(anyLong());
@@ -304,9 +304,83 @@ class MaterialServiceTest {
 
     @Test
     void obtenerPorMateriaRechazaIdentificadoresInvalidos() {
-        assertThrows(BadRequestException.class, () -> materialService.obtenerPorMateria(null));
-        assertThrows(BadRequestException.class, () -> materialService.obtenerPorMateria(0L));
+        assertThrows(BadRequestException.class,
+                () -> materialService.obtenerPorMateria(null, null, null, null));
+        assertThrows(BadRequestException.class,
+                () -> materialService.obtenerPorMateria(0L, null, null, null));
 
         verify(materialRepository, never()).findByMateriaIdOrderByTituloAsc(anyLong());
+    }
+
+    @Test
+    void obtenerPorMateriaFiltraPorDocenteSemestreYTipo() {
+        Docente otroDocente = new Docente("Lucía Rojas");
+        ReflectionTestUtils.setField(otroDocente, "id", 10L);
+
+        Material apuntePdf = material("Apunte de clase", Material.TipoMaterial.PDF, docente, 2, 15L);
+        Material guiaWord = material("Guía de laboratorio", Material.TipoMaterial.WORD, docente, 3, 16L);
+        Material otroPdf = material("Diapositivas", Material.TipoMaterial.PDF, otroDocente, 2, 17L);
+
+        when(materiaRepository.existsById(MATERIA_ID)).thenReturn(true);
+        when(materialRepository.findByMateriaIdOrderByTituloAsc(MATERIA_ID))
+                .thenReturn(List.of(apuntePdf, guiaWord, otroPdf));
+
+        List<MaterialResponse> respuesta = materialService.obtenerPorMateria(
+                MATERIA_ID, DOCENTE_ID, 2, "pdf");
+
+        assertEquals(1, respuesta.size());
+        assertEquals(15L, respuesta.getFirst().id());
+        assertEquals("Apunte de clase", respuesta.getFirst().titulo());
+    }
+
+    @Test
+    void obtenerPorMateriaSinFiltrosDevuelveTodosLosMateriales() {
+        Docente otroDocente = new Docente("Lucía Rojas");
+        ReflectionTestUtils.setField(otroDocente, "id", 10L);
+
+        when(materiaRepository.existsById(MATERIA_ID)).thenReturn(true);
+        when(materialRepository.findByMateriaIdOrderByTituloAsc(MATERIA_ID)).thenReturn(List.of(
+                material("Apunte de clase", Material.TipoMaterial.PDF, docente, 2, 15L),
+                material("Guía de laboratorio", Material.TipoMaterial.WORD, docente, 3, 16L),
+                material("Diapositivas", Material.TipoMaterial.PDF, otroDocente, 2, 17L)));
+
+        List<MaterialResponse> respuesta = materialService.obtenerPorMateria(
+                MATERIA_ID, null, null, "  ");
+
+        assertEquals(3, respuesta.size());
+    }
+
+    @Test
+    void obtenerPorMateriaRechazaFiltrosInvalidos() {
+        assertThrows(BadRequestException.class,
+                () -> materialService.obtenerPorMateria(MATERIA_ID, 0L, null, null));
+        assertThrows(BadRequestException.class,
+                () -> materialService.obtenerPorMateria(MATERIA_ID, null, 0, null));
+        assertThrows(BadRequestException.class,
+                () -> materialService.obtenerPorMateria(MATERIA_ID, null, 21, null));
+        assertThrows(BadRequestException.class,
+                () -> materialService.obtenerPorMateria(MATERIA_ID, null, null, "exe"));
+
+        verify(materialRepository, never()).findByMateriaIdOrderByTituloAsc(anyLong());
+    }
+
+    private Material material(
+            String titulo,
+            Material.TipoMaterial tipo,
+            Docente docenteDelMaterial,
+            Integer semestre,
+            Long id
+    ) {
+        Material material = new Material(
+                "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/archivo",
+                titulo,
+                "Descripción de " + titulo,
+                tipo,
+                materia,
+                docenteDelMaterial,
+                semestre
+        );
+        ReflectionTestUtils.setField(material, "id", id);
+        return material;
     }
 }

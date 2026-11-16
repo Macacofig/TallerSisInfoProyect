@@ -107,7 +107,57 @@ class MaterialControllerTest {
 
     @Test
     void obtieneLosMaterialesDeUnaMateriaSinJwt() throws Exception {
-        MaterialResponse material = new MaterialResponse(
+        MaterialResponse material = materialResponse();
+        when(materialService.obtenerPorMateria(3L, null, null, null)).thenReturn(List.of(material));
+
+        mockMvc.perform(get("/api/material/materia/3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(15))
+                .andExpect(jsonPath("$[0].titulo").value("Apunte de clase"))
+                .andExpect(jsonPath("$[0].nombreMateria").value("Programación I"))
+                .andExpect(jsonPath("$[0].nombreDocente").value("Carlos Gómez"))
+                .andExpect(jsonPath("$[0].linkMaterial").value(
+                        "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/apunte.pdf"))
+                .andExpect(jsonPath("$[0].estado").value("PENDIENTE"));
+
+        verify(materialService).obtenerPorMateria(3L, null, null, null);
+    }
+
+    @Test
+    void aplicaLosFiltrosDeDocenteSemestreYTipo() throws Exception {
+        when(materialService.obtenerPorMateria(3L, 9L, 2, "PDF"))
+                .thenReturn(List.of(materialResponse()));
+
+        mockMvc.perform(get("/api/material/materia/3")
+                        .param("idDocente", "9")
+                        .param("semestre", "2")
+                        .param("tipo", "PDF"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(15));
+
+        verify(materialService).obtenerPorMateria(3L, 9L, 2, "PDF");
+    }
+
+    @Test
+    void rechazaParametrosDeFiltroConTipoInvalido() throws Exception {
+        when(materialService.obtenerPorMateria(3L, null, null, "EXE"))
+                .thenThrow(new com.unihub.backend.exception.BadRequestException(
+                        "Tipo de material no válido"));
+
+        mockMvc.perform(get("/api/material/materia/3").param("tipo", "EXE"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void rechazaSemestreNoNumerico() throws Exception {
+        mockMvc.perform(get("/api/material/materia/3").param("semestre", "abc"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(materialService);
+    }
+
+    private MaterialResponse materialResponse() {
+        return new MaterialResponse(
                 15L,
                 "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/apunte.pdf",
                 "Apunte de clase",
@@ -120,18 +170,5 @@ class MaterialControllerTest {
                 2,
                 "PENDIENTE"
         );
-        when(materialService.obtenerPorMateria(3L)).thenReturn(List.of(material));
-
-        mockMvc.perform(get("/api/material/materia/3"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(15))
-                .andExpect(jsonPath("$[0].titulo").value("Apunte de clase"))
-                .andExpect(jsonPath("$[0].nombreMateria").value("Programación I"))
-                .andExpect(jsonPath("$[0].nombreDocente").value("Carlos Gómez"))
-                .andExpect(jsonPath("$[0].linkMaterial").value(
-                        "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/apunte.pdf"))
-                .andExpect(jsonPath("$[0].estado").value("PENDIENTE"));
-
-        verify(materialService).obtenerPorMateria(3L);
     }
 }
