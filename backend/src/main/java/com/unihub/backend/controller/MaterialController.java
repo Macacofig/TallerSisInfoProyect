@@ -34,8 +34,14 @@ public class MaterialController {
     }
 
     @GetMapping(POR_MATERIA_URL)
-    public ResponseEntity<List<MaterialResponse>> obtenerPorMateria(@PathVariable Long idMateria) {
-        return ResponseEntity.ok(materialService.obtenerPorMateria(idMateria));
+    public ResponseEntity<List<MaterialResponse>> obtenerPorMateria(
+            @PathVariable Long idMateria,
+            @RequestParam(value = "idDocente", required = false) Long idDocente,
+            @RequestParam(value = "semestre", required = false) Integer semestre,
+            @RequestParam(value = "tipo", required = false) String tipo
+    ) {
+        return ResponseEntity.ok(
+                materialService.obtenerPorMateria(idMateria, idDocente, semestre, tipo));
     }
 
     @PostMapping(value = SUBIR_URL, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
