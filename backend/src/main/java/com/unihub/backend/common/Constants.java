@@ -422,7 +422,7 @@ public final class Constants {
 
 	// Obtener materiales de una materia
 	public static final String POR_MATERIA_URL = "/materia/{idMateria}";
-	// Que necesita: idMateria
+	// Que necesita: idMateria; filtros opcionales idDocente, semestre y tipo
 	// Que devuelve: Lista de MaterialResponse con todos los campos, incluido linkMaterial
 	// Es público: no requiere JWT.
 

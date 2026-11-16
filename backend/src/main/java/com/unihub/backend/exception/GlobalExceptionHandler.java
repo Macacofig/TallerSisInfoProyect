@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -74,6 +75,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<String> manejarValidacionInvalida(MethodArgumentNotValidException exception) {
 		return ResponseEntity.badRequest().body("La solicitud contiene datos inválidos");
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<String> manejarParametroInvalido(MethodArgumentTypeMismatchException exception) {
+		return ResponseEntity.badRequest()
+				.body("Parámetro no válido: " + exception.getName());
 	}
 
 	@ExceptionHandler(Exception.class)

@@ -159,20 +159,50 @@ public class MaterialService {
     /**
      * Devuelve los materiales de una materia con los nombres de la materia y
      * del docente, además del enlace público para descargar el archivo.
+     * Los filtros por docente, semestre y tipo son opcionales.
      */
     @Transactional(readOnly = true)
-    public List<MaterialResponse> obtenerPorMateria(Long materiaId) {
+    public List<MaterialResponse> obtenerPorMateria(
+            Long materiaId,
+            Long idDocente,
+            Integer semestre,
+            String tipo
+    ) {
         if (materiaId == null || materiaId <= 0) {
             throw new BadRequestException("La materia es obligatoria");
         }
+        if (idDocente != null && idDocente <= 0) {
+            throw new BadRequestException("El docente no es válido");
+        }
+        if (semestre != null && (semestre < 1 || semestre > 20)) {
+            throw new BadRequestException("El semestre debe estar entre 1 y 20");
+        }
+
+        Material.TipoMaterial tipoMaterial = parsearTipo(tipo);
 
         if (!materiaRepository.existsById(materiaId)) {
             throw new ResourceNotFoundException("La materia no existe");
         }
 
         return materialRepository.findByMateriaIdOrderByTituloAsc(materiaId).stream()
+                .filter(material -> idDocente == null || idDocente.equals(material.getDocente().getId()))
+                .filter(material -> semestre == null || semestre.equals(material.getSemestreIngresado()))
+                .filter(material -> tipoMaterial == null || tipoMaterial == material.getTipo())
                 .map(materialMapper::toResponse)
                 .toList();
+    }
+
+    private Material.TipoMaterial parsearTipo(String tipo) {
+        if (tipo == null || tipo.isBlank()) {
+            return null;
+        }
+
+        try {
+            return Material.TipoMaterial.valueOf(tipo.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException exception) {
+            throw new BadRequestException(
+                    "Tipo de material no válido. Use IMAGEN, WORD, PDF o POWERPOINT");
+        }
     }
 
     private void validarSolicitud(MaterialRequest request) {
