@@ -2,6 +2,7 @@ package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.material.MaterialRequest;
+import com.unihub.backend.dto.material.MaterialResponse;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
 import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -152,6 +154,25 @@ public class MaterialService {
             almacenamiento.eliminar(archivoSubido.ruta());
             throw exception;
         }
+    }
+
+    /**
+     * Devuelve los materiales de una materia con los nombres de la materia y
+     * del docente, además del enlace público para descargar el archivo.
+     */
+    @Transactional(readOnly = true)
+    public List<MaterialResponse> obtenerPorMateria(Long materiaId) {
+        if (materiaId == null || materiaId <= 0) {
+            throw new BadRequestException("La materia es obligatoria");
+        }
+
+        if (!materiaRepository.existsById(materiaId)) {
+            throw new ResourceNotFoundException("La materia no existe");
+        }
+
+        return materialRepository.findByMateriaIdOrderByTituloAsc(materiaId).stream()
+                .map(materialMapper::toResponse)
+                .toList();
     }
 
     private void validarSolicitud(MaterialRequest request) {

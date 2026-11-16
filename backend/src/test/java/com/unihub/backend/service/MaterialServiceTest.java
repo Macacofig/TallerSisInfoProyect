@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.dto.material.MaterialRequest;
+import com.unihub.backend.dto.material.MaterialResponse;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
 import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
@@ -25,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -250,5 +252,61 @@ class MaterialServiceTest {
 
         assertTrue(error.getMessage().contains("tamaño máximo"));
         verify(almacenamiento, never()).subir(any(), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void obtenerPorMateriaDevuelveLosMaterialesConNombresYLink() {
+        Material material = new Material(
+                "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/apunte.pdf",
+                "Apunte de clase",
+                "Resumen del tema 1",
+                Material.TipoMaterial.PDF,
+                materia,
+                docente,
+                2
+        );
+        ReflectionTestUtils.setField(material, "id", 15L);
+
+        when(materiaRepository.existsById(MATERIA_ID)).thenReturn(true);
+        when(materialRepository.findByMateriaIdOrderByTituloAsc(MATERIA_ID))
+                .thenReturn(List.of(material));
+
+        List<MaterialResponse> respuesta = materialService.obtenerPorMateria(MATERIA_ID);
+
+        assertEquals(1, respuesta.size());
+        MaterialResponse primero = respuesta.getFirst();
+        assertEquals(15L, primero.id());
+        assertEquals("Apunte de clase", primero.titulo());
+        assertEquals("Resumen del tema 1", primero.descripcion());
+        assertEquals("PDF", primero.tipo());
+        assertEquals(MATERIA_ID, primero.idMateria());
+        assertEquals("Programación I", primero.nombreMateria());
+        assertEquals(DOCENTE_ID, primero.idDocente());
+        assertEquals("Carlos Gómez", primero.nombreDocente());
+        assertEquals(2, primero.semestreIngresado());
+        assertEquals("PENDIENTE", primero.estado());
+        assertEquals("https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/apunte.pdf",
+                primero.linkMaterial());
+
+        verify(materialRepository).findByMateriaIdOrderByTituloAsc(MATERIA_ID);
+    }
+
+    @Test
+    void obtenerPorMateriaFallaCuandoLaMateriaNoExiste() {
+        when(materiaRepository.existsById(MATERIA_ID)).thenReturn(false);
+
+        ResourceNotFoundException error = assertThrows(ResourceNotFoundException.class,
+                () -> materialService.obtenerPorMateria(MATERIA_ID));
+
+        assertTrue(error.getMessage().contains("materia"));
+        verify(materialRepository, never()).findByMateriaIdOrderByTituloAsc(anyLong());
+    }
+
+    @Test
+    void obtenerPorMateriaRechazaIdentificadoresInvalidos() {
+        assertThrows(BadRequestException.class, () -> materialService.obtenerPorMateria(null));
+        assertThrows(BadRequestException.class, () -> materialService.obtenerPorMateria(0L));
+
+        verify(materialRepository, never()).findByMateriaIdOrderByTituloAsc(anyLong());
     }
 }

@@ -17,11 +17,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -100,5 +103,35 @@ class MaterialControllerTest {
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(materialService);
+    }
+
+    @Test
+    void obtieneLosMaterialesDeUnaMateriaSinJwt() throws Exception {
+        MaterialResponse material = new MaterialResponse(
+                15L,
+                "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/apunte.pdf",
+                "Apunte de clase",
+                "Resumen del tema 1",
+                "PDF",
+                3L,
+                "Programación I",
+                9L,
+                "Carlos Gómez",
+                2,
+                "PENDIENTE"
+        );
+        when(materialService.obtenerPorMateria(3L)).thenReturn(List.of(material));
+
+        mockMvc.perform(get("/api/material/materia/3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(15))
+                .andExpect(jsonPath("$[0].titulo").value("Apunte de clase"))
+                .andExpect(jsonPath("$[0].nombreMateria").value("Programación I"))
+                .andExpect(jsonPath("$[0].nombreDocente").value("Carlos Gómez"))
+                .andExpect(jsonPath("$[0].linkMaterial").value(
+                        "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/materias-3/apunte.pdf"))
+                .andExpect(jsonPath("$[0].estado").value("PENDIENTE"));
+
+        verify(materialService).obtenerPorMateria(3L);
     }
 }
