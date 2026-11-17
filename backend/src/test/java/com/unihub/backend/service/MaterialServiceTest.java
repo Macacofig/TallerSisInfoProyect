@@ -1,5 +1,6 @@
 package com.unihub.backend.service;
 
+import com.unihub.backend.dto.material.MaterialDescarga;
 import com.unihub.backend.dto.material.MaterialRequest;
 import com.unihub.backend.dto.material.MaterialResponse;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
@@ -29,6 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -362,6 +364,70 @@ class MaterialServiceTest {
                 () -> materialService.obtenerPorMateria(MATERIA_ID, null, null, "exe"));
 
         verify(materialRepository, never()).findByMateriaIdOrderByTituloAsc(anyLong());
+    }
+
+    @Test
+    void descargaElArchivoDelMaterialConSuNombreOriginal() {
+        String ruta = "materias-3/123e4567-e89b-12d3-a456-426614174000-apunte.pdf";
+        Material material = new Material(
+                "https://proyecto.supabase.co/storage/v1/object/public/MaterialsTaller/" + ruta,
+                "Apunte de clase",
+                "Resumen del tema 1",
+                Material.TipoMaterial.PDF,
+                materia,
+                docente,
+                2
+        );
+        ReflectionTestUtils.setField(material, "id", 15L);
+
+        when(materialRepository.findById(15L)).thenReturn(Optional.of(material));
+        when(almacenamiento.descargar(ruta)).thenReturn("contenido".getBytes());
+
+        MaterialDescarga descarga = materialService.descargar(15L);
+
+        assertArrayEquals("contenido".getBytes(), descarga.contenido());
+        assertEquals("apunte.pdf", descarga.nombreArchivo());
+        verify(almacenamiento).descargar(ruta);
+    }
+
+    @Test
+    void descargaFallaCuandoElMaterialNoExiste() {
+        when(materialRepository.findById(99L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException error = assertThrows(ResourceNotFoundException.class,
+                () -> materialService.descargar(99L));
+
+        assertTrue(error.getMessage().contains("material"));
+        verify(almacenamiento, never()).descargar(anyString());
+    }
+
+    @Test
+    void descargaRechazaLinksQueNoSonDeSupabaseStorage() {
+        Material material = new Material(
+                "https://otro-sitio.com/archivo.pdf",
+                "Apunte",
+                "Descripción",
+                Material.TipoMaterial.PDF,
+                materia,
+                docente,
+                2
+        );
+        ReflectionTestUtils.setField(material, "id", 15L);
+        when(materialRepository.findById(15L)).thenReturn(Optional.of(material));
+
+        BadRequestException error = assertThrows(BadRequestException.class,
+                () -> materialService.descargar(15L));
+
+        assertTrue(error.getMessage().contains("URL de descarga"));
+        verify(almacenamiento, never()).descargar(anyString());
+    }
+
+    @Test
+    void descargaRechazaIdentificadoresInvalidos() {
+        assertThrows(BadRequestException.class, () -> materialService.descargar(null));
+        assertThrows(BadRequestException.class, () -> materialService.descargar(0L));
+
+        verify(almacenamiento, never()).descargar(anyString());
     }
 
     private Material material(

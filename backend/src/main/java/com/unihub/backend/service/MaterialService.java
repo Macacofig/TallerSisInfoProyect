@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
+import com.unihub.backend.dto.material.MaterialDescarga;
 import com.unihub.backend.dto.material.MaterialRequest;
 import com.unihub.backend.dto.material.MaterialResponse;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
@@ -154,6 +155,49 @@ public class MaterialService {
             almacenamiento.eliminar(archivoSubido.ruta());
             throw exception;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public MaterialDescarga descargar(Long idMaterial) {
+        if (idMaterial == null || idMaterial <= 0) {
+            throw new BadRequestException("El material es obligatorio");
+        }
+
+        Material material = materialRepository.findById(idMaterial)
+                .orElseThrow(() -> new ResourceNotFoundException("El material no existe"));
+
+        String link = material.getLinkMaterial();
+        String ruta = extraerRuta(link);
+        String nombreArchivo = extraerNombreArchivo(link);
+
+        return new MaterialDescarga(almacenamiento.descargar(ruta), nombreArchivo);
+    }
+
+    private String extraerRuta(String link) {
+        String marcador = "/storage/v1/object/public/";
+        if (link == null) {
+            throw new BadRequestException("El material no tiene una URL de descarga válida");
+        }
+
+        int inicio = link.indexOf(marcador);
+        if (inicio < 0) {
+            throw new BadRequestException("El material no tiene una URL de descarga válida");
+        }
+
+        String resto = link.substring(inicio + marcador.length()).split("[?#]", 2)[0];
+        int barra = resto.indexOf('/');
+        if (barra < 0 || barra == resto.length() - 1) {
+            throw new BadRequestException("El material no tiene una URL de descarga válida");
+        }
+
+        return resto.substring(barra + 1);
+    }
+
+    private String extraerNombreArchivo(String link) {
+        String ultimoSegmento = link.substring(link.lastIndexOf('/') + 1).split("[?#]", 2)[0];
+        String nombre = ultimoSegmento.replaceFirst(
+                "^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}-", "");
+        return nombre.isBlank() ? "material" : nombre;
     }
 
     /**
