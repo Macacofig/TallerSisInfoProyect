@@ -39,6 +39,12 @@ Esta tabla describe lo presente en el código; el funcionamiento completo debe v
 | Horarios | Interfaz para cargar materias y bloques; endpoints para normalizar datos y generar combinaciones. |
 | Ayudantes (backend) | Postulación por materia, listado de aprobados, baja y resolución de postulaciones. Solicitudes de ayuda: creación, consulta por estudiante o ayudante, resolución y cancelación. |
 | Materiales académicos (HU-32, HU-33, HU-34, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga, con filtros por docente, semestre y tipo; descarga del archivo por identificador de material. |
+| Materiales académicos (HU-32, HU-33, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga, con filtros por docente, semestre y tipo. |
+| Interfaz | Navegación principal, barra lateral y textos en español e inglés. |
+| Estado de la API | `GET /api/test` devuelve `UniHub funcionando`. |
+
+**Pendientes:** aunque existen clases antiguas vacías llamadas `Ayudante`, el backend de ayudantías se implementa en `AyudanteMateria` y `SolicitudAyuda`. La sección de ayudantes del frontend todavía utiliza datos estáticos de `frontend/src/app/data/ayudantes.data.ts`; no debe confundirse con una integración completa con esos endpoints. La subida, consulta y filtrado de materiales (HU-32, HU-33, HU-35) ya tienen backend, pero el frontend aún no incluye las pantallas de carga ni de búsqueda. No hay implementación de conversación privada en esta rama. `APP_CONFIG.DEMO_MODE` está declarado en `true`; no garantiza que toda la aplicación funcione sin API.
+| Materiales académicos (HU-32, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga. |
 | Interfaz | Navegación principal, barra lateral y textos en español e inglés. |
 | Estado de la API | `GET /api/test` devuelve `UniHub funcionando`. |
 
@@ -274,6 +280,8 @@ Fuera de Compose, incluye la configuración SSL requerida por cada proveedor en 
 El Dockerfile de frontend y Compose ejecutan `npm start`, que lee `frontend/.env` y luego `ng serve`. Para producción usa el build estático y un servidor apropiado para esos archivos. La URL del backend remoto queda incrustada en el bundle: cambiarla después del build exige recompilar y volver a desplegar. El sondeo del backend local solo ocurre cuando la aplicación se abre desde `localhost`; en un despliegue nunca se usa.
 
 ### Materiales académicos (HU-32, HU-33, HU-34, HU-35)
+### Materiales académicos (HU-32, HU-33, HU-35)
+### Materiales académicos (HU-32, HU-35)
 
 El backend crea las tablas `material` y `solicitudes_material` con `ddl-auto=update`. Cada fila de `material` guarda la URL pública del archivo en `link_material`, su tipo (`IMAGEN`, `WORD`, `PDF`, `POWERPOINT`) y el estado (`PENDIENTE`, `ACTIVO`, `RECHAZADO`). La solicitud asociada queda en `PENDIENTE` (`PENDIENTE`, `APROBADO`, `NEGADO`).
 
@@ -319,6 +327,7 @@ GET /api/material/materia/3?idDocente=9&semestre=2&tipo=PDF
 ```
 
 Devuelve una lista ordenada por título con todos los campos del material: `id`, `linkMaterial`, `titulo`, `descripcion`, `tipo`, `idMateria`, `nombreMateria`, `idDocente`, `nombreDocente`, `semestreIngresado` y `estado`. Se incluye `linkMaterial` para poder descargar el archivo. Si la materia no existe responde `404`; si un identificador, el semestre o el tipo no son válidos, `400`.
+Devuelve una lista ordenada por título con todos los campos del material: `id`, `linkMaterial`, `titulo`, `descripcion`, `tipo`, `idMateria`, `nombreMateria`, `idDocente`, `nombreDocente`, `semestreIngresado` y `estado`. Se incluye `linkMaterial` para poder descargar el archivo. Si la materia no existe responde `404`; si el identificador es inválido, `400`.
 
 ```json
 [
