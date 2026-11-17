@@ -38,6 +38,7 @@ Esta tabla describe lo presente en el código; el funcionamiento completo debe v
 | Calificaciones de docentes | Crear, editar y eliminar la calificación propia; consultas y promedios por docente y materia, con filtros de gestión. |
 | Horarios | Interfaz para cargar materias y bloques; endpoints para normalizar datos y generar combinaciones. |
 | Ayudantes (backend) | Postulación por materia, listado de aprobados, baja y resolución de postulaciones. Solicitudes de ayuda: creación, consulta por estudiante o ayudante, resolución y cancelación. |
+| Materiales académicos (HU-32, HU-33, HU-34, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga, con filtros por docente, semestre y tipo; descarga del archivo por identificador de material. |
 | Materiales académicos (HU-32, HU-33, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga, con filtros por docente, semestre y tipo. |
 | Interfaz | Navegación principal, barra lateral y textos en español e inglés. |
 | Estado de la API | `GET /api/test` devuelve `UniHub funcionando`. |
@@ -47,7 +48,7 @@ Esta tabla describe lo presente en el código; el funcionamiento completo debe v
 | Interfaz | Navegación principal, barra lateral y textos en español e inglés. |
 | Estado de la API | `GET /api/test` devuelve `UniHub funcionando`. |
 
-**Pendientes:** aunque existen clases antiguas vacías llamadas `Ayudante`, el backend de ayudantías se implementa en `AyudanteMateria` y `SolicitudAyuda`. La sección de ayudantes del frontend todavía utiliza datos estáticos de `frontend/src/app/data/ayudantes.data.ts`; no debe confundirse con una integración completa con esos endpoints. La subida y consulta de materiales (HU-32, HU-35) ya tienen backend, pero el frontend aún no incluye las pantallas de carga ni de búsqueda. No hay implementación de conversación privada en esta rama. `APP_CONFIG.DEMO_MODE` está declarado en `true`; no garantiza que toda la aplicación funcione sin API.
+**Pendientes:** aunque existen clases antiguas vacías llamadas `Ayudante`, el backend de ayudantías se implementa en `AyudanteMateria` y `SolicitudAyuda`. La sección de ayudantes del frontend todavía utiliza datos estáticos de `frontend/src/app/data/ayudantes.data.ts`; no debe confundirse con una integración completa con esos endpoints. La subida, consulta, filtrado y descarga de materiales (HU-32, HU-33, HU-34, HU-35) ya tienen backend, pero el frontend aún no incluye las pantallas de carga, búsqueda ni el botón de descarga. No hay implementación de conversación privada en esta rama. `APP_CONFIG.DEMO_MODE` está declarado en `true`; no garantiza que toda la aplicación funcione sin API.
 
 ## Requisitos
 
@@ -278,6 +279,7 @@ Fuera de Compose, incluye la configuración SSL requerida por cada proveedor en 
 
 El Dockerfile de frontend y Compose ejecutan `npm start`, que lee `frontend/.env` y luego `ng serve`. Para producción usa el build estático y un servidor apropiado para esos archivos. La URL del backend remoto queda incrustada en el bundle: cambiarla después del build exige recompilar y volver a desplegar. El sondeo del backend local solo ocurre cuando la aplicación se abre desde `localhost`; en un despliegue nunca se usa.
 
+### Materiales académicos (HU-32, HU-33, HU-34, HU-35)
 ### Materiales académicos (HU-32, HU-33, HU-35)
 ### Materiales académicos (HU-32, HU-35)
 
@@ -368,6 +370,24 @@ Respuesta `201 Created` de la subida:
   }
 }
 ```
+
+Descarga del archivo de un material (pública, no requiere JWT):
+
+```http
+GET /api/material/{idMaterial}/descargar
+```
+
+El backend busca el material por `idMaterial`, obtiene el archivo desde Supabase Storage y lo devuelve como descarga adjunta: `Content-Type` según la extensión y `Content-Disposition: attachment` con el nombre original (sin el prefijo UUID interno). Desde la frontend basta con apuntar un botón o enlace a esta URL; el navegador guarda el archivo con ese nombre.
+
+Ejemplo:
+
+```powershell
+curl.exe -OJ "http://localhost:8081/api/material/15/descargar"
+```
+
+- `200`: bytes del archivo.
+- `400`: `idMaterial` inválido o el material no tiene una URL de Supabase Storage válida.
+- `404`: el material no existe o el archivo ya no está disponible en Storage.
 
 ## Scraper opcional
 

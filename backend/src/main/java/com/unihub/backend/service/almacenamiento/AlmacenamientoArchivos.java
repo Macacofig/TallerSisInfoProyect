@@ -12,4 +12,10 @@ public interface AlmacenamientoArchivos {
      * Elimina un archivo usando la ruta interna devuelta por {@link #subir}.
      */
     void eliminar(String ruta);
+
+    /**
+     * Obtiene los bytes de un archivo usando la ruta interna devuelta por
+     * {@link #subir}.
+     */
+    byte[] descargar(String ruta);
 }

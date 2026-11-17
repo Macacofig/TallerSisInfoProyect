@@ -426,6 +426,12 @@ public final class Constants {
 	// Que devuelve: Lista de MaterialResponse con todos los campos, incluido linkMaterial
 	// Es público: no requiere JWT.
 
+	// Descargar el archivo de un material
+	public static final String DESCARGAR_URL = "/{idMaterial}/descargar";
+	// Que necesita: idMaterial
+	// Que devuelve: bytes del archivo con Content-Disposition: attachment
+	// Es público: no requiere JWT.
+
 	}
 
 	// ACTIVIDAD ESTUDIANTE

@@ -2,16 +2,20 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.config.JwtAuthenticationConfig;
 import com.unihub.backend.config.JwtAuthenticationInterceptor;
+import com.unihub.backend.dto.material.MaterialDescarga;
 import com.unihub.backend.dto.material.MaterialResponse;
 import com.unihub.backend.dto.material.MaterialSubidoResponse;
 import com.unihub.backend.dto.material.SolicitudMaterialResponse;
 import com.unihub.backend.repository.EstudianteRepository;
+import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.service.JwtService;
 import com.unihub.backend.service.MaterialService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -19,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -26,6 +31,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -154,6 +161,30 @@ class MaterialControllerTest {
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(materialService);
+    }
+
+    @Test
+    void descargaElArchivoDelMaterial() throws Exception {
+        when(materialService.descargar(15L))
+                .thenReturn(new MaterialDescarga("contenido".getBytes(), "apunte.pdf"));
+
+        mockMvc.perform(get("/api/material/15/descargar"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, containsString("attachment")))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, containsString("apunte.pdf")))
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+                .andExpect(content().bytes("contenido".getBytes()));
+
+        verify(materialService).descargar(15L);
+    }
+
+    @Test
+    void descargaResponde404CuandoElMaterialNoExiste() throws Exception {
+        when(materialService.descargar(99L))
+                .thenThrow(new ResourceNotFoundException("El material no existe"));
+
+        mockMvc.perform(get("/api/material/99/descargar"))
+                .andExpect(status().isNotFound());
     }
 
     private MaterialResponse materialResponse() {
