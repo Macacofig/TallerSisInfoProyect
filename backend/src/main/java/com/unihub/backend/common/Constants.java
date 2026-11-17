@@ -404,6 +404,36 @@ public final class Constants {
 
 	}
 
+	// MATERIAL ACADÉMICO
+	public static final class Material {
+
+	private Material() {
+	}
+
+	// Base = MATERIAL
+	public static final String BASE = "/api/material";
+
+	// Subir material académico (multipart/form-data)
+	public static final String SUBIR_URL = "/subir";
+	// Que necesita: documento, titulo, descripcion, idMateria, idDocente,
+	//               idEstudiante y semestreIngresado (opcional)
+	// Que devuelve: MaterialSubidoResponse con el material y su solicitud en estado PENDIENTE
+	// Es público: no requiere JWT.
+
+	// Obtener materiales de una materia
+	public static final String POR_MATERIA_URL = "/materia/{idMateria}";
+	// Que necesita: idMateria; filtros opcionales idDocente, semestre y tipo
+	// Que devuelve: Lista de MaterialResponse con todos los campos, incluido linkMaterial
+	// Es público: no requiere JWT.
+
+	// Descargar el archivo de un material
+	public static final String DESCARGAR_URL = "/{idMaterial}/descargar";
+	// Que necesita: idMaterial
+	// Que devuelve: bytes del archivo con Content-Disposition: attachment
+	// Es público: no requiere JWT.
+
+	}
+
 	// ACTIVIDAD ESTUDIANTE
 	public static final class ActividadEstudiante {
 

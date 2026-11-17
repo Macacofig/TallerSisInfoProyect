@@ -87,6 +87,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
                     && ("/api/estudiantes".equals(path) || "/api/estudiantes/login".equals(path)
                         || "/api/estudiantes/recuperar-contrasena".equals(path)
                         || path.startsWith("/api/horarios/")
+                        || "/api/material/subir".equals(path)
                         || "/api/docentes".equals(path) || "/api/docente-materia".equals(path)))) {
             return true;
         }
