@@ -2,6 +2,7 @@ package com.unihub.backend.service.almacenamiento;
 
 import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.exception.AlmacenamientoException;
+import com.unihub.backend.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -100,6 +102,35 @@ public class SupabaseStorageService implements AlmacenamientoArchivos {
         }
     }
 
+    @Override
+    public byte[] descargar(String ruta) {
+        validarConfiguracion();
+        if (ruta == null || ruta.isBlank()) {
+            throw new AlmacenamientoException(
+                    "La ruta del archivo que se quiere descargar es obligatoria.");
+        }
+
+        String urlDescarga = urlProyecto + "/storage/v1/object/" + bucket + "/" + ruta;
+        HttpRequest solicitud = solicitudBase(urlDescarga)
+                .GET()
+                .build();
+
+        HttpResponse<byte[]> respuesta = enviar(
+                solicitud, "descargar el archivo", HttpResponse.BodyHandlers.ofByteArray());
+
+        if (respuesta.statusCode() == 404) {
+            throw new ResourceNotFoundException("El archivo del material no está disponible");
+        }
+
+        if (respuesta.statusCode() < 200 || respuesta.statusCode() >= 300) {
+            throw new AlmacenamientoException(
+                    "Supabase Storage rechazó la descarga (HTTP " + respuesta.statusCode() + "): "
+                            + recortar(new String(respuesta.body(), StandardCharsets.UTF_8)));
+        }
+
+        return respuesta.body();
+    }
+
     private void asegurarBucket() {
         if (bucketVerificado) {
             return;
@@ -155,8 +186,16 @@ public class SupabaseStorageService implements AlmacenamientoArchivos {
     }
 
     private HttpResponse<String> enviar(HttpRequest solicitud, String accion) {
+        return enviar(solicitud, accion, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private <T> HttpResponse<T> enviar(
+            HttpRequest solicitud,
+            String accion,
+            HttpResponse.BodyHandler<T> manejador
+    ) {
         try {
-            return httpClient.send(solicitud, HttpResponse.BodyHandlers.ofString());
+            return httpClient.send(solicitud, manejador);
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new AlmacenamientoException("Se interrumpió la operación al " + accion, exception);
