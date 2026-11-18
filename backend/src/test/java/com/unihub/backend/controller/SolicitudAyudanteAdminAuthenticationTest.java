@@ -21,6 +21,8 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,13 +45,26 @@ class SolicitudAyudanteAdminAuthenticationTest {
     }
 
     @Test
-    void mantienePendientesInaccesiblesSinContratoDeRolAdministrador() throws Exception {
+    void consultaTodasLasSolicitudesEsPublicaSinJwt() throws Exception {
+        when(solicitudAyudanteService.obtenerTodas()).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/solicitud-ayudante"))
+                .andExpect(status().isOk());
+
+        verify(solicitudAyudanteService).obtenerTodas();
+    }
+
+    @Test
+    void consultaPendientesEsPublicaSinJwt() throws Exception {
+        when(solicitudAyudanteService.obtenerPendientes()).thenReturn(List.of());
+
         mockMvc.perform(get("/api/solicitud-ayudante/pendientes"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
         mockMvc.perform(get("/api/solicitud-ayudante/pendientes")
                         .header("Authorization", "Bearer " + tokenEstudiante(7L)))
-                .andExpect(status().isForbidden());
-        verifyNoInteractions(solicitudAyudanteService);
+                .andExpect(status().isOk());
+
+        verify(solicitudAyudanteService, times(2)).obtenerPendientes();
     }
 
     @Test
@@ -64,13 +79,14 @@ class SolicitudAyudanteAdminAuthenticationTest {
     }
 
     @Test
-    void tokenAdminSoloAutorizaSiElRepositorioConfirmaRolVigente() throws Exception {
+    void tokenAdminSoloAutorizaDecisionesSiElRepositorioConfirmaRolVigente() throws Exception {
         Estudiante admin = new Estudiante("Admin", "hash", "70000000", "admin@test.com", "Sistemas");
         ReflectionTestUtils.setField(admin, "id", 8L);
         admin.actualizarRol(Estudiante.Rol.ADMIN);
         when(estudianteRepository.findByIdAndRol(8L, Estudiante.Rol.ADMIN)).thenReturn(Optional.of(admin));
-        when(solicitudAyudanteService.obtenerPendientes()).thenReturn(List.of());
-        mockMvc.perform(get("/api/solicitud-ayudante/pendientes").header("Authorization", "Bearer " + jwtService.generarToken(admin)))
+
+        mockMvc.perform(post("/api/solicitud-ayudante/17/aprobar")
+                        .header("Authorization", "Bearer " + jwtService.generarToken(admin)))
                 .andExpect(status().isOk());
     }
 
@@ -90,7 +106,9 @@ class SolicitudAyudanteAdminAuthenticationTest {
         Estudiante admin = new Estudiante("Admin", "hash", "70000000", "admin@test.com", "Sistemas");
         ReflectionTestUtils.setField(admin, "id", 9L);
         admin.actualizarRol(Estudiante.Rol.ADMIN);
-        mockMvc.perform(get("/api/solicitud-ayudante/pendientes").header("Authorization", "Bearer " + jwtService.generarToken(admin)))
+
+        mockMvc.perform(post("/api/solicitud-ayudante/17/aprobar")
+                        .header("Authorization", "Bearer " + jwtService.generarToken(admin)))
                 .andExpect(status().isForbidden());
         verifyNoInteractions(solicitudAyudanteService);
     }

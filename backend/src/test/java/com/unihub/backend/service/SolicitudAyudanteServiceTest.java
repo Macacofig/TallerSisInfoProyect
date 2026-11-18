@@ -352,4 +352,55 @@ class SolicitudAyudanteServiceTest {
         assertEquals(AyudanteMateria.EstadoAyudante.APROBADO,
                 new AyudanteMateria(estudiante(5L), materia(5L), "Lunes").getEstado());
     }
+
+    @Test
+    void obtenerTodasDevuelveTodasLasSolicitudesDeAyudante() {
+        SolicitudAyudante solicitud = solicitudAyudante(
+                1L, estudiante(7L), materia(3L), "Motivo", 4.5, "Lunes 8-10");
+        when(solicitudAyudanteRepository.findAll()).thenReturn(List.of(solicitud));
+
+        List<SolicitudAyudanteResponse> respuesta = service.obtenerTodas();
+
+        assertEquals(1, respuesta.size());
+        assertEquals(1L, respuesta.getFirst().id());
+        assertEquals("Test 7", respuesta.getFirst().nombreEstudiante());
+        assertEquals("Test Materia 3", respuesta.getFirst().nombreMateria());
+        assertEquals("PENDIENTE", respuesta.getFirst().estado());
+    }
+
+    @Test
+    void obtenerPendientesDevuelveSoloLasPendientes() {
+        SolicitudAyudante solicitud = solicitudAyudante(
+                1L, estudiante(7L), materia(3L), "Motivo", 4.5, "Lunes 8-10");
+        when(solicitudAyudanteRepository.findByEstado(SolicitudAyudante.EstadoSolicitud.PENDIENTE))
+                .thenReturn(List.of(solicitud));
+
+        List<SolicitudAyudanteResponse> respuesta = service.obtenerPendientes();
+
+        assertEquals(1, respuesta.size());
+        assertEquals("PENDIENTE", respuesta.getFirst().estado());
+    }
+
+    @Test
+    void obtenerTodasVaciaCuandoNoHaySolicitudes() {
+        when(solicitudAyudanteRepository.findAll()).thenReturn(List.of());
+
+        assertTrue(service.obtenerTodas().isEmpty());
+    }
+
+    @Test
+    void obtenerPendientesVaciaCuandoNoHayPendientes() {
+        when(solicitudAyudanteRepository.findByEstado(SolicitudAyudante.EstadoSolicitud.PENDIENTE))
+                .thenReturn(List.of());
+
+        assertTrue(service.obtenerPendientes().isEmpty());
+    }
+
+    @Test
+    void solicitudAprobadaNoApareceEnPendientes() {
+        when(solicitudAyudanteRepository.findByEstado(SolicitudAyudante.EstadoSolicitud.PENDIENTE))
+                .thenReturn(List.of());
+
+        assertTrue(service.obtenerPendientes().isEmpty());
+    }
 }

@@ -114,6 +114,12 @@ public class SolicitudAyudanteService {
         return ids.stream().findFirst();
     }
 
+    public List<SolicitudAyudanteResponse> obtenerTodas() {
+        return solicitudAyudanteRepository.findAll().stream()
+                .map(solicitudAyudanteMapper::toResponse)
+                .toList();
+    }
+
     public List<SolicitudAyudanteResponse> obtenerPendientes() {
         return solicitudAyudanteRepository.findByEstado(SolicitudAyudante.EstadoSolicitud.PENDIENTE)
                 .stream()

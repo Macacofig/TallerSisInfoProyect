@@ -68,7 +68,6 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         String path = request.getRequestURI();
         String method = request.getMethod();
         return (HttpMethod.POST.matches(method) && path.equals("/api/ayudante-materia"))
-                || (HttpMethod.GET.matches(method) && path.equals("/api/solicitud-ayudante/pendientes"))
                 || (HttpMethod.POST.matches(method) && path.matches("/api/solicitud-ayudante/\\d+/(aprobar|rechazar)"))
                 || (HttpMethod.GET.matches(method) && path.equals("/api/ayudante-materia/pendientes"))
                 || (HttpMethod.POST.matches(method) && path.matches("/api/ayudante-materia/\\d+/(aprobar|rechazar)"));
@@ -80,6 +79,18 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
         if (path.equals("/api/notificaciones") || path.startsWith("/api/notificaciones/")) {
             return false;
+        }
+
+        // HU-14: consultar y actualizar solicitudes de material, listar materiales
+        // aprobados y consultar solicitudes de ayudante son operaciones públicas
+        // (no requieren JWT).
+        if (path.startsWith("/api/solicitud-material") || "/api/material/aprobados".equals(path)) {
+            return true;
+        }
+        if (HttpMethod.GET.matches(method)
+                && ("/api/solicitud-ayudante".equals(path)
+                    || "/api/solicitud-ayudante/pendientes".equals(path))) {
+            return true;
         }
 
         if ("/api/test".equals(path) || "/api/health/database".equals(path)

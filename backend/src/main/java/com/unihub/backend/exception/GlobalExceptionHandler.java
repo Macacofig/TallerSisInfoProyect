@@ -83,6 +83,12 @@ public class GlobalExceptionHandler {
 				.body("Parámetro no válido: " + exception.getName());
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<String> manejarEstadoInvalido(IllegalStateException exception) {
+		LogHelper.warn(GlobalExceptionHandler.class, "Estado inválido para la operación: " + exception.getMessage());
+		return ResponseEntity.badRequest().body(exception.getMessage());
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> manejarErrorInterno(Exception exception) {
 		LogHelper.error(GlobalExceptionHandler.class, "Error interno al procesar la solicitud", null);

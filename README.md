@@ -38,6 +38,11 @@ Esta tabla describe lo presente en el código; el funcionamiento completo debe v
 | Calificaciones de docentes | Crear, editar y eliminar la calificación propia; consultas y promedios por docente y materia, con filtros de gestión. |
 | Horarios | Interfaz para cargar materias y bloques; endpoints para normalizar datos y generar combinaciones. |
 | Ayudantes (backend) | Postulación por materia, listado de aprobados, baja y resolución de postulaciones. Solicitudes de ayuda: creación, consulta por estudiante o ayudante, resolución y cancelación. |
+| Materiales académicos (HU-14, HU-32, HU-33, HU-34, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga, con filtros por docente, semestre y tipo; descarga del archivo por identificador de material; aprobación o rechazo de solicitudes que actualiza el material, consulta de solicitudes de material y ayudante, y listado de materiales aprobados. |
+| Interfaz | Navegación principal, barra lateral y textos en español e inglés. |
+| Estado de la API | `GET /api/test` devuelve `UniHub funcionando`. |
+
+**Pendientes:** aunque existen clases antiguas vacías llamadas `Ayudante`, el backend de ayudantías se implementa en `AyudanteMateria` y `SolicitudAyuda`. La sección de ayudantes del frontend todavía utiliza datos estáticos de `frontend/src/app/data/ayudantes.data.ts`; no debe confundirse con una integración completa con esos endpoints. La subida, consulta, filtrado, descarga y gestión de estados de materiales (HU-14, HU-32, HU-33, HU-34, HU-35) ya tienen backend, pero el frontend aún no incluye las pantallas de carga, búsqueda ni el botón de descarga. No hay implementación de conversación privada en esta rama. `APP_CONFIG.DEMO_MODE` está declarado en `true`; no garantiza que toda la aplicación funcione sin API.
 | Materiales académicos (HU-32, HU-33, HU-34, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga, con filtros por docente, semestre y tipo; descarga del archivo por identificador de material. |
 | Materiales académicos (HU-32, HU-33, HU-35) | Subida de imágenes, PDF, Word y PowerPoint a Supabase Storage; registro del material y de su solicitud de aprobación en estado `PENDIENTE`; consulta de materiales por materia con nombres y enlace de descarga, con filtros por docente, semestre y tipo. |
 | Interfaz | Navegación principal, barra lateral y textos en español e inglés. |
@@ -279,6 +284,7 @@ Fuera de Compose, incluye la configuración SSL requerida por cada proveedor en 
 
 El Dockerfile de frontend y Compose ejecutan `npm start`, que lee `frontend/.env` y luego `ng serve`. Para producción usa el build estático y un servidor apropiado para esos archivos. La URL del backend remoto queda incrustada en el bundle: cambiarla después del build exige recompilar y volver a desplegar. El sondeo del backend local solo ocurre cuando la aplicación se abre desde `localhost`; en un despliegue nunca se usa.
 
+### Materiales académicos (HU-14, HU-32, HU-33, HU-34, HU-35)
 ### Materiales académicos (HU-32, HU-33, HU-34, HU-35)
 ### Materiales académicos (HU-32, HU-33, HU-35)
 ### Materiales académicos (HU-32, HU-35)
@@ -388,6 +394,41 @@ curl.exe -OJ "http://localhost:8081/api/material/15/descargar"
 - `200`: bytes del archivo.
 - `400`: `idMaterial` inválido o el material no tiene una URL de Supabase Storage válida.
 - `404`: el material no existe o el archivo ya no está disponible en Storage.
+
+### Gestión de estados de solicitudes y materiales (HU-14)
+
+Todos los endpoints de esta sección son públicos (no requieren JWT).
+
+**Solicitudes de material:**
+
+```http
+GET    /api/solicitud-material            # todas las solicitudes
+GET    /api/solicitud-material/pendientes # solo las pendientes
+POST   /api/solicitud-material/{idSolicitud}/aprobar
+POST   /api/solicitud-material/{idSolicitud}/rechazar
+```
+
+`aprobar` cambia la solicitud a `APROBADO` y el material asociado a `ACTIVO`; `rechazar` cambia la solicitud a `NEGADO` y el material a `RECHAZADO`. Devuelven la solicitud actualizada con `id`, `titulo`, `idEstudiante`, `nombreEstudiante`, `idMaterial`, `linkMaterial` y `estado`.
+
+- `404`: la solicitud no existe.
+- `400`: la solicitud o el material ya fueron decididos (solo se puede decidir una solicitud pendiente); también si el estado es inválido.
+
+**Solicitudes de ayudante:**
+
+```http
+GET /api/solicitud-ayudante            # todas las solicitudes
+GET /api/solicitud-ayudante/pendientes # solo las pendientes
+```
+
+Devuelven `SolicitudAyudanteResponse` con `id`, `idEstudiante`, `nombreEstudiante`, `idMateria`, `codigoMateria`, `nombreMateria`, `motivo`, `calificacion`, `horarios` y `estado`.
+
+**Materiales aprobados:**
+
+```http
+GET /api/material/aprobados
+```
+
+Devuelve los materiales con estado `ACTIVO` (equivalente a aprobados) ordenados por título, con los mismos campos que la consulta por materia.
 
 ## Scraper opcional
 

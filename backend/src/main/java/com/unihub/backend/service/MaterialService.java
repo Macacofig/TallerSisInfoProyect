@@ -201,6 +201,16 @@ public class MaterialService {
     }
 
     /**
+     * Devuelve los materiales aprobados (estado ACTIVO) ordenados por título.
+     */
+    @Transactional(readOnly = true)
+    public List<MaterialResponse> obtenerAprobados() {
+        return materialRepository.findByEstadoOrderByTituloAsc(Material.EstadoMaterial.ACTIVO).stream()
+                .map(materialMapper::toResponse)
+                .toList();
+    }
+
+    /**
      * Devuelve los materiales de una materia con los nombres de la materia y
      * del docente, además del enlace público para descargar el archivo.
      * Los filtros por docente, semestre y tipo son opcionales.
