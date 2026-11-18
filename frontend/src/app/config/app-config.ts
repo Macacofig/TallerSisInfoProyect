@@ -24,6 +24,7 @@ export const APP_CONFIG = {
       HORARIOS_OBTENER_DATOS: '/horarios/obtenerDatos',
       HORARIOS_GENERAR: '/horarios/generarhorarios',
       DOCENTES: '/docentes',
+      MATERIALES: '/material',
       CALIFICACION_DOCENTE: '/calificacion-docente',
       TEST: '/test',
       DATABASE_HEALTH: '/health/database',

@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Materia } from '../models/materia';
 import { CalificacionMateriaPromedioMateriaResponse } from '../models/calificacion-materia.model';
+import { MaterialResponse } from '../models/material.model';
 import { APP_CONFIG } from '../config/app-config';
 
 
@@ -24,6 +25,20 @@ export class ApiService {
 
   obtenerCarreras(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.CARRERAS}`);
+  }
+
+  obtenerMateriales(
+    idMateria: number,
+    filtros: { idDocente?: number; semestre?: number; tipo?: string } = {}
+  ): Observable<MaterialResponse[]> {
+    let params = new HttpParams();
+    if (filtros.idDocente != null) params = params.set('idDocente', filtros.idDocente);
+    if (filtros.semestre != null) params = params.set('semestre', filtros.semestre);
+    if (filtros.tipo) params = params.set('tipo', filtros.tipo);
+    return this.http.get<MaterialResponse[]>(
+      `${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.MATERIALES}/materia/${idMateria}`,
+      { params }
+    );
   }
 
   obtenerPromediosMaterias(): Observable<CalificacionMateriaPromedioMateriaResponse[]> {

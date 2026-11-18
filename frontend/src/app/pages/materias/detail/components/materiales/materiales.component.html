@@ -36,7 +36,11 @@
     </button>
   </div>
 
-  @if (materiales().length === 0) {
+  @if (cargando()) {
+    <p class="materiales__estado" role="status">{{ MESSAGES.MATERIAL_LOADING }}</p>
+  } @else if (errorCarga()) {
+    <p class="materiales__estado" role="alert">{{ MESSAGES.MATERIAL_LOAD_ERROR }}</p>
+  } @else if (catalogo().length === 0) {
     <p class="materiales__estado">{{ MESSAGES.MATERIAL_EMPTY }}</p>
   } @else if (materialesVisibles().length === 0) {
     <p class="materiales__estado" role="status">{{ MESSAGES.MATERIAL_NO_MATCHES }}</p>
@@ -45,7 +49,10 @@
       @for (material of materialesVisibles(); track material.id) {
         <article class="material-card">
           <h2>{{ material.titulo }}</h2>
-          <p class="material-card__autor">{{ material.docente.nombre }} · {{ material.semestre.etiqueta }}</p>
+          <p class="material-card__autor">
+            {{ material.docente.nombre }}
+            @if (material.semestre) { · {{ material.semestre.etiqueta }} }
+          </p>
           <span class="material-card__tipo">{{ etiquetaTipo(material) }}</span>
           <p class="material-card__descripcion">{{ material.descripcion }}</p>
         </article>

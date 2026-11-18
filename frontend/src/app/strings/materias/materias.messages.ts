@@ -184,8 +184,14 @@ export const MESSAGES = {
   MATERIAL_TYPE_FILTER: 'Tipo',
   MATERIAL_FILTER_ALL: 'Todos',
   MATERIAL_ADD_BUTTON: 'Agregar material',
+  MATERIAL_LOADING: 'Cargando materiales...',
+  MATERIAL_LOAD_ERROR: 'No se pudieron cargar los materiales. Intenta de nuevo.',
   MATERIAL_EMPTY: 'No hay materiales para mostrar.',
   MATERIAL_NO_MATCHES: 'No hay materiales que coincidan con estos filtros.',
+  MATERIAL_TYPE_IMAGE: 'Imagen',
+  MATERIAL_TYPE_WORD: 'Documento Word',
+  MATERIAL_TYPE_PDF: 'PDF',
+  MATERIAL_TYPE_POWERPOINT: 'Presentación',
   MATERIAL_LIST_ARIA: 'Materiales de la materia',
 
   MATERIA_DETAIL_SECTION_PENDING:
