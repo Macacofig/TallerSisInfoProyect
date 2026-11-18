@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static com.unihub.backend.common.Constants.Material.APROBADOS_URL;
 import static com.unihub.backend.common.Constants.Material.BASE;
 import static com.unihub.backend.common.Constants.Material.DESCARGAR_URL;
 import static com.unihub.backend.common.Constants.Material.POR_MATERIA_URL;
@@ -90,5 +91,10 @@ public class MaterialController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(materialService.subirMaterialAcademico(request, documento, idEstudiante));
+    }
+
+    @GetMapping(APROBADOS_URL)
+    public ResponseEntity<List<MaterialResponse>> obtenerAprobados() {
+        return ResponseEntity.ok(materialService.obtenerAprobados());
     }
 }

@@ -300,6 +300,11 @@ public final class Constants {
 	// Base = SOLICITUD AYUDANTE
 	public static final String BASE = "/api/solicitud-ayudante";
 
+	// Obtener todas las solicitudes de ayudante
+	public static final String TODAS_URL = BASE;
+	// Que necesita: nada
+	// Que devuelve: Lista de SolicitudAyudanteResponse
+
 	// Solicitar ser ayudante
 	public static final String CREAR_URL = BASE;
 	// Que necesita: body SolicitudAyudanteRequest (idEstudiante, idMateria, motivo, calificacion, horarios)
@@ -329,6 +334,37 @@ public final class Constants {
 	public static final String RECHAZAR_URL = BASE + "/{idSolicitud}/rechazar";
 	// Que necesita: idSolicitud
 	// Que devuelve: SolicitudAyudanteResponse actualizado
+
+	}
+
+	// SOLICITUD MATERIAL
+	public static final class SolicitudMaterial {
+
+	private SolicitudMaterial() {
+	}
+
+	// Base = SOLICITUD MATERIAL
+	public static final String BASE = "/api/solicitud-material";
+
+	// Obtener todas las solicitudes de material
+	public static final String TODAS_URL = BASE;
+	// Que necesita: nada
+	// Que devuelve: Lista de SolicitudMaterialResponse
+
+	// Obtener solicitudes de material pendientes
+	public static final String PENDIENTES_URL = BASE + "/pendientes";
+	// Que necesita: nada
+	// Que devuelve: Lista de SolicitudMaterialResponse con estado PENDIENTE
+
+	// Aprobar solicitud y activar el material asociado
+	public static final String APROBAR_URL = BASE + "/{idSolicitud}/aprobar";
+	// Que necesita: idSolicitud
+	// Que devuelve: SolicitudMaterialResponse actualizado
+
+	// Rechazar solicitud y rechazar el material asociado
+	public static final String RECHAZAR_URL = BASE + "/{idSolicitud}/rechazar";
+	// Que necesita: idSolicitud
+	// Que devuelve: SolicitudMaterialResponse actualizado
 
 	}
 
@@ -430,6 +466,12 @@ public final class Constants {
 	public static final String DESCARGAR_URL = "/{idMaterial}/descargar";
 	// Que necesita: idMaterial
 	// Que devuelve: bytes del archivo con Content-Disposition: attachment
+	// Es público: no requiere JWT.
+
+	// Obtener materiales aprobados (estado ACTIVO)
+	public static final String APROBADOS_URL = "/aprobados";
+	// Que necesita: nada
+	// Que devuelve: Lista de MaterialResponse con estado ACTIVO
 	// Es público: no requiere JWT.
 
 	}

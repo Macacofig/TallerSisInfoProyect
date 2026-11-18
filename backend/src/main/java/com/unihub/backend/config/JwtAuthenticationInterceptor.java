@@ -82,6 +82,12 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        // HU-14: consultar y actualizar solicitudes de material, y listar materiales
+        // aprobados, son operaciones públicas (no requieren JWT).
+        if (path.startsWith("/api/solicitud-material") || "/api/material/aprobados".equals(path)) {
+            return true;
+        }
+
         if ("/api/test".equals(path) || "/api/health/database".equals(path)
                 || (HttpMethod.POST.matches(method)
                     && ("/api/estudiantes".equals(path) || "/api/estudiantes/login".equals(path)

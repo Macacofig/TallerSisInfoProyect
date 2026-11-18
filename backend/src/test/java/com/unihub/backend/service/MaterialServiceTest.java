@@ -430,6 +430,30 @@ class MaterialServiceTest {
         verify(almacenamiento, never()).descargar(anyString());
     }
 
+    @Test
+    void obtenerAprobadosDevuelveSoloMaterialesActivos() {
+        Docente otroDocente = new Docente("Lucía Rojas");
+        ReflectionTestUtils.setField(otroDocente, "id", 10L);
+
+        Material aprobado = material("Apunte de clase", Material.TipoMaterial.PDF, docente, 2, 15L);
+        aprobado.activar();
+        Material pendiente = material("Guía de laboratorio", Material.TipoMaterial.WORD, docente, 3, 16L);
+        Material otroAprobado = material("Diapositivas", Material.TipoMaterial.PDF, otroDocente, 2, 17L);
+        otroAprobado.activar();
+        Material rechazado = material("Examen viejo", Material.TipoMaterial.IMAGEN, docente, 1, 18L);
+        rechazado.rechazar();
+
+        when(materialRepository.findByEstadoOrderByTituloAsc(Material.EstadoMaterial.ACTIVO))
+                .thenReturn(List.of(aprobado, otroAprobado));
+
+        List<MaterialResponse> respuesta = materialService.obtenerAprobados();
+
+        assertEquals(2, respuesta.size());
+        assertEquals("Apunte de clase", respuesta.getFirst().titulo());
+        assertEquals("ACTIVO", respuesta.getFirst().estado());
+        assertEquals("Diapositivas", respuesta.get(1).titulo());
+    }
+
     private Material material(
             String titulo,
             Material.TipoMaterial tipo,

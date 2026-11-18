@@ -31,6 +31,11 @@ public class SolicitudAyudanteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitudAyudanteService.solicitar(request, estudianteAutenticado));
     }
 
+    @GetMapping(TODAS_URL)
+    public ResponseEntity<List<SolicitudAyudanteResponse>> obtenerTodas() {
+        return ResponseEntity.ok(solicitudAyudanteService.obtenerTodas());
+    }
+
     @GetMapping(POR_ESTUDIANTE_URL)
     public ResponseEntity<List<SolicitudAyudanteResponse>> obtenerPorEstudiante(@PathVariable Long idEstudiante, @RequestAttribute(JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE) Long estudianteAutenticado) {
         if (!idEstudiante.equals(estudianteAutenticado)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
