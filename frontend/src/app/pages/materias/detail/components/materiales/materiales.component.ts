@@ -1,0 +1,150 @@
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+  signal
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, EMPTY, finalize, startWith, Subject, switchMap, tap } from 'rxjs';
+
+import { MaterialResponse } from '../../../../../models/material.model';
+import { ApiService } from '../../../../../services/api';
+import { LanguageService } from '../../../../../services/language.service';
+import { MESSAGES } from '../../../../../strings/materias/materias.messages';
+import { MESSAGES_EN } from '../../../../../strings/materias/materias-ingles.messages';
+
+export interface MaterialAcademico {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  docente: { id: string; nombre: string };
+  semestre: { id: string; etiqueta: string } | null;
+  tipo: { id: string; etiqueta: string; etiquetaEn?: string };
+}
+
+@Component({
+  selector: 'app-materiales',
+  standalone: true,
+  templateUrl: './materiales.component.html',
+  styleUrl: './materiales.component.css'
+})
+export class MaterialesComponent implements OnInit {
+  private readonly api = inject(ApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly languageService = inject(LanguageService);
+  private readonly recargar = new Subject<void>();
+
+  readonly idMateria = input.required<number>();
+  readonly materiales = signal<MaterialAcademico[]>([]);
+  readonly catalogo = signal<MaterialAcademico[]>([]);
+  readonly cargando = signal(true);
+  readonly errorCarga = signal(false);
+  readonly docenteSeleccionado = signal('');
+  readonly semestreSeleccionado = signal('');
+  readonly tipoSeleccionado = signal('');
+
+  readonly docentes = computed(() => this.opciones('docente'));
+  readonly semestres = computed(() => this.opciones('semestre'));
+  readonly tipos = computed(() => this.opciones('tipo'));
+  readonly materialesVisibles = computed(() => this.materiales());
+
+  ngOnInit(): void {
+    this.recargar.pipe(
+      startWith(undefined),
+      switchMap(() => {
+        const filtros = this.filtrosApi();
+        const catalogoCompleto = Object.keys(filtros).length === 0;
+        this.cargando.set(true);
+        this.errorCarga.set(false);
+
+        return this.api.obtenerMateriales(this.idMateria(), filtros).pipe(
+          tap(respuesta => {
+            const materiales = respuesta.map(material => this.mapearMaterial(material));
+            this.materiales.set(materiales);
+            if (catalogoCompleto) this.catalogo.set(materiales);
+          }),
+          catchError(() => {
+            this.errorCarga.set(true);
+            this.materiales.set([]);
+            return EMPTY;
+          }),
+          finalize(() => this.cargando.set(false))
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
+  }
+
+  get MESSAGES() {
+    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+  }
+
+  etiquetaTipo(material: MaterialAcademico): string {
+    const etiquetasApi: Record<string, string> = {
+      IMAGEN: this.MESSAGES.MATERIAL_TYPE_IMAGE,
+      WORD: this.MESSAGES.MATERIAL_TYPE_WORD,
+      PDF: this.MESSAGES.MATERIAL_TYPE_PDF,
+      POWERPOINT: this.MESSAGES.MATERIAL_TYPE_POWERPOINT
+    };
+    if (etiquetasApi[material.tipo.id]) return etiquetasApi[material.tipo.id];
+    return this.languageService.isEnglish()
+      ? material.tipo.etiquetaEn ?? material.tipo.etiqueta
+      : material.tipo.etiqueta;
+  }
+
+  actualizarDocente(event: Event): void {
+    this.docenteSeleccionado.set((event.target as HTMLSelectElement).value);
+    this.recargar.next();
+  }
+
+  actualizarSemestre(event: Event): void {
+    this.semestreSeleccionado.set((event.target as HTMLSelectElement).value);
+    this.recargar.next();
+  }
+
+  actualizarTipo(event: Event): void {
+    this.tipoSeleccionado.set((event.target as HTMLSelectElement).value);
+    this.recargar.next();
+  }
+
+  private filtrosApi(): { idDocente?: number; semestre?: number; tipo?: string } {
+    const docente = this.docenteSeleccionado();
+    const semestre = this.semestreSeleccionado();
+    const tipo = this.tipoSeleccionado();
+    return {
+      ...(docente ? { idDocente: Number(docente) } : {}),
+      ...(semestre ? { semestre: Number(semestre) } : {}),
+      ...(tipo ? { tipo } : {})
+    };
+  }
+
+  private mapearMaterial(material: MaterialResponse): MaterialAcademico {
+    return {
+      id: String(material.id),
+      titulo: material.titulo,
+      descripcion: material.descripcion,
+      docente: { id: String(material.idDocente), nombre: material.nombreDocente },
+      semestre: material.semestreIngresado === null
+        ? null
+        : { id: String(material.semestreIngresado), etiqueta: String(material.semestreIngresado) },
+      tipo: { id: material.tipo, etiqueta: material.tipo }
+    };
+  }
+
+  private opciones(campo: 'docente' | 'semestre' | 'tipo') {
+    const opciones = new Map<string, string>();
+    for (const material of this.catalogo()) {
+      if (campo === 'docente') {
+        opciones.set(material.docente.id, material.docente.nombre);
+      } else if (campo === 'semestre') {
+        if (material.semestre) opciones.set(material.semestre.id, material.semestre.etiqueta);
+      } else {
+        opciones.set(material.tipo.id, this.etiquetaTipo(material));
+      }
+    }
+    return [...opciones].map(([id, etiqueta]) => ({ id, etiqueta }));
+  }
+}

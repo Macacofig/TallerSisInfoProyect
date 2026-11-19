@@ -179,6 +179,21 @@ export const MESSAGES_EN = {
   MATERIA_DETAIL_SECTION_ASSISTANTS:
     'Teaching assistants',
 
+  MATERIAL_TEACHER_FILTER: 'Teacher',
+  MATERIAL_SEMESTER_FILTER: 'Semester',
+  MATERIAL_TYPE_FILTER: 'Type',
+  MATERIAL_FILTER_ALL: 'All',
+  MATERIAL_ADD_BUTTON: 'Add material',
+  MATERIAL_LOADING: 'Loading materials...',
+  MATERIAL_LOAD_ERROR: 'Materials could not be loaded. Please try again.',
+  MATERIAL_EMPTY: 'There is no material to display.',
+  MATERIAL_NO_MATCHES: 'No materials match these filters.',
+  MATERIAL_TYPE_IMAGE: 'Image',
+  MATERIAL_TYPE_WORD: 'Word document',
+  MATERIAL_TYPE_PDF: 'PDF',
+  MATERIAL_TYPE_POWERPOINT: 'Presentation',
+  MATERIAL_LIST_ARIA: 'Course materials',
+
   MATERIA_DETAIL_SECTION_PENDING:
     'This section will be available soon.',
 

@@ -74,6 +74,10 @@ import {
   AyudantesComponent 
 } from './components/ayudantes/ayudantes.component';
 
+import {
+  MaterialesComponent
+} from './components/materiales/materiales.component';
+
 type MateriaDetailMessageKey = keyof typeof MESSAGES;
 
 @Component({
@@ -87,6 +91,7 @@ type MateriaDetailMessageKey = keyof typeof MESSAGES;
     SeccionesDetalleComponent,
     DocentesComponent,
     AyudantesComponent,
+    MaterialesComponent,
   ],
   templateUrl: './materia-detalle.component.html',
   styleUrl: './materia-detalle.component.css'
