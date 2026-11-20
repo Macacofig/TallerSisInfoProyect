@@ -129,6 +129,10 @@
   cursor: pointer;
 }
 
+.materiales__acciones button {
+  flex: 1;
+}
+
 .materiales__acciones button:last-child {
   color: #fff;
   background: #0752ac;
