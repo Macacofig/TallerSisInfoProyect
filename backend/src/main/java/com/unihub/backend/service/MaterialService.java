@@ -63,6 +63,7 @@ public class MaterialService {
     private final EstudianteRepository estudianteRepository;
     private final AlmacenamientoArchivos almacenamiento;
     private final MaterialMapper materialMapper;
+    private final ActividadEstudianteService actividadService;
     private final long tamanioMaximoBytes;
 
     public MaterialService(
@@ -74,6 +75,7 @@ public class MaterialService {
             EstudianteRepository estudianteRepository,
             AlmacenamientoArchivos almacenamiento,
             MaterialMapper materialMapper,
+            ActividadEstudianteService actividadService,
             @Value("${app.materiales.max-file-size-bytes:20971520}") long tamanioMaximoBytes
     ) {
         this.materialRepository = materialRepository;
@@ -84,6 +86,7 @@ public class MaterialService {
         this.estudianteRepository = estudianteRepository;
         this.almacenamiento = almacenamiento;
         this.materialMapper = materialMapper;
+        this.actividadService = actividadService;
         this.tamanioMaximoBytes = tamanioMaximoBytes;
     }
 
@@ -147,6 +150,7 @@ public class MaterialService {
                     "Material " + material.getId() + " subido por el estudiante " + estudianteId
                             + " para la materia " + materia.getId());
 
+            actividadService.registrarMaterial(estudiante, material);
             return new MaterialSubidoResponse(
                     materialMapper.toResponse(material),
                     materialMapper.toSolicitudResponse(solicitud)

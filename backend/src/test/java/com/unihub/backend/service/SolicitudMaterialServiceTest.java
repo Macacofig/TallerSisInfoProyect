@@ -8,8 +8,10 @@ import com.unihub.backend.entity.Materia;
 import com.unihub.backend.entity.SolicitudMaterial;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.MaterialMapper;
+import com.unihub.backend.repository.ActividadEstudianteRepository;
 import com.unihub.backend.repository.MaterialRepository;
 import com.unihub.backend.repository.SolicitudMaterialRepository;
+import com.unihub.backend.service.almacenamiento.AlmacenamientoArchivos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -41,6 +43,12 @@ class SolicitudMaterialServiceTest {
     @Mock
     private MaterialRepository materialRepository;
 
+    @Mock
+    private ActividadEstudianteRepository actividadRepository;
+
+    @Mock
+    private AlmacenamientoArchivos almacenamiento;
+
     private SolicitudMaterialService servicio;
 
     private Estudiante estudiante;
@@ -55,7 +63,9 @@ class SolicitudMaterialServiceTest {
         servicio = new SolicitudMaterialService(
                 solicitudMaterialRepository,
                 materialRepository,
-                new MaterialMapper()
+                new MaterialMapper(),
+                actividadRepository,
+                almacenamiento
         );
 
         estudiante = new Estudiante("Ana Pérez", "hash", "70000000", "ana@example.com", "Sistemas");
@@ -121,17 +131,16 @@ class SolicitudMaterialServiceTest {
     }
 
     @Test
-    void rechazarCambiaEstadoDeSolicitudYMaterial() {
+    void rechazarCambiaEstadoDeSolicitudYEliminaMaterialYArchivo() {
         when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
-        when(materialRepository.findById(MATERIAL_ID)).thenReturn(Optional.of(material));
 
         SolicitudMaterialResponse respuesta = servicio.rechazar(SOLICITUD_ID);
 
         assertEquals("NEGADO", respuesta.estado());
         assertEquals(SolicitudMaterial.EstadoSolicitudMaterial.NEGADO, solicitud.getEstado());
-        assertEquals(Material.EstadoMaterial.RECHAZADO, material.getEstado());
+        verify(almacenamiento).eliminar("materias-3/apunte.pdf");
         verify(solicitudMaterialRepository).save(solicitud);
-        verify(materialRepository).save(material);
+        verify(materialRepository).delete(material);
     }
 
     @Test

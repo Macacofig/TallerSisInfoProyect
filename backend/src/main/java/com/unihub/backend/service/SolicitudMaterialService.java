@@ -2,12 +2,15 @@ package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
 import com.unihub.backend.dto.material.SolicitudMaterialResponse;
+import com.unihub.backend.entity.ActividadEstudiante;
 import com.unihub.backend.entity.Material;
 import com.unihub.backend.entity.SolicitudMaterial;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.MaterialMapper;
+import com.unihub.backend.repository.ActividadEstudianteRepository;
 import com.unihub.backend.repository.MaterialRepository;
 import com.unihub.backend.repository.SolicitudMaterialRepository;
+import com.unihub.backend.service.almacenamiento.AlmacenamientoArchivos;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +22,21 @@ public class SolicitudMaterialService {
     private final SolicitudMaterialRepository solicitudMaterialRepository;
     private final MaterialRepository materialRepository;
     private final MaterialMapper materialMapper;
+    private final ActividadEstudianteRepository actividadRepository;
+    private final AlmacenamientoArchivos almacenamiento;
 
     public SolicitudMaterialService(
             SolicitudMaterialRepository solicitudMaterialRepository,
             MaterialRepository materialRepository,
-            MaterialMapper materialMapper
+            MaterialMapper materialMapper,
+            ActividadEstudianteRepository actividadRepository,
+            AlmacenamientoArchivos almacenamiento
     ) {
         this.solicitudMaterialRepository = solicitudMaterialRepository;
         this.materialRepository = materialRepository;
         this.materialMapper = materialMapper;
+        this.actividadRepository = actividadRepository;
+        this.almacenamiento = almacenamiento;
     }
 
     public List<SolicitudMaterialResponse> obtenerTodas() {
@@ -54,6 +63,15 @@ public class SolicitudMaterialService {
 
         solicitud.aprobar();
         material.activar();
+        actividadRepository.findFirstByEstudianteIdAndIdMaterialAndEstadoOrderByFechaHoraRegistroDesc(
+                        solicitud.getEstudiante().getId(),
+                        material.getId(),
+                        ActividadEstudiante.EstadoActividad.PENDIENTE
+                )
+                .ifPresent(actividad -> {
+                    actividad.actualizarEstado(ActividadEstudiante.EstadoActividad.APROBADA);
+                    actividadRepository.save(actividad);
+                });
         solicitudMaterialRepository.save(solicitud);
         materialRepository.save(material);
 
@@ -71,13 +89,45 @@ public class SolicitudMaterialService {
         exigirPendiente(solicitud, material);
 
         solicitud.negar();
-        material.rechazar();
+        SolicitudMaterialResponse respuesta = materialMapper.toSolicitudResponse(solicitud);
+
+        String ruta = extraerRuta(material.getLinkMaterial());
+        almacenamiento.eliminar(ruta);
+
+        actividadRepository.findFirstByEstudianteIdAndIdMaterialAndEstadoOrderByFechaHoraRegistroDesc(
+                        solicitud.getEstudiante().getId(),
+                        material.getId(),
+                        ActividadEstudiante.EstadoActividad.PENDIENTE
+                )
+                .ifPresent(actividad -> {
+                    actividad.actualizarEstado(ActividadEstudiante.EstadoActividad.RECHAZADA);
+                    actividadRepository.save(actividad);
+                });
+
+        solicitud.desvincularMaterial();
         solicitudMaterialRepository.save(solicitud);
-        materialRepository.save(material);
+        materialRepository.delete(material);
 
         LogHelper.info(SolicitudMaterialService.class,
                 "Solicitud de material " + idSolicitud + " rechazada");
-        return materialMapper.toSolicitudResponse(solicitud);
+        return respuesta;
+    }
+
+    private String extraerRuta(String link) {
+        String marcador = "/storage/v1/object/public/";
+        if (link == null) {
+            throw new IllegalStateException("El material no tiene una URL de descarga válida");
+        }
+        int inicio = link.indexOf(marcador);
+        if (inicio < 0) {
+            throw new IllegalStateException("El material no tiene una URL de descarga válida");
+        }
+        String resto = link.substring(inicio + marcador.length()).split("[?#]", 2)[0];
+        int barra = resto.indexOf('/');
+        if (barra < 0 || barra == resto.length() - 1) {
+            throw new IllegalStateException("El material no tiene una URL de descarga válida");
+        }
+        return resto.substring(barra + 1);
     }
 
     private void exigirPendiente(SolicitudMaterial solicitud, Material material) {

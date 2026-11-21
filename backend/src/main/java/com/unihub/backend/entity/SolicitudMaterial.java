@@ -29,8 +29,8 @@ public class SolicitudMaterial {
     @JoinColumn(name = "id_estudiante", nullable = false)
     private Estudiante estudiante;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_material", nullable = false, unique = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_material", nullable = true, unique = true)
     private Material material;
 
     @Enumerated(EnumType.STRING)
@@ -65,6 +65,10 @@ public class SolicitudMaterial {
 
     public EstadoSolicitudMaterial getEstado() {
         return estado;
+    }
+
+    public void desvincularMaterial() {
+        this.material = null;
     }
 
     public void aprobar() {
