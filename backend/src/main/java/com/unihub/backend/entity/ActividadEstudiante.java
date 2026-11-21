@@ -38,6 +38,9 @@ public class ActividadEstudiante {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
     private EstadoActividad estado;
+    
+    @Column(name = "id_material")
+    private Long idMaterial;
 
     protected ActividadEstudiante() {
     }
@@ -101,5 +104,13 @@ public class ActividadEstudiante {
         APROBADA,
         RECHAZADA,
         REALIZADO
+    }
+
+    public Long getIdMaterial() {
+        return idMaterial;
+    }
+
+    public void setIdMaterial(Long idMaterial) {
+        this.idMaterial = idMaterial;
     }
 }
