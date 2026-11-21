@@ -55,8 +55,45 @@
           </p>
           <span class="material-card__tipo">{{ etiquetaTipo(material) }}</span>
           <p class="material-card__descripcion">{{ material.descripcion }}</p>
+          @if (material.estado === 'ACTIVO') {
+            <div class="materiales__acciones">
+              <button type="button" (click)="ver(material)" [disabled]="procesandoAccion()"
+                [attr.aria-label]="MESSAGES.MATERIAL_VIEW_ARIA + ': ' + material.titulo">
+                {{ MESSAGES.MATERIAL_VIEW_BUTTON }}
+              </button>
+              <button type="button" (click)="descargar(material)" [disabled]="procesandoAccion()"
+                [attr.aria-label]="MESSAGES.MATERIAL_DOWNLOAD_ARIA + ': ' + material.titulo">
+                {{ MESSAGES.MATERIAL_DOWNLOAD_BUTTON }}
+              </button>
+            </div>
+          }
         </article>
       }
     </div>
   }
+
+  @if (mensajeAccion()) {
+    <p class="materiales__mensaje-accion" [class.materiales__mensaje-accion--error]="errorAccion()"
+      [attr.role]="errorAccion() ? 'alert' : 'status'" aria-live="polite">
+      {{ mensajeAccion() }}
+    </p>
+  }
 </section>
+
+<dialog #dialogoVistaPrevia class="materiales__dialogo" aria-modal="true"
+  [attr.aria-label]="MESSAGES.MATERIAL_PREVIEW_DIALOG_ARIA"
+  (close)="cerrarVistaPrevia()" (cancel)="cerrarVistaPrevia()">
+  <header class="materiales__dialogo-cabecera">
+    <h2>{{ vistaPreviaTitulo() }}</h2>
+    <button type="button" (click)="cerrarVistaPrevia()" [attr.aria-label]="MESSAGES.MATERIAL_PREVIEW_CLOSE">
+      {{ MESSAGES.MATERIAL_PREVIEW_CLOSE }}
+    </button>
+  </header>
+  @if (vistaPreviaUrl(); as url) {
+    @if (vistaPreviaEsPdf()) {
+      <iframe [src]="vistaPreviaUrlSegura()" [title]="vistaPreviaTitulo()"></iframe>
+    } @else {
+      <img [src]="url" [alt]="vistaPreviaTitulo()">
+    }
+  }
+</dialog>

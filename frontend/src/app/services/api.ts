@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Materia } from '../models/materia';
 import { CalificacionMateriaPromedioMateriaResponse } from '../models/calificacion-materia.model';
@@ -38,6 +38,13 @@ export class ApiService {
     return this.http.get<MaterialResponse[]>(
       `${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.MATERIALES}/materia/${idMateria}`,
       { params }
+    );
+  }
+
+  descargarMaterial(idMaterial: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(
+      `${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.MATERIALES}/${idMaterial}/descargar`,
+      { observe: 'response', responseType: 'blob' }
     );
   }
 
