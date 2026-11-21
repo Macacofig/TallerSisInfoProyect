@@ -2,10 +2,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, Subject, throwError } from 'rxjs';
 
-import { SolicitudAyudanteResponse } from '../../models/ayudante-materia.model';
-import { routes } from '../../app.routes';
-import { AyudantesService } from '../../services/ayudantes.service';
-import { LanguageService } from '../../services/language.service';
+import { SolicitudAyudanteResponse } from '../../../models/ayudante-materia.model';
+import { routes } from '../../../app.routes';
+import { AyudantesService } from '../../../services/ayudantes.service';
+import { LanguageService } from '../../../services/language.service';
 import { SolicitudesAyudanteAdminComponent } from './solicitudes-ayudante-admin.component';
 
 describe('SolicitudesAyudanteAdminComponent', () => {

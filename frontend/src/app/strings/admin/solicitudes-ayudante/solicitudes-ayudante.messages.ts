@@ -1,4 +1,5 @@
 export const SOLICITUDES_AYUDANTE_MESSAGES = {
+  SECTION_LABEL: 'Solicitudes de ayudantes',
   LOADING: 'Cargando postulaciones...',
   EMPTY: 'No hay postulaciones pendientes.',
   LOAD_ERROR: 'No se pudieron cargar las postulaciones.',

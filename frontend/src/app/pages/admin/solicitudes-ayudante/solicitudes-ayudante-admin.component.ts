@@ -3,11 +3,11 @@ import { ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
-import { SolicitudAyudanteResponse } from '../../models/ayudante-materia.model';
-import { AyudantesService } from '../../services/ayudantes.service';
-import { LanguageService } from '../../services/language.service';
-import { MESSAGES } from '../../strings/materias/materias.messages';
-import { MESSAGES_EN } from '../../strings/materias/materias-ingles.messages';
+import { SolicitudAyudanteResponse } from '../../../models/ayudante-materia.model';
+import { AyudantesService } from '../../../services/ayudantes.service';
+import { LanguageService } from '../../../services/language.service';
+import { SOLICITUDES_AYUDANTE_MESSAGES } from '../../../strings/admin/solicitudes-ayudante/solicitudes-ayudante.messages';
+import { SOLICITUDES_AYUDANTE_MESSAGES_EN } from '../../../strings/admin/solicitudes-ayudante/solicitudes-ayudante-ingles.messages';
 
 @Component({
   selector: 'app-solicitudes-ayudante-admin',
@@ -28,7 +28,10 @@ export class SolicitudesAyudanteAdminComponent {
   mensajeAccion = '';
 
   get mensajes() {
-    return this.languageService.getMessages(MESSAGES, MESSAGES_EN);
+    return this.languageService.getMessages(
+      SOLICITUDES_AYUDANTE_MESSAGES,
+      SOLICITUDES_AYUDANTE_MESSAGES_EN
+    );
   }
 
   constructor() {
@@ -57,8 +60,8 @@ export class SolicitudesAyudanteAdminComponent {
     if (this.idEnProceso !== null || this.cargando || solicitud.estado !== 'PENDIENTE') return;
 
     const confirmacion = decision === 'aprobar'
-      ? this.mensajes.ASSISTANT_ADMIN_CONFIRM_APPROVE
-      : this.mensajes.ASSISTANT_ADMIN_CONFIRM_REJECT;
+      ? this.mensajes.CONFIRM_APPROVE
+      : this.mensajes.CONFIRM_REJECT;
     if (!window.confirm(confirmacion)) return;
 
     this.idEnProceso = solicitud.id;
@@ -79,21 +82,28 @@ export class SolicitudesAyudanteAdminComponent {
         next: () => {
           this.idEnProceso = null;
           this.mensajeAccion = decision === 'aprobar'
-            ? this.mensajes.ASSISTANT_ADMIN_APPROVED
-            : this.mensajes.ASSISTANT_ADMIN_REJECTED;
+            ? this.mensajes.APPROVED
+            : this.mensajes.REJECTED;
           this.cargarSolicitudes();
         },
         error: error => this.mensajeAccion = this.mensajeError(error, false),
       });
   }
 
+  estadoTexto(estado: string): string {
+    if (estado === 'PENDIENTE') return this.mensajes.ESTADOS.PENDIENTE;
+    if (estado === 'APROBADA') return this.mensajes.ESTADOS.APROBADA;
+    if (estado === 'RECHAZADA') return this.mensajes.ESTADOS.RECHAZADA;
+    return estado;
+  }
+
   private mensajeError(error: unknown, esCarga: boolean): string {
     if (error instanceof HttpErrorResponse) {
-      if (error.status === 401) return this.mensajes.ASSISTANT_ADMIN_UNAUTHORIZED;
-      if (error.status === 403) return this.mensajes.ASSISTANT_ADMIN_FORBIDDEN;
+      if (error.status === 401) return this.mensajes.UNAUTHORIZED;
+      if (error.status === 403) return this.mensajes.FORBIDDEN;
     }
     return esCarga
-      ? this.mensajes.ASSISTANT_ADMIN_LOAD_ERROR
-      : this.mensajes.ASSISTANT_ADMIN_ACTION_ERROR;
+      ? this.mensajes.LOAD_ERROR
+      : this.mensajes.ACTION_ERROR;
   }
 }

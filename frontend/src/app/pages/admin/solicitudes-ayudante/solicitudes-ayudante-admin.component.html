@@ -1,25 +1,18 @@
 <section class="solicitudes-admin"
-         aria-labelledby="solicitudes-admin-title"
+         [attr.aria-label]="mensajes.SECTION_LABEL"
          [attr.aria-busy]="cargando || idEnProceso !== null">
-
-
-
   <header class="solicitudes-admin__header">
-    <div class="solicitudes-admin__sr-only">
-      <h1 id="solicitudes-admin-title">{{ mensajes.ASSISTANT_ADMIN_TITLE }}</h1>
-      <p>{{ mensajes.ASSISTANT_ADMIN_DESCRIPTION }}</p>
-    </div>
     <button type="button"
             class="solicitudes-admin__refresh"
             [disabled]="cargando || idEnProceso !== null"
             (click)="cargarSolicitudes()">
-      {{ mensajes.ASSISTANT_ADMIN_RETRY }}
+      {{ mensajes.RETRY }}
     </button>
   </header>
 
   @if (cargando) {
     <p class="solicitudes-admin__notice" role="status">
-      {{ mensajes.ASSISTANT_ADMIN_LOADING }}
+      {{ mensajes.LOADING }}
     </p>
   } @else if (errorCarga) {
     <div class="solicitudes-admin__notice solicitudes-admin__notice--error" role="alert">
@@ -27,12 +20,12 @@
       <button type="button"
               class="solicitudes-admin__secondary"
               (click)="cargarSolicitudes()">
-        {{ mensajes.ASSISTANT_ADMIN_RETRY }}
+        {{ mensajes.RETRY }}
       </button>
     </div>
   } @else if (solicitudes.length === 0) {
     <p class="solicitudes-admin__notice">
-      {{ mensajes.ASSISTANT_ADMIN_EMPTY }}
+      {{ mensajes.EMPTY }}
     </p>
   } @else {
     <div class="solicitudes-admin__list">
@@ -49,22 +42,25 @@
             </p>
 
             <p class="solicitud-card__grade">
-              {{ mensajes.ASSISTANT_ADMIN_GRADE }}:
+              {{ mensajes.GRADE }}:
               <strong>{{ solicitud.calificacion }}</strong>
             </p>
 
             <p class="solicitud-card__schedule">
-              {{ mensajes.ASSISTANT_ADMIN_SCHEDULES }}:
+              {{ mensajes.SCHEDULES }}:
               {{ solicitud.horarios }}
             </p>
 
-            <p class="solicitud-card__motivation">
-              {{ solicitud.motivo }}
-            </p>
+            @if (solicitud.motivo?.trim()) {
+              <p class="solicitud-card__motivation">
+                <strong>{{ mensajes.MOTIVATION }}:</strong>
+                {{ solicitud.motivo }}
+              </p>
+            }
 
             <span class="solicitud-card__status">
               <span class="solicitud-card__status-dot" aria-hidden="true"></span>
-              {{ solicitud.estado === 'PENDIENTE' ? mensajes.ASSISTANT_ADMIN_STATUS_PENDING : solicitud.estado }}
+              {{ estadoTexto(solicitud.estado) }}
             </span>
 
           </div>
@@ -75,7 +71,7 @@
                     [disabled]="idEnProceso !== null || cargando || solicitud.estado !== 'PENDIENTE'"
                     (click)="decidir(solicitud, 'aprobar')">
               <span aria-hidden="true">✓</span>
-              {{ idEnProceso === solicitud.id ? mensajes.ASSISTANT_ADMIN_BUSY : mensajes.ASSISTANT_ADMIN_APPROVE }}
+              {{ idEnProceso === solicitud.id ? mensajes.BUSY : mensajes.APPROVE }}
             </button>
 
             <button type="button"
@@ -83,7 +79,7 @@
                     [disabled]="idEnProceso !== null || cargando || solicitud.estado !== 'PENDIENTE'"
                     (click)="decidir(solicitud, 'rechazar')">
               <span aria-hidden="true">×</span>
-              {{ idEnProceso === solicitud.id ? mensajes.ASSISTANT_ADMIN_BUSY : mensajes.ASSISTANT_ADMIN_REJECT }}
+              {{ idEnProceso === solicitud.id ? mensajes.BUSY : mensajes.REJECT }}
             </button>
           </div>
         </article>

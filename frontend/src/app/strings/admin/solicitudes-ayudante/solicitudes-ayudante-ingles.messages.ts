@@ -1,4 +1,5 @@
 export const SOLICITUDES_AYUDANTE_MESSAGES_EN = {
+  SECTION_LABEL: 'Assistant applications',
   LOADING: 'Loading applications...',
   EMPTY: 'There are no pending applications.',
   LOAD_ERROR: 'Applications could not be loaded.',
