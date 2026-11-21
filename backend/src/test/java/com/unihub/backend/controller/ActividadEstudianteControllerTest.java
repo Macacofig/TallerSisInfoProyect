@@ -81,7 +81,7 @@ class ActividadEstudianteControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"ausente", "malformado", "firma-ajena", "vencido"})
-    void todasLasRutasRechazanCredencialesInvalidas(String caso) throws Exception {
+    void rutasProtegidasRechazanCredencialesInvalidas(String caso) throws Exception {
         String token = switch (caso) {
             case "firma-ajena" -> new JwtService(UUID.randomUUID().toString(), 3600)
                     .generarToken(estudiante(USUARIO_A));
@@ -95,7 +95,6 @@ class ActividadEstudianteControllerTest {
             default -> "invalido";
         };
         List<MockHttpServletRequestBuilder> requests = List.of(
-                get("/api/actividad-estudiante/estudiante/" + USUARIO_A),
                 post("/api/actividad-estudiante").contentType(MediaType.APPLICATION_JSON)
                         .content(insercion(USUARIO_A)),
                 put("/api/actividad-estudiante/" + ACTIVIDAD_ID).contentType(MediaType.APPLICATION_JSON)
@@ -111,13 +110,12 @@ class ActividadEstudianteControllerTest {
     }
 
     @Test
-    void usuarioConsultaSuActividad() throws Exception {
+    void consultaActividadSinToken() throws Exception {
         when(estudianteRepository.existsById(USUARIO_A)).thenReturn(true);
         when(actividadRepository.findByEstudianteIdOrderByFechaHoraRegistroDesc(USUARIO_A))
                 .thenReturn(List.of(actividad(USUARIO_A)));
 
-        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_A)
-                        .header("Authorization", token(USUARIO_A)))
+        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_A))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(ACTIVIDAD_ID))
                 .andExpect(jsonPath("$[0].idEstudiante").value(USUARIO_A))
@@ -128,24 +126,25 @@ class ActividadEstudianteControllerTest {
     }
 
     @Test
-    void consultaPropiaSinActividadDevuelveListaVacia() throws Exception {
+    void consultaSinActividadDevuelveListaVacia() throws Exception {
         when(estudianteRepository.existsById(USUARIO_A)).thenReturn(true);
         when(actividadRepository.findByEstudianteIdOrderByFechaHoraRegistroDesc(USUARIO_A))
                 .thenReturn(List.of());
 
-        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_A)
-                        .header("Authorization", token(USUARIO_A)))
+        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_A))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
-    void usuarioNoPuedeConsultarActividadAjena() throws Exception {
-        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_B)
-                        .header("Authorization", token(USUARIO_A)))
-                .andExpect(status().isForbidden());
+    void consultaActividadDeOtroEstudianteSinToken() throws Exception {
+        when(estudianteRepository.existsById(USUARIO_B)).thenReturn(true);
+        when(actividadRepository.findByEstudianteIdOrderByFechaHoraRegistroDesc(USUARIO_B))
+                .thenReturn(List.of(actividad(USUARIO_B)));
 
-        verifyNoInteractions(actividadRepository, estudianteRepository);
+        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_B))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].idEstudiante").value(USUARIO_B));
     }
 
     @Test
@@ -219,9 +218,8 @@ class ActividadEstudianteControllerTest {
     }
 
     @Test
-    void devuelve404CuandoElEstudiantePropioNoExiste() throws Exception {
-        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_A)
-                        .header("Authorization", token(USUARIO_A)))
+    void devuelve404CuandoElEstudianteNoExiste() throws Exception {
+        mockMvc.perform(get("/api/actividad-estudiante/estudiante/" + USUARIO_A))
                 .andExpect(status().isNotFound());
     }
 

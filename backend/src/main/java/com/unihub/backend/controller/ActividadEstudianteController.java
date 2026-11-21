@@ -57,10 +57,8 @@ public class ActividadEstudianteController {
 
     @GetMapping(POR_ESTUDIANTE_URL)
     public ResponseEntity<List<ActividadEstudianteResponse>> obtenerPorEstudiante(
-            @PathVariable Long idEstudiante,
-            @RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId
+            @PathVariable Long idEstudiante
     ) {
-        jwtService.verificarPropiedad(authenticatedStudentId, idEstudiante);
         return ResponseEntity.ok(actividadEstudianteService.obtenerPorEstudiante(idEstudiante));
     }
 }
