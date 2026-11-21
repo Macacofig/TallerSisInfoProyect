@@ -70,6 +70,9 @@ class MaterialServiceTest {
     @Mock
     private AlmacenamientoArchivos almacenamiento;
 
+    @Mock
+    private ActividadEstudianteService actividadService;
+
     private MaterialService materialService;
 
     private Estudiante estudiante;
@@ -88,6 +91,7 @@ class MaterialServiceTest {
                 estudianteRepository,
                 almacenamiento,
                 new MaterialMapper(),
+                actividadService,
                 TAMANIO_MAXIMO
         );
 
@@ -240,6 +244,7 @@ class MaterialServiceTest {
                 estudianteRepository,
                 almacenamiento,
                 new MaterialMapper(),
+                actividadService,
                 10
         );
 

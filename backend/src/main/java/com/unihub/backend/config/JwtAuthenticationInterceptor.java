@@ -81,9 +81,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // HU-14: consultar y actualizar solicitudes de material, listar materiales
-        // aprobados y consultar solicitudes de ayudante son operaciones públicas
-        // (no requieren JWT).
+        // HU-14 y HU-36: consultar y actualizar solicitudes de material, listar
+        // materiales aprobados, consultar solicitudes de ayudante y consultar la
+        // actividad de un estudiante son operaciones públicas (no requieren JWT).
         if (path.startsWith("/api/solicitud-material") || "/api/material/aprobados".equals(path)) {
             return true;
         }
@@ -107,7 +107,6 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             return !path.matches("/api/estudiantes/\\d+")
                     && !path.matches("/api/calificacion-(materia|docente)/estudiante/.*")
                     && !path.startsWith("/api/solicitud-ayudante")
-                    && !path.startsWith("/api/actividad-estudiante")
                     && !path.equals("/api/ayudante-materia/pendientes");
         }
         return false;

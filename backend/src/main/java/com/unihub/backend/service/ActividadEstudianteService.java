@@ -8,6 +8,7 @@ import com.unihub.backend.entity.ActividadEstudiante;
 import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Materia;
+import com.unihub.backend.entity.Material;
 import com.unihub.backend.exception.ResourceNotFoundException;
 import com.unihub.backend.mapper.ActividadEstudianteMapper;
 import com.unihub.backend.repository.ActividadEstudianteRepository;
@@ -174,6 +175,31 @@ public class ActividadEstudianteService {
                 fechaActualBolivia(),
                 estado
         ));
+    }
+
+    private void registrarActividadConMaterial(
+            Estudiante estudiante,
+            String titulo,
+            String descripcion,
+            ActividadEstudiante.EstadoActividad estado,
+            Material material
+    ) {
+        ActividadEstudiante actividad = new ActividadEstudiante(
+                estudiante,
+                titulo,
+                descripcion,
+                fechaActualBolivia(),
+                estado
+        );
+        actividad.setIdMaterial(material.getId());
+        actividadRepository.save(actividad);
+    }
+
+    @Transactional
+    public void registrarMaterial(Estudiante estudiante, Material material) {
+        String titulo = "Subió material: " + material.getTitulo();
+        String descripcion = "Material subido para la materia " + material.getMateria().getNombre() + ".";
+        registrarActividadConMaterial(estudiante, titulo, descripcion, ActividadEstudiante.EstadoActividad.PENDIENTE, material);
     }
 
     private String tituloSolicitudAyudante(Materia materia) {

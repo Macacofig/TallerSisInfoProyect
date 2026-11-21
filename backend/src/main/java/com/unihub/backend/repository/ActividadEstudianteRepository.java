@@ -15,4 +15,10 @@ public interface ActividadEstudianteRepository extends JpaRepository<ActividadEs
             String titulo,
             ActividadEstudiante.EstadoActividad estado
     );
+
+    Optional<ActividadEstudiante> findFirstByEstudianteIdAndIdMaterialAndEstadoOrderByFechaHoraRegistroDesc(
+            Long idEstudiante,
+            Long idMaterial,
+            ActividadEstudiante.EstadoActividad estado
+    );
 }
