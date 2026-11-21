@@ -165,11 +165,11 @@ describe('SolicitudesAyudanteAdminComponent', () => {
     const languageService = TestBed.inject(LanguageService);
     languageService.setLanguage('en');
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Teaching assistant applications');
+    expect(fixture.nativeElement.textContent).toContain('Grade obtained');
     expect(fixture.nativeElement.querySelector('.solicitud-card__approve')?.textContent).toContain('Approve');
     languageService.setLanguage('es');
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Postulaciones de ayudantes');
+    expect(fixture.nativeElement.textContent).toContain('Nota obtenida');
     expect(fixture.nativeElement.querySelector('.solicitud-card__approve')?.textContent).toContain('Aprobar');
   });
 
