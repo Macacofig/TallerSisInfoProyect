@@ -14,7 +14,7 @@ import { HorariosComponent } from './pages/horarios/horarios.component';
 import { authGuard } from './guards/auth.guard';
 import { materiasTreeGuard } from './guards/materias-tree.guard';
 import { adminGuard } from './guards/admin.guard';
-import { SolicitudesAyudanteAdminComponent } from './pages/admin/solicitudes-ayudante/solicitudes-ayudante-admin.component';
+import { AdminComponent } from './pages/admin/admin.component';
 
 export const routes: Routes = [
 
@@ -60,9 +60,16 @@ export const routes: Routes = [
   },
 
   {
+    path: 'administracion',
+    component: AdminComponent,
+    canActivate: [adminGuard],
+    pathMatch: 'full'
+  },
+
+  {
     path: 'administracion/solicitudes-ayudante',
-    component: SolicitudesAyudanteAdminComponent,
-    canActivate: [adminGuard]
+    redirectTo: '/administracion',
+    pathMatch: 'full'
   },
 
   {

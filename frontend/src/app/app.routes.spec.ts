@@ -10,6 +10,19 @@ import { AuthService } from './services/auth.service';
 import { APP_CONFIG } from './config/app-config';
 import { MiActividadComponent } from './pages/mi-actividad/mi-actividad.component';
 import { Login } from './pages/login/login';
+import { AdminComponent } from './pages/admin/admin.component';
+import { adminGuard } from './guards/admin.guard';
+
+describe('Rutas de Administración', () => {
+  it('protege la página general y conserva la ruta anterior como redirección', () => {
+    const rutaAdmin = routes.find(route => route.path === 'administracion');
+    const rutaAnterior = routes.find(route => route.path === 'administracion/solicitudes-ayudante');
+
+    expect(rutaAdmin?.component).toBe(AdminComponent);
+    expect(rutaAdmin?.canActivate).toContain(adminGuard);
+    expect(rutaAnterior?.redirectTo).toBe('/administracion');
+  });
+});
 
 describe('Rutas desconocidas', () => {
   beforeEach(() => {
