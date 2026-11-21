@@ -10,47 +10,10 @@
   padding: 8px;
 }
 
-.solicitudes-admin__tabs {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  min-height: 36px;
-  padding: 4px 12px;
-  border-radius: 9px;
-  background: #dfedff;
-  font-family: Arial, sans-serif;
-}
-
-.solicitudes-admin__tab {
-  padding: 7px 12px;
-  color: #526e92;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-.solicitudes-admin__tab--active {
-  color: #102f59;
-  background: #ffffff;
-  border-radius: 7px;
-  box-shadow: 0 1px 5px rgb(16 33 63 / 8%);
-  font-weight: 600;
-}
-
 .solicitudes-admin__header {
   display: flex;
   justify-content: flex-end;
   min-height: 0;
-}
-
-.solicitudes-admin__sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
 }
 
 .solicitudes-admin__refresh {
@@ -66,8 +29,8 @@
 
 .solicitudes-admin__list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
   align-items: stretch;
 }
 
@@ -75,8 +38,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 285px;
-  padding: 26px 24px 22px;
+  min-height: 270px;
+  padding: 24px;
   background: #ffffff;
   border: 1px solid #d7e3f2;
   border-radius: 13px;
@@ -96,7 +59,7 @@
 }
 
 .solicitud-card__subject {
-  margin: 0 0 26px;
+  margin: 0 0 20px;
   color: #667d9e;
   font-size: 12px;
 }
@@ -214,22 +177,9 @@
 }
 
 @media (max-width: 700px) {
-  .solicitudes-admin__list {
-    grid-template-columns: 1fr;
-  }
-
   .solicitud-card {
     min-height: 0;
     padding: 20px;
-  }
-
-  .solicitudes-admin__tabs {
-    gap: 2px;
-  }
-
-  .solicitudes-admin__tab {
-    font-size: 11px;
-    padding: 7px;
   }
 }
 

@@ -56,6 +56,15 @@ describe('SolicitudesAyudanteAdminComponent', () => {
 
   });
 
+  it('omite la descripción cuando está vacía', () => {
+    fixture.destroy();
+    service.obtenerSolicitudesAyudantePendientes.mockReturnValue(of([{ ...solicitud, motivo: '  ' }]));
+    fixture = TestBed.createComponent(SolicitudesAyudanteAdminComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.solicitud-card__motivation')).toBeNull();
+  });
+
   it('muestra el estado vacío sin registros', () => {
     fixture.destroy();
     service.obtenerSolicitudesAyudantePendientes.mockReturnValue(of([]));
