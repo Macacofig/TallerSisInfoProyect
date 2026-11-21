@@ -26,13 +26,14 @@ public class MaterialMapper {
     }
 
     public SolicitudMaterialResponse toSolicitudResponse(SolicitudMaterial solicitud) {
+        Material material = solicitud.getMaterial();
         return new SolicitudMaterialResponse(
                 solicitud.getId(),
                 solicitud.getTitulo(),
                 solicitud.getEstudiante().getId(),
                 solicitud.getEstudiante().getNombre(),
-                solicitud.getMaterial().getId(),
-                solicitud.getMaterial().getLinkMaterial(),
+                material == null ? null : material.getId(),
+                material == null ? null : material.getLinkMaterial(),
                 solicitud.getEstado().name()
         );
     }
