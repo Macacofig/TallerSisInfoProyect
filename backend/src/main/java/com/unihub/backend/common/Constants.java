@@ -366,6 +366,9 @@ public final class Constants {
 	// Que necesita: idSolicitud
 	// Que devuelve: SolicitudMaterialResponse actualizado
 
+	public static final String ELIMINAR_URL = BASE + "/{idSolicitud}";
+	// Que necesita: idSolicitud de una solicitud pendiente
+
 	}
 
 	// NOTIFICACIONES

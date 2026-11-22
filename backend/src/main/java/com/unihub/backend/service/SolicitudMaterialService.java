@@ -91,8 +91,36 @@ public class SolicitudMaterialService {
         solicitud.negar();
         SolicitudMaterialResponse respuesta = materialMapper.toSolicitudResponse(solicitud);
 
-        String ruta = extraerRuta(material.getLinkMaterial());
-        almacenamiento.eliminar(ruta);
+        eliminarArchivoYActualizarActividad(solicitud, material);
+
+        solicitud.desvincularMaterial();
+        solicitudMaterialRepository.save(solicitud);
+        materialRepository.delete(material);
+
+        LogHelper.info(SolicitudMaterialService.class,
+                "Solicitud de material " + idSolicitud + " rechazada");
+        return respuesta;
+    }
+
+    @Transactional
+    public void eliminar(Long idSolicitud) {
+        SolicitudMaterial solicitud = solicitudMaterialRepository.findById(idSolicitud)
+                .orElseThrow(() -> new ResourceNotFoundException("La solicitud de material no existe"));
+        Material material = solicitud.getMaterial();
+
+        exigirPendiente(solicitud, material);
+        eliminarArchivoYActualizarActividad(solicitud, material);
+
+        solicitud.desvincularMaterial();
+        solicitudMaterialRepository.delete(solicitud);
+        materialRepository.delete(material);
+
+        LogHelper.info(SolicitudMaterialService.class,
+                "Solicitud de material " + idSolicitud + " eliminada");
+    }
+
+    private void eliminarArchivoYActualizarActividad(SolicitudMaterial solicitud, Material material) {
+        almacenamiento.eliminar(extraerRuta(material.getLinkMaterial()));
 
         actividadRepository.findFirstByEstudianteIdAndIdMaterialAndEstadoOrderByFechaHoraRegistroDesc(
                         solicitud.getEstudiante().getId(),
@@ -103,14 +131,6 @@ public class SolicitudMaterialService {
                     actividad.actualizarEstado(ActividadEstudiante.EstadoActividad.RECHAZADA);
                     actividadRepository.save(actividad);
                 });
-
-        solicitud.desvincularMaterial();
-        solicitudMaterialRepository.save(solicitud);
-        materialRepository.delete(material);
-
-        LogHelper.info(SolicitudMaterialService.class,
-                "Solicitud de material " + idSolicitud + " rechazada");
-        return respuesta;
     }
 
     private String extraerRuta(String link) {

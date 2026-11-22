@@ -144,6 +144,17 @@ class SolicitudMaterialServiceTest {
     }
 
     @Test
+    void eliminarSolicitudPendienteEliminaArchivoMaterialYSolicitud() {
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        servicio.eliminar(SOLICITUD_ID);
+
+        verify(almacenamiento).eliminar("materias-3/apunte.pdf");
+        verify(solicitudMaterialRepository).delete(solicitud);
+        verify(materialRepository).delete(material);
+    }
+
+    @Test
     void aprobarLanzaErrorCuandoLaSolicitudNoExiste() {
         when(solicitudMaterialRepository.findById(99L)).thenReturn(Optional.empty());
 

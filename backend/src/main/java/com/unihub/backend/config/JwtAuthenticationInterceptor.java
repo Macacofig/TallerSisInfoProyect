@@ -70,7 +70,12 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         return (HttpMethod.POST.matches(method) && path.equals("/api/ayudante-materia"))
                 || (HttpMethod.POST.matches(method) && path.matches("/api/solicitud-ayudante/\\d+/(aprobar|rechazar)"))
                 || (HttpMethod.GET.matches(method) && path.equals("/api/ayudante-materia/pendientes"))
-                || (HttpMethod.POST.matches(method) && path.matches("/api/ayudante-materia/\\d+/(aprobar|rechazar)"));
+                || (HttpMethod.POST.matches(method) && path.matches("/api/ayudante-materia/\\d+/(aprobar|rechazar)"))
+                || (HttpMethod.GET.matches(method) && (path.equals("/api/solicitud-material")
+                    || path.equals("/api/solicitud-material/pendientes")))
+                || (HttpMethod.POST.matches(method)
+                    && path.matches("/api/solicitud-material/\\d+/(aprobar|rechazar)"))
+                || (HttpMethod.DELETE.matches(method) && path.matches("/api/solicitud-material/\\d+"));
     }
 
     private boolean esPublica(HttpServletRequest request) {
@@ -81,10 +86,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // HU-14 y HU-36: consultar y actualizar solicitudes de material, listar
-        // materiales aprobados, consultar solicitudes de ayudante y consultar la
-        // actividad de un estudiante son operaciones públicas (no requieren JWT).
-        if (path.startsWith("/api/solicitud-material") || "/api/material/aprobados".equals(path)) {
+        // HU-14 y HU-36: listar materiales aprobados, consultar solicitudes de
+        // ayudante y consultar la actividad de un estudiante son operaciones públicas.
+        if ("/api/material/aprobados".equals(path)) {
             return true;
         }
         if (HttpMethod.GET.matches(method)
@@ -106,6 +110,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         if (HttpMethod.GET.matches(method)) {
             return !path.matches("/api/estudiantes/\\d+")
                     && !path.matches("/api/calificacion-(materia|docente)/estudiante/.*")
+                    && !path.startsWith("/api/solicitud-material")
                     && !path.startsWith("/api/solicitud-ayudante")
                     && !path.equals("/api/ayudante-materia/pendientes");
         }
