@@ -159,6 +159,30 @@ class SolicitudMaterialServiceTest {
     }
 
     @Test
+    void eliminarSolicitudPendienteSinLinkEliminaSolicitudSinIntentarBorrarArchivo() {
+        org.springframework.test.util.ReflectionTestUtils.setField(material, "linkMaterial", " ");
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        servicio.eliminar(SOLICITUD_ID);
+
+        verify(almacenamiento, never()).eliminar(any());
+        verify(solicitudMaterialRepository).delete(solicitud);
+        verify(materialRepository).delete(material);
+    }
+
+    @Test
+    void eliminarSolicitudPendienteConLinkNuloNoIntentaBorrarArchivo() {
+        org.springframework.test.util.ReflectionTestUtils.setField(material, "linkMaterial", null);
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        servicio.eliminar(SOLICITUD_ID);
+
+        verify(almacenamiento, never()).eliminar(any());
+        verify(solicitudMaterialRepository).delete(solicitud);
+        verify(materialRepository).delete(material);
+    }
+
+    @Test
     void eliminarSolicitudPendienteSinMaterialAsociadoDevuelveErrorControlado() {
         solicitud.desvincularMaterial();
         when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));

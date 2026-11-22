@@ -129,7 +129,14 @@ public class SolicitudMaterialService {
     }
 
     private void eliminarArchivoYActualizarActividad(SolicitudMaterial solicitud, Material material) {
-        almacenamiento.eliminar(extraerRuta(material.getLinkMaterial()));
+        String linkMaterial = material.getLinkMaterial();
+        if (linkMaterial == null || linkMaterial.isBlank()) {
+            LogHelper.warn(SolicitudMaterialService.class,
+                    "No se pudo eliminar el archivo de la solicitud " + solicitud.getId()
+                            + ": el material no tiene un link válido");
+        } else {
+            almacenamiento.eliminar(extraerRuta(linkMaterial));
+        }
 
         actividadRepository.findFirstByEstudianteIdAndIdMaterialAndEstadoOrderByFechaHoraRegistroDesc(
                         solicitud.getEstudiante().getId(),

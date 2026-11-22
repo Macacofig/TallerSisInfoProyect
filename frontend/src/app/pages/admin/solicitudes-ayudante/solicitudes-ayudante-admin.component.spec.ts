@@ -221,6 +221,9 @@ describe('SolicitudesAyudanteAdminComponent', () => {
     fixture.nativeElement.querySelector('.solicitud-card__approve').click();
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('No tienes permiso para gestionar postulaciones.');
+    expect(fixture.componentInstance.idEnProceso).toBe(null);
+    expect((fixture.nativeElement.querySelector('.solicitud-card__approve') as HTMLButtonElement).disabled)
+      .toBe(false);
   });
 
   it('usa botones nativos accesibles por teclado', () => {
