@@ -29,9 +29,10 @@
 
 .solicitudes-admin__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), max-content));
   gap: 1rem;
   align-items: stretch;
+  justify-content: start;
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
