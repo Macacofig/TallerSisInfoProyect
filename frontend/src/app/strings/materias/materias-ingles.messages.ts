@@ -194,6 +194,37 @@ export const MESSAGES_EN = {
   MATERIAL_TYPE_POWERPOINT: 'Presentation',
   MATERIAL_LIST_ARIA: 'Course materials',
 
+  MATERIAL_MODAL_TITULO: 'Add material',
+  MATERIAL_MODAL_SUBTITULO:
+    'The material is published after review by the administration team.',
+  MATERIAL_LABEL_MATERIA: 'Subject',
+  MATERIAL_LABEL_DOCENTE: 'Teacher',
+  MATERIAL_LABEL_SEMESTRE: 'Semester',
+  MATERIAL_LABEL_TIPO: 'Type',
+  MATERIAL_LABEL_TITULO: 'Title',
+  MATERIAL_LABEL_DESCRIPCION: 'Description',
+  MATERIAL_LABEL_ARCHIVO: 'File',
+  MATERIAL_BOTON_ENVIAR: 'Send material',
+  MATERIAL_BOTON_CERRAR: 'Close',
+  MATERIAL_PLACEHOLDER_TITULO: 'E.g. First partial solved',
+  MATERIAL_PLACEHOLDER_DESCRIPCION: 'What does the document contain?',
+  MATERIAL_ARCHIVO_SELECCIONADO: 'File selected',
+  MATERIAL_ERROR_CAMPO_REQUERIDO: 'This field is required.',
+  MATERIAL_ERROR_ARCHIVO_REQUERIDO: 'You must select a file.',
+  MATERIAL_ERROR_EXTENSION_NO_PERMITIDA: 'File format not allowed.',
+  MATERIAL_ERROR_TAMANIO_EXCEDIDO:
+    'The file exceeds the maximum allowed size of 20 MB.',
+  MATERIAL_ERROR_TIPO_ARCHIVO_INCONSISTENTE:
+    'The file type does not match the selected extension.',
+  MATERIAL_ERROR_SEMESTRE_INVALIDO:
+    'The semester must be a number between 1 and 20.',
+  MATERIAL_ERROR_ENVIO: 'Could not upload the material. Please try again.',
+  MATERIAL_ERROR_SIN_SESION:
+    'You must log in to upload academic material.',
+  MATERIAL_EXITO:
+    'Your academic material was submitted successfully and is pending review.',
+  MATERIAL_ENVIO: 'Uploading material...',
+
   MATERIA_DETAIL_SECTION_PENDING:
     'This section will be available soon.',
 

@@ -11,3 +11,18 @@ export interface MaterialResponse {
   semestreIngresado: number | null;
   estado: string;
 }
+
+export interface SolicitudMaterialResponse {
+  id: number;
+  titulo: string;
+  idEstudiante: number;
+  nombreEstudiante: string;
+  idMaterial: number;
+  linkMaterial: string;
+  estado: string;
+}
+
+export interface MaterialSubidoResponse {
+  material: MaterialResponse;
+  solicitud: SolicitudMaterialResponse;
+}

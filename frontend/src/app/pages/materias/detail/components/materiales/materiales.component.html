@@ -30,11 +30,22 @@
       </select>
     </div>
 
-    <button class="materiales__agregar" type="button" disabled>
+    <button
+      class="materiales__agregar"
+      type="button"
+      (click)="abrirModal()"
+    >
       <span aria-hidden="true">＋</span>
       {{ MESSAGES.MATERIAL_ADD_BUTTON }}
     </button>
   </div>
+
+  <app-agregar-material-modal
+    [abierto]="modalAbierto()"
+    [idMateria]="idMateria()"
+    (cerrar)="cerrarModal()"
+    (materialEnviado)="recargarMateriales()"
+  />
 
   @if (cargando()) {
     <p class="materiales__estado" role="status">{{ MESSAGES.MATERIAL_LOADING }}</p>
