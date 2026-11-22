@@ -6,7 +6,11 @@
       </h2>
     </header>
 
-    @if (documentos.length === 0) {
+    @if (cargando()) {
+      <p class="material-pendiente__state" role="status">{{ mensajes.LOADING }}</p>
+    } @else if (errorCarga()) {
+      <p class="material-pendiente__state" role="alert">{{ errorCarga() }}</p>
+    } @else if (documentos().length === 0) {
       <p class="material-pendiente__empty">{{ mensajes.EMPTY }}</p>
     } @else {
       <div class="material-pendiente__scroll" tabindex="0">
@@ -26,20 +30,22 @@
             </tr>
           </thead>
           <tbody>
-            @for (documento of documentos; track documento.usuario) {
+            @for (documento of documentos(); track documento.id) {
               <tr>
-                <td class="material-pendiente__file">{{ documento.archivo }}</td>
-                <td>{{ documento.materia }}</td>
-                <td>{{ documento.docente }}</td>
-                <td>{{ documento.semestre }}</td>
-                <td>{{ documento.usuario }}</td>
-                <td>{{ documento.tipo }}</td>
-                <td><time [attr.datetime]="documento.fecha">{{ documento.fecha }}</time></td>
+                <td class="material-pendiente__file">{{ documento.titulo }}</td>
+                <td>{{ mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ documento.nombreEstudiante || mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ mensajes.NOT_AVAILABLE }}</td>
                 <td>
                   <div class="material-pendiente__actions">
                     <button type="button"
                             class="material-pendiente__icon-button"
-                            [attr.aria-label]="mensajes.ACTIONS.VIEW">
+                            [attr.aria-label]="mensajes.ACTIONS.VIEW + ': ' + documento.titulo"
+                            [disabled]="idSolicitudEnCurso() !== null || documento.idMaterial === null"
+                            (click)="ver(documento)">
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
                               stroke="currentColor" stroke-width="1.8" />
@@ -48,7 +54,9 @@
                     </button>
                     <button type="button"
                             class="material-pendiente__action-button"
-                            [attr.aria-label]="mensajes.ACTIONS.APPROVE">
+                            [attr.aria-label]="mensajes.ACTIONS.APPROVE + ': ' + documento.titulo"
+                            [disabled]="idSolicitudEnCurso() !== null"
+                            (click)="aprobar(documento)">
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="m5 12 4.5 4.5L19 7" stroke="currentColor" stroke-width="2"
                               stroke-linecap="round" stroke-linejoin="round" />
@@ -57,7 +65,9 @@
                     </button>
                     <button type="button"
                             class="material-pendiente__action-button"
-                            [attr.aria-label]="mensajes.ACTIONS.REJECT">
+                            [attr.aria-label]="mensajes.ACTIONS.REJECT + ': ' + documento.titulo"
+                            [disabled]="idSolicitudEnCurso() !== null"
+                            (click)="rechazar(documento)">
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2"
                               stroke-linecap="round" />
@@ -66,7 +76,9 @@
                     </button>
                     <button type="button"
                             class="material-pendiente__delete-button"
-                            [attr.aria-label]="mensajes.ACTIONS.DELETE">
+                            [attr.aria-label]="mensajes.ACTIONS.DELETE + ': ' + documento.titulo"
+                            [disabled]="idSolicitudEnCurso() !== null"
+                            (click)="eliminar(documento)">
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"
                               stroke="currentColor" stroke-width="1.8"
@@ -81,5 +93,38 @@
         </table>
       </div>
     }
+
+    @if (mensajeAccion()) {
+      <p class="material-pendiente__feedback"
+         [class.material-pendiente__feedback--error]="errorAccion()"
+         [attr.role]="errorAccion() ? 'alert' : 'status'"
+         aria-live="polite">
+        {{ mensajeAccion() }}
+      </p>
+    }
   </article>
 </section>
+
+<dialog #dialogoVistaPrevia
+        class="material-pendiente__dialog"
+        aria-modal="true"
+        aria-labelledby="material-pendiente-preview-title"
+        (close)="cerrarVistaPrevia()"
+        (cancel)="cerrarVistaPrevia()">
+  <header class="material-pendiente__dialog-header">
+    <h2 id="material-pendiente-preview-title">{{ vistaPreviaTitulo() }}</h2>
+    <button type="button"
+            class="material-pendiente__action-button"
+            [attr.aria-label]="mensajes.ACTIONS.CLOSE_PREVIEW"
+            (click)="cerrarVistaPrevia()">
+      {{ mensajes.ACTIONS.CLOSE_PREVIEW }}
+    </button>
+  </header>
+  @if (vistaPreviaUrl(); as url) {
+    @if (vistaPreviaEsPdf()) {
+      <iframe [src]="vistaPreviaUrlSegura()" [title]="vistaPreviaTitulo()"></iframe>
+    } @else {
+      <img [src]="url" [alt]="vistaPreviaTitulo()">
+    }
+  }
+</dialog>

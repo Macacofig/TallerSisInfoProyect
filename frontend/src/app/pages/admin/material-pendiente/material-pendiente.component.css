@@ -129,3 +129,68 @@
   color: #667d9e;
   text-align: center;
 }
+
+.material-pendiente__state {
+  margin: 0;
+  padding: 2rem 1rem;
+  border-top: 0.0625rem solid #e3eaf3;
+  color: #667d9e;
+  text-align: center;
+}
+
+.material-pendiente__feedback {
+  margin: 1rem 0 0;
+  color: #17613a;
+}
+
+.material-pendiente__feedback--error {
+  color: #b42318;
+}
+
+.material-pendiente__icon-button:disabled,
+.material-pendiente__action-button:disabled,
+.material-pendiente__delete-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.material-pendiente__dialog {
+  width: min(90vw, 80rem);
+  max-width: 90vw;
+  max-height: 90vh;
+  padding: 1rem;
+  border: 0.0625rem solid #dce5f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.material-pendiente__dialog::backdrop {
+  background: rgb(16 33 63 / 60%);
+}
+
+.material-pendiente__dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.material-pendiente__dialog-header h2 {
+  margin: 0;
+  color: #102f59;
+  font-size: 1.125rem;
+}
+
+.material-pendiente__dialog iframe,
+.material-pendiente__dialog img {
+  display: block;
+  width: 100%;
+  max-height: 75vh;
+  border: 0;
+  object-fit: contain;
+}
+
+.material-pendiente__dialog iframe {
+  height: 70vh;
+}
