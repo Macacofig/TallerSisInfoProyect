@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { LanguageService } from '../../services/language.service';
 import { ADMIN_MESSAGES } from '../../strings/admin/admin/admin.messages';
 import { ADMIN_MESSAGES_EN } from '../../strings/admin/admin/admin-ingles.messages';
+import { MaterialPendienteComponent } from './material-pendiente/material-pendiente.component';
 import { SolicitudesAyudanteAdminComponent } from './solicitudes-ayudante/solicitudes-ayudante-admin.component';
 
 type PestanaAdmin = 'material-pendiente' | 'solicitudes-ayudantes' | 'reportes';
@@ -10,7 +11,7 @@ type PestanaAdmin = 'material-pendiente' | 'solicitudes-ayudantes' | 'reportes';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [SolicitudesAyudanteAdminComponent],
+  imports: [MaterialPendienteComponent, SolicitudesAyudanteAdminComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css',
 })

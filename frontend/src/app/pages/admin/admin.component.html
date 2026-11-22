@@ -35,7 +35,7 @@
     @if (pestanaActiva === 'solicitudes-ayudantes') {
       <app-solicitudes-ayudante-admin />
     } @else if (pestanaActiva === 'material-pendiente') {
-      <p class="admin-page__placeholder">{{ mensajes.PLACEHOLDERS.MATERIAL_PENDIENTE }}</p>
+      <app-material-pendiente />
     } @else {
       <p class="admin-page__placeholder">{{ mensajes.PLACEHOLDERS.REPORTES }}</p>
     }
