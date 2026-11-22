@@ -1,0 +1,85 @@
+<section class="material-pendiente" [attr.aria-label]="mensajes.TABLE_LABEL">
+  <article class="material-pendiente__card">
+    <header class="material-pendiente__header">
+      <h2 id="material-pendiente-count" class="material-pendiente__count">
+        {{ tituloConteo }}
+      </h2>
+    </header>
+
+    @if (documentos.length === 0) {
+      <p class="material-pendiente__empty">{{ mensajes.EMPTY }}</p>
+    } @else {
+      <div class="material-pendiente__scroll" tabindex="0">
+        <table class="material-pendiente__table" [attr.aria-label]="mensajes.TABLE_LABEL">
+          <thead>
+            <tr>
+              <th scope="col">{{ mensajes.COLUMNS.ARCHIVO }}</th>
+              <th scope="col">{{ mensajes.COLUMNS.MATERIA }}</th>
+              <th scope="col">{{ mensajes.COLUMNS.DOCENTE }}</th>
+              <th scope="col">{{ mensajes.COLUMNS.SEMESTRE }}</th>
+              <th scope="col">{{ mensajes.COLUMNS.USUARIO }}</th>
+              <th scope="col">{{ mensajes.COLUMNS.TIPO }}</th>
+              <th scope="col">{{ mensajes.COLUMNS.FECHA }}</th>
+              <th scope="col" class="material-pendiente__actions-heading">
+                {{ mensajes.COLUMNS.ACCIONES }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (documento of documentos; track documento.usuario) {
+              <tr>
+                <td class="material-pendiente__file">{{ documento.archivo }}</td>
+                <td>{{ documento.materia }}</td>
+                <td>{{ documento.docente }}</td>
+                <td>{{ documento.semestre }}</td>
+                <td>{{ documento.usuario }}</td>
+                <td>{{ documento.tipo }}</td>
+                <td><time [attr.datetime]="documento.fecha">{{ documento.fecha }}</time></td>
+                <td>
+                  <div class="material-pendiente__actions">
+                    <button type="button"
+                            class="material-pendiente__icon-button"
+                            [attr.aria-label]="mensajes.ACTIONS.VIEW">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+                              stroke="currentColor" stroke-width="1.8" />
+                        <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.8" />
+                      </svg>
+                    </button>
+                    <button type="button"
+                            class="material-pendiente__action-button"
+                            [attr.aria-label]="mensajes.ACTIONS.APPROVE">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m5 12 4.5 4.5L19 7" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                      {{ mensajes.ACTIONS.APPROVE }}
+                    </button>
+                    <button type="button"
+                            class="material-pendiente__action-button"
+                            [attr.aria-label]="mensajes.ACTIONS.REJECT">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round" />
+                      </svg>
+                      {{ mensajes.ACTIONS.REJECT }}
+                    </button>
+                    <button type="button"
+                            class="material-pendiente__delete-button"
+                            [attr.aria-label]="mensajes.ACTIONS.DELETE">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"
+                              stroke="currentColor" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </article>
+</section>
