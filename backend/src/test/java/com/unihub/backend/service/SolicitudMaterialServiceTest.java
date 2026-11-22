@@ -155,6 +155,17 @@ class SolicitudMaterialServiceTest {
     }
 
     @Test
+    void eliminarSolicitudPendienteSinMaterialAsociadoDevuelveErrorControlado() {
+        solicitud.desvincularMaterial();
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        assertThrows(ResourceNotFoundException.class, () -> servicio.eliminar(SOLICITUD_ID));
+
+        verify(almacenamiento, never()).eliminar(any());
+        verify(solicitudMaterialRepository, never()).delete(any());
+    }
+
+    @Test
     void aprobarLanzaErrorCuandoLaSolicitudNoExiste() {
         when(solicitudMaterialRepository.findById(99L)).thenReturn(Optional.empty());
 

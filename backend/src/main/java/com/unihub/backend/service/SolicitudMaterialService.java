@@ -154,6 +154,9 @@ public class SolicitudMaterialService {
         if (solicitud.getEstado() != SolicitudMaterial.EstadoSolicitudMaterial.PENDIENTE) {
             throw new IllegalStateException("Solo se puede decidir una solicitud de material pendiente");
         }
+        if (material == null) {
+            throw new ResourceNotFoundException("El material asociado a la solicitud no existe");
+        }
         if (material.getEstado() != Material.EstadoMaterial.PENDIENTE) {
             throw new IllegalStateException("El material asociado ya fue decidido");
         }
