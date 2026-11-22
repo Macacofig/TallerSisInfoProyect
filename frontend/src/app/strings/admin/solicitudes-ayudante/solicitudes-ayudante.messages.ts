@@ -16,7 +16,6 @@ export const SOLICITUDES_AYUDANTE_MESSAGES = {
   GRADE: 'Nota obtenida',
   SCHEDULES: 'Horarios',
   BUSY: 'Actualizando...',
-  RETRY: 'Reintentar',
   ESTADOS: {
     PENDIENTE: 'Pendiente',
     APROBADA: 'Aprobada',

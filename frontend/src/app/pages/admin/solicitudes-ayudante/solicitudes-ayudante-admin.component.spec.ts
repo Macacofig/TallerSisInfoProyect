@@ -140,7 +140,7 @@ describe('SolicitudesAyudanteAdminComponent', () => {
     pendiente.complete();
   });
 
-  it('conserva el resultado de decisión y permite reintentar si falla la recarga', () => {
+  it('conserva el resultado de decisión y muestra solo el error si falla la recarga', () => {
     fixture.destroy();
     const recarga = new Subject<SolicitudAyudanteResponse[]>();
     service.obtenerSolicitudesAyudantePendientes.mockReturnValueOnce(of([solicitud])).mockReturnValueOnce(recarga);
@@ -155,9 +155,10 @@ describe('SolicitudesAyudanteAdminComponent', () => {
     expect(fixture.componentInstance.cargando).toBe(false);
     expect(fixture.componentInstance.idEnProceso).toBe(null);
     expect(service.aprobarSolicitudAyudante).toHaveBeenCalledOnce();
-    fixture.componentInstance.cargarSolicitudes();
-    fixture.detectChanges();
-    expect(service.obtenerSolicitudesAyudantePendientes).toHaveBeenCalledTimes(4);
+    expect(service.obtenerSolicitudesAyudantePendientes).toHaveBeenCalledTimes(3);
+    expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent)
+      .toContain('No se pudieron cargar las postulaciones.');
+    expect(fixture.nativeElement.querySelector('[role="alert"] button')).toBeNull();
     expect(service.aprobarSolicitudAyudante).toHaveBeenCalledOnce();
   });
 

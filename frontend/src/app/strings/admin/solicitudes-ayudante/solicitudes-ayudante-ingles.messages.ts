@@ -16,7 +16,6 @@ export const SOLICITUDES_AYUDANTE_MESSAGES_EN = {
   GRADE: 'Grade obtained',
   SCHEDULES: 'Schedules',
   BUSY: 'Updating...',
-  RETRY: 'Try again',
   ESTADOS: {
     PENDIENTE: 'Pending',
     APROBADA: 'Approved',

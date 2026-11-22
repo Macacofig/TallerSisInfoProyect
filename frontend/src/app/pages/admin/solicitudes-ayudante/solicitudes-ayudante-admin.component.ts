@@ -38,7 +38,7 @@ export class SolicitudesAyudanteAdminComponent {
     this.cargarSolicitudes();
   }
 
-  cargarSolicitudes(): void {
+  private cargarSolicitudes(): void {
     if (this.cargando || this.idEnProceso !== null) return;
     this.cargando = true;
     this.errorCarga = '';
