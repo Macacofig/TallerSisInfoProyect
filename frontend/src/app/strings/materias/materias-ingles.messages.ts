@@ -193,6 +193,17 @@ export const MESSAGES_EN = {
   MATERIAL_TYPE_PDF: 'PDF',
   MATERIAL_TYPE_POWERPOINT: 'Presentation',
   MATERIAL_LIST_ARIA: 'Course materials',
+  MATERIAL_VIEW_BUTTON: 'View',
+  MATERIAL_VIEW_ARIA: 'View material',
+  MATERIAL_DOWNLOAD_BUTTON: 'Download',
+  MATERIAL_DOWNLOAD_ARIA: 'Download material',
+  MATERIAL_DOWNLOAD_LOADING: 'Starting download...',
+  MATERIAL_DOWNLOAD_SUCCESS: 'The download has started.',
+  MATERIAL_PREVIEW_LOADING: 'Loading preview...',
+  MATERIAL_PREVIEW_UNAVAILABLE: 'Preview is not available for this format. You can download the material.',
+  MATERIAL_PREVIEW_DIALOG_ARIA: 'Material preview',
+  MATERIAL_PREVIEW_CLOSE: 'Close preview',
+  MATERIAL_ACTION_ERROR: 'Could not retrieve the material. Please try again.',
 
   MATERIAL_MODAL_TITULO: 'Add material',
   MATERIAL_MODAL_SUBTITULO:
