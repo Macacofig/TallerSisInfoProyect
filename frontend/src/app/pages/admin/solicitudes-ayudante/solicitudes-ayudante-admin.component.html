@@ -1,28 +1,14 @@
 <section class="solicitudes-admin"
          [attr.aria-label]="mensajes.SECTION_LABEL"
          [attr.aria-busy]="cargando || idEnProceso !== null">
-  <header class="solicitudes-admin__header">
-    <button type="button"
-            class="solicitudes-admin__refresh"
-            [disabled]="cargando || idEnProceso !== null"
-            (click)="cargarSolicitudes()">
-      {{ mensajes.RETRY }}
-    </button>
-  </header>
-
   @if (cargando) {
     <p class="solicitudes-admin__notice" role="status">
       {{ mensajes.LOADING }}
     </p>
   } @else if (errorCarga) {
-    <div class="solicitudes-admin__notice solicitudes-admin__notice--error" role="alert">
-      <p>{{ errorCarga }}</p>
-      <button type="button"
-              class="solicitudes-admin__secondary"
-              (click)="cargarSolicitudes()">
-        {{ mensajes.RETRY }}
-      </button>
-    </div>
+    <p class="solicitudes-admin__notice solicitudes-admin__notice--error" role="alert">
+      {{ errorCarga }}
+    </p>
   } @else if (solicitudes.length === 0) {
     <p class="solicitudes-admin__notice">
       {{ mensajes.EMPTY }}
