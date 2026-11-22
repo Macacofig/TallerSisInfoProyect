@@ -14,6 +14,10 @@ describe('AdminComponent', () => {
     {
       id: 21,
       titulo: 'Tarea 3 — modelado de procesos',
+      materia: 'Ingeniería de Software',
+      docente: 'Ana Pérez',
+      usuario: 'Hugo Paz',
+      tipo: 'PDF',
       idEstudiante: 6,
       nombreEstudiante: 'Hugo Paz',
       idMaterial: 34,
@@ -23,6 +27,10 @@ describe('AdminComponent', () => {
     {
       id: 22,
       titulo: 'Segundo parcial 2025-2',
+      materia: 'Bases de Datos',
+      docente: 'Luis Gomez',
+      usuario: 'Nadia Lopez',
+      tipo: 'WORD',
       idEstudiante: 7,
       nombreEstudiante: 'Nadia Lopez',
       idMaterial: 35,

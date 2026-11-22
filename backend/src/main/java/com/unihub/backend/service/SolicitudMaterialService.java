@@ -41,7 +41,7 @@ public class SolicitudMaterialService {
 
     public List<SolicitudMaterialResponse> obtenerTodas() {
         return solicitudMaterialRepository.findAll().stream()
-                .map(materialMapper::toSolicitudResponse)
+                .map(this::mapearSolicitudConMaterial)
                 .toList();
     }
 
@@ -49,8 +49,17 @@ public class SolicitudMaterialService {
         return solicitudMaterialRepository.findByEstadoOrderByTituloAsc(
                 SolicitudMaterial.EstadoSolicitudMaterial.PENDIENTE
         ).stream()
-                .map(materialMapper::toSolicitudResponse)
+                .map(this::mapearSolicitudConMaterial)
                 .toList();
+    }
+
+    private SolicitudMaterialResponse mapearSolicitudConMaterial(SolicitudMaterial solicitud) {
+        Material material = solicitud.getMaterial();
+        if (material != null && material.getId() != null) {
+            material = materialRepository.findById(material.getId()).orElse(material);
+        }
+
+        return materialMapper.toSolicitudResponse(solicitud, material);
     }
 
     @Transactional

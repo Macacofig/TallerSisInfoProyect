@@ -10,10 +10,8 @@ export const MATERIAL_PENDIENTE_MESSAGES = {
     ARCHIVO: 'Archivo',
     MATERIA: 'Materia',
     DOCENTE: 'Docente',
-    SEMESTRE: 'Semestre',
     USUARIO: 'Usuario',
     TIPO: 'Tipo',
-    FECHA: 'Fecha',
     ACCIONES: 'Acciones'
   },
   ACTIONS: {

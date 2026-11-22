@@ -101,6 +101,10 @@ class SolicitudMaterialServiceTest {
         assertEquals(1, respuesta.size());
         assertEquals(SOLICITUD_ID, respuesta.getFirst().id());
         assertEquals("Apunte de clase", respuesta.getFirst().titulo());
+        assertEquals("Programación I", respuesta.getFirst().materia());
+        assertEquals("Carlos Gómez", respuesta.getFirst().docente());
+        assertEquals("Ana Pérez", respuesta.getFirst().usuario());
+        assertEquals("PDF", respuesta.getFirst().tipo());
         assertEquals("PENDIENTE", respuesta.getFirst().estado());
     }
 

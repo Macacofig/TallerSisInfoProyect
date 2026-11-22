@@ -13,6 +13,10 @@ describe('SolicitudMaterialAdminService', () => {
   const respuesta = {
     id: 21,
     titulo: 'Documento de prueba',
+    materia: 'Ingeniería de Software',
+    docente: 'Ana Pérez',
+    usuario: 'Hugo Paz',
+    tipo: 'PDF',
     idEstudiante: 6,
     nombreEstudiante: 'Hugo Paz',
     idMaterial: 34,

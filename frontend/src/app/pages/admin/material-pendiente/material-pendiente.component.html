@@ -20,10 +20,8 @@
               <th scope="col">{{ mensajes.COLUMNS.ARCHIVO }}</th>
               <th scope="col">{{ mensajes.COLUMNS.MATERIA }}</th>
               <th scope="col">{{ mensajes.COLUMNS.DOCENTE }}</th>
-              <th scope="col">{{ mensajes.COLUMNS.SEMESTRE }}</th>
               <th scope="col">{{ mensajes.COLUMNS.USUARIO }}</th>
               <th scope="col">{{ mensajes.COLUMNS.TIPO }}</th>
-              <th scope="col">{{ mensajes.COLUMNS.FECHA }}</th>
               <th scope="col" class="material-pendiente__actions-heading">
                 {{ mensajes.COLUMNS.ACCIONES }}
               </th>
@@ -33,12 +31,10 @@
             @for (documento of documentos(); track documento.id) {
               <tr>
                 <td class="material-pendiente__file">{{ documento.titulo }}</td>
-                <td>{{ mensajes.NOT_AVAILABLE }}</td>
-                <td>{{ mensajes.NOT_AVAILABLE }}</td>
-                <td>{{ mensajes.NOT_AVAILABLE }}</td>
-                <td>{{ documento.nombreEstudiante || mensajes.NOT_AVAILABLE }}</td>
-                <td>{{ mensajes.NOT_AVAILABLE }}</td>
-                <td>{{ mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ documento.materia || mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ documento.docente || mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ documento.usuario || documento.nombreEstudiante || mensajes.NOT_AVAILABLE }}</td>
+                <td>{{ documento.tipo || mensajes.NOT_AVAILABLE }}</td>
                 <td>
                   <div class="material-pendiente__actions">
                     <button type="button"

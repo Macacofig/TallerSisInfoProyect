@@ -21,6 +21,10 @@ describe('MaterialPendienteComponent', () => {
   const solicitud: SolicitudMaterialResponse = {
     id: 21,
     titulo: 'Tarea 3 — modelado de procesos',
+    materia: 'Ingeniería de Software',
+    docente: 'Ana Pérez',
+    usuario: 'Hugo Paz',
+    tipo: 'PDF',
     idEstudiante: 6,
     nombreEstudiante: 'Hugo Paz',
     idMaterial: 34,
