@@ -31,13 +31,12 @@ describe('AdminComponent', () => {
     expect(fixture.nativeElement.querySelector('app-solicitudes-ayudante-admin')).not.toBeNull();
   });
 
-  it('muestra el estado de preparación de Material pendiente', () => {
+  it('muestra el componente de Material pendiente al seleccionar su pestaña', () => {
     const button = fixture.nativeElement.querySelectorAll('.admin-tabs__button')[0] as HTMLButtonElement;
     button.click();
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain(
-      'La revisión de material pendiente estará disponible próximamente.'
-    );
+    expect(fixture.nativeElement.querySelector('app-material-pendiente')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('2 documentos esperando revisión');
     expect(fixture.nativeElement.querySelector('app-solicitudes-ayudante-admin')).toBeNull();
   });
 });
