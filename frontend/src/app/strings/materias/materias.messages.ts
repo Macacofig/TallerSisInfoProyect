@@ -205,6 +205,37 @@ export const MESSAGES = {
   MATERIAL_PREVIEW_CLOSE: 'Cerrar vista previa',
   MATERIAL_ACTION_ERROR: 'No se pudo obtener el material. Intenta de nuevo.',
 
+  MATERIAL_MODAL_TITULO: 'Agregar material',
+  MATERIAL_MODAL_SUBTITULO:
+    'El material se publica tras la revisión del equipo de administración.',
+  MATERIAL_LABEL_MATERIA: 'Materia',
+  MATERIAL_LABEL_DOCENTE: 'Docente',
+  MATERIAL_LABEL_SEMESTRE: 'Semestre',
+  MATERIAL_LABEL_TIPO: 'Tipo',
+  MATERIAL_LABEL_TITULO: 'Título',
+  MATERIAL_LABEL_DESCRIPCION: 'Descripción',
+  MATERIAL_LABEL_ARCHIVO: 'Archivo',
+  MATERIAL_BOTON_ENVIAR: 'Enviar material',
+  MATERIAL_BOTON_CERRAR: 'Cerrar',
+  MATERIAL_PLACEHOLDER_TITULO: 'Ej. Primer parcial resuelto',
+  MATERIAL_PLACEHOLDER_DESCRIPCION: '¿Qué contiene el documento?',
+  MATERIAL_ARCHIVO_SELECCIONADO: 'Archivo seleccionado',
+  MATERIAL_ERROR_CAMPO_REQUERIDO: 'Este campo es obligatorio.',
+  MATERIAL_ERROR_ARCHIVO_REQUERIDO: 'Debe seleccionar un archivo.',
+  MATERIAL_ERROR_EXTENSION_NO_PERMITIDA: 'Formato de archivo no permitido.',
+  MATERIAL_ERROR_TAMANIO_EXCEDIDO:
+    'El archivo excede el tamaño máximo permitido de 20 MB.',
+  MATERIAL_ERROR_TIPO_ARCHIVO_INCONSISTENTE:
+    'El tipo de archivo no coincide con la extensión seleccionada.',
+  MATERIAL_ERROR_SEMESTRE_INVALIDO:
+    'El semestre debe ser un número entre 1 y 20.',
+  MATERIAL_ERROR_ENVIO: 'No se pudo subir el material. Intenta de nuevo.',
+  MATERIAL_ERROR_SIN_SESION:
+    'Debes iniciar sesión para subir material académico.',
+  MATERIAL_EXITO:
+    'Tu material académico se envió correctamente y está pendiente de revisión.',
+  MATERIAL_ENVIO: 'Subiendo material...',
+
   MATERIA_DETAIL_SECTION_PENDING:
     'Esta sección estará disponible próximamente.',
 

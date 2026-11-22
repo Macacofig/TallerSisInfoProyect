@@ -19,6 +19,7 @@ import { ApiService } from '../../../../../services/api';
 import { LanguageService } from '../../../../../services/language.service';
 import { MESSAGES } from '../../../../../strings/materias/materias.messages';
 import { MESSAGES_EN } from '../../../../../strings/materias/materias-ingles.messages';
+import { AgregarMaterialModalComponent } from './agregar-material-modal/agregar-material-modal.component';
 
 export interface MaterialAcademico {
   id: string;
@@ -35,7 +36,8 @@ export interface MaterialAcademico {
   selector: 'app-materiales',
   standalone: true,
   templateUrl: './materiales.component.html',
-  styleUrl: './materiales.component.css'
+  styleUrl: './materiales.component.css',
+  imports: [AgregarMaterialModalComponent]
 })
 export class MaterialesComponent implements OnInit {
   private readonly api = inject(ApiService);
@@ -63,6 +65,7 @@ export class MaterialesComponent implements OnInit {
   readonly docenteSeleccionado = signal('');
   readonly semestreSeleccionado = signal('');
   readonly tipoSeleccionado = signal('');
+  readonly modalAbierto = signal(false);
 
   readonly docentes = computed(() => this.opciones('docente'));
   readonly semestres = computed(() => this.opciones('semestre'));
@@ -210,6 +213,18 @@ export class MaterialesComponent implements OnInit {
 
   actualizarTipo(event: Event): void {
     this.tipoSeleccionado.set((event.target as HTMLSelectElement).value);
+    this.recargar.next();
+  }
+
+  abrirModal(): void {
+    this.modalAbierto.set(true);
+  }
+
+  cerrarModal(): void {
+    this.modalAbierto.set(false);
+  }
+
+  recargarMateriales(): void {
     this.recargar.next();
   }
 

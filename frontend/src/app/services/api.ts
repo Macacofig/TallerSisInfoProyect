@@ -3,7 +3,7 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Materia } from '../models/materia';
 import { CalificacionMateriaPromedioMateriaResponse } from '../models/calificacion-materia.model';
-import { MaterialResponse } from '../models/material.model';
+import { MaterialResponse, MaterialSubidoResponse } from '../models/material.model';
 import { APP_CONFIG } from '../config/app-config';
 
 
@@ -41,6 +41,12 @@ export class ApiService {
     );
   }
 
+  subirMaterial(formData: FormData): Observable<MaterialSubidoResponse> {
+    return this.http.post<MaterialSubidoResponse>(
+      `${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.MATERIALES}/subir`,
+      formData
+    );
+  }
   descargarMaterial(idMaterial: number): Observable<HttpResponse<Blob>> {
     return this.http.get(
       `${this.apiUrl}${APP_CONFIG.API.ENDPOINTS.MATERIALES}/${idMaterial}/descargar`,

@@ -1,0 +1,254 @@
+@if (abierto()) {
+  <div
+    class="material-modal__fondo"
+    (click)="cerrarModal()"
+    role="presentation"
+  >
+    <section
+      class="material-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="material-modal-titulo"
+      aria-describedby="material-modal-subtitulo"
+      (click)="$event.stopPropagation()"
+    >
+    <button
+      type="button"
+      class="material-modal__cerrar"
+      (click)="cerrarModal()"
+      aria-label="{{ MESSAGES.MATERIAL_BOTON_CERRAR }}"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="material-modal__contenido">
+      <h2 id="material-modal-titulo" class="material-modal__titulo">
+        {{ MESSAGES.MATERIAL_MODAL_TITULO }}
+      </h2>
+      <p id="material-modal-subtitulo" class="material-modal__subtitulo">
+        {{ MESSAGES.MATERIAL_MODAL_SUBTITULO }}
+      </p>
+
+      @if (errorGeneral()) {
+        <p class="material-modal__error" role="alert">
+          {{ errorGeneral() }}
+        </p>
+      }
+
+      @if (!exito()) {
+        <form
+          [formGroup]="formulario"
+          (ngSubmit)="enviar()"
+          class="material-modal__form"
+        >
+
+          <div class="material-modal__campo">
+            <label for="modal-materia" class="material-modal__etiqueta">
+              {{ MESSAGES.MATERIAL_LABEL_MATERIA }}
+            </label>
+            <select
+              id="modal-materia"
+              formControlName="idMateria"
+              class="material-modal__select"
+              (change)="onMateriaSeleccionada($event)"
+            >
+              <option [value]="null">{{ MESSAGES.MATERIAL_FILTER_ALL }}</option>
+              @for (materia of materias(); track materia.id) {
+                <option [value]="materia.id">{{ materia.nombre }}</option>
+              }
+            </select>
+            @if (campoInvalido('idMateria')) {
+              <small class="material-modal__error-campo">
+                {{ errorCampo('idMateria') }}
+              </small>
+            }
+          </div>
+
+          <div class="material-modal__campo">
+            <label for="modal-docente" class="material-modal__etiqueta">
+              {{ MESSAGES.MATERIAL_LABEL_DOCENTE }}
+            </label>
+            <select
+              id="modal-docente"
+              formControlName="idDocente"
+              class="material-modal__select"
+              [disabled]="docentes().length === 0"
+            >
+              <option [value]="null">{{ MESSAGES.MATERIAL_FILTER_ALL }}</option>
+              @for (docente of docentes(); track docente.id) {
+                <option [value]="docente.id">{{ docente.nombre }}</option>
+              }
+            </select>
+            @if (campoInvalido('idDocente')) {
+              <small class="material-modal__error-campo">
+                {{ errorCampo('idDocente') }}
+              </small>
+            }
+            @if (docentes().length === 0 && formulario.get('idDocente')?.touched) {
+              <small class="material-modal__error-campo">
+                {{ MESSAGES.MATERIAL_ERROR_CAMPO_REQUERIDO }}
+              </small>
+            }
+          </div>
+
+          <div class="material-modal__fila-dos">
+            <div class="material-modal__campo">
+              <label for="modal-semestre" class="material-modal__etiqueta">
+                {{ MESSAGES.MATERIAL_LABEL_SEMESTRE }}
+              </label>
+              <select
+                id="modal-semestre"
+                formControlName="semestreIngresado"
+                class="material-modal__select"
+              >
+                <option [value]="null">{{ MESSAGES.MATERIAL_FILTER_ALL }}</option>
+                @for (semestre of semestres; track semestre) {
+                  <option [value]="semestre">{{ semestre }}</option>
+                }
+              </select>
+              @if (campoInvalido('semestreIngresado')) {
+                <small class="material-modal__error-campo">
+                  {{ errorCampo('semestreIngresado') }}
+                </small>
+              }
+            </div>
+
+            <div class="material-modal__campo">
+              <label for="modal-tipo" class="material-modal__etiqueta">
+                {{ MESSAGES.MATERIAL_LABEL_TIPO }}
+              </label>
+              <select
+                id="modal-tipo"
+                formControlName="tipo"
+                class="material-modal__select"
+                (change)="onTipoSeleccionado($event)"
+              >
+                <option [value]="">---</option>
+                @for (tipo of tipoOpciones; track tipo) {
+                  <option [value]="tipo">{{ etiquetaTipo(tipo) }}</option>
+                }
+              </select>
+              @if (campoInvalido('tipo')) {
+                <small class="material-modal__error-campo">
+                  {{ errorCampo('tipo') }}
+                </small>
+              }
+            </div>
+          </div>
+
+          <div class="material-modal__campo">
+            <label for="modal-titulo" class="material-modal__etiqueta">
+              {{ MESSAGES.MATERIAL_LABEL_TITULO }}
+            </label>
+            <input
+              id="modal-titulo"
+              type="text"
+              formControlName="titulo"
+              class="material-modal__input"
+              [placeholder]="MESSAGES.MATERIAL_PLACEHOLDER_TITULO"
+            />
+            @if (campoInvalido('titulo')) {
+              <small class="material-modal__error-campo">
+                {{ errorCampo('titulo') }}
+              </small>
+            }
+          </div>
+
+          <div class="material-modal__campo">
+            <label for="modal-descripcion" class="material-modal__etiqueta">
+              {{ MESSAGES.MATERIAL_LABEL_DESCRIPCION }}
+            </label>
+            <textarea
+              id="modal-descripcion"
+              formControlName="descripcion"
+              class="material-modal__textarea"
+              rows="4"
+              [placeholder]="MESSAGES.MATERIAL_PLACEHOLDER_DESCRIPCION"
+            ></textarea>
+            @if (campoInvalido('descripcion')) {
+              <small class="material-modal__error-campo">
+                {{ errorCampo('descripcion') }}
+              </small>
+            }
+          </div>
+
+          <div class="material-modal__campo">
+            <label for="modal-archivo" class="material-modal__etiqueta">
+              {{ MESSAGES.MATERIAL_LABEL_ARCHIVO }}
+            </label>
+            <div class="material-modal__archivo">
+              <input
+                id="modal-archivo"
+                type="file"
+                class="material-modal__file"
+                (change)="onArchivoSeleccionado($event)"
+                [disabled]="enviando()"
+              />
+              @if (nombreArchivo()) {
+                <span class="material-modal__archivo-nombre">
+                  {{ nombreArchivo() }}
+                </span>
+                <button
+                  type="button"
+                  class="material-modal__archivo-quitar"
+                  (click)="removerArchivo()"
+                  aria-label="Quitar archivo"
+                >
+                  ×
+                </button>
+              }
+            </div>
+            @if (campoInvalido('archivo')) {
+              <small class="material-modal__error-campo">
+                {{ errorCampo('archivo') }}
+              </small>
+            }
+            @if (esTipoInconsistente() && formulario.get('tipo')?.touched) {
+              <small class="material-modal__error-campo">
+                {{ MESSAGES.MATERIAL_ERROR_TIPO_ARCHIVO_INCONSISTENTE }}
+              </small>
+            }
+          </div>
+
+          <div class="material-modal__acciones">
+            <button
+              type="button"
+              class="material-modal__boton-cerrar"
+              (click)="cerrarModal()"
+              [disabled]="enviando()"
+            >
+              {{ MESSAGES.MATERIAL_BOTON_CERRAR }}
+            </button>
+            <button
+              type="submit"
+              class="material-modal__boton-enviar"
+              [disabled]="enviando() || formulario.invalid || !archivoSeleccionado()"
+            >
+              @if (enviando()) {
+                <span class="material-modal__cargando" aria-hidden="true"></span>
+                {{ MESSAGES.MATERIAL_ENVIO }}
+              } @else {
+                {{ MESSAGES.MATERIAL_BOTON_ENVIAR }}
+              }
+            </button>
+          </div>
+
+        </form>
+      } @else {
+        <div class="material-modal__exito" role="status" aria-live="polite">
+          <p class="material-modal__exito-mensaje">
+            {{ MESSAGES.MATERIAL_EXITO }}
+          </p>
+          <button
+            type="button"
+            class="material-modal__boton-enviar"
+            (click)="cerrarModal()"
+          >
+            {{ MESSAGES.MATERIAL_BOTON_CERRAR }}
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+</div>
+}
