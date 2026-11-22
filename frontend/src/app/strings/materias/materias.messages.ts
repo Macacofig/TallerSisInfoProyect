@@ -193,6 +193,17 @@ export const MESSAGES = {
   MATERIAL_TYPE_PDF: 'PDF',
   MATERIAL_TYPE_POWERPOINT: 'Presentación',
   MATERIAL_LIST_ARIA: 'Materiales de la materia',
+  MATERIAL_VIEW_BUTTON: 'Ver',
+  MATERIAL_VIEW_ARIA: 'Ver material',
+  MATERIAL_DOWNLOAD_BUTTON: 'Descargar',
+  MATERIAL_DOWNLOAD_ARIA: 'Descargar material',
+  MATERIAL_DOWNLOAD_LOADING: 'Iniciando descarga...',
+  MATERIAL_DOWNLOAD_SUCCESS: 'La descarga se inició.',
+  MATERIAL_PREVIEW_LOADING: 'Cargando vista previa...',
+  MATERIAL_PREVIEW_UNAVAILABLE: 'La vista previa no está disponible para este formato. Puedes descargar el material.',
+  MATERIAL_PREVIEW_DIALOG_ARIA: 'Vista previa del material',
+  MATERIAL_PREVIEW_CLOSE: 'Cerrar vista previa',
+  MATERIAL_ACTION_ERROR: 'No se pudo obtener el material. Intenta de nuevo.',
 
   MATERIA_DETAIL_SECTION_PENDING:
     'Esta sección estará disponible próximamente.',

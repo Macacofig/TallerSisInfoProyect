@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpHeaders } from '@angular/common/http';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { ApiService } from './api';
+import { APP_CONFIG } from '../config/app-config';
 
 describe('Api', () => {
   let service: ApiService;
@@ -25,6 +27,23 @@ describe('Api', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('descarga un material como Blob desde el endpoint configurado', () => {
+    const archivo = new Blob(['contenido'], { type: 'application/pdf' });
+    service.descargarMaterial(37).subscribe(respuesta => {
+      expect(respuesta.body).toBe(archivo);
+      expect(respuesta.headers.get('Content-Disposition')).toBe('attachment; filename="apuntes.pdf"');
+    });
+
+    const peticion = TestBed.inject(HttpTestingController).expectOne(
+      `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.MATERIALES}/37/descargar`
+    );
+    expect(peticion.request.method).toBe('GET');
+    expect(peticion.request.responseType).toBe('blob');
+    peticion.flush(archivo, {
+      headers: new HttpHeaders({ 'Content-Disposition': 'attachment; filename="apuntes.pdf"' })
+    });
   });
 
   afterEach(() => TestBed.inject(HttpTestingController).verify());
