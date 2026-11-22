@@ -6,20 +6,20 @@
 
 .admin-page {
   display: grid;
-  gap: 18px;
+  gap: 1.125rem;
   min-width: 0;
-  padding: clamp(18px, 2.5vw, 36px);
+  padding: clamp(1.125rem, 2.5vw, 2.25rem);
 }
 
 .admin-page__header {
   display: grid;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .admin-page__eyebrow {
   margin: 0;
   color: #c9a227;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
 }
@@ -28,14 +28,14 @@
   margin: 0;
   color: #102f59;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(28px, 3vw, 38px);
+  font-size: clamp(1.75rem, 3vw, 2.375rem);
   line-height: 1.15;
 }
 
 .admin-page__subtitle {
   margin: 0;
   color: #5a7295;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 
@@ -43,7 +43,7 @@
   width: 100%;
   margin: 0;
   border: 0;
-  border-top: 1px solid #d7e3f2;
+  border-top: 0.0625rem solid #d7e3f2;
 }
 
 .admin-tabs {
@@ -51,21 +51,21 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 5px;
-  border-radius: 9px;
+  gap: 0.375rem;
+  padding: 0.3125rem;
+  border-radius: 0.5625rem;
   background: #dfedff;
 }
 
 .admin-tabs__button {
-  min-height: 36px;
-  padding: 8px 14px;
+  min-height: 2.25rem;
+  padding: 0.5rem 0.875rem;
   border: 0;
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   background: transparent;
   color: #526e92;
   font: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: center;
   cursor: pointer;
 }
@@ -73,13 +73,13 @@
 .admin-tabs__button--active {
   background: #ffffff;
   color: #102f59;
-  box-shadow: 0 1px 5px rgb(16 33 63 / 8%);
+  box-shadow: 0 0.0625rem 0.3125rem rgb(16 33 63 / 8%);
   font-weight: 600;
 }
 
 .admin-tabs__button:focus-visible {
-  outline: 3px solid #91bff0;
-  outline-offset: 2px;
+  outline: 0.1875rem solid #91bff0;
+  outline-offset: 0.125rem;
 }
 
 .admin-page__content {
@@ -88,26 +88,26 @@
 
 .admin-page__placeholder {
   margin: 0;
-  padding: 24px;
-  border: 1px solid #dce5f0;
-  border-radius: 12px;
+  padding: 1.5rem;
+  border: 0.0625rem solid #dce5f0;
+  border-radius: 0.75rem;
   background: #ffffff;
   color: #5a7295;
   text-align: center;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 32.5em) {
   .admin-page {
-    padding: 18px 14px;
+    padding: 1.125rem 0.875rem;
   }
 
   .admin-tabs {
-    gap: 2px;
+    gap: 0.125rem;
   }
 
   .admin-tabs__button {
     flex: 1 1 auto;
-    padding: 8px 9px;
-    font-size: 12px;
+    padding: 0.5rem 0.5625rem;
+    font-size: 0.75rem;
   }
 }
