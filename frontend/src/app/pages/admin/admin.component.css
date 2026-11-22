@@ -50,6 +50,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 5px;
   border-radius: 9px;
@@ -65,6 +66,7 @@
   color: #526e92;
   font: inherit;
   font-size: 13px;
+  text-align: center;
   cursor: pointer;
 }
 
