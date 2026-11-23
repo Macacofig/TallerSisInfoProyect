@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
     Optional<Estudiante> findByIdAndRol(Long id, Estudiante.Rol rol);
 
     @Modifying
+    @Transactional
     @Query(value = """
             UPDATE estudiantes
             SET materias_aprobadas = ARRAY(
@@ -28,6 +30,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
     int reemplazarMateriasAprobadas(@Param("id") Long id, @Param("materias") String[] materias);
 
     @Modifying
+    @Transactional
     @Query(value = """
             UPDATE estudiantes
             SET materias_aprobadas = array_remove(materias_aprobadas, :materia)

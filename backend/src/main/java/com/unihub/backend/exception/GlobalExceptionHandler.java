@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> manejarErrorInterno(Exception exception) {
-		LogHelper.error(GlobalExceptionHandler.class, "Error interno al procesar la solicitud", null);
+		LogHelper.error(GlobalExceptionHandler.class, "Error interno al procesar la solicitud", exception);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body("No se pudo procesar la solicitud");
 	}
