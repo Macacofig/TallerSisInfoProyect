@@ -98,7 +98,9 @@ export class MaterialesComponent implements OnInit {
 
         return this.api.obtenerMateriales(this.idMateria(), filtros).pipe(
           tap(respuesta => {
-            const materiales = respuesta.map(material => this.mapearMaterial(material));
+            const materiales = respuesta
+              .filter(material => material.estado === 'ACTIVO')
+              .map(material => this.mapearMaterial(material));
             this.materiales.set(materiales);
             if (catalogoCompleto) this.catalogo.set(materiales);
           }),

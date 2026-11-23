@@ -8,6 +8,7 @@ import { LanguageService } from '../../../services/language.service';
 import { MESSAGES } from '../../../strings/materias/materias.messages';
 import { MESSAGES_EN } from '../../../strings/materias/materias-ingles.messages';
 import { MateriasComponent } from './materias.component';
+import { Router } from '@angular/router';
 
 describe('HU-01: catálogo de materias', () => {
   let fixture: ComponentFixture<MateriasComponent>;
@@ -39,9 +40,110 @@ describe('HU-01: catálogo de materias', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     languageService?.setLanguage('es');
     config.DEMO_MODE = originalDemoMode;
     http.verify();
+  });
+
+  describe('HU-32: búsqueda de material académico por materia', () => {
+    const nombresVisibles = () => Array.from(
+      fixture.nativeElement.querySelectorAll('.materia-card h2') as NodeListOf<HTMLElement>,
+      titulo => titulo.textContent!.trim()
+    );
+
+    function escribir(termino: string): void {
+      const input: HTMLInputElement = fixture.nativeElement.querySelector('#buscar-materia');
+      input.value = termino;
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+    }
+
+    function responderBusqueda(termino: string, respuesta = materias): void {
+      http.expectOne(req => req.url === endpoint &&
+        req.params.get('nombre') === termino).flush(respuesta);
+      fixture.detectChanges();
+    }
+
+    beforeEach(() => {
+      http.expectOne(endpoint).flush(materias);
+      fixture.detectChanges();
+      vi.useFakeTimers();
+    });
+
+    it('actualiza el mismo input de Programación a Matemática sin recrear el componente', () => {
+      const input = fixture.nativeElement.querySelector('#buscar-materia');
+      escribir('Programación');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE - 1);
+      http.expectNone(req => req.url === endpoint);
+      vi.advanceTimersByTime(1);
+      responderBusqueda('Programación');
+      expect(nombresVisibles()).toEqual(['Programación I']);
+
+      escribir('Matemática');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      responderBusqueda('Matemática');
+      expect(nombresVisibles()).toEqual(['Matemática II']);
+      expect(fixture.nativeElement.querySelector('#buscar-materia')).toBe(input);
+    });
+
+    it('cancela una respuesta anterior para que no reemplace la búsqueda más reciente', () => {
+      escribir('Programación');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      const anterior = http.expectOne(req => req.params.get('nombre') === 'Programación');
+      escribir('Matemática');
+      expect(anterior.cancelled).toBe(true);
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      responderBusqueda('Matemática');
+      expect(nombresVisibles()).toEqual(['Matemática II']);
+    });
+
+    it('consulta por el nombre ingresado después del debounce', () => {
+      escribir('Programación');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      responderBusqueda('Programación', [materias[0]]);
+      expect(nombresVisibles()).toEqual(['Programación I']);
+    });
+
+    it('mantiene únicamente coincidencias aunque la API entregue varias materias', () => {
+      escribir('Matemática');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      responderBusqueda('Matemática');
+      expect(nombresVisibles()).toEqual(['Matemática II']);
+    });
+
+    it('muestra el mensaje sin resultados y ninguna tarjeta para un término inexistente', () => {
+      escribir('xyz-no-existe');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      // Los términos con guion consultan el catálogo y se filtran localmente.
+      http.expectOne(endpoint).flush(materias);
+      fixture.detectChanges();
+      expect(nombresVisibles()).toEqual([]);
+      expect(fixture.nativeElement.querySelector('#resultados-materias [role="status"]').textContent)
+        .toContain(MESSAGES.SEARCH_EMPTY_TITLE);
+    });
+
+    it('recupera el catálogo al limpiar el mismo input y reinicia la paginación', () => {
+      escribir('Programación');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      responderBusqueda('Programación');
+      fixture.componentInstance.paginaActual.set(2);
+      escribir('');
+      http.expectOne(endpoint).flush(materias);
+      fixture.detectChanges();
+      expect(nombresVisibles()).toEqual(['Programación I', 'Matemática II']);
+      expect(fixture.componentInstance.paginaActual()).toBe(1);
+    });
+
+    it('abre el detalle correspondiente desde la materia encontrada', () => {
+      const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      escribir('Matemática');
+      vi.advanceTimersByTime(APP_CONFIG.TIMEOUTS.SEARCH_DEBOUNCE);
+      responderBusqueda('Matemática');
+      fixture.nativeElement.querySelector('.materia-card .materia-button').click();
+      expect(navegar).toHaveBeenCalledWith(['/materias', materias[1].id]);
+      navegar.mockRestore();
+    });
   });
 
   it('consulta la API y muestra nombre, código y carrera de cada materia', async () => {
