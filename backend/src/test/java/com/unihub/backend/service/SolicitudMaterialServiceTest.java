@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -118,6 +119,28 @@ class SolicitudMaterialServiceTest {
 
         assertEquals(1, respuesta.size());
         assertEquals("PENDIENTE", respuesta.getFirst().estado());
+    }
+
+    @Test
+    void obtenerPorEstudianteConservaEstadosYDevuelveSolicitudesRechazadasSinMaterial() {
+        solicitud.aprobar();
+        material.activar();
+        SolicitudMaterial rechazada = new SolicitudMaterial("Material rechazado", estudiante, material);
+        org.springframework.test.util.ReflectionTestUtils.setField(rechazada, "id", 3L);
+        rechazada.negar();
+        rechazada.desvincularMaterial();
+        when(solicitudMaterialRepository.findByEstudianteId(ESTUDIANTE_ID))
+                .thenReturn(List.of(solicitud, rechazada));
+
+        List<SolicitudMaterialResponse> respuesta = servicio.obtenerPorEstudiante(ESTUDIANTE_ID);
+
+        assertEquals(2, respuesta.size());
+        assertEquals("APROBADO", respuesta.get(0).estado());
+        assertEquals("NEGADO", respuesta.get(1).estado());
+        assertEquals("Material rechazado", respuesta.get(1).titulo());
+        assertNull(respuesta.get(1).idMaterial());
+        assertNull(respuesta.get(1).materia());
+        verify(solicitudMaterialRepository).findByEstudianteId(ESTUDIANTE_ID);
     }
 
     @Test

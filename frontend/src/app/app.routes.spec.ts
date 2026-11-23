@@ -12,6 +12,8 @@ import { MiActividadComponent } from './pages/mi-actividad/mi-actividad.componen
 import { Login } from './pages/login/login';
 import { AdminComponent } from './pages/admin/admin.component';
 import { adminGuard } from './guards/admin.guard';
+import { authGuard } from './guards/auth.guard';
+import { MisMateriales } from './pages/mis-materiales/mis-materiales';
 
 describe('Rutas de Administración', () => {
   it('protege la página general y conserva la ruta anterior como redirección', () => {
@@ -21,6 +23,15 @@ describe('Rutas de Administración', () => {
     expect(rutaAdmin?.component).toBe(AdminComponent);
     expect(rutaAdmin?.canActivate).toContain(adminGuard);
     expect(rutaAnterior?.redirectTo).toBe('/administracion');
+  });
+});
+
+describe('Ruta de Mis materiales', () => {
+  it('registra la pantalla protegida por autenticación', () => {
+    const ruta = routes.find(route => route.path === 'mis-materiales');
+
+    expect(ruta?.component).toBe(MisMateriales);
+    expect(ruta?.canActivate).toContain(authGuard);
   });
 });
 

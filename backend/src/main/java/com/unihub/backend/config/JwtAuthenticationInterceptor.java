@@ -114,6 +114,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
         if (HttpMethod.GET.matches(method)) {
             return !path.matches("/api/estudiantes/\\d+")
+                    && !"/api/estudiantes/me/materiales".equals(path)
                     && !path.matches("/api/estudiantes/\\d+/telefono")
                     && !path.matches("/api/calificacion-(materia|docente)/estudiante/.*")
                     && !path.startsWith("/api/solicitud-material")

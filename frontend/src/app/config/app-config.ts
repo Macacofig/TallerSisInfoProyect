@@ -31,6 +31,7 @@ export const APP_CONFIG = {
       AUTH_REGISTER: '/estudiantes',
       AUTH_LOGIN: '/estudiantes/login',
       AUTH_RECUPERAR_CONTRASENA: '/estudiantes/recuperar-contrasena',
+      MIS_MATERIALES: '/estudiantes/me/materiales',
       AYUDANTE_MATERIA: '/ayudante-materia',
       SOLICITUD_AYUDANTE: '/solicitud-ayudante',
       SOLICITUD_MATERIAL: '/solicitud-material',

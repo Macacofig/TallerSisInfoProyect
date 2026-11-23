@@ -53,6 +53,13 @@ public class SolicitudMaterialService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<SolicitudMaterialResponse> obtenerPorEstudiante(Long idEstudiante) {
+        return solicitudMaterialRepository.findByEstudianteId(idEstudiante).stream()
+                .map(this::mapearSolicitudConMaterial)
+                .toList();
+    }
+
     private SolicitudMaterialResponse mapearSolicitudConMaterial(SolicitudMaterial solicitud) {
         Material material = solicitud.getMaterial();
         if (material != null && material.getId() != null) {
