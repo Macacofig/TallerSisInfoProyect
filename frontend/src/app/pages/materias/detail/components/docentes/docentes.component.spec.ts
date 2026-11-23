@@ -168,6 +168,44 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       .toBeTruthy();
   });
 
+  it('normaliza etiquetas heredadas sin inventar años y elimina gestiones equivalentes de la UI', () => {
+    calificacionesServiceMock.obtenerGestionesPorMateria.mockReturnValue(of([
+      'i-año',
+      'año-I',
+      '2026-II',
+      '2026-2',
+      '2027-II'
+    ]));
+    calificacionesServiceMock.obtenerPromediosPorGestion.mockClear();
+
+    component.cargarDocentes();
+    fixture.detectChanges();
+
+    expect(component.gestiones).toEqual(['i-año', '2026-II', '2027-II']);
+    expect(component.formatearGestionDocente('i-año')).toBe('Año I');
+    expect(component.formatearGestionDocente('2026-2')).toBe('2026-II');
+    expect(component.formatearGestionDocente('desconocida')).toBe('desconocida');
+
+    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
+      .toHaveBeenCalledWith(materia.id, 'i-año');
+    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
+      .toHaveBeenCalledWith(materia.id, '2026-II');
+    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
+      .toHaveBeenCalledWith(materia.id, '2027-II');
+    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
+      .toHaveBeenCalledTimes(3);
+
+    expect(fixture.nativeElement.querySelectorAll('.docentes__gestion-rapida'))
+      .toHaveLength(3);
+    expect(fixture.nativeElement.querySelectorAll('select option'))
+      .toHaveLength(3);
+    expect(component.historialDocente).toHaveLength(3);
+    expect(fixture.nativeElement.querySelectorAll('.docentes__grafico-etiqueta-x'))
+      .toHaveLength(3);
+    expect(fixture.nativeElement.textContent).toContain('2026-II');
+    expect(fixture.nativeElement.textContent).not.toContain('i-año');
+  });
+
   it('filtra las tarjetas al elegir una gestión rápida del historial', () => {
     const boton = fixture.nativeElement.querySelector(
       '.docentes__gestion-rapida'

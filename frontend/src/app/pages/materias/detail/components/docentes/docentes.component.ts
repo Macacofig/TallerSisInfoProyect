@@ -346,12 +346,12 @@ export class DocentesComponent implements OnChanges {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: gestiones => {
-          this.gestiones = gestiones;
-          this.gestionSeleccionada = gestiones.at(-1) ?? '';
-          this.gestionDesde = gestiones[0] ?? '';
-          this.gestionHasta = gestiones.at(-1) ?? '';
+          this.gestiones = this.deduplicarGestiones(gestiones);
+          this.gestionSeleccionada = this.gestiones.at(-1) ?? '';
+          this.gestionDesde = this.gestiones[0] ?? '';
+          this.gestionHasta = this.gestiones.at(-1) ?? '';
           this.cargandoGestiones = false;
-          this.cargarHistorialDocentes(gestiones);
+          this.cargarHistorialDocentes(this.gestiones);
           this.changeDetectorRef.detectChanges();
         },
         error: () => {
@@ -504,7 +504,16 @@ export class DocentesComponent implements OnChanges {
   }
 
   formatearGestionDocente(gestion: GestionDocente): string {
-    return gestion.replace('año-', this.mensajes.ACADEMIC_YEAR_PREFIX);
+    const gestionConAnio = /^(\d{4})-(I|II|1|2)$/i.exec(gestion.trim());
+    if (gestionConAnio) {
+      const semestre = this.normalizarSemestre(gestionConAnio[2]);
+      return `${gestionConAnio[1]}-${semestre}`;
+    }
+
+    const semestre = this.obtenerSemestreSinAnio(gestion);
+    return semestre
+      ? `${this.mensajes.ACADEMIC_YEAR_PREFIX}${semestre}`
+      : gestion;
   }
 
   esGestionActiva(gestion: GestionDocente): boolean {
@@ -640,6 +649,41 @@ export class DocentesComponent implements OnChanges {
           this.changeDetectorRef.detectChanges();
         }
       });
+  }
+
+  private deduplicarGestiones(gestiones: GestionDocente[]): GestionDocente[] {
+    const gestionesUnicas = new Map<string, GestionDocente>();
+
+    for (const gestion of gestiones) {
+      const gestionConAnio = /^(\d{4})-(I|II|1|2)$/i.exec(gestion.trim());
+      const semestre = this.obtenerSemestreSinAnio(gestion);
+      const clave = gestionConAnio
+        ? `${gestionConAnio[1]}-${this.normalizarSemestre(gestionConAnio[2])}`
+        : semestre
+          ? `sin-anio-${semestre}`
+          : `original-${gestion}`;
+
+      if (!gestionesUnicas.has(clave)) {
+        gestionesUnicas.set(clave, gestion);
+      }
+    }
+
+    return [...gestionesUnicas.values()];
+  }
+
+  private obtenerSemestreSinAnio(gestion: GestionDocente): 'I' | 'II' | null {
+    const gestionSinAnio = gestion.trim().toLocaleLowerCase();
+    const formatoApi = /^año-(i|ii)$/.exec(gestionSinAnio);
+    const formatoInvertido = /^(i|ii)-año$/.exec(gestionSinAnio);
+    const semestre = formatoApi?.[1] ?? formatoInvertido?.[1];
+
+    return semestre ? this.normalizarSemestre(semestre) : null;
+  }
+
+  private normalizarSemestre(semestre: string): 'I' | 'II' {
+    return semestre.toUpperCase() === '1' || semestre.toUpperCase() === 'I'
+      ? 'I'
+      : 'II';
   }
 
   private promedioDeDocentes(
