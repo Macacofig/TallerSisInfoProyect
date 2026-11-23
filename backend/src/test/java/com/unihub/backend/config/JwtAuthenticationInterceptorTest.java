@@ -14,12 +14,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(com.unihub.backend.controller.EstudianteController.class)
@@ -74,6 +76,16 @@ class JwtAuthenticationInterceptorTest {
                         .header("Authorization", "Bearer token-valido")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Ana\",\"telefono\":\"71234567\",\"carrera\":\"Medicina\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void permiteGestionarMateriasAprobadasSinToken() throws Exception {
+        when(estudianteService.eliminarMateriaAprobada(1L, "SIS-111")).thenReturn(
+                new com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse(
+                        1L, "Ingeniería de Sistemas", List.of(), List.of()));
+
+        mockMvc.perform(delete("/api/estudiantes/1/materias-aprobadas/SIS-111"))
                 .andExpect(status().isOk());
     }
 

@@ -5,7 +5,6 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
-import com.unihub.backend.dto.estudiante.EstudianteMateriaAprobadaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
@@ -50,6 +49,9 @@ class EstudianteServiceTest {
     @Mock
     private EstudianteRepository estudianteRepository;
 
+    @Mock
+    private MateriaService materiaService;
+
     private EstudianteService estudianteService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private static int numeroPrueba;
@@ -61,7 +63,8 @@ class EstudianteServiceTest {
                 new EstudianteMapper(),
                 new JwtService("test-secret-key-with-at-least-32-bytes", 3600),
                 passwordEncoder,
-                new LoginAttemptRateLimiter()
+                new LoginAttemptRateLimiter(),
+                materiaService
         );
         numeroPrueba++;
     }
@@ -173,70 +176,72 @@ class EstudianteServiceTest {
     }
 
     @Test
-    void deberiaAgregarMateriasAprobadasSinDuplicados() {
+    void deberiaActualizarMateriasAprobadasSinDuplicados() {
         Estudiante estudiante = new Estudiante(
-                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería de Sistemas"
         );
-        estudiante.agregarMateriasAprobadas(List.of("SIS-111"));
-        when(estudianteRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(estudiante));
-        when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(materiaService.obtenerMaterias(null, "Ingeniería de Sistemas", null)).thenReturn(List.of());
 
-        EstudianteMateriasAprobadasResponse resultado = estudianteService.agregarMateriasAprobadas(
+        EstudianteMateriasAprobadasResponse resultado = estudianteService.actualizarMateriasAprobadas(
                 1L,
-                new EstudianteMateriasAprobadasRequest(List.of(" SIS-111 ", "SIS-112", " "))
+                new EstudianteMateriasAprobadasRequest(List.of(" SIS-111 ", "SIS-112", " ", "SIS-111"))
         );
 
         assertEquals(List.of("SIS-111", "SIS-112"), resultado.materiasAprobadas());
-        verify(estudianteRepository).save(estudiante);
-        mostrarResultado("Agregar materias aprobadas evitando duplicados");
+        verify(estudianteRepository).reemplazarMateriasAprobadas(
+                1L, new String[]{"SIS-111", "SIS-112"});
+        mostrarResultado("Actualizar materias aprobadas evitando duplicados");
     }
 
     @Test
     void deberiaRechazarMateriasAprobadasCuandoElEstudianteNoExiste() {
-        when(estudianteRepository.findByIdForUpdate(99L)).thenReturn(Optional.empty());
+        when(estudianteRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(
                 com.unihub.backend.exception.ResourceNotFoundException.class,
-                () -> estudianteService.agregarMateriasAprobadas(
+                () -> estudianteService.actualizarMateriasAprobadas(
                         99L,
                         new EstudianteMateriasAprobadasRequest(List.of("SIS-111"))
                 )
         );
-        verify(estudianteRepository, never()).save(any(Estudiante.class));
+        verify(estudianteRepository, never()).reemplazarMateriasAprobadas(anyLong(), any());
         mostrarResultado("Rechazar materias aprobadas cuando el estudiante no existe");
     }
 
     @Test
-    void deberiaObtenerMateriasAprobadas() {
+    void deberiaObtenerMateriasAprobadasFiltrandoPorCarrera() {
         Estudiante estudiante = new Estudiante(
-                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería de Sistemas"
         );
         estudiante.agregarMateriasAprobadas(List.of("SIS-111", "SIS-112"));
         when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(materiaService.obtenerMaterias(null, "Medicina", null)).thenReturn(List.of());
 
         EstudianteMateriasAprobadasResponse resultado =
-                estudianteService.obtenerMateriasAprobadas(1L);
+                estudianteService.obtenerMateriasAprobadas(1L, "Medicina");
 
+        assertEquals("Medicina", resultado.carrera());
         assertEquals(List.of("SIS-111", "SIS-112"), resultado.materiasAprobadas());
-        mostrarResultado("Obtener materias aprobadas");
+        verify(materiaService).obtenerMaterias(null, "Medicina", null);
+        mostrarResultado("Obtener materias aprobadas filtrando por carrera");
     }
 
     @Test
     void deberiaEliminarMateriaAprobada() {
         Estudiante estudiante = new Estudiante(
-                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería de Sistemas"
         );
         estudiante.agregarMateriasAprobadas(List.of("SIS-111", "SIS-112"));
-        when(estudianteRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(estudiante));
-        when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(materiaService.obtenerMaterias(null, "Ingeniería de Sistemas", null)).thenReturn(List.of());
 
         EstudianteMateriasAprobadasResponse resultado = estudianteService.eliminarMateriaAprobada(
-                1L,
-                new EstudianteMateriaAprobadaRequest(" SIS-111 ")
+                1L, "SIS-111"
         );
 
         assertEquals(List.of("SIS-112"), resultado.materiasAprobadas());
-        verify(estudianteRepository).save(estudiante);
+        verify(estudianteRepository).eliminarMateriaAprobada(1L, "SIS-111");
         mostrarResultado("Eliminar materia aprobada");
     }
 
