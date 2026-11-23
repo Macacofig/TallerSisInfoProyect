@@ -10,5 +10,6 @@ export const SIDEBAR_MESSAGES = {
   MENU_ADMIN: 'Solicitudes de ayudantes',
   MENU_HORARIOS: 'Horarios',
   MENU_ACTIVIDAD: 'Mi actividad',
+  MENU_MATERIALES: 'Mis materiales',
   DEMO_NOTICE: 'Datos de demostración. La información mostrada es ficticia.',
 } as const;

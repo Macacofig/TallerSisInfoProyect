@@ -21,6 +21,7 @@ describe('Sidebar', () => {
       providers: [
         provideRouter([
           { path: 'mi-actividad', component: PaginaPrueba },
+          { path: 'mis-materiales', component: PaginaPrueba },
           { path: 'materias', component: PaginaPrueba }
         ]),
         { provide: AuthService, useValue: { tieneRolAdministrador: () => false } }
@@ -82,5 +83,18 @@ describe('Sidebar', () => {
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('a[href="/mi-actividad"]')?.textContent).toContain('My activity');
     expect(fixture.nativeElement.querySelector('nav')?.getAttribute('aria-label')).toBe('Main navigation');
+  });
+
+  it('navega a Mis materiales y traduce su etiqueta', async () => {
+    const enlace = fixture.nativeElement.querySelector('a[href="/mis-materiales"]') as HTMLAnchorElement;
+    expect(enlace.textContent).toContain('Mis materiales');
+    enlace.click();
+    await fixture.whenStable();
+    expect(TestBed.inject(Router).url).toBe('/mis-materiales');
+    expect(enlace.getAttribute('aria-current')).toBe('page');
+
+    TestBed.inject(LanguageService).setLanguage('en');
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('a[href="/mis-materiales"]')?.textContent).toContain('My materials');
   });
 });

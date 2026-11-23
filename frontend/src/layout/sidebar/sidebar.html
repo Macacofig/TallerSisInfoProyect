@@ -162,6 +162,12 @@
       </span>
       <span class="sidebar__label">{{ SIDEBAR_MESSAGES.MENU_ACTIVIDAD }}</span>
     </a>
+    <a routerLink="/mis-materiales" routerLinkActive="sidebar__item--active"
+      #misMaterialesLink="routerLinkActive"
+      [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', fragment: 'ignored', matrixParams: 'ignored' }"
+      ariaCurrentWhenActive="page" class="sidebar__item">
+      <span class="sidebar__label">{{ SIDEBAR_MESSAGES.MENU_MATERIALES }}</span>
+    </a>
     @if (authService.tieneRolAdministrador()) {
       <a routerLink="/administracion" routerLinkActive="sidebar__item--active" class="sidebar__item">
         <span class="sidebar__label">{{ SIDEBAR_MESSAGES.MENU_ADMIN }}</span>
@@ -170,7 +176,7 @@
   </nav>
 
 
-  @if (!miActividadLink.isActive) {
+  @if (!miActividadLink.isActive && !misMaterialesLink.isActive) {
   <footer class="sidebar__footer">
     <p>
       {{ SIDEBAR_MESSAGES.DEMO_NOTICE }}

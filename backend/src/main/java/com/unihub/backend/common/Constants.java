@@ -160,6 +160,9 @@ public final class Constants {
 	// Base = ESTUDIANTES
 	public static final String BASE = "/api/estudiantes";
 
+	// Consultar los materiales del estudiante autenticado
+	public static final String MIS_MATERIALES_URL = BASE + "/me/materiales";
+
 	// Registrar un estudiante
 	public static final String REGISTRAR_URL = BASE;
 	// Que necesita: body EstudianteRequest
