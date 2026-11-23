@@ -42,6 +42,7 @@ import {
 } from '../../../../../models/docente.model';
 
 import {
+  CalificacionDocenteGestionResumenResponse,
   CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse,
   GestionDocente,
@@ -105,13 +106,10 @@ interface ResultadoCargaDocentes {
   errorPromedios: boolean;
 }
 
-interface ResultadoHistorialGestion {
-  gestion: GestionDocente;
-  promedios: CalificacionDocentePromedioResponse[] | null;
-}
-
 interface HistorialDocenteGestion {
   gestion: GestionDocente;
+  anio: number | null;
+  cantidadEvaluaciones: number;
   claridad: number;
   metodologia: number;
   relacion: number;
@@ -204,6 +202,7 @@ export class DocentesComponent implements OnChanges {
   errorEnvio: DocenteMessageKey | '' = '';
   mensajeExito: DocenteMessageKey | '' = '';
   gestiones: GestionDocente[] = [];
+  private historialGestiones: CalificacionDocenteGestionResumenResponse[] = [];
   cargandoGestiones = false;
   cargandoFiltro = false;
   modoFiltro: ModoFiltroDocentes = 'gestion';
@@ -252,7 +251,6 @@ export class DocentesComponent implements OnChanges {
 
   private cargaDocentes?: Subscription;
   private cargaPromedios?: Subscription;
-  private cargaGestiones?: Subscription;
   private consultaFiltro?: Subscription;
   private cargaHistorial?: Subscription;
 
@@ -321,7 +319,6 @@ export class DocentesComponent implements OnChanges {
 
     this.cargaDocentes?.unsubscribe();
     this.cargaPromedios?.unsubscribe();
-    this.cargaGestiones?.unsubscribe();
     this.consultaFiltro?.unsubscribe();
     this.cargaHistorial?.unsubscribe();
     this.cargando = true;
@@ -335,30 +332,15 @@ export class DocentesComponent implements OnChanges {
     this.errorFiltro = '';
     this.errorHistorial = '';
     this.gestiones = [];
+    this.modoFiltro = 'gestion';
     this.gestionAplicada = null;
     this.contextoFiltro = null;
     this.filtroSinResultados = false;
     this.historialDocente = [];
+    this.historialGestiones = [];
     this.docentes = [];
 
-    this.cargaGestiones = this.calificacionesDocenteService
-      .obtenerGestionesPorMateria(this.materia.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: gestiones => {
-          this.gestiones = this.deduplicarGestiones(gestiones);
-          this.gestionSeleccionada = this.gestiones.at(-1) ?? '';
-          this.gestionDesde = this.gestiones[0] ?? '';
-          this.gestionHasta = this.gestiones.at(-1) ?? '';
-          this.cargandoGestiones = false;
-          this.cargarHistorialDocentes(this.gestiones);
-          this.changeDetectorRef.detectChanges();
-        },
-        error: () => {
-          this.errorGestiones = 'GESTIONS_ERROR';
-          this.cargandoGestiones = false;
-        }
-      });
+    this.cargarHistorialGestiones(true);
 
     this.cargaDocentes = this.docentesService
       .obtenerPorMateria(
@@ -411,6 +393,7 @@ export class DocentesComponent implements OnChanges {
     this.contextoFiltro = null;
     this.filtroSinResultados = false;
     this.errorFiltro = '';
+    this.cargarHistorialGestiones(false);
     this.cargaPromedios = this.calificacionesDocenteService
       .obtenerPromediosPorMateria(
         this.materia.id
@@ -441,7 +424,21 @@ export class DocentesComponent implements OnChanges {
   }
 
   get gestionesRapidas(): GestionDocente[] {
-    return [...this.gestiones].reverse().slice(0, 4);
+    const conocidas = this.gestionesCronologicas.slice(-4).reverse();
+    const noFechadas = this.historialGestiones
+      .filter(gestion => gestion.anio === null)
+      .map(gestion => gestion.gestion);
+    return [...conocidas, ...noFechadas.slice(0, Math.max(0, 4 - conocidas.length))];
+  }
+
+  get gestionesCronologicas(): GestionDocente[] {
+    return this.historialGestiones
+      .filter(gestion => gestion.anio !== null)
+      .map(gestion => gestion.gestion);
+  }
+
+  get gestionMasReciente(): GestionDocente | null {
+    return this.gestionesCronologicas.at(-1) ?? null;
   }
 
   cambiarModoFiltro(modo: ModoFiltroDocentes): void {
@@ -483,17 +480,15 @@ export class DocentesComponent implements OnChanges {
       return;
     }
 
-    if (this.gestiones.indexOf(this.gestionDesde) > this.gestiones.indexOf(this.gestionHasta)) {
+    const desde = this.gestionesCronologicas.indexOf(this.gestionDesde);
+    const hasta = this.gestionesCronologicas.indexOf(this.gestionHasta);
+    if (desde < 0 || hasta < 0 || desde > hasta) {
       this.errorFiltro = 'FILTER_RANGE_INVALID';
       return;
     }
 
     this.consultarPromedios(
-      this.calificacionesDocenteService.obtenerPromediosPorRango(
-        this.materia.id,
-        this.gestionDesde,
-        this.gestionHasta
-      ),
+      of(this.obtenerPromediosDelRango(this.gestionDesde, this.gestionHasta)),
       null,
         {
           tipo: 'rango',
@@ -530,10 +525,7 @@ export class DocentesComponent implements OnChanges {
 
   private consultarPorGestion(gestion: GestionDocente): void {
     this.consultarPromedios(
-      this.calificacionesDocenteService.obtenerPromediosPorGestion(
-        this.materia.id,
-        gestion
-      ),
+      of(this.obtenerPromediosDeGestion(gestion)),
       gestion,
       {
         tipo: 'gestion',
@@ -600,75 +592,161 @@ export class DocentesComponent implements OnChanges {
       (valor / this.escalaMaxima) * altoDisponible;
   }
 
-  private cargarHistorialDocentes(gestiones: GestionDocente[]): void {
+  private cargarHistorialGestiones(mostrarCargaGestiones: boolean): void {
     this.cargaHistorial?.unsubscribe();
     this.errorHistorial = '';
-    this.historialDocente = [];
-
-    if (gestiones.length < 2) {
-      this.cargandoHistorial = false;
-      return;
+    if (mostrarCargaGestiones) {
+      this.cargandoGestiones = true;
     }
-
     this.cargandoHistorial = true;
-    const consultas = gestiones.map(gestion =>
-      this.calificacionesDocenteService
-        .obtenerPromediosPorGestion(this.materia.id, gestion)
-        .pipe(
-          map(promedios => ({ gestion, promedios })),
-          catchError(() => of({ gestion, promedios: null }))
-        )
-    );
-
-    this.cargaHistorial = forkJoin(consultas)
+    this.cargaHistorial = this.calificacionesDocenteService
+      .obtenerHistorialGestionesPorMateria(this.materia.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (resultados: ResultadoHistorialGestion[]) => {
-          this.errorHistorial = resultados.some(resultado => resultado.promedios === null)
-            ? 'HISTORY_ERROR'
-            : '';
-
-          this.historialDocente = resultados
-            .filter((resultado): resultado is {
-              gestion: GestionDocente;
-              promedios: CalificacionDocentePromedioResponse[];
-            } => resultado.promedios !== null && resultado.promedios.length > 0)
-            .map(({ gestion, promedios }) => ({
-              gestion,
-              claridad: this.promedioDeDocentes(promedios, 'claridadExplicacionesPromedio'),
-              metodologia: this.promedioDeDocentes(promedios, 'metodologiaPromedio'),
-              relacion: this.promedioDeDocentes(promedios, 'relacionClasesEvaluacionesPromedio')
-            }));
-
+        next: historial => {
+          this.historialGestiones = [...historial].sort((primera, segunda) =>
+            this.compararGestiones(primera, segunda)
+          );
+          this.gestiones = this.historialGestiones.map(gestion => gestion.gestion);
+          this.gestionSeleccionada =
+            this.gestionMasReciente ?? this.gestiones[0] ?? '';
+          this.gestionDesde = this.gestionesCronologicas[0] ?? '';
+          this.gestionHasta = this.gestionMasReciente ?? '';
+          this.errorGestiones = '';
+          this.cargarHistorialDocentes();
+          this.cargandoGestiones = false;
           this.cargandoHistorial = false;
           this.changeDetectorRef.detectChanges();
         },
         error: () => {
+          this.errorGestiones = 'GESTIONS_ERROR';
           this.errorHistorial = 'HISTORY_ERROR';
+          this.cargandoGestiones = false;
           this.cargandoHistorial = false;
           this.changeDetectorRef.detectChanges();
         }
       });
   }
 
-  private deduplicarGestiones(gestiones: GestionDocente[]): GestionDocente[] {
-    const gestionesUnicas = new Map<string, GestionDocente>();
+  private cargarHistorialDocentes(): void {
+    this.historialDocente = this.historialGestiones.map(gestion => ({
+      gestion: gestion.gestion,
+      anio: gestion.anio,
+      cantidadEvaluaciones: gestion.cantidadEvaluaciones,
+      claridad: this.promedioDeDocentes(
+        gestion.docentes,
+        'claridadExplicacionesPromedio'
+      ),
+      metodologia: this.promedioDeDocentes(
+        gestion.docentes,
+        'metodologiaPromedio'
+      ),
+      relacion: this.promedioDeDocentes(
+        gestion.docentes,
+        'relacionClasesEvaluacionesPromedio'
+      )
+    }));
+  }
 
-    for (const gestion of gestiones) {
-      const gestionConAnio = /^(\d{4})-(I|II|1|2)$/i.exec(gestion.trim());
-      const semestre = this.obtenerSemestreSinAnio(gestion);
-      const clave = gestionConAnio
-        ? `${gestionConAnio[1]}-${this.normalizarSemestre(gestionConAnio[2])}`
-        : semestre
-          ? `sin-anio-${semestre}`
-          : `original-${gestion}`;
+  private compararGestiones(
+    primera: CalificacionDocenteGestionResumenResponse,
+    segunda: CalificacionDocenteGestionResumenResponse
+  ): number {
+    if (primera.anio !== null && segunda.anio !== null) {
+      const porAnio = primera.anio - segunda.anio;
+      if (porAnio !== 0) {
+        return porAnio;
+      }
+    } else if (primera.anio !== null) {
+      return -1;
+    } else if (segunda.anio !== null) {
+      return 1;
+    }
 
-      if (!gestionesUnicas.has(clave)) {
-        gestionesUnicas.set(clave, gestion);
+    const ordenSemestre = (semestre: 'I' | 'II' | null): number =>
+      semestre === 'I' ? 1 : semestre === 'II' ? 2 : 3;
+    const porSemestre = ordenSemestre(primera.semestre) - ordenSemestre(segunda.semestre);
+    return porSemestre || primera.gestion.localeCompare(segunda.gestion);
+  }
+
+  private obtenerPromediosDeGestion(
+    gestion: GestionDocente
+  ): CalificacionDocentePromedioResponse[] {
+    const resumen = this.historialGestiones.find(item => item.gestion === gestion);
+    return resumen?.docentes.map(docente => this.aPromedioDocente(
+      docente,
+      gestion,
+      gestion
+    )) ?? [];
+  }
+
+  private obtenerPromediosDelRango(
+    desde: GestionDocente,
+    hasta: GestionDocente
+  ): CalificacionDocentePromedioResponse[] {
+    const periodos = this.historialGestiones.filter(periodo => {
+      if (periodo.anio === null) {
+        return false;
+      }
+      const indice = this.gestionesCronologicas.indexOf(periodo.gestion);
+      return indice >= this.gestionesCronologicas.indexOf(desde) &&
+        indice <= this.gestionesCronologicas.indexOf(hasta);
+    });
+    const acumulados = new Map<number, {
+      docente: CalificacionDocenteGestionResumenResponse['docentes'][number];
+      cantidadEvaluaciones: number;
+      claridad: number;
+      metodologia: number;
+      relacion: number;
+    }>();
+
+    for (const periodo of periodos) {
+      for (const docente of periodo.docentes) {
+        const acumulado = acumulados.get(docente.idDocente) ?? {
+          docente,
+          cantidadEvaluaciones: 0,
+          claridad: 0,
+          metodologia: 0,
+          relacion: 0
+        };
+        acumulado.cantidadEvaluaciones += docente.cantidadEvaluaciones;
+        acumulado.claridad +=
+          docente.claridadExplicacionesPromedio * docente.cantidadEvaluaciones;
+        acumulado.metodologia +=
+          docente.metodologiaPromedio * docente.cantidadEvaluaciones;
+        acumulado.relacion +=
+          docente.relacionClasesEvaluacionesPromedio * docente.cantidadEvaluaciones;
+        acumulados.set(docente.idDocente, acumulado);
       }
     }
 
-    return [...gestionesUnicas.values()];
+    return [...acumulados.values()].map(({ docente, cantidadEvaluaciones, claridad, metodologia, relacion }) => ({
+      idDocente: docente.idDocente,
+      nombreDocente: docente.nombreDocente,
+      gestionDesde: desde,
+      gestionHasta: hasta,
+      idMateria: this.materia.id,
+      claridadExplicacionesPromedio: claridad / cantidadEvaluaciones,
+      metodologiaPromedio: metodologia / cantidadEvaluaciones,
+      relacionClasesEvaluacionesPromedio: relacion / cantidadEvaluaciones
+    }));
+  }
+
+  private aPromedioDocente(
+    docente: CalificacionDocenteGestionResumenResponse['docentes'][number],
+    gestionDesde: GestionDocente,
+    gestionHasta: GestionDocente
+  ): CalificacionDocentePromedioResponse {
+    return {
+      idDocente: docente.idDocente,
+      nombreDocente: docente.nombreDocente,
+      gestionDesde,
+      gestionHasta,
+      idMateria: this.materia.id,
+      claridadExplicacionesPromedio: docente.claridadExplicacionesPromedio,
+      metodologiaPromedio: docente.metodologiaPromedio,
+      relacionClasesEvaluacionesPromedio: docente.relacionClasesEvaluacionesPromedio
+    };
   }
 
   private obtenerSemestreSinAnio(gestion: GestionDocente): 'I' | 'II' | null {
@@ -687,11 +765,21 @@ export class DocentesComponent implements OnChanges {
   }
 
   private promedioDeDocentes(
-    promedios: CalificacionDocentePromedioResponse[],
+    promedios: CalificacionDocenteGestionResumenResponse['docentes'],
     metrica: 'claridadExplicacionesPromedio' | 'metodologiaPromedio' | 'relacionClasesEvaluacionesPromedio'
   ): number {
-    return promedios.reduce((total, promedio) => total + promedio[metrica], 0) /
-      promedios.length;
+    const cantidadEvaluaciones = promedios.reduce(
+      (total, docente) => total + docente.cantidadEvaluaciones,
+      0
+    );
+    if (cantidadEvaluaciones === 0) {
+      return 0;
+    }
+    return promedios.reduce(
+      (total, docente) =>
+        total + docente[metrica] * docente.cantidadEvaluaciones,
+      0
+    ) / cantidadEvaluaciones;
   }
 
   abrirFormulario(

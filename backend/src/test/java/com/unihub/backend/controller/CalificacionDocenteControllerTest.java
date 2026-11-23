@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.calificacion.CalificacionDocentePromedioResponse;
+import com.unihub.backend.dto.calificacion.CalificacionDocenteGestionResumenResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.exception.CalificacionDocenteDuplicadaException;
 import com.unihub.backend.exception.DocenteInexistenteException;
@@ -67,6 +68,23 @@ class CalificacionDocenteControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idMateria").value(10));
         mostrarResultado("Crear una calificacion de docente asociada obligatoriamente a una materia");
+    }
+
+    @Test
+    @DisplayName("Aceptar el formato de gestión explícito enviado por Angular")
+    void deberiaAceptarGestionConAnoExplicito() throws Exception {
+        when(calificacionService.crear(any())).thenReturn(
+                new CalificacionDocenteResponse(2L, 1L, 10L, 25L, 8, 7, 9, "2026-II"));
+
+        mockMvc.perform(post("/api/calificacion-docente")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"idDocente":1,"idMateria":10,"idEstudiante":25,
+                                 "claridadExplicaciones":8,"metodologia":7,
+                                 "relacionClasesEvaluaciones":9,"gestion":"2026-II"}
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.gestion").value("2026-II"));
     }
 
     @Test
@@ -144,6 +162,34 @@ class CalificacionDocenteControllerTest {
                 .andExpect(jsonPath("$[0].nombreDocente").value("Ana Docente"))
                 .andExpect(jsonPath("$[1].idDocente").value(2));
         mostrarResultado("Obtener los promedios de todos los docentes de una materia");
+    }
+
+    @Test
+    @DisplayName("Exponer el historial agrupado con conteos y formatos originales")
+    void deberiaConsultarHistorialDeGestionesAgrupado() throws Exception {
+        when(calificacionService.obtenerHistorialGestiones(10L)).thenReturn(List.of(
+                new CalificacionDocenteGestionResumenResponse(
+                        "2026-I", 2026, "I", List.of("2026-1", "2026-I"), 2,
+                        List.of(new CalificacionDocenteGestionResumenResponse.DocenteResumen(
+                                1L, "Ana Docente", 2, 8.0, 7.0, 9.0
+                        ))
+                ),
+                new CalificacionDocenteGestionResumenResponse(
+                        "año-I", null, "I", List.of("I-Año", "año-I"), 1,
+                        List.of(new CalificacionDocenteGestionResumenResponse.DocenteResumen(
+                                1L, "Ana Docente", 1, 6.0, 5.0, 7.0
+                        ))
+                )
+        ));
+
+        mockMvc.perform(get("/api/calificacion-docente/materia/10/historial-gestiones"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].gestion").value("2026-I"))
+                .andExpect(jsonPath("$[0].cantidadEvaluaciones").value(2))
+                .andExpect(jsonPath("$[0].gestionesOriginales[0]").value("2026-1"))
+                .andExpect(jsonPath("$[1].gestion").value("año-I"))
+                .andExpect(jsonPath("$[1].anio").doesNotExist())
+                .andExpect(jsonPath("$[1].cantidadEvaluaciones").value(1));
     }
 
     @Test

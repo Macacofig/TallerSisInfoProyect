@@ -31,3 +31,21 @@ export interface CalificacionDocentePromedioResponse {
   idMateria: number;
   nombreDocente: string;
 }
+
+export interface CalificacionDocenteGestionResumenResponse {
+  gestion: GestionDocente;
+  anio: number | null;
+  semestre: 'I' | 'II' | null;
+  gestionesOriginales: GestionDocente[];
+  cantidadEvaluaciones: number;
+  docentes: CalificacionDocenteGestionDocenteResumen[];
+}
+
+export interface CalificacionDocenteGestionDocenteResumen {
+  idDocente: number;
+  nombreDocente: string;
+  cantidadEvaluaciones: number;
+  claridadExplicacionesPromedio: number;
+  metodologiaPromedio: number;
+  relacionClasesEvaluacionesPromedio: number;
+}

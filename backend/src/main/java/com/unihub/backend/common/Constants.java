@@ -43,6 +43,12 @@ public final class Constants {
 	public static final String GESTIONES_POR_MATERIA_URL = BASE + "/materia/{idMateria}/gestiones";
 	// Que necesita: idMateria
 	// Que devuelve: Lista de gestiones con calificaciones 
+
+	// Obtener el historial agregado por gestión sin perder evaluaciones equivalentes
+	public static final String HISTORIAL_GESTIONES_POR_MATERIA_URL =
+			BASE + "/materia/{idMateria}/historial-gestiones";
+	// Que necesita: idMateria
+	// Que devuelve: periodos canónicos, alias originales, conteos y promedios por docente
 		
 
 	// Filtrar promedios por una gestion

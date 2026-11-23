@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
+import com.unihub.backend.dto.calificacion.CalificacionDocenteGestionResumenResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocentePromedioResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
@@ -15,6 +16,7 @@ import com.unihub.backend.repository.DocenteRepository;
 import com.unihub.backend.repository.DocenteMateriaRepository;
 import com.unihub.backend.repository.EstudianteRepository;
 import com.unihub.backend.repository.MateriaRepository;
+import com.unihub.backend.util.GestionAcademica;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -129,6 +133,20 @@ public class CalificacionDocenteService {
 				.map(CalificacionDocente::getGestion).distinct().collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
+	public List<CalificacionDocenteGestionResumenResponse> obtenerHistorialGestiones(Long idMateria) {
+		Map<GestionAcademica, GestionAcumulada> porGestion = new LinkedHashMap<>();
+		calificacionRepository.findByMateriaId(idMateria).forEach(calificacion -> {
+			GestionAcademica gestion = GestionAcademica.normalizar(calificacion.getGestion());
+			porGestion.computeIfAbsent(gestion, GestionAcumulada::new).agregar(calificacion);
+		});
+
+		return porGestion.values().stream()
+				.sorted((primera, segunda) -> primera.gestion.compareTo(segunda.gestion))
+				.map(GestionAcumulada::toResponse)
+				.toList();
+	}
+
 	public List<CalificacionDocentePromedioResponse> obtenerPromediosPorMateriaYRango(Long idMateria,
 			String gestionDesde, String gestionHasta) {
 		return obtenerPromediosAgrupados(idMateria, gestionDesde, gestionHasta,
@@ -173,5 +191,68 @@ public class CalificacionDocenteService {
 				idMateria,
 				calificaciones.get(0).getDocente().getNombre()
 		));
+	}
+
+	private static final class GestionAcumulada {
+		private final GestionAcademica gestion;
+		private final Set<String> gestionesOriginales = new TreeSet<>();
+		private final Map<Long, DocenteAcumulado> docentes = new LinkedHashMap<>();
+
+		private GestionAcumulada(GestionAcademica gestion) {
+			this.gestion = gestion;
+		}
+
+		private void agregar(CalificacionDocente calificacion) {
+			gestionesOriginales.add(calificacion.getGestion());
+			Docente docente = calificacion.getDocente();
+			docentes.computeIfAbsent(docente.getId(), ignored -> new DocenteAcumulado(docente))
+					.agregar(calificacion);
+		}
+
+		private CalificacionDocenteGestionResumenResponse toResponse() {
+			List<CalificacionDocenteGestionResumenResponse.DocenteResumen> resumenesDocentes =
+					docentes.values().stream().map(DocenteAcumulado::toResponse).toList();
+			long cantidadEvaluaciones = resumenesDocentes.stream()
+					.mapToLong(CalificacionDocenteGestionResumenResponse.DocenteResumen::cantidadEvaluaciones)
+					.sum();
+			return new CalificacionDocenteGestionResumenResponse(
+					gestion.gestion(),
+					gestion.anio(),
+					gestion.semestre(),
+					List.copyOf(gestionesOriginales),
+					cantidadEvaluaciones,
+					resumenesDocentes
+			);
+		}
+	}
+
+	private static final class DocenteAcumulado {
+		private final Docente docente;
+		private long cantidadEvaluaciones;
+		private double claridad;
+		private double metodologia;
+		private double relacion;
+
+		private DocenteAcumulado(Docente docente) {
+			this.docente = docente;
+		}
+
+		private void agregar(CalificacionDocente calificacion) {
+			cantidadEvaluaciones++;
+			claridad += calificacion.getClaridadExplicaciones();
+			metodologia += calificacion.getMetodologia();
+			relacion += calificacion.getRelacionClasesEvaluaciones();
+		}
+
+		private CalificacionDocenteGestionResumenResponse.DocenteResumen toResponse() {
+			return new CalificacionDocenteGestionResumenResponse.DocenteResumen(
+					docente.getId(),
+					docente.getNombre(),
+					cantidadEvaluaciones,
+					claridad / cantidadEvaluaciones,
+					metodologia / cantidadEvaluaciones,
+					relacion / cantidadEvaluaciones
+			);
+		}
 	}
 }

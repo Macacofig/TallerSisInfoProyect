@@ -10,6 +10,7 @@ CalificacionesDocenteService
 } from './calificaciones-docente.service';
 
 import {
+CalificacionDocenteGestionResumenResponse,
 CalificacionDocentePromedioResponse,
 RegistrarCalificacionDocenteRequest
 } from '../models/calificacion-docente.model';
@@ -96,6 +97,34 @@ it('debería obtener las gestiones con calificaciones de la materia', () => {
   );
   expect(request.request.method).toBe('GET');
   request.flush(['2026-I', '2026-II']);
+});
+
+it('debería obtener el historial agrupado con conteos y aliases originales', () => {
+  const respuesta: CalificacionDocenteGestionResumenResponse[] = [{
+    gestion: '2026-I',
+    anio: 2026,
+    semestre: 'I',
+    gestionesOriginales: ['2026-1', '2026-I'],
+    cantidadEvaluaciones: 2,
+    docentes: [{
+      idDocente: 1,
+      nombreDocente: 'Ana Pérez',
+      cantidadEvaluaciones: 2,
+      claridadExplicacionesPromedio: 8,
+      metodologiaPromedio: 7,
+      relacionClasesEvaluacionesPromedio: 9
+    }]
+  }];
+
+  service.obtenerHistorialGestionesPorMateria(25).subscribe(resultado =>
+    expect(resultado).toEqual(respuesta)
+  );
+
+  const request = httpTestingController.expectOne(
+    'https://tallersisinfoproyect.onrender.com/api/calificacion-docente/materia/25/historial-gestiones'
+  );
+  expect(request.request.method).toBe('GET');
+  request.flush(respuesta);
 });
 
 it('debería consultar promedios docentes por gestión', () => {

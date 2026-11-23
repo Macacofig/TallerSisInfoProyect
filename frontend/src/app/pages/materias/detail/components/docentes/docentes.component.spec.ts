@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject, of, throwError } from 'rxjs';
 
 import {
+  CalificacionDocenteGestionResumenResponse,
   CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse
 } from '../../../../../models/calificacion-docente.model';
@@ -55,6 +56,36 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     }
   ];
 
+  const crearResumenGestion = (
+    gestion: string,
+    anio: number | null,
+    semestre: 'I' | 'II' | null,
+    gestionesOriginales: string[],
+    docentesResumen = promedios.map(promedio => ({
+      idDocente: promedio.idDocente,
+      nombreDocente: promedio.nombreDocente,
+      cantidadEvaluaciones: 1,
+      claridadExplicacionesPromedio: promedio.claridadExplicacionesPromedio,
+      metodologiaPromedio: promedio.metodologiaPromedio,
+      relacionClasesEvaluacionesPromedio: promedio.relacionClasesEvaluacionesPromedio
+    }))
+  ): CalificacionDocenteGestionResumenResponse => ({
+    gestion,
+    anio,
+    semestre,
+    gestionesOriginales,
+    cantidadEvaluaciones: docentesResumen.reduce(
+      (total, docente) => total + docente.cantidadEvaluaciones,
+      0
+    ),
+    docentes: docentesResumen
+  });
+
+  const historialPorDefecto = [
+    crearResumenGestion('2026-I', 2026, 'I', ['2026-1', '2026-I']),
+    crearResumenGestion('2026-II', 2026, 'II', ['2026-2', '2026-II'])
+  ];
+
   const calificacion: CalificacionDocenteResponse = {
     id: 10,
     idDocente: 1,
@@ -85,6 +116,7 @@ describe('HU-06.1: promedios de docentes por materia', () => {
 
   const calificacionesServiceMock = {
     obtenerGestionesPorMateria: vi.fn(() => of(['2026-I', '2026-II'])),
+    obtenerHistorialGestionesPorMateria: vi.fn(() => of(historialPorDefecto)),
     obtenerPromediosPorMateria: vi.fn(() => of(promedios)),
     obtenerPromediosPorGestion: vi.fn(() => of(promedios)),
     obtenerPromediosPorRango: vi.fn(() => of(promedios)),
@@ -101,6 +133,7 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     vi.clearAllMocks();
     docentesServiceMock.obtenerPorMateria.mockReturnValue(of(docentes));
     calificacionesServiceMock.obtenerGestionesPorMateria.mockReturnValue(of(['2026-I', '2026-II']));
+    calificacionesServiceMock.obtenerHistorialGestionesPorMateria.mockReturnValue(of(historialPorDefecto));
     calificacionesServiceMock.obtenerPromediosPorMateria.mockReturnValue(of(promedios));
     calificacionesServiceMock.obtenerPromediosPorGestion.mockReturnValue(of(promedios));
     calificacionesServiceMock.obtenerPromediosPorRango.mockReturnValue(of(promedios));
@@ -134,7 +167,7 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       .toHaveBeenCalledExactlyOnceWith(materia.id);
     expect(calificacionesServiceMock.obtenerPromediosPorMateria)
       .toHaveBeenCalledExactlyOnceWith(materia.id);
-    expect(calificacionesServiceMock.obtenerGestionesPorMateria)
+    expect(calificacionesServiceMock.obtenerHistorialGestionesPorMateria)
       .toHaveBeenCalledExactlyOnceWith(materia.id);
   });
 
@@ -156,10 +189,8 @@ describe('HU-06.1: promedios de docentes por materia', () => {
   });
 
   it('muestra el historial agregado por gestión usando las tres métricas docentes', () => {
-    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
-      .toHaveBeenCalledWith(materia.id, '2026-I');
-    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
-      .toHaveBeenCalledWith(materia.id, '2026-II');
+    expect(calificacionesServiceMock.obtenerHistorialGestionesPorMateria)
+      .toHaveBeenCalledExactlyOnceWith(materia.id);
     expect(component.historialDocente).toHaveLength(2);
     expect(component.historialDocente[0].claridad).toBeCloseTo(7.75);
     expect(component.historialDocente[0].metodologia).toBeCloseTo(7.8);
@@ -168,42 +199,56 @@ describe('HU-06.1: promedios de docentes por materia', () => {
       .toBeTruthy();
   });
 
-  it('normaliza etiquetas heredadas sin inventar años y elimina gestiones equivalentes de la UI', () => {
-    calificacionesServiceMock.obtenerGestionesPorMateria.mockReturnValue(of([
-      'i-año',
-      'año-I',
-      '2026-II',
-      '2026-2',
-      '2027-II'
+  it('mantiene una entrada por gestión canónica y no marca como reciente los periodos sin año', () => {
+    calificacionesServiceMock.obtenerHistorialGestionesPorMateria.mockReturnValue(of([
+      crearResumenGestion('año-I', null, 'I', ['I-Año', 'año-I']),
+      crearResumenGestion('2027-II', 2027, 'II', ['2027-II']),
+      crearResumenGestion('2026-II', 2026, 'II', ['2026-2', '2026-II']),
+      crearResumenGestion('2026-I', 2026, 'I', ['2026-1', '2026-I'])
     ]));
-    calificacionesServiceMock.obtenerPromediosPorGestion.mockClear();
 
     component.cargarDocentes();
     fixture.detectChanges();
 
-    expect(component.gestiones).toEqual(['i-año', '2026-II', '2027-II']);
-    expect(component.formatearGestionDocente('i-año')).toBe('Año I');
+    expect(component.gestiones).toEqual(['2026-I', '2026-II', '2027-II', 'año-I']);
+    expect(component.formatearGestionDocente('año-I')).toBe('Año I');
     expect(component.formatearGestionDocente('2026-2')).toBe('2026-II');
     expect(component.formatearGestionDocente('desconocida')).toBe('desconocida');
 
-    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
-      .toHaveBeenCalledWith(materia.id, 'i-año');
-    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
-      .toHaveBeenCalledWith(materia.id, '2026-II');
-    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
-      .toHaveBeenCalledWith(materia.id, '2027-II');
-    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
-      .toHaveBeenCalledTimes(3);
-
     expect(fixture.nativeElement.querySelectorAll('.docentes__gestion-rapida'))
-      .toHaveLength(3);
+      .toHaveLength(4);
     expect(fixture.nativeElement.querySelectorAll('select option'))
-      .toHaveLength(3);
-    expect(component.historialDocente).toHaveLength(3);
+      .toHaveLength(4);
+    expect(component.historialDocente).toHaveLength(4);
     expect(fixture.nativeElement.querySelectorAll('.docentes__grafico-etiqueta-x'))
-      .toHaveLength(3);
+      .toHaveLength(4);
     expect(fixture.nativeElement.textContent).toContain('2026-II');
-    expect(fixture.nativeElement.textContent).not.toContain('i-año');
+    expect(fixture.nativeElement.textContent).not.toContain('I-Año');
+
+    const botones = Array.from(fixture.nativeElement.querySelectorAll(
+      '.docentes__gestion-rapida'
+    ) as NodeListOf<HTMLButtonElement>);
+    const recientes = botones.filter(boton =>
+      boton.textContent?.includes(DOCENTES_MESSAGES.RECENT)
+    );
+    expect(recientes).toHaveLength(1);
+    expect(recientes[0].textContent).toContain('2027-II');
+    const botonSinAnio = botones.find(boton => boton.textContent?.includes('Año I'));
+    expect(botonSinAnio?.textContent).not.toContain(DOCENTES_MESSAGES.RECENT);
+    botonSinAnio?.click();
+    fixture.detectChanges();
+    expect(component.gestionAplicada).toBe('año-I');
+
+    const modos = fixture.nativeElement.querySelectorAll(
+      '.docentes__filtro-modos button'
+    ) as NodeListOf<HTMLButtonElement>;
+    modos[1].click();
+    fixture.detectChanges();
+    const selectoresRango = fixture.nativeElement.querySelectorAll(
+      '.docentes__campos-rango select'
+    ) as NodeListOf<HTMLSelectElement>;
+    expect(selectoresRango[0].querySelectorAll('option')).toHaveLength(3);
+    expect(selectoresRango[0].textContent).not.toContain('Año I');
   });
 
   it('filtra las tarjetas al elegir una gestión rápida del historial', () => {
@@ -215,9 +260,8 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     boton.click();
     fixture.detectChanges();
 
-    expect(calificacionesServiceMock.obtenerPromediosPorGestion)
-      .toHaveBeenCalledWith(materia.id, '2026-II');
     expect(component.gestionAplicada).toBe('2026-II');
+    expect(component.docentes[0].promedio?.gestionDesde).toBe('2026-II');
     expect(fixture.nativeElement.querySelector('.docentes__contexto-filtro')?.textContent)
       .toContain('2026-II');
   });
@@ -242,9 +286,95 @@ describe('HU-06.1: promedios de docentes por materia', () => {
     ) as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    expect(calificacionesServiceMock.obtenerPromediosPorRango)
-      .toHaveBeenCalledExactlyOnceWith(materia.id, '2026-I', '2026-II');
+    expect(calificacionesServiceMock.obtenerPromediosPorRango).not.toHaveBeenCalled();
     expect(component.descripcionFiltro).toContain('2026-I y 2026-II');
+  });
+
+  it('pondera el promedio histórico por la cantidad de evaluaciones', () => {
+    calificacionesServiceMock.obtenerHistorialGestionesPorMateria.mockReturnValue(of([
+      crearResumenGestion('2026-II', 2026, 'II', ['2026-II'], [
+        {
+          idDocente: 1,
+          nombreDocente: 'Ana Pérez',
+          cantidadEvaluaciones: 1,
+          claridadExplicacionesPromedio: 6,
+          metodologiaPromedio: 4,
+          relacionClasesEvaluacionesPromedio: 8
+        },
+        {
+          idDocente: 2,
+          nombreDocente: 'Luis Gómez',
+          cantidadEvaluaciones: 9,
+          claridadExplicacionesPromedio: 8,
+          metodologiaPromedio: 8,
+          relacionClasesEvaluacionesPromedio: 6
+        }
+      ])
+    ]));
+
+    component.cargarDocentes();
+
+    expect(component.historialDocente[0].claridad).toBeCloseTo(7.8);
+    expect(component.historialDocente[0].metodologia).toBeCloseTo(7.6);
+    expect(component.historialDocente[0].relacion).toBeCloseTo(6.2);
+    expect(component.historialDocente[0].cantidadEvaluaciones).toBe(10);
+  });
+
+  it('combina periodos de un rango ponderando las evaluaciones de cada gestión', () => {
+    calificacionesServiceMock.obtenerHistorialGestionesPorMateria.mockReturnValue(of([
+      crearResumenGestion('2026-I', 2026, 'I', ['2026-I'], [{
+        idDocente: 1,
+        nombreDocente: 'Ana Pérez',
+        cantidadEvaluaciones: 1,
+        claridadExplicacionesPromedio: 6,
+        metodologiaPromedio: 5,
+        relacionClasesEvaluacionesPromedio: 7
+      }]),
+      crearResumenGestion('2026-II', 2026, 'II', ['2026-II'], [{
+        idDocente: 1,
+        nombreDocente: 'Ana Pérez',
+        cantidadEvaluaciones: 9,
+        claridadExplicacionesPromedio: 8,
+        metodologiaPromedio: 7,
+        relacionClasesEvaluacionesPromedio: 9
+      }])
+    ]));
+    component.cargarDocentes();
+    component.cambiarModoFiltro('rango');
+    component.gestionDesde = '2026-I';
+    component.gestionHasta = '2026-II';
+
+    component.aplicarConsultaPersonalizada();
+
+    expect(component.docentes[0].promedio?.claridadExplicacionesPromedio)
+      .toBeCloseTo(7.8);
+    expect(component.docentes[0].promedio?.metodologiaPromedio)
+      .toBeCloseTo(6.8);
+    expect(component.docentes[0].promedio?.relacionClasesEvaluacionesPromedio)
+      .toBeCloseTo(8.8);
+  });
+
+  it('mantiene disponible la gestión heredada como filtro individual sin inventar una fecha', () => {
+    calificacionesServiceMock.obtenerHistorialGestionesPorMateria.mockReturnValue(of([
+      crearResumenGestion('año-II', null, 'II', ['II-Año', 'año-II'])
+    ]));
+    component.cargarDocentes();
+    fixture.detectChanges();
+
+    expect(component.gestionMasReciente).toBeNull();
+    const modos = fixture.nativeElement.querySelectorAll(
+      '.docentes__filtro-modos button'
+    ) as NodeListOf<HTMLButtonElement>;
+    expect(modos[1].disabled).toBe(true);
+
+    const boton = fixture.nativeElement.querySelector(
+      '.docentes__gestion-rapida'
+    ) as HTMLButtonElement;
+    expect(boton.textContent).toContain('Año II');
+    expect(boton.textContent).not.toContain(DOCENTES_MESSAGES.RECENT);
+    boton.click();
+    fixture.detectChanges();
+    expect(component.gestionAplicada).toBe('año-II');
   });
 
   it('conserva la consulta de la evaluación del estudiante para cada docente', () => {

@@ -117,7 +117,7 @@
           </div>
 
           <div class="docentes__gestiones-rapidas">
-            @for (gestion of gestionesRapidas; track gestion; let indice = $index) {
+            @for (gestion of gestionesRapidas; track gestion) {
               <button
                 type="button"
                 class="docentes__gestion-rapida"
@@ -127,7 +127,7 @@
                 (click)="seleccionarGestionRapida(gestion)"
               >
                 {{ formatearGestionDocente(gestion) }}
-                @if (indice === 0) {
+                @if (gestion === gestionMasReciente) {
                   <span>· {{ mensajes.RECENT }}</span>
                 }
               </button>
@@ -152,6 +152,7 @@
               type="button"
               [class.activo]="modoFiltro === 'rango'"
               [attr.aria-pressed]="modoFiltro === 'rango'"
+              [disabled]="gestionesCronologicas.length === 0"
               (click)="cambiarModoFiltro('rango')"
             >{{ mensajes.RANGE_MODE }}</button>
           </div>
@@ -178,7 +179,7 @@
                   [disabled]="cargandoFiltro"
                   (change)="actualizarGestionDesde($event)"
                 >
-                  @for (gestion of gestiones; track gestion) {
+                  @for (gestion of gestionesCronologicas; track gestion) {
                     <option [value]="gestion">{{ formatearGestionDocente(gestion) }}</option>
                   }
                 </select>
@@ -191,7 +192,7 @@
                   [disabled]="cargandoFiltro"
                   (change)="actualizarGestionHasta($event)"
                 >
-                  @for (gestion of gestiones; track gestion) {
+                  @for (gestion of gestionesCronologicas; track gestion) {
                     <option [value]="gestion">{{ formatearGestionDocente(gestion) }}</option>
                   }
                 </select>

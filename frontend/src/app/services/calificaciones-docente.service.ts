@@ -6,6 +6,7 @@ import { APP_CONFIG } from '../config/app-config';
 import { AuthService } from './auth.service';
 
 import {
+  CalificacionDocenteGestionResumenResponse,
   CalificacionDocentePromedioResponse,
   CalificacionDocenteResponse,
   GestionDocente,
@@ -43,6 +44,15 @@ export class CalificacionesDocenteService {
 
     return this.http.get<GestionDocente[]>(
       `${this.apiUrl}/materia/${idMateria}/gestiones`
+    );
+  }
+
+  obtenerHistorialGestionesPorMateria(
+    idMateria: number
+  ): Observable<CalificacionDocenteGestionResumenResponse[]> {
+
+    return this.http.get<CalificacionDocenteGestionResumenResponse[]>(
+      `${this.apiUrl}/materia/${idMateria}/historial-gestiones`
     );
   }
 

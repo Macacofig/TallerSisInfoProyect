@@ -16,6 +16,6 @@ public record CalificacionDocenteRequest(
         @NotNull @Min(1) @Max(10) Integer metodologia,
         @NotNull @Min(1) @Max(10) Integer relacionClasesEvaluaciones,
 
-        @NotBlank @Pattern(regexp = "año-I|año-II") String gestion
+        @NotBlank @Pattern(regexp = "(?:\\d{4}-(?:I|II)|año-(?:I|II))") String gestion
 ) {
 }

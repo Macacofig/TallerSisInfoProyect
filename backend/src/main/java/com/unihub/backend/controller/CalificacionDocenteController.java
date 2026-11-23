@@ -1,6 +1,7 @@
 package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.calificacion.CalificacionDocentePromedioResponse;
+import com.unihub.backend.dto.calificacion.CalificacionDocenteGestionResumenResponse;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteRequest;
 import com.unihub.backend.dto.calificacion.CalificacionDocenteResponse;
 import com.unihub.backend.service.CalificacionDocenteService;
@@ -26,6 +27,7 @@ import static com.unihub.backend.common.Constants.CalificacionDocente.ACTUALIZAR
 import static com.unihub.backend.common.Constants.CalificacionDocente.CREAR_URL;
 import static com.unihub.backend.common.Constants.CalificacionDocente.ELIMINAR_URL;
 import static com.unihub.backend.common.Constants.CalificacionDocente.GESTIONES_POR_MATERIA_URL;
+import static com.unihub.backend.common.Constants.CalificacionDocente.HISTORIAL_GESTIONES_POR_MATERIA_URL;
 import static com.unihub.backend.common.Constants.CalificacionDocente.OBTENER_POR_ESTUDIANTE_URL;
 import static com.unihub.backend.common.Constants.CalificacionDocente.PROMEDIOS_POR_GESTION_URL;
 import static com.unihub.backend.common.Constants.CalificacionDocente.PROMEDIOS_POR_MATERIA_URL;
@@ -109,6 +111,13 @@ public class CalificacionDocenteController {
     @GetMapping(GESTIONES_POR_MATERIA_URL)
     public ResponseEntity<List<String>> obtenerGestionesPorMateria(@PathVariable Long idMateria) {
         return ResponseEntity.ok(calificacionService.obtenerGestiones(idMateria));
+    }
+
+    @GetMapping(HISTORIAL_GESTIONES_POR_MATERIA_URL)
+    public ResponseEntity<List<CalificacionDocenteGestionResumenResponse>> obtenerHistorialGestiones(
+            @PathVariable Long idMateria
+    ) {
+        return ResponseEntity.ok(calificacionService.obtenerHistorialGestiones(idMateria));
     }
 
         @GetMapping(PROMEDIOS_POR_RANGO_URL)
