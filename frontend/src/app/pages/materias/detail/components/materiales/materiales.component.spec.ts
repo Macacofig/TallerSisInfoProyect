@@ -138,6 +138,31 @@ describe('MaterialesComponent', () => {
     expect(titulos()).toEqual(['Guía de ejercicios']);
   });
 
+  it('HU-32: muestra únicamente materiales aprobados de la respuesta de la materia', () => {
+    api.obtenerMateriales.mockReturnValueOnce(of([
+      MATERIALES[0],
+      { ...MATERIALES[1], estado: 'PENDIENTE' },
+      { ...MATERIALES[2], estado: 'RECHAZADO' }
+    ]));
+    seleccionar('material-tipo', 'PDF');
+    expect(api.obtenerMateriales).toHaveBeenLastCalledWith(ID_MATERIA, { tipo: 'PDF' });
+    expect(titulos()).toEqual(['Parcial resuelto']);
+    expect(fixture.componentInstance.materiales()).toHaveLength(1);
+  });
+
+  it('HU-32: muestra el estado vacío si la materia solo tiene materiales sin aprobar', () => {
+    fixture.destroy();
+    api.obtenerMateriales.mockReturnValueOnce(of([
+      { ...MATERIALES[0], estado: 'PENDIENTE' },
+      { ...MATERIALES[1], estado: 'RECHAZADO' }
+    ]));
+    fixture = TestBed.createComponent(MaterialesComponent);
+    fixture.componentRef.setInput('idMateria', ID_MATERIA);
+    fixture.detectChanges();
+    expect(titulos()).toEqual([]);
+    expect(fixture.nativeElement.textContent).toContain(MESSAGES.MATERIAL_EMPTY);
+  });
+
   it('filtra por semestre', () => {
     seleccionar('material-semestre', '2');
     expect(api.obtenerMateriales).toHaveBeenLastCalledWith(ID_MATERIA, { semestre: 2 });
