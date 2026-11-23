@@ -6,6 +6,7 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginRequest;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
+import com.unihub.backend.dto.estudiante.EstudianteMateriaAprobadaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
@@ -19,6 +20,7 @@ import com.unihub.backend.mapper.EstudianteMapper;
 import com.unihub.backend.repository.EstudianteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EstudianteService {
@@ -80,16 +82,44 @@ public class EstudianteService {
         return new EstudianteTelefonoResponse(estudiante.getTelefono());
     }
 
+    @Transactional
     public EstudianteMateriasAprobadasResponse agregarMateriasAprobadas(
             Long id,
             EstudianteMateriasAprobadasRequest request
     ) {
-        Estudiante estudiante = estudianteRepository.findById(id)
+        Estudiante estudiante = estudianteRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
 
         estudiante.agregarMateriasAprobadas(request.materias());
         estudianteRepository.save(estudiante);
         LogHelper.info(EstudianteService.class, "Materias aprobadas del estudiante actualizadas correctamente");
+        return new EstudianteMateriasAprobadasResponse(
+                estudiante.getId(),
+                estudiante.getMateriasAprobadas()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public EstudianteMateriasAprobadasResponse obtenerMateriasAprobadas(Long id) {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
+        return new EstudianteMateriasAprobadasResponse(
+                estudiante.getId(),
+                estudiante.getMateriasAprobadas()
+        );
+    }
+
+    @Transactional
+    public EstudianteMateriasAprobadasResponse eliminarMateriaAprobada(
+            Long id,
+            EstudianteMateriaAprobadaRequest request
+    ) {
+        Estudiante estudiante = estudianteRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
+
+        estudiante.eliminarMateriaAprobada(request.materia());
+        estudianteRepository.save(estudiante);
+        LogHelper.info(EstudianteService.class, "Materia aprobada eliminada correctamente");
         return new EstudianteMateriasAprobadasResponse(
                 estudiante.getId(),
                 estudiante.getMateriasAprobadas()

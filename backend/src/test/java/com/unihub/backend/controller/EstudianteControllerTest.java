@@ -31,6 +31,7 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -289,6 +290,52 @@ class EstudianteControllerTest {
                 .andExpect(status().isForbidden());
 
         verify(estudianteService, never()).agregarMateriasAprobadas(anyLong(), any());
+    }
+
+    @Test
+    void deberiaObtenerMateriasAprobadas() throws Exception {
+        when(estudianteService.obtenerMateriasAprobadas(1L)).thenReturn(
+                new EstudianteMateriasAprobadasResponse(1L, List.of("SIS-111", "SIS-112")));
+
+        mockMvc.perform(get("/api/estudiantes/1/materias-aprobadas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idEstudiante").value(1))
+                .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-111"))
+                .andExpect(jsonPath("$.materiasAprobadas[1]").value("SIS-112"));
+
+        verify(estudianteService).obtenerMateriasAprobadas(1L);
+    }
+
+    @Test
+    void deberiaEliminarMateriaAprobadaPorCuerpo() throws Exception {
+        when(estudianteService.eliminarMateriaAprobada(eq(1L), any())).thenReturn(
+                new EstudianteMateriasAprobadasResponse(1L, List.of("SIS-112")));
+
+        mockMvc.perform(delete("/api/estudiantes/1/materias-aprobadas")
+                .requestAttr("authenticatedStudentId", 1L)
+                .header("Authorization", "Bearer jwt-valido")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"materia":"SIS-111"}
+                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-112"));
+
+        verify(estudianteService).eliminarMateriaAprobada(eq(1L), any());
+    }
+
+    @Test
+    void deberiaEliminarMateriaAprobadaPorRuta() throws Exception {
+        when(estudianteService.eliminarMateriaAprobada(eq(1L), any())).thenReturn(
+                new EstudianteMateriasAprobadasResponse(1L, List.of("SIS-112")));
+
+        mockMvc.perform(delete("/api/estudiantes/1/materias-aprobadas/SIS-111")
+                .requestAttr("authenticatedStudentId", 1L)
+                .header("Authorization", "Bearer jwt-valido"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-112"));
+
+        verify(estudianteService).eliminarMateriaAprobada(eq(1L), any());
     }
 
     @Test

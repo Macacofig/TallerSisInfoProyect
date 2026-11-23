@@ -184,6 +184,9 @@ public final class Constants {
 	public static final String MATERIAS_APROBADAS_URL = BASE + "/{id}/materias-aprobadas";
 	// Que necesita: id del estudiante y body EstudianteMateriasAprobadasRequest (lista de materias)
 	// Que devuelve: EstudianteMateriasAprobadasResponse con la lista actualizada
+	// Eliminar una materia aprobada de un estudiante
+	public static final String ELIMINAR_MATERIA_APROBADA_URL = MATERIAS_APROBADAS_URL + "/{materia}";
+
 	// Recuperar la contrasena de un estudiante
 	public static final String RECUPERAR_CONTRASENA_URL = BASE + "/recuperar-contrasena";
 	// Que necesita: body EstudianteRecuperarContrasenaRequest (correoElectronico, nuevaContrasena, confirmarNuevaContrasena)

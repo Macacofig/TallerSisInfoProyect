@@ -5,6 +5,7 @@ import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
 import com.unihub.backend.dto.estudiante.EstudianteActualizacionRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasRequest;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
+import com.unihub.backend.dto.estudiante.EstudianteMateriaAprobadaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRecuperarContrasenaRequest;
 import com.unihub.backend.dto.estudiante.EstudianteRequest;
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
@@ -177,7 +178,7 @@ class EstudianteServiceTest {
                 "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
         );
         estudiante.agregarMateriasAprobadas(List.of("SIS-111"));
-        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+        when(estudianteRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(estudiante));
         when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
 
         EstudianteMateriasAprobadasResponse resultado = estudianteService.agregarMateriasAprobadas(
@@ -192,7 +193,7 @@ class EstudianteServiceTest {
 
     @Test
     void deberiaRechazarMateriasAprobadasCuandoElEstudianteNoExiste() {
-        when(estudianteRepository.findById(99L)).thenReturn(Optional.empty());
+        when(estudianteRepository.findByIdForUpdate(99L)).thenReturn(Optional.empty());
 
         assertThrows(
                 com.unihub.backend.exception.ResourceNotFoundException.class,
@@ -203,6 +204,40 @@ class EstudianteServiceTest {
         );
         verify(estudianteRepository, never()).save(any(Estudiante.class));
         mostrarResultado("Rechazar materias aprobadas cuando el estudiante no existe");
+    }
+
+    @Test
+    void deberiaObtenerMateriasAprobadas() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        estudiante.agregarMateriasAprobadas(List.of("SIS-111", "SIS-112"));
+        when(estudianteRepository.findById(1L)).thenReturn(Optional.of(estudiante));
+
+        EstudianteMateriasAprobadasResponse resultado =
+                estudianteService.obtenerMateriasAprobadas(1L);
+
+        assertEquals(List.of("SIS-111", "SIS-112"), resultado.materiasAprobadas());
+        mostrarResultado("Obtener materias aprobadas");
+    }
+
+    @Test
+    void deberiaEliminarMateriaAprobada() {
+        Estudiante estudiante = new Estudiante(
+                "Ana Pérez", "ClaveSegura1!", "71234567", "ana@ucb.edu.bo", "Ingeniería"
+        );
+        estudiante.agregarMateriasAprobadas(List.of("SIS-111", "SIS-112"));
+        when(estudianteRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(estudiante));
+        when(estudianteRepository.save(estudiante)).thenReturn(estudiante);
+
+        EstudianteMateriasAprobadasResponse resultado = estudianteService.eliminarMateriaAprobada(
+                1L,
+                new EstudianteMateriaAprobadaRequest(" SIS-111 ")
+        );
+
+        assertEquals(List.of("SIS-112"), resultado.materiasAprobadas());
+        verify(estudianteRepository).save(estudiante);
+        mostrarResultado("Eliminar materia aprobada");
     }
 
     @Test
