@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.common.LogHelper;
+import com.unihub.backend.dto.material.MaterialEstudianteResponse;
 import com.unihub.backend.dto.material.SolicitudMaterialResponse;
 import com.unihub.backend.entity.ActividadEstudiante;
 import com.unihub.backend.entity.Material;
@@ -50,6 +51,13 @@ public class SolicitudMaterialService {
                 SolicitudMaterial.EstadoSolicitudMaterial.PENDIENTE
         ).stream()
                 .map(materialMapper::toSolicitudResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MaterialEstudianteResponse> obtenerPorEstudiante(Long idEstudiante) {
+        return solicitudMaterialRepository.findByEstudianteId(idEstudiante).stream()
+                .map(materialMapper::toMaterialEstudianteResponse)
                 .toList();
     }
 

@@ -1,0 +1,123 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: #183454;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.mis-materiales {
+  width: 100%;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 2.5rem clamp(1.25rem, 2.5vw, 2.5rem);
+  overflow-wrap: anywhere;
+}
+
+.mis-materiales__header { margin-bottom: 2rem; }
+.mis-materiales__eyebrow {
+  margin: 0 0 0.75rem;
+  color: #9b7213;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.11rem;
+}
+h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
+h1 { margin: 0 0 1.25rem; font-size: clamp(2rem, 4vw, 3rem); }
+.mis-materiales__nombre { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.mis-materiales__card {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #d3e1f2;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 1rem #193c6508;
+}
+h2 { margin: 0; padding: 1.5rem; border-bottom: 1px solid #e5ecf4; font-size: 1.5rem; }
+.mis-materiales__filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(12rem, 1fr);
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5ecf4;
+}
+.mis-materiales__field { display: grid; gap: 0.5rem; }
+.mis-materiales__field label { font-size: 0.8125rem; font-weight: 700; }
+.mis-materiales__field input, .mis-materiales__field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #b9c9dc;
+  border-radius: 0.375rem;
+  background: #fff;
+  color: #183454;
+  font: inherit;
+}
+.mis-materiales__field input:focus-visible, .mis-materiales__field select:focus-visible,
+.mis-materiales__retry:focus-visible, .mis-materiales__notice a:focus-visible {
+  outline: 0.1875rem solid #9b7213;
+  outline-offset: 0.125rem;
+}
+.mis-materiales__list { list-style: none; margin: 0; padding: 0; }
+.mis-materiales__row {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+.mis-materiales__row + .mis-materiales__row { border-top: 1px solid #e5ecf4; }
+.mis-materiales__icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  background: #edf4fc;
+  color: #063b78;
+}
+.mis-materiales__icon svg { width: 1.5rem; height: 1.5rem; }
+.mis-materiales__body { min-width: 0; }
+h3 { margin: 0 0 0.625rem; font-size: 1rem; line-height: 1.5; }
+.mis-materiales__body p { margin: 0.25rem 0 0; color: #5d6f88; line-height: 1.5; }
+.mis-materiales__body p span { font-weight: 600; color: #183454; }
+.mis-materiales__badge {
+  max-width: 100%;
+  padding: 0.3rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.mis-materiales__badge[data-estado='pendiente'] { background: #fff5d8; color: #76540b; }
+.mis-materiales__badge[data-estado='aprobado'] { background: #e7f5ed; color: #1d6340; }
+.mis-materiales__badge[data-estado='rechazado'] { background: #fcebed; color: #963248; }
+.mis-materiales__notice { margin: 0; padding: 2rem 1.5rem; color: #5d6f88; line-height: 1.6; }
+.mis-materiales__notice p { margin: 0 0 1rem; }
+.mis-materiales__notice a { color: #064b96; font-weight: 600; }
+.mis-materiales__retry {
+  min-height: 2.75rem;
+  max-width: 100%;
+  padding: 0.625rem 1.25rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: #063b78;
+  color: #fff;
+  font: inherit;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.mis-materiales__retry:hover { background: #064b96; }
+
+@media (max-width: 40rem) {
+  .mis-materiales { padding: 1.5rem 0.75rem; }
+  .mis-materiales__header { margin-bottom: 1.5rem; }
+  h2 { padding: 1rem; }
+  .mis-materiales__filters { grid-template-columns: minmax(0, 1fr); padding: 1rem; }
+  .mis-materiales__row {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  .mis-materiales__icon { width: 2.25rem; height: 2.25rem; }
+  .mis-materiales__badge { grid-column: 2; justify-self: start; }
+  .mis-materiales__notice { padding: 1.5rem 1rem; }
+}

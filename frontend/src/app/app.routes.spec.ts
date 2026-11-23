@@ -9,6 +9,7 @@ import { Registro } from './pages/registro/registro';
 import { AuthService } from './services/auth.service';
 import { APP_CONFIG } from './config/app-config';
 import { MiActividadComponent } from './pages/mi-actividad/mi-actividad.component';
+import { MisMateriales } from './pages/mis-materiales/mis-materiales';
 import { Login } from './pages/login/login';
 
 describe('Rutas desconocidas', () => {
@@ -73,5 +74,53 @@ describe('Ruta de Mi actividad', () => {
     expect(request.request.method).toBe('GET');
     await harness.navigateByUrl('/login');
     expect(request.cancelled).toBe(true);
+  });
+});
+
+describe('Ruta de Mis materiales', () => {
+  let auth: AuthService;
+  let http: HttpTestingController;
+  const url = `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.MIS_MATERIALES}`;
+
+  beforeEach(() => {
+    localStorage.removeItem('usuario');
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()]
+    });
+    auth = TestBed.inject(AuthService);
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    auth.cerrarSesion();
+    http.verify();
+  });
+
+  function iniciarSesion(): void {
+    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+    auth.guardarUsuario({
+      id: 41, nombre: 'Lucía', carrera: 'Sistemas', telefono: '71234567',
+      correoElectronico: 'lucia@test.invalid', accessToken: `header.${payload}.signature`
+    });
+  }
+
+  it('redirige al login sin sesión y no solicita materiales', async () => {
+    const harness = await RouterTestingHarness.create('/mis-materiales');
+    expect(TestBed.inject(Router).url).toBe('/login');
+    expect(harness.routeDebugElement?.componentInstance).toBeInstanceOf(Login);
+    http.expectNone(() => true);
+  });
+
+  it('permite acceso con sesión y consulta materiales usando el Bearer token', async () => {
+    iniciarSesion();
+    const harness = await RouterTestingHarness.create('/mis-materiales');
+    expect(TestBed.inject(Router).url).toBe('/mis-materiales');
+    expect(harness.routeDebugElement?.componentInstance).toBeInstanceOf(MisMateriales);
+    const request = http.expectOne(url);
+    expect(request.request.method).toBe('GET');
+    expect(request.request.headers.get('Authorization')).toBe(
+      `Bearer ${auth.obtenerUsuario()!.accessToken}`
+    );
+    request.flush([]);
   });
 });

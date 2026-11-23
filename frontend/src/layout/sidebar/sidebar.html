@@ -162,6 +162,19 @@
       </span>
       <span class="sidebar__label">{{ SIDEBAR_MESSAGES.MENU_ACTIVIDAD }}</span>
     </a>
+    <a routerLink="/mis-materiales" routerLinkActive="sidebar__item--active"
+      #misMaterialesLink="routerLinkActive"
+      [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', fragment: 'ignored', matrixParams: 'ignored' }"
+      ariaCurrentWhenActive="page" class="sidebar__item">
+      <span class="sidebar__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M6 3.75h8l4 4v12.5H6z" />
+          <path d="M14 3.75v4h4M9 12h6M9 16h6" />
+        </svg>
+      </span>
+      <span class="sidebar__label">{{ SIDEBAR_MESSAGES.MENU_MIS_MATERIALES }}</span>
+    </a>
     @if (authService.tieneRolAdministrador()) {
       <a routerLink="/administracion/solicitudes-ayudante" routerLinkActive="sidebar__item--active" class="sidebar__item">
         <span class="sidebar__label">{{ SIDEBAR_MESSAGES.MENU_ADMIN }}</span>
@@ -170,7 +183,7 @@
   </nav>
 
 
-  @if (!miActividadLink.isActive) {
+  @if (!miActividadLink.isActive && !misMaterialesLink.isActive) {
   <footer class="sidebar__footer">
     <p>
       {{ SIDEBAR_MESSAGES.DEMO_NOTICE }}

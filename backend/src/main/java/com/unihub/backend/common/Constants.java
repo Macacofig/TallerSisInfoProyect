@@ -182,6 +182,8 @@ public final class Constants {
 
 	// Agregar materias cursadas/aprobadas a un estudiante
 	public static final String MATERIAS_APROBADAS_URL = BASE + "/{id}/materias-aprobadas";
+	// Consultar solicitudes de material del estudiante autenticado
+	public static final String MIS_MATERIALES_URL = BASE + "/me/materiales";
 	// Que necesita: id del estudiante y body EstudianteMateriasAprobadasRequest (lista de materias)
 	// Que devuelve: EstudianteMateriasAprobadasResponse con la lista actualizada
 	// Recuperar la contrasena de un estudiante

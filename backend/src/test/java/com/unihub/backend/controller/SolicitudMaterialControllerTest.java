@@ -1,17 +1,25 @@
 package com.unihub.backend.controller;
 
+import com.unihub.backend.config.JwtAuthenticationConfig;
+import com.unihub.backend.config.JwtAuthenticationInterceptor;
+import com.unihub.backend.dto.material.MaterialEstudianteResponse;
 import com.unihub.backend.dto.material.SolicitudMaterialResponse;
 import com.unihub.backend.exception.ResourceNotFoundException;
+import com.unihub.backend.repository.EstudianteRepository;
+import com.unihub.backend.service.JwtService;
 import com.unihub.backend.service.SolicitudMaterialService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SolicitudMaterialController.class)
-@TestPropertySource(properties = "app.security.jwt-middleware.enabled=false")
+@Import({JwtAuthenticationConfig.class, JwtAuthenticationInterceptor.class})
+@TestPropertySource(properties = "app.security.jwt-middleware.enabled=true")
 class SolicitudMaterialControllerTest {
 
     private static final long SOLICITUD_ID = 1L;
@@ -29,6 +38,65 @@ class SolicitudMaterialControllerTest {
 
     @MockitoBean
     private SolicitudMaterialService solicitudMaterialService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private EstudianteRepository estudianteRepository;
+
+    @Test
+    void requiereJwtParaConsultarLosMaterialesDelEstudianteAutenticado() throws Exception {
+        mockMvc.perform(get("/api/estudiantes/me/materiales"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void rechazaJwtInvalidoAlConsultarLosMaterialesDelEstudiante() throws Exception {
+        when(jwtService.obtenerIdEstudiante("token-invalido")).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/estudiantes/me/materiales")
+                        .header("Authorization", "Bearer token-invalido"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void consultaSoloLosMaterialesDelIdValidadoDesdeElJwt() throws Exception {
+        when(jwtService.obtenerIdEstudiante("token-ana")).thenReturn(Optional.of(7L));
+        when(jwtService.obtenerIdEstudiante("token-lucia")).thenReturn(Optional.of(8L));
+        when(solicitudMaterialService.obtenerPorEstudiante(7L)).thenReturn(List.of(
+                new MaterialEstudianteResponse(1L, "Apunte de Ana", "Programación I", "PDF", "PENDIENTE")
+        ));
+        when(solicitudMaterialService.obtenerPorEstudiante(8L)).thenReturn(List.of(
+                new MaterialEstudianteResponse(2L, "Guía de Lucía", null, null, "NEGADO")
+        ));
+
+        mockMvc.perform(get("/api/estudiantes/me/materiales")
+                        .header("Authorization", "Bearer token-ana")
+                        .param("idEstudiante", "8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].titulo").value("Apunte de Ana"))
+                .andExpect(jsonPath("$[0].estado").value("PENDIENTE"));
+        mockMvc.perform(get("/api/estudiantes/me/materiales")
+                        .header("Authorization", "Bearer token-lucia"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].titulo").value("Guía de Lucía"))
+                .andExpect(jsonPath("$[0].estado").value("NEGADO"));
+
+        verify(solicitudMaterialService).obtenerPorEstudiante(7L);
+        verify(solicitudMaterialService).obtenerPorEstudiante(8L);
+    }
+
+    @Test
+    void devuelveListaVaciaCuandoElEstudianteNoTieneMateriales() throws Exception {
+        when(jwtService.obtenerIdEstudiante("token-valido")).thenReturn(Optional.of(7L));
+        when(solicitudMaterialService.obtenerPorEstudiante(7L)).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/estudiantes/me/materiales")
+                        .header("Authorization", "Bearer token-valido"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 
     @Test
     void obtieneTodasLasSolicitudesDeMaterialSinJwt() throws Exception {

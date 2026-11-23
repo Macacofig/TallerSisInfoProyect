@@ -1,6 +1,7 @@
 package com.unihub.backend.service;
 
 import com.unihub.backend.dto.material.SolicitudMaterialResponse;
+import com.unihub.backend.dto.material.MaterialEstudianteResponse;
 import com.unihub.backend.entity.Docente;
 import com.unihub.backend.entity.Estudiante;
 import com.unihub.backend.entity.Material;
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -102,6 +104,36 @@ class SolicitudMaterialServiceTest {
         assertEquals(SOLICITUD_ID, respuesta.getFirst().id());
         assertEquals("Apunte de clase", respuesta.getFirst().titulo());
         assertEquals("PENDIENTE", respuesta.getFirst().estado());
+    }
+
+    @Test
+    void obtenerPorEstudianteFiltraPorIdYDevuelveLosEstadosYDatosDisponibles() {
+        SolicitudMaterial aprobada = new SolicitudMaterial("Material aprobado", estudiante, material);
+        org.springframework.test.util.ReflectionTestUtils.setField(aprobada, "id", 2L);
+        aprobada.aprobar();
+        material.activar();
+
+        SolicitudMaterial negada = new SolicitudMaterial("Material negado", estudiante, null);
+        org.springframework.test.util.ReflectionTestUtils.setField(negada, "id", 3L);
+        negada.negar();
+
+        when(solicitudMaterialRepository.findByEstudianteId(ESTUDIANTE_ID))
+                .thenReturn(List.of(solicitud, aprobada, negada));
+        when(solicitudMaterialRepository.findByEstudianteId(99L)).thenReturn(List.of());
+
+        List<MaterialEstudianteResponse> materialesPropios = servicio.obtenerPorEstudiante(ESTUDIANTE_ID);
+        List<MaterialEstudianteResponse> materialesDeOtroEstudiante = servicio.obtenerPorEstudiante(99L);
+
+        assertEquals(List.of("PENDIENTE", "APROBADO", "NEGADO"),
+                materialesPropios.stream().map(MaterialEstudianteResponse::estado).toList());
+        assertEquals("Programación I", materialesPropios.getFirst().nombreMateria());
+        assertEquals("PDF", materialesPropios.getFirst().tipo());
+        assertEquals("Material negado", materialesPropios.getLast().titulo());
+        assertNull(materialesPropios.getLast().nombreMateria());
+        assertNull(materialesPropios.getLast().tipo());
+        assertTrue(materialesDeOtroEstudiante.isEmpty());
+        verify(solicitudMaterialRepository).findByEstudianteId(ESTUDIANTE_ID);
+        verify(solicitudMaterialRepository).findByEstudianteId(99L);
     }
 
     @Test
@@ -197,5 +229,12 @@ class SolicitudMaterialServiceTest {
 
         assertTrue(respuesta.isEmpty());
         assertFalse(respuesta.contains(null));
+    }
+
+    @Test
+    void obtenerPorEstudianteVaciaCuandoNoTieneSolicitudes() {
+        when(solicitudMaterialRepository.findByEstudianteId(ESTUDIANTE_ID)).thenReturn(List.of());
+
+        assertTrue(servicio.obtenerPorEstudiante(ESTUDIANTE_ID).isEmpty());
     }
 }

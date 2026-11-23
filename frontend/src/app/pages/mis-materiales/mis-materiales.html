@@ -1,0 +1,86 @@
+<section class="mis-materiales" aria-labelledby="mis-materiales-title">
+  <header class="mis-materiales__header">
+    <p class="mis-materiales__eyebrow">{{ mensajes.EYEBROW }}</p>
+    <h1 id="mis-materiales-title">{{ mensajes.PAGE_TITLE }}</h1>
+    @if (usuario(); as persona) {
+      <p class="mis-materiales__nombre">{{ persona.nombre }}</p>
+    }
+  </header>
+
+  <section class="mis-materiales__card" aria-labelledby="bitacora-title"
+    [attr.aria-busy]="vista().estado === 'cargando'">
+    <h2 id="bitacora-title">{{ mensajes.LOG_TITLE }}</h2>
+
+    @if (vista().estado === 'listo') {
+      <div class="mis-materiales__filters">
+        <div class="mis-materiales__field">
+          <label for="material-titulo">{{ mensajes.SEARCH_LABEL }}</label>
+          <input id="material-titulo" type="search" [value]="busquedaTitulo()"
+            [placeholder]="mensajes.SEARCH_PLACEHOLDER" [disabled]="vista().estado !== 'listo'"
+            (input)="actualizarBusqueda($event)">
+        </div>
+        <div class="mis-materiales__field">
+          <label for="material-estado">{{ mensajes.STATUS_FILTER_LABEL }}</label>
+          <select id="material-estado" [value]="estadoSeleccionado()" [disabled]="vista().estado !== 'listo'"
+            (change)="actualizarEstado($event)">
+            <option value="TODOS">{{ mensajes.FILTER_ALL }}</option>
+            <option value="PENDIENTE">{{ mensajes.ESTADOS.PENDIENTE }}</option>
+            <option value="APROBADO">{{ mensajes.ESTADOS.APROBADO }}</option>
+            <option value="NEGADO">{{ mensajes.ESTADOS.NEGADO }}</option>
+          </select>
+        </div>
+      </div>
+    }
+
+    @switch (vista().estado) {
+      @case ('cargando') {
+        <p class="mis-materiales__notice" role="status">{{ mensajes.LOADING }}</p>
+      }
+      @case ('sesion') {
+        <p class="mis-materiales__notice" role="status">
+          {{ mensajes.SESSION_REQUIRED }}
+          <a routerLink="/login">{{ mensajes.GO_TO_LOGIN }}</a>
+        </p>
+      }
+      @case ('error') {
+        <div class="mis-materiales__notice">
+          <p role="alert">{{ mensajes.ERROR }}</p>
+          <button type="button" class="mis-materiales__retry" (click)="reintentar()">
+            {{ mensajes.RETRY }}
+          </button>
+        </div>
+      }
+      @case ('listo') {
+        @if (vista().materiales.length === 0) {
+          <p class="mis-materiales__notice" role="status">{{ mensajes.EMPTY }}</p>
+        } @else if (materialesFiltrados().length === 0) {
+          <p class="mis-materiales__notice" role="status">{{ mensajes.NO_MATCHES }}</p>
+        } @else {
+          <ul class="mis-materiales__list" [attr.aria-label]="mensajes.LIST_LABEL">
+            @for (material of materialesFiltrados(); track material.id) {
+              <li class="mis-materiales__row">
+                <span class="mis-materiales__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M6 3.75h8l4 4v12.5H6z" />
+                    <path d="M14 3.75v4h4M9 12h6M9 16h6" />
+                  </svg>
+                </span>
+                <div class="mis-materiales__body">
+                  <h3>{{ material.titulo }}</h3>
+                  <p><span>{{ mensajes.SUBJECT }}:</span> {{ material.nombreMateria ?? mensajes.DETAIL_UNAVAILABLE }}</p>
+                  <p><span>{{ mensajes.FILE_TYPE }}:</span>
+                    {{ material.tipo ? etiquetaTipo(material.tipo) : mensajes.DETAIL_UNAVAILABLE }}
+                  </p>
+                </div>
+                <span class="mis-materiales__badge" [attr.data-estado]="estadoVisual(material.estado)">
+                  {{ mensajes.ESTADOS[material.estado] }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  </section>
+</section>

@@ -10,6 +10,7 @@ import { Login } from './pages/login/login';
 import { RecuperarContrasena } from './pages/recuperar-contrasena/recuperar-contrasena';
 import { Perfil } from './pages/perfil/perfil';
 import { MiActividadComponent } from './pages/mi-actividad/mi-actividad.component';
+import { MisMateriales } from './pages/mis-materiales/mis-materiales';
 import { HorariosComponent } from './pages/horarios/horarios.component';
 import { authGuard } from './guards/auth.guard';
 import { materiasTreeGuard } from './guards/materias-tree.guard';
@@ -74,6 +75,12 @@ export const routes: Routes = [
   {
     path: 'mi-actividad',
     component: MiActividadComponent,
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'mis-materiales',
+    component: MisMateriales,
     canActivate: [authGuard]
   },
 

@@ -21,6 +21,7 @@ describe('Sidebar', () => {
       providers: [
         provideRouter([
           { path: 'mi-actividad', component: PaginaPrueba },
+          { path: 'mis-materiales', component: PaginaPrueba },
           { path: 'materias', component: PaginaPrueba }
         ]),
         { provide: AuthService, useValue: { tieneRolAdministrador: () => false } }
@@ -62,13 +63,27 @@ describe('Sidebar', () => {
     expect(enlace.classList.contains('sidebar__item--active')).toBe(true);
   });
 
-  it('oculta el aviso demo solo en Mi actividad, incluso con query y fragmento', async () => {
+  it('navega a Mis materiales desde el menú compartido de escritorio y móvil', async () => {
+    const enlace = fixture.nativeElement.querySelector('a[href="/mis-materiales"]') as HTMLAnchorElement;
+    expect(enlace.textContent).toContain('Mis materiales');
+    enlace.click();
+    await fixture.whenStable();
+    expect(TestBed.inject(Router).url).toBe('/mis-materiales');
+    expect(enlace.getAttribute('aria-current')).toBe('page');
+    expect(enlace.classList.contains('sidebar__item--active')).toBe(true);
+  });
+
+  it('oculta el aviso demo en las páginas personales, incluso con query y fragmento', async () => {
     const router = TestBed.inject(Router);
     await router.navigateByUrl('/materias');
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.sidebar__footer')?.textContent).toContain('Datos de demostración');
 
     await router.navigateByUrl('/mi-actividad?origen=menu#bitacora');
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.sidebar__footer')).toBeNull();
+
+    await router.navigateByUrl('/mis-materiales?origen=menu#bitacora');
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.sidebar__footer')).toBeNull();
 
@@ -81,6 +96,7 @@ describe('Sidebar', () => {
     TestBed.inject(LanguageService).setLanguage('en');
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('a[href="/mi-actividad"]')?.textContent).toContain('My activity');
+    expect(fixture.nativeElement.querySelector('a[href="/mis-materiales"]')?.textContent).toContain('My materials');
     expect(fixture.nativeElement.querySelector('nav')?.getAttribute('aria-label')).toBe('Main navigation');
   });
 });
