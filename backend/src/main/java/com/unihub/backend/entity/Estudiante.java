@@ -13,6 +13,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashSet;
 
 @Entity
 @Table(name = "estudiantes")
@@ -105,11 +106,27 @@ public class Estudiante {
         if (this.materiasAprobadas == null) {
             this.materiasAprobadas = new ArrayList<>();
         }
+        LinkedHashSet<String> materiasActuales = new LinkedHashSet<>(this.materiasAprobadas);
         for (String materia : materias) {
-            if (materia != null && !materia.isBlank() && !this.materiasAprobadas.contains(materia)) {
-                this.materiasAprobadas.add(materia);
+            if (materia != null && !materia.isBlank()) {
+                materiasActuales.add(materia.trim());
             }
         }
+        this.materiasAprobadas = new ArrayList<>(materiasActuales);
+    }
+
+    public void eliminarMateriaAprobada(String materia) {
+        if (materia == null || materia.isBlank()) {
+            return;
+        }
+        if (this.materiasAprobadas == null) {
+            this.materiasAprobadas = new ArrayList<>();
+            return;
+        }
+        this.materiasAprobadas.removeIf(
+                materiaActual -> materiaActual != null
+                        && materiaActual.trim().equalsIgnoreCase(materia.trim())
+        );
     }
 
     public void actualizar(

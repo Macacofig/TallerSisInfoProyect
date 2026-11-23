@@ -180,10 +180,14 @@ public final class Constants {
 	// Que necesita: body EstudianteLoginRequest (correo, ...)
 	// Que devuelve: EstudianteLoginResponse con sesion/token
 
-	// Agregar materias cursadas/aprobadas a un estudiante
+	// Obtener y actualizar las materias aprobadas de un estudiante
 	public static final String MATERIAS_APROBADAS_URL = BASE + "/{id}/materias-aprobadas";
-	// Que necesita: id del estudiante y body EstudianteMateriasAprobadasRequest (lista de materias)
-	// Que devuelve: EstudianteMateriasAprobadasResponse con la lista actualizada
+	// GET: id del estudiante y query opcional carrera
+	// PUT: id del estudiante y body EstudianteMateriasAprobadasRequest (lista de materias)
+	// Que devuelve: EstudianteMateriasAprobadasResponse con la lista actualizada y las materias de la carrera
+	// Eliminar una materia aprobada de un estudiante
+	public static final String ELIMINAR_MATERIA_APROBADA_URL = MATERIAS_APROBADAS_URL + "/{materia}";
+
 	// Recuperar la contrasena de un estudiante
 	public static final String RECUPERAR_CONTRASENA_URL = BASE + "/recuperar-contrasena";
 	// Que necesita: body EstudianteRecuperarContrasenaRequest (correoElectronico, nuevaContrasena, confirmarNuevaContrasena)

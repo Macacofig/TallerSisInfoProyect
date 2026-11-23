@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.unihub.backend.common.Constants.Estudiante.ACTUALIZAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.LOGIN_URL;
 import static com.unihub.backend.common.Constants.Estudiante.MATERIAS_APROBADAS_URL;
+import static com.unihub.backend.common.Constants.Estudiante.ELIMINAR_MATERIA_APROBADA_URL;
 import static com.unihub.backend.common.Constants.Estudiante.RECUPERAR_CONTRASENA_URL;
 import static com.unihub.backend.common.Constants.Estudiante.REGISTRAR_URL;
 import static com.unihub.backend.common.Constants.Estudiante.TELEFONO_URL;
@@ -72,15 +75,30 @@ public class EstudianteController {
         return ResponseEntity.ok(estudianteService.iniciarSesion(request));
     }
 
-    @PostMapping(MATERIAS_APROBADAS_URL)
-    public ResponseEntity<EstudianteMateriasAprobadasResponse> agregarMateriasAprobadas(
+    @GetMapping(MATERIAS_APROBADAS_URL)
+    public ResponseEntity<EstudianteMateriasAprobadasResponse> obtenerMateriasAprobadas(
             @PathVariable Long id,
-            @RequestAttribute(value = JwtAuthenticationInterceptor.STUDENT_ID_ATTRIBUTE, required = false) Long authenticatedStudentId,
+            @RequestParam(required = false) String carrera
+    ) {
+        return ResponseEntity.ok(estudianteService.obtenerMateriasAprobadas(id, carrera));
+    }
+
+    @PutMapping(MATERIAS_APROBADAS_URL)
+    public ResponseEntity<EstudianteMateriasAprobadasResponse> actualizarMateriasAprobadas(
+            @PathVariable Long id,
             @Valid @RequestBody EstudianteMateriasAprobadasRequest request
     ) {
-        jwtService.verificarPropiedad(authenticatedStudentId, id);
-        return ResponseEntity.ok(estudianteService.agregarMateriasAprobadas(id, request));
+        return ResponseEntity.ok(estudianteService.actualizarMateriasAprobadas(id, request));
     }
+
+    @DeleteMapping(ELIMINAR_MATERIA_APROBADA_URL)
+    public ResponseEntity<EstudianteMateriasAprobadasResponse> eliminarMateriaAprobada(
+            @PathVariable Long id,
+            @PathVariable String materia
+    ) {
+        return ResponseEntity.ok(estudianteService.eliminarMateriaAprobada(id, materia));
+    }
+
     @PostMapping(RECUPERAR_CONTRASENA_URL)
     public ResponseEntity<EstudianteResponse> recuperarContrasena(
             @Valid @RequestBody EstudianteRecuperarContrasenaRequest request

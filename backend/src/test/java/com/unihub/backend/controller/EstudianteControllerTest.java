@@ -2,6 +2,7 @@ package com.unihub.backend.controller;
 
 import com.unihub.backend.dto.estudiante.EstudianteResponse;
 import com.unihub.backend.dto.estudiante.EstudianteLoginResponse;
+import com.unihub.backend.dto.materia.MateriaResponse;
 import com.unihub.backend.dto.estudiante.EstudianteMateriasAprobadasResponse;
 import com.unihub.backend.dto.estudiante.EstudianteTelefonoResponse;
 import com.unihub.backend.exception.BadRequestException;
@@ -31,6 +32,7 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -234,13 +236,12 @@ class EstudianteControllerTest {
     }
 
     @Test
-    void deberiaAgregarMateriasAprobadas() throws Exception {
-        when(estudianteService.agregarMateriasAprobadas(eq(1L), any())).thenReturn(
-                new EstudianteMateriasAprobadasResponse(1L, List.of("SIS-111", "SIS-112")));
+    void deberiaActualizarMateriasAprobadas() throws Exception {
+        when(estudianteService.actualizarMateriasAprobadas(eq(1L), any())).thenReturn(
+                new EstudianteMateriasAprobadasResponse(
+                        1L, "Ingeniería de Sistemas", List.of("SIS-111", "SIS-112"), List.of()));
 
-        mockMvc.perform(post("/api/estudiantes/1/materias-aprobadas")
-                .requestAttr("authenticatedStudentId", 1L)
-                .header("Authorization", "Bearer jwt-valido")
+        mockMvc.perform(put("/api/estudiantes/1/materias-aprobadas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -249,20 +250,19 @@ class EstudianteControllerTest {
                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idEstudiante").value(1))
+                .andExpect(jsonPath("$.carrera").value("Ingeniería de Sistemas"))
                 .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-111"))
                 .andExpect(jsonPath("$.materiasAprobadas[1]").value("SIS-112"));
 
-        verify(estudianteService).agregarMateriasAprobadas(eq(1L), any());
+        verify(estudianteService).actualizarMateriasAprobadas(eq(1L), any());
     }
 
     @Test
-    void deberiaResponder404AlAgregarMateriasSiElEstudianteNoExiste() throws Exception {
+    void deberiaResponder404AlActualizarMateriasSiElEstudianteNoExiste() throws Exception {
         doThrow(new ResourceNotFoundException("Estudiante no encontrado"))
-                .when(estudianteService).agregarMateriasAprobadas(eq(99L), any());
+                .when(estudianteService).actualizarMateriasAprobadas(eq(99L), any());
 
-        mockMvc.perform(post("/api/estudiantes/99/materias-aprobadas")
-                .requestAttr("authenticatedStudentId", 99L)
-                .header("Authorization", "Bearer jwt-valido")
+        mockMvc.perform(put("/api/estudiantes/99/materias-aprobadas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -273,22 +273,57 @@ class EstudianteControllerTest {
     }
 
     @Test
-    void deberiaImpedirAgregarMateriasAOtroEstudiante() throws Exception {
-        doThrow(new com.unihub.backend.exception.AccesoNoAutorizadoException())
-                .when(jwtService).verificarPropiedad(2L, 1L);
+    void deberiaPermitirGuardarListaVaciaDeMaterias() throws Exception {
+        when(estudianteService.actualizarMateriasAprobadas(eq(1L), any())).thenReturn(
+                new EstudianteMateriasAprobadasResponse(
+                        1L, "Ingeniería de Sistemas", List.of(), List.of()));
 
-        mockMvc.perform(post("/api/estudiantes/1/materias-aprobadas")
-                .requestAttr("authenticatedStudentId", 2L)
-                .header("Authorization", "Bearer jwt-ajeno")
+        mockMvc.perform(put("/api/estudiantes/1/materias-aprobadas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                        "materias": ["SIS-111"]
+                        "materias": []
                     }
                 """))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.materiasAprobadas").isEmpty());
 
-        verify(estudianteService, never()).agregarMateriasAprobadas(anyLong(), any());
+        verify(estudianteService).actualizarMateriasAprobadas(eq(1L), any());
+    }
+
+    @Test
+    void deberiaObtenerMateriasAprobadasPorCarrera() throws Exception {
+        when(estudianteService.obtenerMateriasAprobadas(1L, "Ingeniería de Sistemas")).thenReturn(
+                new EstudianteMateriasAprobadasResponse(
+                        1L,
+                        "Ingeniería de Sistemas",
+                        List.of("SIS-111"),
+                        List.of(new MateriaResponse(
+                                1L, "SIS-111", "Programación", "Ingeniería de Sistemas", 1, List.of()))
+                ));
+
+        mockMvc.perform(get("/api/estudiantes/1/materias-aprobadas")
+                .param("carrera", "Ingeniería de Sistemas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idEstudiante").value(1))
+                .andExpect(jsonPath("$.carrera").value("Ingeniería de Sistemas"))
+                .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-111"))
+                .andExpect(jsonPath("$.materiasDisponibles[0].codigo").value("SIS-111"));
+
+        verify(estudianteService).obtenerMateriasAprobadas(1L, "Ingeniería de Sistemas");
+    }
+
+    @Test
+    void deberiaEliminarMateriaAprobadaPorRuta() throws Exception {
+        when(estudianteService.eliminarMateriaAprobada(1L, "SIS-111")).thenReturn(
+                new EstudianteMateriasAprobadasResponse(
+                        1L, "Ingeniería de Sistemas", List.of("SIS-112"), List.of()));
+
+        mockMvc.perform(delete("/api/estudiantes/1/materias-aprobadas/SIS-111"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.materiasAprobadas[0]").value("SIS-112"));
+
+        verify(estudianteService).eliminarMateriaAprobada(1L, "SIS-111");
     }
 
     @Test
