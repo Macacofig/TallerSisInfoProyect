@@ -153,7 +153,7 @@ export class Login {
           this.authService.guardarUsuario(usuario);
           this.router.navigate(
             this.authService.tieneRolAdministrador()
-              ? ['/administracion/solicitudes-ayudante']
+              ? ['/administracion']
               : ['/home']
           );
         },

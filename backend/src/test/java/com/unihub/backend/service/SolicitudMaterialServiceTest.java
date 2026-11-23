@@ -101,6 +101,10 @@ class SolicitudMaterialServiceTest {
         assertEquals(1, respuesta.size());
         assertEquals(SOLICITUD_ID, respuesta.getFirst().id());
         assertEquals("Apunte de clase", respuesta.getFirst().titulo());
+        assertEquals("Programación I", respuesta.getFirst().materia());
+        assertEquals("Carlos Gómez", respuesta.getFirst().docente());
+        assertEquals("Ana Pérez", respuesta.getFirst().usuario());
+        assertEquals("PDF", respuesta.getFirst().tipo());
         assertEquals("PENDIENTE", respuesta.getFirst().estado());
     }
 
@@ -141,6 +145,52 @@ class SolicitudMaterialServiceTest {
         verify(almacenamiento).eliminar("materias-3/apunte.pdf");
         verify(solicitudMaterialRepository).save(solicitud);
         verify(materialRepository).delete(material);
+    }
+
+    @Test
+    void eliminarSolicitudPendienteEliminaArchivoMaterialYSolicitud() {
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        servicio.eliminar(SOLICITUD_ID);
+
+        verify(almacenamiento).eliminar("materias-3/apunte.pdf");
+        verify(solicitudMaterialRepository).delete(solicitud);
+        verify(materialRepository).delete(material);
+    }
+
+    @Test
+    void eliminarSolicitudPendienteSinLinkEliminaSolicitudSinIntentarBorrarArchivo() {
+        org.springframework.test.util.ReflectionTestUtils.setField(material, "linkMaterial", " ");
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        servicio.eliminar(SOLICITUD_ID);
+
+        verify(almacenamiento, never()).eliminar(any());
+        verify(solicitudMaterialRepository).delete(solicitud);
+        verify(materialRepository).delete(material);
+    }
+
+    @Test
+    void eliminarSolicitudPendienteConLinkNuloNoIntentaBorrarArchivo() {
+        org.springframework.test.util.ReflectionTestUtils.setField(material, "linkMaterial", null);
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        servicio.eliminar(SOLICITUD_ID);
+
+        verify(almacenamiento, never()).eliminar(any());
+        verify(solicitudMaterialRepository).delete(solicitud);
+        verify(materialRepository).delete(material);
+    }
+
+    @Test
+    void eliminarSolicitudPendienteSinMaterialAsociadoDevuelveErrorControlado() {
+        solicitud.desvincularMaterial();
+        when(solicitudMaterialRepository.findById(SOLICITUD_ID)).thenReturn(Optional.of(solicitud));
+
+        assertThrows(ResourceNotFoundException.class, () -> servicio.eliminar(SOLICITUD_ID));
+
+        verify(almacenamiento, never()).eliminar(any());
+        verify(solicitudMaterialRepository, never()).delete(any());
     }
 
     @Test

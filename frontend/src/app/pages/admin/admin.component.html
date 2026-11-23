@@ -1,0 +1,43 @@
+<section class="admin-page" aria-labelledby="admin-title">
+  <header class="admin-page__header">
+    <p class="admin-page__eyebrow">{{ mensajes.EYEBROW }}</p>
+    <h1 id="admin-title" class="admin-page__title">{{ mensajes.PAGE_TITLE }}</h1>
+    <p class="admin-page__subtitle">{{ mensajes.SUBTITLE }}</p>
+  </header>
+
+  <hr class="admin-page__divider">
+
+  <div class="admin-tabs" role="group" [attr.aria-label]="mensajes.PAGE_TITLE">
+    <button type="button"
+            class="admin-tabs__button"
+            [class.admin-tabs__button--active]="pestanaActiva === 'material-pendiente'"
+            [attr.aria-pressed]="pestanaActiva === 'material-pendiente'"
+            (click)="seleccionarPestana('material-pendiente')">
+      {{ mensajes.TABS.MATERIAL_PENDIENTE }}
+    </button>
+    <button type="button"
+            class="admin-tabs__button"
+            [class.admin-tabs__button--active]="pestanaActiva === 'solicitudes-ayudantes'"
+            [attr.aria-pressed]="pestanaActiva === 'solicitudes-ayudantes'"
+            (click)="seleccionarPestana('solicitudes-ayudantes')">
+      {{ mensajes.TABS.SOLICITUDES_AYUDANTES }}
+    </button>
+    <button type="button"
+            class="admin-tabs__button"
+            [class.admin-tabs__button--active]="pestanaActiva === 'reportes'"
+            [attr.aria-pressed]="pestanaActiva === 'reportes'"
+            (click)="seleccionarPestana('reportes')">
+      {{ mensajes.TABS.REPORTES }}
+    </button>
+  </div>
+
+  <section class="admin-page__content">
+    @if (pestanaActiva === 'solicitudes-ayudantes') {
+      <app-solicitudes-ayudante-admin />
+    } @else if (pestanaActiva === 'material-pendiente') {
+      <app-material-pendiente />
+    } @else {
+      <p class="admin-page__placeholder">{{ mensajes.PLACEHOLDERS.REPORTES }}</p>
+    }
+  </section>
+</section>

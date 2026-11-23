@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -66,6 +67,12 @@ class SolicitudMaterialControllerTest {
         mockMvc.perform(post("/api/solicitud-material/{idSolicitud}/rechazar", SOLICITUD_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("NEGADO"));
+    }
+
+    @Test
+    void eliminaLaSolicitudPendiente() throws Exception {
+        mockMvc.perform(delete("/api/solicitud-material/{idSolicitud}", SOLICITUD_ID))
+                .andExpect(status().isNoContent());
     }
 
     @Test

@@ -41,7 +41,7 @@ public class SolicitudMaterialService {
 
     public List<SolicitudMaterialResponse> obtenerTodas() {
         return solicitudMaterialRepository.findAll().stream()
-                .map(materialMapper::toSolicitudResponse)
+                .map(this::mapearSolicitudConMaterial)
                 .toList();
     }
 
@@ -49,8 +49,17 @@ public class SolicitudMaterialService {
         return solicitudMaterialRepository.findByEstadoOrderByTituloAsc(
                 SolicitudMaterial.EstadoSolicitudMaterial.PENDIENTE
         ).stream()
-                .map(materialMapper::toSolicitudResponse)
+                .map(this::mapearSolicitudConMaterial)
                 .toList();
+    }
+
+    private SolicitudMaterialResponse mapearSolicitudConMaterial(SolicitudMaterial solicitud) {
+        Material material = solicitud.getMaterial();
+        if (material != null && material.getId() != null) {
+            material = materialRepository.findById(material.getId()).orElse(material);
+        }
+
+        return materialMapper.toSolicitudResponse(solicitud, material);
     }
 
     @Transactional
@@ -91,8 +100,43 @@ public class SolicitudMaterialService {
         solicitud.negar();
         SolicitudMaterialResponse respuesta = materialMapper.toSolicitudResponse(solicitud);
 
-        String ruta = extraerRuta(material.getLinkMaterial());
-        almacenamiento.eliminar(ruta);
+        eliminarArchivoYActualizarActividad(solicitud, material);
+
+        solicitud.desvincularMaterial();
+        solicitudMaterialRepository.save(solicitud);
+        materialRepository.delete(material);
+
+        LogHelper.info(SolicitudMaterialService.class,
+                "Solicitud de material " + idSolicitud + " rechazada");
+        return respuesta;
+    }
+
+    @Transactional
+    public void eliminar(Long idSolicitud) {
+        SolicitudMaterial solicitud = solicitudMaterialRepository.findById(idSolicitud)
+                .orElseThrow(() -> new ResourceNotFoundException("La solicitud de material no existe"));
+        Material material = solicitud.getMaterial();
+
+        exigirPendiente(solicitud, material);
+        eliminarArchivoYActualizarActividad(solicitud, material);
+
+        solicitud.desvincularMaterial();
+        solicitudMaterialRepository.delete(solicitud);
+        materialRepository.delete(material);
+
+        LogHelper.info(SolicitudMaterialService.class,
+                "Solicitud de material " + idSolicitud + " eliminada");
+    }
+
+    private void eliminarArchivoYActualizarActividad(SolicitudMaterial solicitud, Material material) {
+        String linkMaterial = material.getLinkMaterial();
+        if (linkMaterial == null || linkMaterial.isBlank()) {
+            LogHelper.warn(SolicitudMaterialService.class,
+                    "No se pudo eliminar el archivo de la solicitud " + solicitud.getId()
+                            + ": el material no tiene un link válido");
+        } else {
+            almacenamiento.eliminar(extraerRuta(linkMaterial));
+        }
 
         actividadRepository.findFirstByEstudianteIdAndIdMaterialAndEstadoOrderByFechaHoraRegistroDesc(
                         solicitud.getEstudiante().getId(),
@@ -103,14 +147,6 @@ public class SolicitudMaterialService {
                     actividad.actualizarEstado(ActividadEstudiante.EstadoActividad.RECHAZADA);
                     actividadRepository.save(actividad);
                 });
-
-        solicitud.desvincularMaterial();
-        solicitudMaterialRepository.save(solicitud);
-        materialRepository.delete(material);
-
-        LogHelper.info(SolicitudMaterialService.class,
-                "Solicitud de material " + idSolicitud + " rechazada");
-        return respuesta;
     }
 
     private String extraerRuta(String link) {
@@ -133,6 +169,9 @@ public class SolicitudMaterialService {
     private void exigirPendiente(SolicitudMaterial solicitud, Material material) {
         if (solicitud.getEstado() != SolicitudMaterial.EstadoSolicitudMaterial.PENDIENTE) {
             throw new IllegalStateException("Solo se puede decidir una solicitud de material pendiente");
+        }
+        if (material == null) {
+            throw new ResourceNotFoundException("El material asociado a la solicitud no existe");
         }
         if (material.getEstado() != Material.EstadoMaterial.PENDIENTE) {
             throw new IllegalStateException("El material asociado ya fue decidido");
