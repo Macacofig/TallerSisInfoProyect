@@ -97,6 +97,11 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // HU-51: la gestión de materias aprobadas no requiere JWT.
+        if (path.matches("/api/estudiantes/\\d+/materias-aprobadas(/.*)?")) {
+            return true;
+        }
+
         if ("/api/test".equals(path) || "/api/health/database".equals(path)
                 || (HttpMethod.POST.matches(method)
                     && ("/api/estudiantes".equals(path) || "/api/estudiantes/login".equals(path)
@@ -109,6 +114,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
         if (HttpMethod.GET.matches(method)) {
             return !path.matches("/api/estudiantes/\\d+")
+                    && !path.matches("/api/estudiantes/\\d+/telefono")
                     && !path.matches("/api/calificacion-(materia|docente)/estudiante/.*")
                     && !path.startsWith("/api/solicitud-material")
                     && !path.startsWith("/api/solicitud-ayudante")

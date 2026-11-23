@@ -2,6 +2,8 @@ package com.unihub.backend.dto.estudiante;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public record EstudianteMateriasAprobadasRequest(
@@ -9,9 +11,14 @@ public record EstudianteMateriasAprobadasRequest(
         List<String> materias
 ) {
     public EstudianteMateriasAprobadasRequest {
-        materias = materias == null ? null : materias.stream()
-                .filter(materia -> materia != null && !materia.isBlank())
-                .map(String::trim)
-                .toList();
+        LinkedHashSet<String> normalizadas = new LinkedHashSet<>();
+        if (materias != null) {
+            for (String materia : materias) {
+                if (materia != null && !materia.isBlank()) {
+                    normalizadas.add(materia.trim());
+                }
+            }
+        }
+        materias = new ArrayList<>(normalizadas);
     }
 }
